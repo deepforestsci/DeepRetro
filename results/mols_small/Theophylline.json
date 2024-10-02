@@ -1,0 +1,39 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CCOCn1cnc2c1c(=O)n(C)c(=O)n2C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H14N4O3",
+                        "mass": 238.106590308
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Cn1c(=O)c2[nH]cnc2n(C)c1=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8N4O2",
+                        "mass": 180.064725496
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}
