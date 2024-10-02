@@ -1,0 +1,11 @@
+2024-10-02 15:46:39.363974: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2024-10-02 15:46:39.364631: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-10-02 15:46:39.367757: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-10-02 15:46:39.405245: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-10-02 15:46:40.154375: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+  0%|          | 0/7 [00:00<?, ?it/s] 14%|█▍        | 1/7 [00:01<00:06,  1.16s/it] 29%|██▊       | 2/7 [02:52<08:25, 101.12s/it] 43%|████▎     | 3/7 [03:20<04:30, 67.67s/it]  57%|█████▋    | 4/7 [06:39<05:59, 119.68s/it] 71%|███████▏  | 5/7 [07:43<03:19, 99.55s/it]  86%|████████▌ | 6/7 [10:09<01:55, 115.43s/it]100%|██████████| 7/7 [12:03<00:00, 115.08s/it]100%|██████████| 7/7 [12:03<00:00, 103.43s/it]
+Error in molecule: 9772
+Error: maximum recursion depth exceeded while calling a Python object
+Error in molecule: 9824
+Error: list index out of range

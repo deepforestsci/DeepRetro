@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(=O)N1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4BrNO2",
+                        "mass": 176.942540468
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)NC(=O)c1[nH]c2ccccc2c1CC(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H18N2O3",
+                        "mass": 274.131742436
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)NC(=O)c1[nH]c2ccc(Br)cc2c1CC(=O)O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H17BrN2O3",
+                        "mass": 352.04225450399997
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H11N",
+                        "mass": 73.08914935199999
+                    }
+                },
+                {
+                    "smiles": "COC(=O)c1[nH]c2ccccc2c1CC(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H11NO4",
+                        "mass": 233.068807832
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)NC(=O)c1[nH]c2ccccc2c1CC(=O)O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H18N2O3",
+                        "mass": 274.131742436
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

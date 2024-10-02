@@ -1,0 +1,39 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CCOC(=O)[C@@H]1C[C@H]1c1ccncc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H13NO2",
+                        "mass": 191.094628656
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(O)[C@@H]1C[C@H]1c1ccncc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9NO2",
+                        "mass": 163.063328528
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.79,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

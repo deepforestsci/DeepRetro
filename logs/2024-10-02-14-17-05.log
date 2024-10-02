@@ -1,0 +1,1657 @@
+2024-10-02 14:23:31,621 - INFO - AZ failed for COC(=O)c1cccc(C(=O)N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2)c1, running LLM
+2024-10-02 14:23:31,622 - INFO - Running LLM for the 0.0th time for molecule: COC(=O)c1cccc(C(=O)N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2)c1
+2024-10-02 14:23:31,637 - INFO - LLM returned [['COC(=O)c1cccc(C#N)c1', 'N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2'], ['COC(=O)c1cccc(C(=O)O)c1', 'N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2'], ['COC(=O)c1cccc(C(=O)Cl)c1', 'N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2'], ['COC(=O)c1cccc(C(=O)N2CCC(CCN3C4CCC3CC(N)C4)(c3ccccc3)CC2)c1', 'c1nc2ccccc2c(C)n1']]
+2024-10-02 14:23:31,637 - INFO - LLM explained ['Amide coupling reaction between an acid chloride and a secondary amine, using a base like triethylamine or pyridine', 'Amide coupling reaction between a carboxylic acid and a secondary amine, using a coupling reagent like HATU or EDC/HOBt', 'Nucleophilic addition of the secondary amine to an aryl nitrile, followed by rearrangement. May require harsh conditions', 'Nucleophilic aromatic substitution of the chloro or fluoro derivative with 2-methylbenzimidazole, using a base like NaH or NaOtBu']
+2024-10-02 14:23:31,637 - INFO - AZ solved COC(=O)c1cccc(C#N)c1
+2024-10-02 14:23:31,641 - INFO - AZ failed for N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2, running LLM
+2024-10-02 14:23:31,641 - INFO - Running LLM for the 0.0th time for molecule: N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2
+2024-10-02 14:23:31,656 - INFO - LLM returned [['N2CCC(CCN3C4CCC3CCC4)(c3ccccc3)CC2', 'Cc1nc2ccccc2n1C3CC4CCC3C4Br'], ['N2CCC(CCN3C4CCC3CC(N)C4)(c3ccccc3)CC2', 'Cc1nc2ccccc2n1Cl'], ['N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CN2', 'BrC1CCCCC1']]
+2024-10-02 14:23:31,656 - INFO - LLM explained ['Nucleophilic substitution of the benzyl bromide with the secondary amine', 'Nucleophilic aromatic substitution of the chloroimidazole with the secondary amine', 'Alkylation of the imidazole with the bromide under basic conditions']
+2024-10-02 14:23:31,656 - INFO - AZ failed for N2CCC(CCN3C4CCC3CCC4)(c3ccccc3)CC2, running LLM
+2024-10-02 14:23:31,656 - INFO - Running LLM for the 0.0th time for molecule: N2CCC(CCN3C4CCC3CCC4)(c3ccccc3)CC2
+2024-10-02 14:23:31,661 - INFO - LLM returned [['N2CCC(CCN3C4CCC3CCC4)CC2', 'c1ccccc1'], ['N2CCC(CCN3C4CCC3CCC4)CC2', 'Br-c1ccccc1'], ['N2CCC(CCN3C4CCC3CCC4)CC2', 'Cl-c1ccccc1'], ['N2CCC(CCN3C4CCC3CCC4)(CO)CC2', 'c1ccccc1']]
+2024-10-02 14:23:31,661 - INFO - LLM explained ['Disconnection of the C-C bond between the piperazine and phenyl rings via Buchwald-Hartwig amination using a palladium catalyst and a base', 'Disconnection of the C-C bond between the piperazine and phenyl rings via Buchwald-Hartwig amination using a palladium catalyst, a base, and a bromobenzene coupling partner', 'Disconnection of the C-C bond between the piperazine and phenyl rings via Buchwald-Hartwig amination using a palladium catalyst, a base, and a chlorobenzene coupling partner', 'Disconnection of the C-C bond between the piperazine and phenyl rings via nucleophilic addition of a phenyl Grignard reagent or phenyllithium to a piperazine ketone, followed by reduction of the resulting alcohol']
+2024-10-02 14:23:31,661 - INFO - AZ failed for N2CCC(CCN3C4CCC3CCC4)CC2, running LLM
+2024-10-02 14:23:31,661 - INFO - Running LLM for the 0.0th time for molecule: N2CCC(CCN3C4CCC3CCC4)CC2
+2024-10-02 14:23:31,661 - INFO - LLM returned [['N2CCC(CCN3C4CCC3CCC4)CN2', 'BrCC(Br)CCN1C2CCC1CCC2'], ['N2CCC(CCN3C4CCC3CCC4)CO2', 'OCC(O)CCN1C2CCC1CCC2']]
+2024-10-02 14:23:31,661 - INFO - LLM explained ['Intramolecular nucleophilic substitution (SN2) reaction, using a dihalide precursor', 'Intramolecular nucleophilic substitution (SN2) reaction, using a diol precursor']
+2024-10-02 14:23:31,666 - INFO - AZ failed for N2CCC(CCN3C4CCC3CCC4)CN2, running LLM
+2024-10-02 14:23:31,666 - INFO - Running LLM for the 0.0th time for molecule: N2CCC(CCN3C4CCC3CCC4)CN2
+2024-10-02 14:23:31,666 - INFO - LLM returned [['N2CCCCN2', 'N3C4CCC3CCC4', 'BrCN'], ['N2CCC(CCN)CN2', 'N3C4CCC3CCC4']]
+2024-10-02 14:23:31,666 - INFO - LLM explained ['Reductive amination between the primary amine and the ketone, using a reducing agent like NaBH4 or H2/catalyst', 'Sequential N-alkylation reactions, first with BrCN to form the diamine, then alkylation with the bicyclic ketone']
+2024-10-02 14:23:31,666 - INFO - AZ solved N2CCCCN2
+2024-10-02 14:23:31,666 - INFO - AZ failed for N3C4CCC3CCC4, running LLM
+2024-10-02 14:23:31,666 - INFO - Running LLM for the 0.0th time for molecule: N3C4CCC3CCC4
+2024-10-02 14:23:31,666 - INFO - Running LLM for the 0.2th time for molecule: N3C4CCC3CCC4
+2024-10-02 14:23:31,666 - INFO - Running LLM for the 0.4th time for molecule: N3C4CCC3CCC4
+2024-10-02 14:23:31,667 - INFO - LLM returned []
+2024-10-02 14:23:31,667 - INFO - LLM explained []
+2024-10-02 14:23:31,670 - INFO - AZ solved BrCN
+2024-10-02 14:23:31,670 - INFO - temp_stat: [True, True]
+2024-10-02 14:23:31,670 - INFO - breaking
+2024-10-02 14:23:31,671 - INFO - AZ failed for BrCC(Br)CCN1C2CCC1CCC2, running LLM
+2024-10-02 14:23:31,671 - INFO - Running LLM for the 0.0th time for molecule: BrCC(Br)CCN1C2CCC1CCC2
+2024-10-02 14:23:31,678 - INFO - LLM returned [['BrCC(Br)CCCl', 'C1CCC2CCCN2C1'], ['BrCC(Br)CCBr', 'C1CCC2CCCN2C1'], ['BrCC(Br)CCN1C2CCC1CC2', 'C=O']]
+2024-10-02 14:23:31,678 - INFO - LLM explained ['Alkylation of the secondary amine with 1,3-dibromopropane under basic conditions (e.g. K2CO3, acetone)', 'Alkylation of the secondary amine with 1-bromo-3-chloropropane under basic conditions (e.g. K2CO3, acetone)', 'Reductive amination of the ketone with 1,3-dibromopropan-2-amine, using a reducing agent like NaBH4 or NaBH(OAc)3']
+2024-10-02 14:23:31,682 - INFO - AZ failed for BrCC(Br)CCCl, running LLM
+2024-10-02 14:23:31,682 - INFO - Running LLM for the 0.0th time for molecule: BrCC(Br)CCCl
+2024-10-02 14:23:31,682 - INFO - Running LLM for the 0.2th time for molecule: BrCC(Br)CCCl
+2024-10-02 14:23:31,687 - INFO - Running LLM for the 0.4th time for molecule: BrCC(Br)CCCl
+2024-10-02 14:23:31,687 - INFO - LLM returned []
+2024-10-02 14:23:31,687 - INFO - LLM explained []
+2024-10-02 14:23:31,691 - INFO - AZ failed for C1CCC2CCCN2C1, running LLM
+2024-10-02 14:23:31,691 - INFO - Running LLM for the 0.0th time for molecule: C1CCC2CCCN2C1
+2024-10-02 14:23:31,695 - INFO - LLM returned [['C1CCC2CC=NC2C1', '[H]'], ['C1CCC2CCNC2C1', 'C1CCC2CCNCC12'], ['C1CCC2CCNC2C1', '[O]']]
+2024-10-02 14:23:31,695 - INFO - LLM explained ['Intramolecular SN2 reaction of a primary amine with an alkyl halide or tosylate, forming the bicyclic ring system', 'Hydrogenation of an enamine using H2 with a metal catalyst like Pd/C or PtO2', 'Reductive amination of a ketone with a primary amine, using a reducing agent like NaBH4 or NaBH3CN']
+2024-10-02 14:23:31,696 - INFO - AZ failed for C1CCC2CC=NC2C1, running LLM
+2024-10-02 14:23:31,696 - INFO - Running LLM for the 0.0th time for molecule: C1CCC2CC=NC2C1
+2024-10-02 14:23:31,696 - INFO - LLM returned [['C1CCC2CCNC2C1', 'O'], ['C1CCC2CCNC2C1', 'O']]
+2024-10-02 14:23:31,696 - INFO - LLM explained ['Oxidation of secondary amine to imine using oxidizing agents like MnO2 or Swern oxidation', 'Dehydration of hemiaminal intermediate formed from reaction of ketone and secondary amine']
+2024-10-02 14:23:31,696 - INFO - AZ failed for C1CCC2CCNC2C1, running LLM
+2024-10-02 14:23:31,696 - INFO - Running LLM for the 0.0th time for molecule: C1CCC2CCNC2C1
+2024-10-02 14:23:31,696 - INFO - LLM returned [['C1CCC(N)CC1', 'O=C1CCCC1'], ['C1CCC(Cl)CC1', 'NCC']]
+2024-10-02 14:23:31,696 - INFO - LLM explained ['Reductive amination between cyclohexylamine and cyclopentanone using a reducing agent like NaBH4 or NaBH3CN.', 'N-alkylation of cyclohexylamine with chlorocyclopentane under basic conditions (e.g., K2CO3, NaHCO3).']
+2024-10-02 14:23:31,696 - INFO - AZ solved C1CCC(N)CC1
+2024-10-02 14:23:31,700 - INFO - AZ solved O=C1CCCC1
+2024-10-02 14:23:31,700 - INFO - temp_stat: [True, True]
+2024-10-02 14:23:31,700 - INFO - breaking
+2024-10-02 14:23:31,704 - INFO - AZ solved O
+2024-10-02 14:23:31,704 - INFO - temp_stat: [True, True]
+2024-10-02 14:23:31,704 - INFO - breaking
+2024-10-02 14:23:31,707 - INFO - AZ failed for [H], running LLM
+2024-10-02 14:23:31,707 - INFO - Running LLM for the 0.0th time for molecule: [H]
+2024-10-02 14:23:31,716 - INFO - Running LLM for the 0.2th time for molecule: [H]
+2024-10-02 14:23:31,719 - INFO - Running LLM for the 0.4th time for molecule: [H]
+2024-10-02 14:23:31,720 - INFO - LLM returned []
+2024-10-02 14:23:31,720 - INFO - LLM explained []
+2024-10-02 14:23:31,720 - INFO - temp_stat: [True]
+2024-10-02 14:23:31,720 - INFO - breaking
+2024-10-02 14:23:31,720 - INFO - temp_stat: [True]
+2024-10-02 14:23:31,720 - INFO - breaking
+2024-10-02 14:23:31,720 - INFO - temp_stat: [True, True]
+2024-10-02 14:23:31,720 - INFO - breaking
+2024-10-02 14:23:31,720 - INFO - AZ solved c1ccccc1
+2024-10-02 14:23:31,720 - INFO - temp_stat: [True, True]
+2024-10-02 14:23:31,720 - INFO - breaking
+2024-10-02 14:23:31,727 - INFO - AZ failed for Cc1nc2ccccc2n1C3CC4CCC3C4Br, running LLM
+2024-10-02 14:23:31,727 - INFO - Running LLM for the 0.0th time for molecule: Cc1nc2ccccc2n1C3CC4CCC3C4Br
+2024-10-02 14:23:31,737 - INFO - LLM returned [['Cc1nc2ccccc2n1C3CC4CCC3C4', 'Br'], ['Cc1nc2ccccc2n1C3CC4CCC3C4', '[Pb]']]
+2024-10-02 14:23:31,737 - INFO - LLM explained ['Alkylation of the imidazole nitrogen with an alkyl bromide, using a base such as K2CO3 or NaH', 'Halogen-metal exchange of the bromide using an organometallic reagent like n-BuLi, followed by quenching with an electrophile']
+2024-10-02 14:23:31,740 - INFO - AZ failed for Cc1nc2ccccc2n1C3CC4CCC3C4, running LLM
+2024-10-02 14:23:31,740 - INFO - Running LLM for the 0.0th time for molecule: Cc1nc2ccccc2n1C3CC4CCC3C4
+2024-10-02 14:23:31,740 - INFO - Calling LLM with molecule: Cc1nc2ccccc2n1C3CC4CCC3C4
+2024-10-02 14:23:43,160 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:23:43,163 - INFO - Received response from LLM: {
+  "data": [
+    ["Cc1nc2ccccc2n1", "C1CC2CCC1C2"],
+    ["Cc1nc2ccccc2n1Cl", "C1CC2CCC1C2"],
+    ["Cc1nc2ccccc2n1C3CC4CCC3C4O", null]
+  ],
+  "explanation": [
+    "Alkylation of 2-methyl benzimidazole with bicyclo[3.1.0]hexane under basic conditions (e.g. NaH, DMF)",
+    "Nucleophilic substitution of 2-chloro-1-methyl benzimidazole with bicyclo[3.1.0]hexane under basic conditions (e.g. K2CO3, DMF)", 
+    "Reduction of the corresponding alcohol (Cc1nc2ccccc2n1C3CC4CCC3C4O) using a hydride reducing agent (e.g. LiAlH4, THF)"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7
+  ]
+}
+2024-10-02 14:23:43,164 - INFO - Error in parsing response: malformed node or string on line 5: <ast.Name object at 0x76d6a5f42ec0>
+2024-10-02 14:23:43,165 - INFO - AZ failed for CC(=O)N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(-c4cc(C(F)F)ccc4OCC4CC4)ncnc23)[C@@H](C)C1, running LLM
+2024-10-02 14:23:43,165 - INFO - Running LLM for the 0.0th time for molecule: CC(=O)N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(-c4cc(C(F)F)ccc4OCC4CC4)ncnc23)[C@@H](C)C1
+2024-10-02 14:23:43,173 - INFO - LLM returned [['CC(=O)Cl', 'N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(-c4cc(C(F)F)ccc4OCC4CC4)ncnc23)[C@@H](C)C1'], ['CC(=O)N[C@H]1CC[C@H](N)C(C)C1', 'O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12'], ['CC(=O)N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3cncnc23)[C@@H](C)C1', 'c1cc(C(F)F)ccc1-c1ncnc2[nH]c(C)cc12'], ['CC(=O)N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(-c4cc(C(F)F)ccc4O)ncnc23)[C@@H](C)C1', 'BrCC1CC1']]
+2024-10-02 14:23:43,173 - INFO - LLM explained ['Amide coupling between the amine and acid chloride, using a coupling reagent like HATU or PyBOP', 'Acetylation of the free amine using acetyl chloride or acetic anhydride', 'O-alkylation of the phenol using cyclobutylmethyl bromide and a base like K2CO3', 'Pd-catalyzed Suzuki coupling between the aryl halide and boronic acid/ester to form the biaryl bond']
+2024-10-02 14:23:43,173 - INFO - AZ solved CC(=O)Cl
+2024-10-02 14:23:43,173 - INFO - AZ failed for N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(-c4cc(C(F)F)ccc4OCC4CC4)ncnc23)[C@@H](C)C1, running LLM
+2024-10-02 14:23:43,173 - INFO - Running LLM for the 0.0th time for molecule: N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(-c4cc(C(F)F)ccc4OCC4CC4)ncnc23)[C@@H](C)C1
+2024-10-02 14:23:43,173 - INFO - Calling LLM with molecule: N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(-c4cc(C(F)F)ccc4OCC4CC4)ncnc23)[C@@H](C)C1
+2024-10-02 14:23:58,847 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:23:58,848 - INFO - Received response from LLM: {
+  "data": [
+    ["N[C@H]1CC[C@H](N)C(C)C1", "O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12"],
+    ["N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(-c4cc(C(F)F)ccc4O)ncnc23)C(C)C1", "BrCC1CC1"],
+    ["N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3cncnc23)[C@@H](C)C1", "c1cc(C(F)F)ccc1OCC1CC1"],
+    ["N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(Br)ncnc23)[C@@H](C)C1", "c1cc(C(F)F)ccc1OCC1CC1"]
+  ],
+  "explanation": [
+    "Amide coupling between the amine and the acid chloride, which can be formed from the carboxylic acid",
+    "O-alkylation of the phenol with cyclobutyl bromide under basic conditions", 
+    "Suzuki coupling between the halogenated heterocycle and the cyclobutyl trifluoroethoxy benzene boronic acid or ester",
+    "Suzuki coupling between the brominated heterocycle and the cyclobutyl trifluoroethoxy benzene boronic acid or ester"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:23:58,876 - INFO - Obtained 4 valid pathways after validity test: [['N[C@H]1CC[C@H](N)C(C)C1', 'O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12'], ['N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(-c4cc(C(F)F)ccc4O)ncnc23)C(C)C1', 'BrCC1CC1'], ['N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3cncnc23)[C@@H](C)C1', 'c1cc(C(F)F)ccc1OCC1CC1'], ['N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(Br)ncnc23)[C@@H](C)C1', 'c1cc(C(F)F)ccc1OCC1CC1']]
+2024-10-02 14:23:58,877 - INFO - LLM returned [['N[C@H]1CC[C@H](N)C(C)C1', 'O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12'], ['N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3cncnc23)[C@@H](C)C1', 'c1cc(C(F)F)ccc1OCC1CC1'], ['N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(Br)ncnc23)[C@@H](C)C1', 'c1cc(C(F)F)ccc1OCC1CC1'], ['N[C@H]1CC[C@H](NC(=O)c2c(C)[nH]c3c(-c4cc(C(F)F)ccc4O)ncnc23)C(C)C1', 'BrCC1CC1']]
+2024-10-02 14:23:58,877 - INFO - LLM explained ['Amide coupling between the amine and the acid chloride, which can be formed from the carboxylic acid', 'O-alkylation of the phenol with cyclobutyl bromide under basic conditions', 'Suzuki coupling between the halogenated heterocycle and the cyclobutyl trifluoroethoxy benzene boronic acid or ester', 'Suzuki coupling between the brominated heterocycle and the cyclobutyl trifluoroethoxy benzene boronic acid or ester']
+2024-10-02 14:23:58,879 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:23:59,648 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:23:59,812 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:23:59,891 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:23:59,915 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:24:11,350 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:24:11,350 - INFO - Selected as stock: zinc
+2024-10-02 14:24:11,350 - INFO - Compounds in stock: 17422831
+2024-10-02 14:24:11,350 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:24:11,350 - INFO - Selected as filter policy: uspto
+2024-10-02 14:24:41,247 - INFO - AZ failed for N[C@H]1CC[C@H](N)C(C)C1, running LLM
+2024-10-02 14:24:41,247 - INFO - Running LLM for the 0.0th time for molecule: N[C@H]1CC[C@H](N)C(C)C1
+2024-10-02 14:24:41,247 - INFO - Calling LLM with molecule: N[C@H]1CC[C@H](N)C(C)C1
+2024-10-02 14:24:51,309 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:24:51,312 - INFO - Received response from LLM: {
+  "data": [
+    ["N[C@H]1CC[C@H](N)C(C(=O)O)C1"],
+    ["N[C@H]1CC[C@H](NC(=O)OC(C)(C)C)C(C)C1"],
+    ["N[C@H]1CC[C@H](N)C(CO)C1"]
+  ],
+  "explanation": [
+    "Oxidation of the methyl group to a carboxylic acid using a strong oxidant like KMnO4 or CrO3",
+    "Protection of the primary amine with a Boc group, which can be removed later by acid",
+    "Reduction of the methyl group to a primary alcohol using LiAlH4 or NaBH4"
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:24:51,313 - INFO - Molecule : N[C@H]1CC[C@H](N)C(C)C1 is substructure of target molecule
+2024-10-02 14:24:51,314 - INFO - Molecule : N[C@H]1CC[C@H](N)C(C)C1 is substructure of target molecule
+2024-10-02 14:24:51,314 - INFO - Molecule : N[C@H]1CC[C@H](N)C(C)C1 is substructure of target molecule
+2024-10-02 14:24:51,314 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:24:51,314 - INFO - Running LLM for the 0.2th time for molecule: N[C@H]1CC[C@H](N)C(C)C1
+2024-10-02 14:24:51,314 - INFO - Calling LLM with molecule: N[C@H]1CC[C@H](N)C(C)C1
+2024-10-02 14:25:01,482 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:25:01,483 - INFO - Received response from LLM: {
+  "data": [
+    ["N[C@H]1CC[C@H](N)C(C(=O)O)C1"],
+    ["N[C@H]1CC[C@H](NC(=O)OC(C)(C)C)C(C)C1"],
+    ["N[C@H]1CC[C@H](N=C)C(C)C1"]
+  ],
+  "explanation": [
+    "Oxidation of the methyl group to a carboxylic acid using a strong oxidant like KMnO4 or CrO3",
+    "Protection of the primary amine as a tert-butyloxycarbonyl (Boc) carbamate, which can be removed later by acid",
+    "Reductive amination of the primary amine with formaldehyde and a reducing agent like NaBH4 or H2/catalyst"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7
+  ]
+}
+2024-10-02 14:25:01,484 - INFO - Molecule : N[C@H]1CC[C@H](N)C(C)C1 is substructure of target molecule
+2024-10-02 14:25:01,484 - INFO - Molecule : N[C@H]1CC[C@H](N)C(C)C1 is substructure of target molecule
+2024-10-02 14:25:01,485 - INFO - Molecule : N[C@H]1CC[C@H](N)C(C)C1 is substructure of target molecule
+2024-10-02 14:25:01,485 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:25:01,485 - INFO - Running LLM for the 0.4th time for molecule: N[C@H]1CC[C@H](N)C(C)C1
+2024-10-02 14:25:01,485 - INFO - Calling LLM with molecule: N[C@H]1CC[C@H](N)C(C)C1
+2024-10-02 14:25:11,183 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:25:11,184 - INFO - Received response from LLM: {
+  "data": [
+    ["N[C@H]1CC[C@H](N)C(C(=O)O)C1"],
+    ["N[C@H]1CC[C@H](NC(=O)OC(C)(C)C)C(C)C1"],
+    ["N[C@H]1CC[C@H](NC=O)C(C)C1"]
+  ],
+  "explanation": [
+    "Oxidation of the methyl group to a carboxylic acid, using a strong oxidant like KMnO4 or CrO3",
+    "Boc protection of the free amine, using di-tert-butyl dicarbonate ((Boc)2O) and a base like Et3N or DMAP",
+    "Reductive amination of the free amine with formaldehyde, using a reducing agent like NaBH4 or NaBH3CN"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7
+  ]
+}
+2024-10-02 14:25:11,189 - INFO - Molecule : N[C@H]1CC[C@H](N)C(C)C1 is substructure of target molecule
+2024-10-02 14:25:11,190 - INFO - Molecule : N[C@H]1CC[C@H](N)C(C)C1 is substructure of target molecule
+2024-10-02 14:25:11,190 - INFO - Molecule : N[C@H]1CC[C@H](N)C(C)C1 is substructure of target molecule
+2024-10-02 14:25:11,190 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:25:11,190 - INFO - LLM returned []
+2024-10-02 14:25:11,191 - INFO - LLM explained []
+2024-10-02 14:25:11,192 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:25:11,299 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:25:11,441 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:25:11,453 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:25:11,473 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:25:17,183 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:25:17,183 - INFO - Selected as stock: zinc
+2024-10-02 14:25:17,183 - INFO - Compounds in stock: 17422831
+2024-10-02 14:25:17,183 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:25:17,183 - INFO - Selected as filter policy: uspto
+2024-10-02 14:25:35,484 - INFO - AZ failed for O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12, running LLM
+2024-10-02 14:25:35,484 - INFO - Running LLM for the 0.0th time for molecule: O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12
+2024-10-02 14:25:35,484 - INFO - Calling LLM with molecule: O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12
+2024-10-02 14:25:49,109 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:25:49,112 - INFO - Received response from LLM: {
+  "data": [
+    ["O=C(O)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12", "Cl"],
+    ["O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12", "BrCC1CC1"],
+    ["O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3)ncnc12", "CH2=CHCH2Br"],
+    ["O=C(Cl)c1c(C#N)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12", "H2"]
+  ],
+  "explanation": [
+    "Acid chloride formation from carboxylic acid using thionyl chloride or oxalyl chloride",
+    "O-alkylation of phenol with cyclopropylmethyl bromide and base",
+    "Heck reaction of aryl halide with allyl bromide, Pd catalyst", 
+    "Reduction of nitrile to methyl group using LiAlH4 or catalytic hydrogenation"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:25:49,126 - INFO - Molecule : O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12 is invalid or cannot be parsed
+2024-10-02 14:25:49,127 - INFO - Molecule : O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12 is substructure of target molecule
+2024-10-02 14:25:49,127 - INFO - Molecule : O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12 is invalid or cannot be parsed
+2024-10-02 14:25:49,127 - INFO - Obtained 2 valid pathways after validity test: [['O=C(O)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12', 'Cl'], ['O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12', 'BrCC1CC1']]
+2024-10-02 14:25:49,127 - INFO - LLM returned [['O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12', 'BrCC1CC1'], ['O=C(O)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3OCC3CC3)ncnc12', 'Cl']]
+2024-10-02 14:25:49,127 - INFO - LLM explained ['Acid chloride formation from carboxylic acid using thionyl chloride or oxalyl chloride', 'O-alkylation of phenol with cyclopropylmethyl bromide and base']
+2024-10-02 14:25:49,129 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:25:49,232 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:25:49,365 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:25:49,376 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:25:49,394 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:25:55,139 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:25:55,139 - INFO - Selected as stock: zinc
+2024-10-02 14:25:55,139 - INFO - Compounds in stock: 17422831
+2024-10-02 14:25:55,139 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:25:55,139 - INFO - Selected as filter policy: uspto
+2024-10-02 14:26:18,159 - INFO - AZ failed for O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12, running LLM
+2024-10-02 14:26:18,159 - INFO - Running LLM for the 0.0th time for molecule: O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12
+2024-10-02 14:26:18,159 - INFO - Calling LLM with molecule: O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12
+2024-10-02 14:26:29,790 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:26:29,793 - INFO - Received response from LLM: {
+  "data": [
+    ["O=C(O)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12", "Cl"],
+    ["O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12", "H2O"],
+    ["O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12", "NH3"],
+    ["O=C(Cl)c1c(C)[nH]c2c(-c3cc(CHF)ccc3O)ncnc12", "HF"]
+  ],
+  "explanation": [
+    "Acid chloride formation from carboxylic acid using thionyl chloride or oxalyl chloride",
+    "Hydrolysis of acid chloride to carboxylic acid using water", 
+    "Amide formation from acid chloride and ammonia or primary amine",
+    "Reduction of difluoromethyl group to monofluoromethyl using DIBAL-H or other hydride reducing agents"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:26:29,795 - INFO - Molecule : O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12 is same as target molecule
+2024-10-02 14:26:29,795 - INFO - Molecule : O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12 is invalid or cannot be parsed
+2024-10-02 14:26:29,796 - INFO - Molecule : O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12 is same as target molecule
+2024-10-02 14:26:29,796 - INFO - Molecule : O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12 is invalid or cannot be parsed
+2024-10-02 14:26:29,796 - INFO - Molecule : O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12 is invalid or cannot be parsed
+2024-10-02 14:26:29,796 - INFO - Molecule : O=C(Cl)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12 is invalid or cannot be parsed
+2024-10-02 14:26:29,796 - INFO - Obtained 1 valid pathways after validity test: [['O=C(O)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12', 'Cl']]
+2024-10-02 14:26:29,796 - INFO - LLM returned [['O=C(O)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12', 'Cl']]
+2024-10-02 14:26:29,796 - INFO - LLM explained ['Acid chloride formation from carboxylic acid using thionyl chloride or oxalyl chloride']
+2024-10-02 14:26:29,798 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:26:29,902 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:26:30,033 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:26:30,042 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:26:30,060 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:26:35,758 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:26:35,758 - INFO - Selected as stock: zinc
+2024-10-02 14:26:35,758 - INFO - Compounds in stock: 17422831
+2024-10-02 14:26:35,758 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:26:35,758 - INFO - Selected as filter policy: uspto
+2024-10-02 14:27:10,727 - INFO - AZ failed for O=C(O)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12, running LLM
+2024-10-02 14:27:10,727 - INFO - Running LLM for the 0.0th time for molecule: O=C(O)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12
+2024-10-02 14:27:10,732 - INFO - Calling LLM with molecule: O=C(O)c1c(C)[nH]c2c(-c3cc(C(F)F)ccc3O)ncnc12
+2024-10-02 14:27:26,820 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:27:26,822 - INFO - Received response from LLM: {
+  "data": [
+    ["O=C(O)c1c(C)[nH]c2c(Br)ncnc12", "Oc1ccc(C(F)F)cc1-c1[nH]ccc1"],
+    ["O=C(O)c1c(C)[nH]c2c(I)ncnc12", "Oc1ccc(C(F)F)cc1B(O)O"],
+    ["O=C(O)c1c(C)[nH]c2c(Cl)ncnc12", "Oc1ccc(C(F)F)cc1[SnH3]"],
+    ["O=C(O)c1c(C)[nH]c2cncnc12", "Oc1ccc(C(F)F)cc1Br"]
+  ],
+  "explanation": [
+    "Suzuki coupling between a halogenated indole carboxylic acid and a difluoromethylphenol boronic acid, using a palladium catalyst and base",
+    "Suzuki coupling between an iodinated indole carboxylic acid and a difluoromethylphenol boronic acid, using a palladium catalyst and base", 
+    "Stille coupling between a chlorinated indole carboxylic acid and a difluoromethylphenol stannane, using a palladium catalyst",
+    "Buchwald-Hartwig amination between an indole carboxylic acid and a brominated difluoromethylphenol, using a palladium catalyst, ligand and base"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.8,
+    0.7
+  ]
+}
+2024-10-02 14:27:26,833 - INFO - Obtained 4 valid pathways after validity test: [['O=C(O)c1c(C)[nH]c2c(Br)ncnc12', 'Oc1ccc(C(F)F)cc1-c1[nH]ccc1'], ['O=C(O)c1c(C)[nH]c2c(I)ncnc12', 'Oc1ccc(C(F)F)cc1B(O)O'], ['O=C(O)c1c(C)[nH]c2c(Cl)ncnc12', 'Oc1ccc(C(F)F)cc1[SnH3]'], ['O=C(O)c1c(C)[nH]c2cncnc12', 'Oc1ccc(C(F)F)cc1Br']]
+2024-10-02 14:27:26,851 - INFO - LLM returned [['O=C(O)c1c(C)[nH]c2cncnc12', 'Oc1ccc(C(F)F)cc1Br'], ['O=C(O)c1c(C)[nH]c2c(Cl)ncnc12', 'Oc1ccc(C(F)F)cc1[SnH3]'], ['O=C(O)c1c(C)[nH]c2c(Br)ncnc12', 'Oc1ccc(C(F)F)cc1-c1[nH]ccc1'], ['O=C(O)c1c(C)[nH]c2c(I)ncnc12', 'Oc1ccc(C(F)F)cc1B(O)O']]
+2024-10-02 14:27:26,851 - INFO - LLM explained ['Suzuki coupling between a halogenated indole carboxylic acid and a difluoromethylphenol boronic acid, using a palladium catalyst and base', 'Suzuki coupling between an iodinated indole carboxylic acid and a difluoromethylphenol boronic acid, using a palladium catalyst and base', 'Stille coupling between a chlorinated indole carboxylic acid and a difluoromethylphenol stannane, using a palladium catalyst', 'Buchwald-Hartwig amination between an indole carboxylic acid and a brominated difluoromethylphenol, using a palladium catalyst, ligand and base']
+2024-10-02 14:27:26,853 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:27:26,957 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:27:27,092 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:27:27,101 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:27:27,119 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:27:32,851 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:27:32,851 - INFO - Selected as stock: zinc
+2024-10-02 14:27:32,851 - INFO - Compounds in stock: 17422831
+2024-10-02 14:27:32,851 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:27:32,851 - INFO - Selected as filter policy: uspto
+2024-10-02 14:27:57,001 - INFO - AZ failed for O=C(O)c1c(C)[nH]c2cncnc12, running LLM
+2024-10-02 14:27:57,002 - INFO - Running LLM for the 0.0th time for molecule: O=C(O)c1c(C)[nH]c2cncnc12
+2024-10-02 14:27:57,002 - INFO - Calling LLM with molecule: O=C(O)c1c(C)[nH]c2cncnc12
+2024-10-02 14:28:09,671 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:28:09,674 - INFO - Received response from LLM: {
+  "data": [
+    ["O=C(O)c1c(C)[nH]c2cncn(Br)c12"],
+    ["O=C(O)c1c(C)[nH]c2cnc(Cl)nc12", "N#Cc1ncnc2c1[nH]c(C)c2C(=O)O"],
+    ["O=C(O)c1c(C)[nH]c2c(N)ncnc12"],
+    ["O=C(O)c1c(C)[nH]c2c(N)ncnc12", "NCc1ncnc2c1[nH]c(C)c2C(=O)O"]
+  ],
+  "explanation": [
+    "Bromination at the N9 position of the purine ring",
+    "Chlorination at the C6 position of the purine ring, followed by cyanation",
+    "Nitration at the C6 position of the purine ring, followed by reduction",
+    "Nucleophilic addition of methylamine at the C6 position of the purine ring, followed by oxidation of the resulting hydroxymethyl group"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.8, 
+    0.6
+  ]
+}
+2024-10-02 14:28:09,680 - INFO - Molecule : O=C(O)c1c(C)[nH]c2cncnc12 is invalid or cannot be parsed
+2024-10-02 14:28:09,681 - INFO - Molecule : O=C(O)c1c(C)[nH]c2cncnc12 is substructure of target molecule
+2024-10-02 14:28:09,682 - INFO - Molecule : O=C(O)c1c(C)[nH]c2cncnc12 is substructure of target molecule
+2024-10-02 14:28:09,682 - INFO - Molecule : O=C(O)c1c(C)[nH]c2cncnc12 is substructure of target molecule
+2024-10-02 14:28:09,683 - INFO - Molecule : O=C(O)c1c(C)[nH]c2cncnc12 is substructure of target molecule
+2024-10-02 14:28:09,683 - INFO - Molecule : O=C(O)c1c(C)[nH]c2cncnc12 is substructure of target molecule
+2024-10-02 14:28:09,683 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:28:09,684 - INFO - Running LLM for the 0.2th time for molecule: O=C(O)c1c(C)[nH]c2cncnc12
+2024-10-02 14:28:09,684 - INFO - Calling LLM with molecule: O=C(O)c1c(C)[nH]c2cncnc12
+2024-10-02 14:28:21,169 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:28:21,169 - INFO - Received response from LLM: {
+  "data": [
+    ["O=C(O)c1c(C)[nH]c2cnc(N)nc12"],
+    ["O=C(O)c1c(C)[nH]c2c(Cl)ncnc12", "N"],
+    ["O=C(O)c1c(C)[nH]c2c(OC)ncnc12"],
+    ["O=C(Cl)c1c(C)[nH]c2cncnc12", "O"]
+  ],
+  "explanation": [
+    "Reduction of the nitrile group to a primary amine using LiAlH4 or catalytic hydrogenation",
+    "Nucleophilic aromatic substitution of the chlorine with ammonia or another nitrogen nucleophile",
+    "Ether cleavage of the methoxy group using BBr3 or HBr",
+    "Hydrolysis of the acid chloride to the carboxylic acid using water"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:28:21,171 - INFO - Molecule : O=C(O)c1c(C)[nH]c2cncnc12 is substructure of target molecule
+2024-10-02 14:28:21,171 - INFO - Molecule : O=C(O)c1c(C)[nH]c2cncnc12 is substructure of target molecule
+2024-10-02 14:28:21,172 - INFO - Molecule : O=C(O)c1c(C)[nH]c2cncnc12 is substructure of target molecule
+2024-10-02 14:28:21,173 - INFO - Obtained 1 valid pathways after validity test: [['O=C(Cl)c1c(C)[nH]c2cncnc12', 'O']]
+2024-10-02 14:28:21,173 - INFO - LLM returned [['O=C(Cl)c1c(C)[nH]c2cncnc12', 'O']]
+2024-10-02 14:28:21,173 - INFO - LLM explained ['Hydrolysis of the acid chloride to the carboxylic acid using water']
+2024-10-02 14:28:21,175 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:28:21,281 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:28:21,417 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:28:21,428 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:28:21,447 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:28:27,159 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:28:27,160 - INFO - Selected as stock: zinc
+2024-10-02 14:28:27,160 - INFO - Compounds in stock: 17422831
+2024-10-02 14:28:27,160 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:28:27,160 - INFO - Selected as filter policy: uspto
+2024-10-02 14:28:48,268 - INFO - AZ failed for O=C(Cl)c1c(C)[nH]c2cncnc12, running LLM
+2024-10-02 14:28:48,268 - INFO - Running LLM for the 0.0th time for molecule: O=C(Cl)c1c(C)[nH]c2cncnc12
+2024-10-02 14:28:48,268 - INFO - Calling LLM with molecule: O=C(Cl)c1c(C)[nH]c2cncnc12
+2024-10-02 14:29:01,625 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:29:01,627 - INFO - Received response from LLM: {
+  "data": [
+    ["O=C(O)c1c(C)[nH]c2cncnc12"],
+    ["O=C(Cl)c1c(C)[nH]c2cncn(Br)c12", "N#CC[NH2+]C"],
+    ["O=C(Cl)c1c(C)[nH]c2cnc[nH+]c12", "H-"],
+    ["Clc1c(C)[nH]c2cncnc12", "O=C=O"]
+  ],
+  "explanation": [
+    "Hydrolysis of the acid chloride to the carboxylic acid using water or hydroxide.",
+    "Nucleophilic aromatic substitution of the brominated imidazole with cyanoacetamidine.",
+    "Deprotonation of the imidazolium cation with a base such as NaH or LDA.", 
+    "Friedel-Crafts acylation of the chlorinated imidazopyridine with phosgene or oxalyl chloride."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.6,
+    0.8
+  ]
+}
+2024-10-02 14:29:01,629 - INFO - Molecule : O=C(Cl)c1c(C)[nH]c2cncnc12 is invalid or cannot be parsed
+2024-10-02 14:29:01,629 - INFO - Molecule : O=C(Cl)c1c(C)[nH]c2cncnc12 is substructure of target molecule
+2024-10-02 14:29:01,630 - INFO - Molecule : O=C(Cl)c1c(C)[nH]c2cncnc12 is invalid or cannot be parsed
+2024-10-02 14:29:01,630 - INFO - Obtained 1 valid pathways after validity test: [['Clc1c(C)[nH]c2cncnc12', 'O=C=O']]
+2024-10-02 14:29:01,631 - INFO - LLM returned [['Clc1c(C)[nH]c2cncnc12', 'O=C=O']]
+2024-10-02 14:29:01,631 - INFO - LLM explained ['Friedel-Crafts acylation of the chlorinated imidazopyridine with phosgene or oxalyl chloride.']
+2024-10-02 14:29:01,632 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:29:01,742 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:29:01,876 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:29:01,886 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:29:01,905 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:29:07,674 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:29:07,675 - INFO - Selected as stock: zinc
+2024-10-02 14:29:07,675 - INFO - Compounds in stock: 17422831
+2024-10-02 14:29:07,675 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:29:07,675 - INFO - Selected as filter policy: uspto
+2024-10-02 14:29:21,505 - INFO - AZ solved Clc1c(C)[nH]c2cncnc12
+2024-10-02 14:29:21,516 - INFO - AZ solved O=C=O
+2024-10-02 14:29:21,516 - INFO - temp_stat: [True, True]
+2024-10-02 14:29:21,516 - INFO - breaking
+2024-10-02 14:29:21,516 - INFO - AZ solved O
+2024-10-02 14:29:21,516 - INFO - temp_stat: [True, True]
+2024-10-02 14:29:21,516 - INFO - breaking
+2024-10-02 14:29:21,518 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:29:21,623 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:29:21,761 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:29:21,771 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:29:21,790 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:29:27,602 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:29:27,603 - INFO - Selected as stock: zinc
+2024-10-02 14:29:27,603 - INFO - Compounds in stock: 17422831
+2024-10-02 14:29:27,603 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:29:27,603 - INFO - Selected as filter policy: uspto
+2024-10-02 14:29:52,490 - INFO - AZ solved Oc1ccc(C(F)F)cc1Br
+2024-10-02 14:29:52,490 - INFO - temp_stat: [True, True]
+2024-10-02 14:29:52,490 - INFO - breaking
+2024-10-02 14:29:52,490 - INFO - AZ solved Cl
+2024-10-02 14:29:52,490 - INFO - temp_stat: [True, True]
+2024-10-02 14:29:52,490 - INFO - breaking
+2024-10-02 14:29:52,491 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:29:52,596 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:29:52,730 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:29:52,740 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:29:52,759 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:29:58,543 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:29:58,544 - INFO - Selected as stock: zinc
+2024-10-02 14:29:58,544 - INFO - Compounds in stock: 17422831
+2024-10-02 14:29:58,544 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:29:58,544 - INFO - Selected as filter policy: uspto
+2024-10-02 14:30:08,063 - INFO - AZ solved BrCC1CC1
+2024-10-02 14:30:08,064 - INFO - temp_stat: [True, True]
+2024-10-02 14:30:08,064 - INFO - breaking
+2024-10-02 14:30:08,064 - INFO - temp_stat: [True]
+2024-10-02 14:30:08,064 - INFO - breaking
+2024-10-02 14:30:08,064 - INFO - temp_stat: [True, True]
+2024-10-02 14:30:08,064 - INFO - breaking
+2024-10-02 14:30:15,132 - INFO - AZ failed for CCC(C)N1CC(c2c(C)c(Cl)cc(C(C)n3nc(C)c4c(N)ncnc43)c2OC)C1, running LLM
+2024-10-02 14:30:15,132 - INFO - Running LLM for the 0.0th time for molecule: CCC(C)N1CC(c2c(C)c(Cl)cc(C(C)n3nc(C)c4c(N)ncnc43)c2OC)C1
+2024-10-02 14:30:15,136 - INFO - LLM returned [['CCC(C)N1CC(c2c(C)c(Cl)ccc2OC)C1', 'N#Cc1c(C)n(C)nc1c1c(N)ncnc1'], ['CCC(C)N1CC(c2c(C)c(Cl)cc(Br)c2OC)C1', 'Cn1nc(C)c2c(N)ncnc21'], ['CCC(C)N1CC(c2c(C)c(Cl)cc(C#Cn3nc(C)c4c(N)ncnc43)c2OC)C1', 'C(C)C(=O)Cl'], ['CCC(C)N1CC(c2c(C)c(Cl)cc(C(=O)C(C)n3nc(C)c4c(N)ncnc43)c2OC)C1', 'CNC']]
+2024-10-02 14:30:15,136 - INFO - LLM explained ['Reductive amination of the ketone with methylamine, using a reducing agent like NaBH4 or H2 with a catalyst', 'Nucleophilic addition of the organolithium or Grignard reagent derived from 2-chloro-2-methylpropane to the nitrile', 'Pd-catalyzed cross-coupling (e.g. Suzuki or Stille) of the aryl bromide with the heterocyclic organometallic reagent', 'Pd-catalyzed cross-coupling (e.g. Sonogashira) of the terminal alkyne with the heterocyclic halide']
+2024-10-02 14:30:15,136 - INFO - AZ failed for CCC(C)N1CC(c2c(C)c(Cl)ccc2OC)C1, running LLM
+2024-10-02 14:30:15,136 - INFO - Running LLM for the 0.0th time for molecule: CCC(C)N1CC(c2c(C)c(Cl)ccc2OC)C1
+2024-10-02 14:30:15,136 - INFO - LLM returned [['CCC(C)N1CCC1', 'Clc1ccc(OC)c(C)c1C=O'], ['CCC(C)N1CCC1', 'Clc1ccc(O)c(C)c1C=O'], ['CCC(C)N1CC(CO)C1', 'Clc1ccc(OC)c(C)c1Br'], ['CCC(C)N1CC(CO)C1', 'Clc1ccc(OC)c(C)c1I']]
+2024-10-02 14:30:15,136 - INFO - LLM explained ['Reductive amination of the ketone with the secondary amine, using a reducing agent like NaBH4 or H2/catalyst', 'Reductive amination of the ketone with the secondary amine, followed by O-methylation using a methylating agent like MeI or dimethyl sulfate', 'N-alkylation of the secondary amine with the benzylic bromide under basic conditions', 'N-alkylation of the secondary amine with the benzylic iodide under basic conditions']
+2024-10-02 14:30:15,137 - INFO - AZ solved CCC(C)N1CCC1
+2024-10-02 14:30:15,137 - INFO - AZ solved Clc1ccc(OC)c(C)c1C=O
+2024-10-02 14:30:15,137 - INFO - temp_stat: [True, True]
+2024-10-02 14:30:15,137 - INFO - breaking
+2024-10-02 14:30:15,137 - INFO - AZ failed for N#Cc1c(C)n(C)nc1c1c(N)ncnc1, running LLM
+2024-10-02 14:30:15,137 - INFO - Running LLM for the 0.0th time for molecule: N#Cc1c(C)n(C)nc1c1c(N)ncnc1
+2024-10-02 14:30:15,137 - INFO - Calling LLM with molecule: N#Cc1c(C)n(C)nc1c1c(N)ncnc1
+2024-10-02 14:30:29,503 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:30:29,506 - INFO - Received response from LLM: {
+  "data": [
+    ["N#Cc1c(C)n(C)nc1Cl", "Nc1ncnc(N)c1"],
+    ["N#Cc1c(C)n(C)nc1I", "Nc1ncnc(N)c1"],
+    ["N#Cc1c(C)n(C)nc1Br", "Nc1ncnc(N)c1"],
+    ["N#Cc1c(C)n(C)nc1c1c(N)ncnc1N", null],
+    ["N#Cc1c(C)n(C)nc1c1c([N+](=O)[O-])ncnc1N", null]
+  ],
+  "explanation": [
+    "Buchwald-Hartwig cross-coupling reaction between a chloro-substituted nitrile and a diamino-substituted pyrimidine, using a palladium catalyst and a base.",
+    "Buchwald-Hartwig cross-coupling reaction between an iodo-substituted nitrile and a diamino-substituted pyrimidine, using a palladium catalyst and a base.",
+    "Buchwald-Hartwig cross-coupling reaction between a bromo-substituted nitrile and a diamino-substituted pyrimidine, using a palladium catalyst and a base.",
+    "Reduction of the nitro group to an amine using a reducing agent such as hydrogen gas with a palladium catalyst or iron powder with hydrochloric acid.",
+    "Reduction of the nitro group to an amine using a reducing agent such as hydrogen gas with a palladium catalyst or iron powder with hydrochloric acid."
+  ],
+  "confidence_scores": [
+    0.8,
+    0.8,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:30:29,506 - INFO - Error in parsing response: malformed node or string on line 6: <ast.Name object at 0x76d6803fae60>
+2024-10-02 14:30:29,511 - INFO - AZ failed for Cc1c(-c2ccccc2)c2c(c3c1[nH]c1ccc(O)cc13)C(=O)NC2=O, running LLM
+2024-10-02 14:30:29,511 - INFO - Running LLM for the 0.0th time for molecule: Cc1c(-c2ccccc2)c2c(c3c1[nH]c1ccc(O)cc13)C(=O)NC2=O
+2024-10-02 14:30:29,511 - INFO - Calling LLM with molecule: Cc1c(-c2ccccc2)c2c(c3c1[nH]c1ccc(O)cc13)C(=O)NC2=O
+2024-10-02 14:30:44,285 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:30:44,288 - INFO - Received response from LLM: {
+  "data": [
+    ["Cc1c(-c2ccccc2)c2c(c3c1[nH]c1ccc(O)cc13)C(=O)N", "O=C=O"],
+    ["Cc1c(-c2ccccc2)c2c(c3c1[nH]c1ccc(OC)cc13)C(=O)NC2=O", null],
+    ["Cc1c(-c2ccccc2)c2c(c3c1[nH]c1ccc(O)cc13)C(=O)Cl", "NC2=O"],
+    ["Cc1c(-c2ccccc2)c2c(c3c1[nH]c1ccc(OP)cc13)C(=O)NC2=O", null]
+  ],
+  "explanation": [
+    "Curtius rearrangement of the carboxylic acid followed by reaction with phosgene (COCl2)",
+    "O-Demethylation of the methoxy group using BBr3 or another demethylating agent", 
+    "Coupling of the acid chloride with isocyanate, likely formed in situ from the corresponding amine",
+    "Hydrolysis of a phosphate ester protecting group to reveal the phenol"
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.6,
+    0.5
+  ]
+}
+2024-10-02 14:30:44,288 - INFO - Error in parsing response: malformed node or string on line 4: <ast.Name object at 0x76d6803d4dc0>
+2024-10-02 14:30:44,294 - INFO - AZ failed for COc1ccc(N(C(=O)CN2C(=O)Cc3nnc(C4CCCCC4)n3-c3ccccc32)C(C)C)cn1, running LLM
+2024-10-02 14:30:44,294 - INFO - Running LLM for the 0.0th time for molecule: COc1ccc(N(C(=O)CN2C(=O)Cc3nnc(C4CCCCC4)n3-c3ccccc32)C(C)C)cn1
+2024-10-02 14:30:44,302 - INFO - LLM returned [['COc1ccc(NC(C)C)cn1', 'O=C(CN1C(=O)Cc2nnc(C3CCCCC3)n2-c2ccccc21)Cl']]
+2024-10-02 14:30:44,302 - INFO - LLM explained ['Amide formation between the acid chloride and the aniline derivative']
+2024-10-02 14:30:44,302 - INFO - AZ solved COc1ccc(NC(C)C)cn1
+2024-10-02 14:30:44,309 - INFO - AZ failed for O=C(CN1C(=O)Cc2nnc(C3CCCCC3)n2-c2ccccc21)Cl, running LLM
+2024-10-02 14:30:44,309 - INFO - Running LLM for the 0.0th time for molecule: O=C(CN1C(=O)Cc2nnc(C3CCCCC3)n2-c2ccccc21)Cl
+2024-10-02 14:30:44,309 - INFO - LLM returned [['O=C(CN1C(=O)Cc2nnc(C3CCCCC3)n2-c2ccccc21)O', 'ClC(Cl)Cl']]
+2024-10-02 14:30:44,310 - INFO - LLM explained ['Acid chloride formation from carboxylic acid using thionyl chloride']
+2024-10-02 14:30:44,310 - INFO - AZ failed for O=C(CN1C(=O)Cc2nnc(C3CCCCC3)n2-c2ccccc21)O, running LLM
+2024-10-02 14:30:44,310 - INFO - Running LLM for the 0.0th time for molecule: O=C(CN1C(=O)Cc2nnc(C3CCCCC3)n2-c2ccccc21)O
+2024-10-02 14:30:44,310 - INFO - LLM returned [['O=C(CN1C(=O)Cc2nnc(Br)n2-c2ccccc21)O', 'C1CCC(C1)C1CCCCC1'], ['O=C(CN1C2=C(C(=O)N(C)C1=O)c1nnc(C3CCCCC3)n1-c1ccccc12)O', 'Nc1nnc(C2CCCCC2)n1-c1ccccc1C(=O)N(C)C']]
+2024-10-02 14:30:44,310 - INFO - LLM explained ['The tricyclic core could be formed via an intramolecular cyclization reaction between the amine and ketone, followed by lactamization. The amine and ketone precursors are shown.', 'The cyclohexyl group could be installed by a cross-coupling reaction like Suzuki coupling between the heteroaryl bromide and cyclohexylboronic acid.']
+2024-10-02 14:30:44,310 - INFO - AZ failed for O=C(CN1C(=O)Cc2nnc(Br)n2-c2ccccc21)O, running LLM
+2024-10-02 14:30:44,311 - INFO - Running LLM for the 0.0th time for molecule: O=C(CN1C(=O)Cc2nnc(Br)n2-c2ccccc21)O
+2024-10-02 14:30:44,314 - INFO - LLM returned [['O=C(CN1C(=O)Cc2nncn2-c2ccccc21)O', 'NBS']]
+2024-10-02 14:30:44,314 - INFO - LLM explained ['Bromination at the 5-position of the pyrazole ring using N-bromosuccinimide (NBS)']
+2024-10-02 14:30:44,318 - INFO - AZ failed for O=C(CN1C(=O)Cc2nncn2-c2ccccc21)O, running LLM
+2024-10-02 14:30:44,318 - INFO - Running LLM for the 0.0th time for molecule: O=C(CN1C(=O)Cc2nncn2-c2ccccc21)O
+2024-10-02 14:30:44,318 - INFO - Calling LLM with molecule: O=C(CN1C(=O)Cc2nncn2-c2ccccc21)O
+2024-10-02 14:30:55,780 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:30:55,780 - INFO - Received response from LLM: {
+  "data": [
+    ["O=C(O)CN1C(=O)Cc2nncn2-c2ccccc21", "OC"],
+    ["O=C(Cl)CN1C(=O)Cc2nncn2-c2ccccc21", "O"],
+    ["O=C(CN1C(=O)Cc2nncn2-c2ccccc21)OC", null],
+    ["O=C(CN1C2=C(C(=O)N(CC(=O)O)C1=O)N=NC=N2)c1ccccc1", null]
+  ],
+  "explanation": [
+    "Ester hydrolysis using hydroxide (OH-) under basic conditions",
+    "Nucleophilic acyl substitution with water, starting from the acid chloride",
+    "Ester formation from the carboxylic acid and an alcohol (ROH) under acidic conditions",
+    "Intramolecular cyclization forming the fused imidazole ring, likely under basic conditions"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:30:55,781 - INFO - Error in parsing response: malformed node or string on line 5: <ast.Name object at 0x76d68041d720>
+2024-10-02 14:30:55,785 - INFO - AZ failed for CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1, running LLM
+2024-10-02 14:30:55,785 - INFO - Running LLM for the 0.0th time for molecule: CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1
+2024-10-02 14:30:55,790 - INFO - Running LLM for the 0.2th time for molecule: CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1
+2024-10-02 14:30:55,794 - INFO - Running LLM for the 0.4th time for molecule: CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1
+2024-10-02 14:30:55,797 - INFO - LLM returned []
+2024-10-02 14:30:55,797 - INFO - LLM explained []
+2024-10-02 14:30:55,805 - INFO - AZ failed for CCOC(=O)/C=C/c1c(O)c(=O)[nH]c2cc(Cl)ccc2c1=O, running LLM
+2024-10-02 14:30:55,806 - INFO - Running LLM for the 0.0th time for molecule: CCOC(=O)/C=C/c1c(O)c(=O)[nH]c2cc(Cl)ccc2c1=O
+2024-10-02 14:30:55,812 - INFO - Running LLM for the 0.2th time for molecule: CCOC(=O)/C=C/c1c(O)c(=O)[nH]c2cc(Cl)ccc2c1=O
+2024-10-02 14:30:55,812 - INFO - Running LLM for the 0.4th time for molecule: CCOC(=O)/C=C/c1c(O)c(=O)[nH]c2cc(Cl)ccc2c1=O
+2024-10-02 14:30:55,812 - INFO - LLM returned []
+2024-10-02 14:30:55,812 - INFO - LLM explained []
+2024-10-02 14:30:55,817 - INFO - AZ failed for CCC(CC)(c1ccc(OCC(O[Si](C)(C)C(C)(C)C)C(C)(C)C)c(C)c1)c1cc(C)c(CO)s1, running LLM
+2024-10-02 14:30:55,817 - INFO - Running LLM for the 0.0th time for molecule: CCC(CC)(c1ccc(OCC(O[Si](C)(C)C(C)(C)C)C(C)(C)C)c(C)c1)c1cc(C)c(CO)s1
+2024-10-02 14:30:55,817 - INFO - LLM returned [['CCC(CC)(c1ccc(O)c(C)c1)c1cc(C)c(CO)s1', 'ClCC(O[Si](C)(C)C(C)(C)C)C(C)(C)C'], ['CCC(CC)(c1ccc(OCC(O)C(C)(C)C)c(C)c1)c1cc(C)c(C=O)s1', '[Si](C)(C)C(C)(C)C'], ['CCC(CC)(c1ccc(OCC(O)C(C)(C)C)c(C)c1)c1cc(C)c(CO)s1', 'C[Si](C)C(C)(C)Cl'], ['CCC(CC)(c1ccc(OCC(Cl)C(C)(C)C)c(C)c1)c1cc(C)c(CO)s1', 'O[Si](C)(C)C(C)(C)C']]
+2024-10-02 14:30:55,817 - INFO - LLM explained ['Williamson ether synthesis: Alkoxide displacement of alkyl halide under basic conditions', 'Silyl ether formation: Alcohol protection using silyl chloride and base', 'Alcohol oxidation and silyl ether formation: Oxidize alcohol to aldehyde, then protect the other alcohol', 'Nucleophilic substitution: Replace chloride with silanol using Williamson ether synthesis conditions']
+2024-10-02 14:30:55,820 - INFO - AZ failed for CCC(CC)(c1ccc(O)c(C)c1)c1cc(C)c(CO)s1, running LLM
+2024-10-02 14:30:55,820 - INFO - Running LLM for the 0.0th time for molecule: CCC(CC)(c1ccc(O)c(C)c1)c1cc(C)c(CO)s1
+2024-10-02 14:30:55,821 - INFO - LLM returned [['CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(CO)s1', 'CC(Br)CC'], ['CCC(CC)(c1ccc(O)c(C)c1)c1cc(C)c(CBr)s1', 'CCC(CC)(c1ccc(O)c(C)c1)c1cc(C)c(CI)s1']]
+2024-10-02 14:30:55,821 - INFO - LLM explained ['Conversion of the primary alcohol to a halide (bromide or iodide) using PBr3, PI3, or similar, followed by Grignard addition or alkylation', 'Deprotonation of the benzylic position with a strong base like LDA or NaH, followed by alkylation with a suitable alkyl halide']
+2024-10-02 14:30:55,824 - INFO - AZ failed for CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(CO)s1, running LLM
+2024-10-02 14:30:55,824 - INFO - Running LLM for the 0.0th time for molecule: CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(CO)s1
+2024-10-02 14:30:55,824 - INFO - LLM returned [['CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(CBr)s1', 'CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(CI)s1']]
+2024-10-02 14:30:55,824 - INFO - LLM explained ['Nucleophilic substitution of the alkyl halide (bromide or iodide) with a hydroxide or other oxygen nucleophile']
+2024-10-02 14:30:55,824 - INFO - AZ failed for CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(CBr)s1, running LLM
+2024-10-02 14:30:55,824 - INFO - Running LLM for the 0.0th time for molecule: CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(CBr)s1
+2024-10-02 14:30:55,824 - INFO - Running LLM for the 0.2th time for molecule: CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(CBr)s1
+2024-10-02 14:30:55,824 - INFO - Running LLM for the 0.4th time for molecule: CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(CBr)s1
+2024-10-02 14:30:55,825 - INFO - LLM returned [['CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(C)s1', 'Br'], ['CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(C=O)s1', 'CBr']]
+2024-10-02 14:30:55,825 - INFO - LLM explained ['Aldehyde precursor undergoes Corey-Fuchs reaction with CBr4 and PPh3 to form dibromoalkene, followed by n-BuLi to form terminal alkyne and then hydrogenation to form alkane', 'Free radical bromination of the benzylic methyl group using NBS or Br2']
+2024-10-02 14:30:55,827 - INFO - AZ failed for CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(C)s1, running LLM
+2024-10-02 14:30:55,827 - INFO - Running LLM for the 0.0th time for molecule: CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(C)s1
+2024-10-02 14:30:55,828 - INFO - LLM returned [['CCC(C)(c1ccc(O)c(C)c1)C(=O)c1cc(C)c(C)s1', 'CCC(C)(c1ccc(O)c(C)c1)C#Cc1cc(C)c(C)s1'], ['CCC(C)(c1ccc(O)c(C)c1)c1cc(C)c(C)c(Br)c1', 'CCC(C)(c1ccc(O)c(C)c1)Br']]
+2024-10-02 14:30:55,828 - INFO - LLM explained ['Suzuki coupling between the aryl bromide and the boronic acid or ester derivative of the thiophene moiety, using a palladium catalyst and base', 'Reduction of the ketone or alkyne using a suitable reducing agent like LiAlH4 or H2 with a catalyst']
+2024-10-02 14:30:55,828 - INFO - AZ failed for CCC(C)(c1ccc(O)c(C)c1)C(=O)c1cc(C)c(C)s1, running LLM
+2024-10-02 14:30:55,828 - INFO - Running LLM for the 0.0th time for molecule: CCC(C)(c1ccc(O)c(C)c1)C(=O)c1cc(C)c(C)s1
+2024-10-02 14:30:55,828 - INFO - LLM returned [['CCC(C)(c1ccc(O)c(C)c1)C#N', 'Cc1sc(C)c(C(=O)Cl)c1'], ['CCC(C)(c1ccc(O)c(C)c1)C(=O)OC', 'Cc1sc(C)c(C(=O)OC)c1'], ['CCC(C)(c1ccc(O)c(C)c1)C(=O)Cl', 'Cc1sc(C)c(C(=O)Cl)c1']]
+2024-10-02 14:30:55,828 - INFO - LLM explained ['Acyl chloride coupling between an acyl chloride and a thiophene derivative using Lewis acid catalyst like AlCl3', 'Transesterification between a methyl ester and a thiophene derivative using a base catalyst', 'Hydrolysis of a nitrile to an acyl chloride, followed by coupling with a thiophene derivative using Lewis acid catalyst']
+2024-10-02 14:30:55,828 - INFO - AZ failed for CCC(C)(c1ccc(O)c(C)c1)C#N, running LLM
+2024-10-02 14:30:55,828 - INFO - Running LLM for the 0.0th time for molecule: CCC(C)(c1ccc(O)c(C)c1)C#N
+2024-10-02 14:30:55,828 - INFO - Calling LLM with molecule: CCC(C)(c1ccc(O)c(C)c1)C#N
+2024-10-02 14:31:07,929 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:31:07,930 - INFO - Received response from LLM: {
+  "data": [
+    ["CCC(C)(c1ccc(O)c(C)c1)C(=O)O", "NH3"],
+    ["CCC(C)(c1ccc(OC)c(C)c1)C#N", null],
+    ["CCC(C)(c1ccc(O)c(C)c1)CBr", "NaN3"],
+    ["CCC(C)(c1ccc(O)c(C)c1)CI", "NaN3"]
+  ],
+  "explanation": [
+    "Hydrolysis of the nitrile to a carboxylic acid, followed by amide formation with ammonia",
+    "Demethylation of the phenol ether using BBr3 or another demethylating agent", 
+    "Nucleophilic substitution of an alkyl bromide with sodium azide, followed by Curtius rearrangement and nitrile formation",
+    "Nucleophilic substitution of an alkyl iodide with sodium azide, followed by Curtius rearrangement and nitrile formation"
+  ],
+  "confidence_scores": [
+    0.8,
+    0.9,
+    0.7,
+    0.7
+  ]
+}
+2024-10-02 14:31:07,930 - INFO - Error in parsing response: malformed node or string on line 4: <ast.Name object at 0x76d68041fdc0>
+2024-10-02 14:31:07,935 - INFO - AZ failed for NC(=O)c1ccsc1-c1n[nH]c2c(F)c(-c3ccc(N)c(F)c3)ccc12, running LLM
+2024-10-02 14:31:07,935 - INFO - Running LLM for the 0.0th time for molecule: NC(=O)c1ccsc1-c1n[nH]c2c(F)c(-c3ccc(N)c(F)c3)ccc12
+2024-10-02 14:31:07,939 - INFO - LLM returned [['Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2C(=O)N)c(F)c1', 'O=C(Cl)c1ccsc1'], ['NC(=O)c1ccsc1-c1n[nH]c2ccc(-c3ccc(N)c(F)c3)c(F)c12', 'Nc1ccc(Br)cc1F']]
+2024-10-02 14:31:07,939 - INFO - LLM explained ['Amide coupling between the pre-formed aminoindole and thiophene acid chloride', 'Buchwald-Hartwig amination with the fluoroaniline and a regioisomeric halogenated indole intermediate']
+2024-10-02 14:31:07,942 - INFO - AZ failed for Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2C(=O)N)c(F)c1, running LLM
+2024-10-02 14:31:07,942 - INFO - Running LLM for the 0.0th time for molecule: Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2C(=O)N)c(F)c1
+2024-10-02 14:31:07,942 - INFO - LLM returned [['Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1', 'ClC(=O)Cl'], ['Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2C(=O)Cl)c(F)c1', 'N']]
+2024-10-02 14:31:07,943 - INFO - LLM explained ['Amide formation from an acid chloride and ammonia', 'Friedel-Crafts acylation of the thiophene ring with oxalyl chloride']
+2024-10-02 14:31:07,943 - INFO - AZ failed for Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1, running LLM
+2024-10-02 14:31:07,943 - INFO - Running LLM for the 0.0th time for molecule: Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1
+2024-10-02 14:31:07,943 - INFO - Calling LLM with molecule: Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1
+2024-10-02 14:31:23,298 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:31:23,299 - INFO - Received response from LLM: {
+  "data": [
+    ["Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1", "Nc1ccc(Br)c(F)c1"],
+    ["Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1", "Nc1ccc(-c2ccc3c(c2)[nH]nc3Cl)c(F)c1"],
+    ["Nc1ccc(-c2ccc3c(c2)n[nH]c3-c2sccc2)c(F)c1", "Nc1ccc(-c2ccc3c(c2)n[nH]c3-c2sccc2)c(F)c1"],
+    ["Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1", "O=C(O)c1sccc1"]
+  ],
+  "explanation": [
+    "Suzuki coupling between the fluoroaniline and a suitable boronic acid or ester derived from the benzimidazole-thiophene scaffold",
+    "Nucleophilic aromatic substitution of the chloro group on the benzimidazole with the fluoroaniline", 
+    "Oxidation of the 4,5-dihydro-1H-benzo[d]imidazole to the fully aromatic benzimidazole using an oxidant like MnO2 or air",
+    "Amide coupling between the fluoroaniline and thiophene-2-carboxylic acid, followed by cyclization to form the benzimidazole ring"
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.6,
+    0.5
+  ]
+}
+2024-10-02 14:31:23,301 - INFO - Molecule : Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1 is same as target molecule
+2024-10-02 14:31:23,302 - INFO - Molecule : Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1 is same as target molecule
+2024-10-02 14:31:23,303 - INFO - Molecule : Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1 is substructure of target molecule
+2024-10-02 14:31:23,304 - INFO - Molecule : Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1 is substructure of target molecule
+2024-10-02 14:31:23,305 - INFO - Molecule : Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1 is same as target molecule
+2024-10-02 14:31:23,305 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:31:23,313 - INFO - Running LLM for the 0.2th time for molecule: Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1
+2024-10-02 14:31:23,313 - INFO - Calling LLM with molecule: Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1
+2024-10-02 14:31:39,592 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:31:39,595 - INFO - Received response from LLM: {
+  "data": [
+    ["Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1", "Nc1ccc(-c2ccc3[nH]ncc3c2)c(F)c1"],
+    ["Nc1ccc(-c2ccc3c(c2)[nH]nc3Cl)c(F)c1", "c1cscc1"],
+    ["Nc1ccc(-c2ccc3c(c2)n[nH]c3-c2sccc2)c(F)c1"],
+    ["Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)cc1", "CCOC(=O)CF"]
+  ],
+  "explanation": [
+    "Disconnection of the thiophene ring via a Suzuki coupling reaction, using a thiophene boronic acid or ester and a suitable palladium catalyst.",
+    "Disconnection of the pyrazole ring at the N-C bond, revealing a chloropyrazole and a thiophene, which could be coupled via a nucleophilic aromatic substitution reaction.",
+    "Tautomerization of the pyrazole ring, indicating the target molecule could be obtained by tautomerization of this precursor under suitable conditions (e.g., base, heat).",
+    "Disconnection of the fluorine atom, which could be installed via an electrophilic fluorination reaction using a reagent like Selectfluor or NFSI on the corresponding non-fluorinated precursor."
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.6,
+    0.9
+  ]
+}
+2024-10-02 14:31:39,596 - INFO - Molecule : Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1 is same as target molecule
+2024-10-02 14:31:39,599 - INFO - Molecule : Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)c(F)c1 is substructure of target molecule
+2024-10-02 14:31:39,600 - INFO - Obtained 2 valid pathways after validity test: [['Nc1ccc(-c2ccc3c(c2)[nH]nc3Cl)c(F)c1', 'c1cscc1'], ['Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)cc1', 'CCOC(=O)CF']]
+2024-10-02 14:31:39,601 - INFO - LLM returned [['Nc1ccc(-c2ccc3c(c2)[nH]nc3Cl)c(F)c1', 'c1cscc1'], ['Nc1ccc(-c2ccc3c(c2)[nH]nc3-c2sccc2)cc1', 'CCOC(=O)CF']]
+2024-10-02 14:31:39,601 - INFO - LLM explained ['Disconnection of the pyrazole ring at the N-C bond, revealing a chloropyrazole and a thiophene, which could be coupled via a nucleophilic aromatic substitution reaction.', 'Disconnection of the fluorine atom, which could be installed via an electrophilic fluorination reaction using a reagent like Selectfluor or NFSI on the corresponding non-fluorinated precursor.']
+2024-10-02 14:31:39,602 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:31:39,709 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:31:39,847 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:31:39,857 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:31:39,877 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:31:45,621 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:31:45,622 - INFO - Selected as stock: zinc
+2024-10-02 14:31:45,622 - INFO - Compounds in stock: 17422831
+2024-10-02 14:31:45,622 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:31:45,622 - INFO - Selected as filter policy: uspto
+2024-10-02 14:31:58,917 - INFO - AZ solved Nc1ccc(-c2ccc3c(c2)[nH]nc3Cl)c(F)c1
+2024-10-02 14:31:58,918 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:31:59,023 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:31:59,159 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:31:59,170 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:31:59,189 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:32:05,008 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:32:05,008 - INFO - Selected as stock: zinc
+2024-10-02 14:32:05,008 - INFO - Compounds in stock: 17422831
+2024-10-02 14:32:05,008 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:32:05,008 - INFO - Selected as filter policy: uspto
+2024-10-02 14:32:06,895 - INFO - AZ solved c1cscc1
+2024-10-02 14:32:06,895 - INFO - temp_stat: [True, True]
+2024-10-02 14:32:06,895 - INFO - breaking
+2024-10-02 14:32:06,895 - INFO - AZ failed for ClC(=O)Cl, running LLM
+2024-10-02 14:32:06,895 - INFO - Running LLM for the 0.0th time for molecule: ClC(=O)Cl
+2024-10-02 14:32:06,895 - INFO - LLM returned [['Cl', 'CO'], ['CCl', 'O=C=O']]
+2024-10-02 14:32:06,895 - INFO - LLM explained ['Oxalyl chloride can be synthesized by the chlorination of carbon monoxide using chlorine gas. This is an industrial process typically conducted under high temperature and pressure.', 'Oxalyl chloride can also be prepared by the reaction of phosgene (carbonyl dichloride) with carbon monoxide. This reaction requires a catalyst and is usually performed under elevated temperature and pressure.']
+2024-10-02 14:32:06,895 - INFO - AZ solved Cl
+2024-10-02 14:32:06,895 - INFO - AZ solved CO
+2024-10-02 14:32:06,895 - INFO - temp_stat: [True, True]
+2024-10-02 14:32:06,895 - INFO - breaking
+2024-10-02 14:32:06,896 - INFO - temp_stat: [True, True]
+2024-10-02 14:32:06,896 - INFO - breaking
+2024-10-02 14:32:06,897 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:32:07,004 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:32:07,142 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:32:07,157 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:32:07,176 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:32:12,957 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:32:12,957 - INFO - Selected as stock: zinc
+2024-10-02 14:32:12,957 - INFO - Compounds in stock: 17422831
+2024-10-02 14:32:12,957 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:32:12,957 - INFO - Selected as filter policy: uspto
+2024-10-02 14:32:15,771 - INFO - AZ solved O=C(Cl)c1ccsc1
+2024-10-02 14:32:15,771 - INFO - temp_stat: [True, True]
+2024-10-02 14:32:15,771 - INFO - breaking
+2024-10-02 14:32:18,859 - INFO - AZ failed for CCn1cc(-c2cccc(NC(=O)Nc3ccccc3Cl)c2)c(-c2ccncc2)n1, running LLM
+2024-10-02 14:32:18,859 - INFO - Running LLM for the 0.0th time for molecule: CCn1cc(-c2cccc(NC(=O)Nc3ccccc3Cl)c2)c(-c2ccncc2)n1
+2024-10-02 14:32:18,859 - INFO - Calling LLM with molecule: CCn1cc(-c2cccc(NC(=O)Nc3ccccc3Cl)c2)c(-c2ccncc2)n1
+2024-10-02 14:32:34,707 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:32:34,709 - INFO - Received response from LLM: {
+  "data": [
+    ["CCn1cc(-c2cccc(N)c2)c(-c2ccncc2)n1", "O=C(Cl)Nc1ccccc1Cl"],
+    ["CCn1cc(-c2cccc(NC(=O)Nc3ccccc3)c2)c(-c2ccncc2)n1", "Cl"],
+    ["CCn1cc(-c2cccc(N)c2)c(-c2ccncc2)n1", "O=C(Nc1ccccc1Cl)Cl"],
+    ["CCn1cc(-c2cccc(Cl)c2)c(-c2ccncc2)n1", "NC(=O)Nc1ccccc1Cl"]
+  ],
+  "explanation": [
+    "Nucleophilic acyl substitution reaction between an aniline and an acyl chloride, with a base like triethylamine or pyridine",
+    "Chlorination of the secondary amide using a chlorinating agent like NCS or SO2Cl2", 
+    "Nucleophilic acyl substitution reaction between an aniline and a carbamoyl chloride, with a base like triethylamine or pyridine",
+    "Nucleophilic aromatic substitution of the chloro group with a phenyl urea, using a base like NaH or NaOEt"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.8,
+    0.6
+  ]
+}
+2024-10-02 14:32:34,720 - INFO - Obtained 4 valid pathways after validity test: [['CCn1cc(-c2cccc(N)c2)c(-c2ccncc2)n1', 'O=C(Cl)Nc1ccccc1Cl'], ['CCn1cc(-c2cccc(NC(=O)Nc3ccccc3)c2)c(-c2ccncc2)n1', 'Cl'], ['CCn1cc(-c2cccc(N)c2)c(-c2ccncc2)n1', 'O=C(Nc1ccccc1Cl)Cl'], ['CCn1cc(-c2cccc(Cl)c2)c(-c2ccncc2)n1', 'NC(=O)Nc1ccccc1Cl']]
+2024-10-02 14:32:34,721 - INFO - LLM returned [['CCn1cc(-c2cccc(N)c2)c(-c2ccncc2)n1', 'O=C(Cl)Nc1ccccc1Cl'], ['CCn1cc(-c2cccc(N)c2)c(-c2ccncc2)n1', 'O=C(Nc1ccccc1Cl)Cl'], ['CCn1cc(-c2cccc(Cl)c2)c(-c2ccncc2)n1', 'NC(=O)Nc1ccccc1Cl'], ['CCn1cc(-c2cccc(NC(=O)Nc3ccccc3)c2)c(-c2ccncc2)n1', 'Cl']]
+2024-10-02 14:32:34,721 - INFO - LLM explained ['Nucleophilic acyl substitution reaction between an aniline and an acyl chloride, with a base like triethylamine or pyridine', 'Chlorination of the secondary amide using a chlorinating agent like NCS or SO2Cl2', 'Nucleophilic acyl substitution reaction between an aniline and a carbamoyl chloride, with a base like triethylamine or pyridine', 'Nucleophilic aromatic substitution of the chloro group with a phenyl urea, using a base like NaH or NaOEt']
+2024-10-02 14:32:34,722 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:32:34,832 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:32:34,974 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:32:34,989 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:32:35,008 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:32:40,754 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:32:40,754 - INFO - Selected as stock: zinc
+2024-10-02 14:32:40,754 - INFO - Compounds in stock: 17422831
+2024-10-02 14:32:40,754 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:32:40,754 - INFO - Selected as filter policy: uspto
+2024-10-02 14:33:13,024 - INFO - AZ failed for CCn1cc(-c2cccc(N)c2)c(-c2ccncc2)n1, running LLM
+2024-10-02 14:33:13,025 - INFO - Running LLM for the 0.0th time for molecule: CCn1cc(-c2cccc(N)c2)c(-c2ccncc2)n1
+2024-10-02 14:33:13,025 - INFO - Calling LLM with molecule: CCn1cc(-c2cccc(N)c2)c(-c2ccncc2)n1
+2024-10-02 14:33:27,244 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:33:27,247 - INFO - Received response from LLM: {
+  "data": [
+    ["CCn1cc(-c2cccc(N)c2)c(Cl)n1", "c1cnccc1"],
+    ["CCn1cc(-c2cccc(N)c2)cn1", "Clc1ccncc1"], 
+    ["CCn1ccc(-c2cccc(N)c2)n1", "Clc1ccncc1"],
+    ["CCn1cc(Br)c(-c2ccncc2)n1", "Nc1cccc(-c2cn(CC)nc2Br)c1"]
+  ],
+  "explanation": [
+    "Suzuki coupling between the chloro-substituted imidazole and a pyridine boronic acid or ester",
+    "Nucleophilic aromatic substitution (SNAr) between the imidazole and 2-chloropyridine, with base",
+    "Nucleophilic aromatic substitution (SNAr) between an imidazole and 2-chloropyridine, with base",
+    "Buchwald-Hartwig amination between the bromo-substituted imidazole and aniline, with Pd catalyst and base"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.6,
+    0.8
+  ]
+}
+2024-10-02 14:33:27,251 - INFO - Obtained 4 valid pathways after validity test: [['CCn1cc(-c2cccc(N)c2)c(Cl)n1', 'c1cnccc1'], ['CCn1cc(-c2cccc(N)c2)cn1', 'Clc1ccncc1'], ['CCn1ccc(-c2cccc(N)c2)n1', 'Clc1ccncc1'], ['CCn1cc(Br)c(-c2ccncc2)n1', 'Nc1cccc(-c2cn(CC)nc2Br)c1']]
+2024-10-02 14:33:27,252 - INFO - LLM returned [['CCn1cc(-c2cccc(N)c2)cn1', 'Clc1ccncc1'], ['CCn1ccc(-c2cccc(N)c2)n1', 'Clc1ccncc1'], ['CCn1cc(-c2cccc(N)c2)c(Cl)n1', 'c1cnccc1'], ['CCn1cc(Br)c(-c2ccncc2)n1', 'Nc1cccc(-c2cn(CC)nc2Br)c1']]
+2024-10-02 14:33:27,252 - INFO - LLM explained ['Suzuki coupling between the chloro-substituted imidazole and a pyridine boronic acid or ester', 'Nucleophilic aromatic substitution (SNAr) between the imidazole and 2-chloropyridine, with base', 'Nucleophilic aromatic substitution (SNAr) between an imidazole and 2-chloropyridine, with base', 'Buchwald-Hartwig amination between the bromo-substituted imidazole and aniline, with Pd catalyst and base']
+2024-10-02 14:33:27,253 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:33:27,354 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:33:27,485 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:33:27,494 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:33:27,513 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:33:33,289 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:33:33,289 - INFO - Selected as stock: zinc
+2024-10-02 14:33:33,289 - INFO - Compounds in stock: 17422831
+2024-10-02 14:33:33,289 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:33:33,289 - INFO - Selected as filter policy: uspto
+2024-10-02 14:33:46,315 - INFO - AZ solved CCn1cc(-c2cccc(N)c2)cn1
+2024-10-02 14:33:46,316 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:33:46,396 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:33:46,530 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:33:46,539 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:33:46,558 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:33:52,290 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:33:52,290 - INFO - Selected as stock: zinc
+2024-10-02 14:33:52,290 - INFO - Compounds in stock: 17422831
+2024-10-02 14:33:52,290 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:33:52,290 - INFO - Selected as filter policy: uspto
+2024-10-02 14:33:54,699 - INFO - AZ solved Clc1ccncc1
+2024-10-02 14:33:54,699 - INFO - temp_stat: [True, True]
+2024-10-02 14:33:54,699 - INFO - breaking
+2024-10-02 14:33:54,700 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:33:54,802 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:33:54,940 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:33:54,950 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:33:54,970 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:34:00,711 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:34:00,711 - INFO - Selected as stock: zinc
+2024-10-02 14:34:00,711 - INFO - Compounds in stock: 17422831
+2024-10-02 14:34:00,712 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:34:00,712 - INFO - Selected as filter policy: uspto
+2024-10-02 14:34:40,037 - INFO - AZ solved O=C(Cl)Nc1ccccc1Cl
+2024-10-02 14:34:40,037 - INFO - temp_stat: [True, True]
+2024-10-02 14:34:40,037 - INFO - breaking
+2024-10-02 14:34:41,331 - INFO - AZ failed for CCCO[C@H]1CCC[C@H]([NH3+])C(=O)O[C@@H](C)[C@@H]1CCC(C)C, running LLM
+2024-10-02 14:34:41,331 - INFO - Running LLM for the 0.0th time for molecule: CCCO[C@H]1CCC[C@H]([NH3+])C(=O)O[C@@H](C)[C@@H]1CCC(C)C
+2024-10-02 14:34:41,331 - INFO - Calling LLM with molecule: CCCO[C@H]1CCC[C@H]([NH3+])C(=O)O[C@@H](C)[C@@H]1CCC(C)C
+2024-10-02 14:34:55,630 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:34:55,633 - INFO - Received response from LLM: {
+  "data": [
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)C"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)C", "CC(C)CC[C@@H]1[C@@H](C)OC(=O)[C@H]1CCC[C@H]1CCCO1"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)Cl", "C[C@@H]1OC(=O)[C@H](N)CCC[C@H]1CCCO"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C", "[H]"]
+  ],
+  "explanation": [
+    "Deprotonation of the ammonium group to form the free amine",
+    "Disconnection of the ester linkage via transesterification or hydrolysis", 
+    "Disconnection of the ester to form an acid chloride and an alcohol",
+    "Reduction of the alkene in the side chain"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:34:55,636 - INFO - Molecule : CCCO[C@H]1CCC[C@H]([NH3+])C(=O)O[C@@H](C)[C@@H]1CCC(C)C is invalid or cannot be parsed
+2024-10-02 14:34:55,637 - INFO - Obtained 2 valid pathways after validity test: [['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)C', 'CC(C)CC[C@@H]1[C@@H](C)OC(=O)[C@H]1CCC[C@H]1CCCO1'], ['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C', '[H]']]
+2024-10-02 14:34:55,638 - INFO - LLM returned [['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C', '[H]'], ['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)C', 'CC(C)CC[C@@H]1[C@@H](C)OC(=O)[C@H]1CCC[C@H]1CCCO1']]
+2024-10-02 14:34:55,638 - INFO - LLM explained ['Disconnection of the ester linkage via transesterification or hydrolysis', 'Reduction of the alkene in the side chain']
+2024-10-02 14:34:55,639 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:34:55,733 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:34:55,868 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:34:55,878 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:34:55,896 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:35:01,721 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:35:01,721 - INFO - Selected as stock: zinc
+2024-10-02 14:35:01,722 - INFO - Compounds in stock: 17422831
+2024-10-02 14:35:01,722 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:35:01,722 - INFO - Selected as filter policy: uspto
+2024-10-02 14:35:37,104 - INFO - AZ failed for CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C, running LLM
+2024-10-02 14:35:37,104 - INFO - Running LLM for the 0.0th time for molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C
+2024-10-02 14:35:37,104 - INFO - Calling LLM with molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C
+2024-10-02 14:35:50,022 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:35:50,025 - INFO - Received response from LLM: {
+  "data": [
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C", "O"],
+    ["CCCO[C@H]1CCC[C@H](NC(=O)OC(C)(C)C)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC(O)C(=O)C"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)Cl", "O[C@@H](C)[C@@H]1CC=C(C)C"]
+  ],
+  "explanation": [
+    "Hydrolysis of the lactone ring using water under acidic or basic conditions",
+    "Boc deprotection of the amine using TFA or HCl",
+    "Oxidative cleavage of the alkene using ozone or OsO4/NaIO4", 
+    "Lactone formation via intramolecular esterification of a carboxylic acid and alcohol"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:35:50,026 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C is same as target molecule
+2024-10-02 14:35:50,027 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C is substructure of target molecule
+2024-10-02 14:35:50,028 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C is invalid or cannot be parsed
+2024-10-02 14:35:50,028 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C is invalid or cannot be parsed
+2024-10-02 14:35:50,028 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:35:50,028 - INFO - Running LLM for the 0.2th time for molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C
+2024-10-02 14:35:50,028 - INFO - Calling LLM with molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C
+2024-10-02 14:36:07,441 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:36:07,442 - INFO - Received response from LLM: {
+  "data": [
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C", "O"],
+    ["CCCO[C@H]1CCC[C@H](NC(=O)OC(C)(C)C)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC(O)C(=C)C"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C", "O"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)Cl", "HO[C@@H](C)[C@@H]1CC=C(C)C"]
+  ],
+  "explanation": [
+    "Hydrolysis of the ester bond using water under acidic or basic conditions",
+    "Boc deprotection of the amine using TFA or HCl",
+    "Oxidation of the allylic alcohol to the corresponding ketone using PCC, PDC, or Swern conditions", 
+    "Wacker oxidation of the terminal alkene to a methyl ketone using PdCl2 and Cu(II) salt under O2",
+    "Disconnection of the ester bond to the acid chloride and alcohol fragments"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:36:07,443 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C is same as target molecule
+2024-10-02 14:36:07,444 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C is substructure of target molecule
+2024-10-02 14:36:07,445 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C is invalid or cannot be parsed
+2024-10-02 14:36:07,445 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC=C(C)C is invalid or cannot be parsed
+2024-10-02 14:36:07,445 - INFO - Obtained 1 valid pathways after validity test: [['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C', 'O']]
+2024-10-02 14:36:07,446 - INFO - LLM returned [['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C', 'O']]
+2024-10-02 14:36:07,446 - INFO - LLM explained ['Wacker oxidation of the terminal alkene to a methyl ketone using PdCl2 and Cu(II) salt under O2']
+2024-10-02 14:36:07,447 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:36:07,555 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:36:07,689 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:36:07,699 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:36:07,718 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:36:13,480 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:36:13,480 - INFO - Selected as stock: zinc
+2024-10-02 14:36:13,480 - INFO - Compounds in stock: 17422831
+2024-10-02 14:36:13,480 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:36:13,480 - INFO - Selected as filter policy: uspto
+2024-10-02 14:36:39,124 - INFO - AZ failed for CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C, running LLM
+2024-10-02 14:36:39,124 - INFO - Running LLM for the 0.0th time for molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C
+2024-10-02 14:36:39,124 - INFO - Calling LLM with molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C
+2024-10-02 14:36:55,846 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:36:55,849 - INFO - Received response from LLM: {
+  "data": [
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=O", "C[BH3-]"],
+    ["CCCO[C@H]1CCC[C@H](NC(=O)OC(C)(C)C)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C", "H2O"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCBr", "CH2=CH2", "Zn"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)Cl", "HO[C@@H](C)[C@@H]1CCC(C)=C"]
+  ],
+  "explanation": [
+    "Reductive amination of ketone using borane-methyl sulfide complex or similar hydride reducing agent",
+    "Boc deprotection of amine using aqueous acid like TFA or HCl",
+    "Corey-Fuchs reaction to convert alkyl bromide to terminal alkene using triphenylphosphine, carbon tetrabromide, then zinc metal",
+    "Esterification of acid chloride with chiral alcohol fragment using base like triethylamine or pyridine"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.95, 
+    0.8,
+    0.85
+  ]
+}
+2024-10-02 14:36:55,851 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C is substructure of target molecule
+2024-10-02 14:36:55,851 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C is invalid or cannot be parsed
+2024-10-02 14:36:55,852 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C is invalid or cannot be parsed
+2024-10-02 14:36:55,852 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C is invalid or cannot be parsed
+2024-10-02 14:36:55,852 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C is invalid or cannot be parsed
+2024-10-02 14:36:55,852 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=C is invalid or cannot be parsed
+2024-10-02 14:36:55,852 - INFO - Obtained 1 valid pathways after validity test: [['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=O', 'C[BH3-]']]
+2024-10-02 14:36:55,852 - INFO - LLM returned [['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=O', 'C[BH3-]']]
+2024-10-02 14:36:55,852 - INFO - LLM explained ['Reductive amination of ketone using borane-methyl sulfide complex or similar hydride reducing agent']
+2024-10-02 14:36:55,853 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:36:55,936 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:36:56,071 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:36:56,080 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:36:56,099 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:37:01,910 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:37:01,910 - INFO - Selected as stock: zinc
+2024-10-02 14:37:01,910 - INFO - Compounds in stock: 17422831
+2024-10-02 14:37:01,910 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:37:01,910 - INFO - Selected as filter policy: uspto
+2024-10-02 14:37:22,409 - INFO - AZ failed for CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=O, running LLM
+2024-10-02 14:37:22,409 - INFO - Running LLM for the 0.0th time for molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=O
+2024-10-02 14:37:22,409 - INFO - Calling LLM with molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCC(C)=O
+2024-10-02 14:37:35,806 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:37:35,808 - INFO - Received response from LLM: {
+  "data": [
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC", "CC(=O)Cl"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCBr", "CC(=O)O"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCI", "CC(=O)O"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC", "CCC(=O)Cl"]
+  ],
+  "explanation": [
+    "Acylation reaction with acetyl chloride to form the ketone",
+    "Oxidation of the alkyl bromide with a carboxylic acid or carboxylate salt",
+    "Oxidation of the alkyl iodide with a carboxylic acid or carboxylate salt", 
+    "Acylation reaction with propionyl chloride to form the ketone"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.7,
+    0.8
+  ]
+}
+2024-10-02 14:37:35,817 - INFO - Obtained 4 valid pathways after validity test: [['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC', 'CC(=O)Cl'], ['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCBr', 'CC(=O)O'], ['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCI', 'CC(=O)O'], ['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC', 'CCC(=O)Cl']]
+2024-10-02 14:37:35,818 - INFO - LLM returned [['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC', 'CC(=O)Cl'], ['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC', 'CCC(=O)Cl'], ['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCBr', 'CC(=O)O'], ['CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCI', 'CC(=O)O']]
+2024-10-02 14:37:35,818 - INFO - LLM explained ['Acylation reaction with acetyl chloride to form the ketone', 'Oxidation of the alkyl bromide with a carboxylic acid or carboxylate salt', 'Oxidation of the alkyl iodide with a carboxylic acid or carboxylate salt', 'Acylation reaction with propionyl chloride to form the ketone']
+2024-10-02 14:37:35,819 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:37:35,925 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:37:36,059 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:37:36,069 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:37:36,088 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:37:41,847 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:37:41,848 - INFO - Selected as stock: zinc
+2024-10-02 14:37:41,848 - INFO - Compounds in stock: 17422831
+2024-10-02 14:37:41,848 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:37:41,848 - INFO - Selected as filter policy: uspto
+2024-10-02 14:38:02,021 - INFO - AZ failed for CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC, running LLM
+2024-10-02 14:38:02,021 - INFO - Running LLM for the 0.0th time for molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC
+2024-10-02 14:38:02,021 - INFO - Calling LLM with molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC
+2024-10-02 14:38:14,489 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:38:14,492 - INFO - Received response from LLM: {
+  "data": [
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O", "C[C@@H](O)[C@@H]1CC"],
+    ["CCCO[C@H]1CCC[C@H](NC(=O)OC(C)(C)C)C(=O)O[C@@H](C)[C@@H]1CC"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)Cl", "C[C@@H](O)[C@@H]1CC"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCBr"]
+  ],
+  "explanation": [
+    "Esterification reaction between a carboxylic acid and an alcohol, using an acid catalyst",
+    "Boc deprotection of an amine using TFA or HCl",
+    "Esterification reaction between an acid chloride and an alcohol",
+    "Substitution of an alkyl bromide using an alcohol under basic conditions"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.8,
+    0.6
+  ]
+}
+2024-10-02 14:38:14,493 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:14,493 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:14,494 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is substructure of target molecule
+2024-10-02 14:38:14,494 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:14,494 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:14,494 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is substructure of target molecule
+2024-10-02 14:38:14,494 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:38:14,494 - INFO - Running LLM for the 0.2th time for molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC
+2024-10-02 14:38:14,495 - INFO - Calling LLM with molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC
+2024-10-02 14:38:28,301 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:38:28,301 - INFO - Received response from LLM: {
+  "data": [
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O", "C[C@@H](O)[C@@H]1CC"],
+    ["CCCO[C@H]1CCC[C@H](NC(=O)OC(C)(C)C)C(=O)O[C@@H](C)[C@@H]1CC"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)Cl", "C[C@@H](O)[C@@H]1CC"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)OC(C)=O", "C[C@@H](O)[C@@H]1CC"]
+  ],
+  "explanation": [
+    "Ester hydrolysis using aqueous base or acid to give the alcohol and carboxylic acid precursors",
+    "Boc deprotection of the amine using TFA or HCl, followed by ester formation", 
+    "Esterification of the carboxylic acid with the alcohol using an acid chloride intermediate",
+    "Transesterification using a simple ester like methyl or ethyl acetate and an acid or base catalyst"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.6,
+    0.5
+  ]
+}
+2024-10-02 14:38:28,302 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:28,302 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:28,303 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is substructure of target molecule
+2024-10-02 14:38:28,303 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:28,303 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:28,303 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:28,303 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:28,303 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:38:28,303 - INFO - Running LLM for the 0.4th time for molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC
+2024-10-02 14:38:28,303 - INFO - Calling LLM with molecule: CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC
+2024-10-02 14:38:41,530 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:38:41,531 - INFO - Received response from LLM: {
+  "data": [
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O", "C[C@@H](O)[C@@H]1CC"],
+    ["CCCO[C@H]1CCC[C@H](NC(=O)OC(C)(C)C)C(=O)O[C@@H](C)[C@@H]1CC"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)Cl", "C[C@@H](O)[C@@H]1CC"],
+    ["CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CCBr"]
+  ],
+  "explanation": [
+    "Esterification reaction between a carboxylic acid and an alcohol, using an acid catalyst",
+    "Boc deprotection of an amine using TFA or HCl",
+    "Esterification reaction between an acyl chloride and an alcohol, using a base like pyridine or triethylamine", 
+    "Nucleophilic substitution of an alkyl bromide with the alcohol, using a base like sodium hydride or sodium ethoxide"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:38:41,532 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:41,532 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:41,533 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is substructure of target molecule
+2024-10-02 14:38:41,533 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:41,533 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is invalid or cannot be parsed
+2024-10-02 14:38:41,533 - INFO - Molecule : CCCO[C@H]1CCC[C@H](N)C(=O)O[C@@H](C)[C@@H]1CC is substructure of target molecule
+2024-10-02 14:38:41,533 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:38:41,534 - INFO - LLM returned []
+2024-10-02 14:38:41,534 - INFO - LLM explained []
+2024-10-02 14:38:41,534 - INFO - AZ solved CC(=O)Cl
+2024-10-02 14:38:41,534 - INFO - temp_stat: [True]
+2024-10-02 14:38:41,534 - INFO - breaking
+2024-10-02 14:38:41,535 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:38:41,618 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:38:41,752 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:38:41,762 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:38:41,781 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:38:47,600 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:38:47,600 - INFO - Selected as stock: zinc
+2024-10-02 14:38:47,600 - INFO - Compounds in stock: 17422831
+2024-10-02 14:38:47,600 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:38:47,600 - INFO - Selected as filter policy: uspto
+2024-10-02 14:38:48,675 - INFO - AZ failed for C[BH3-], running LLM
+2024-10-02 14:38:48,675 - INFO - Running LLM for the 0.0th time for molecule: C[BH3-]
+2024-10-02 14:38:48,675 - INFO - Calling LLM with molecule: C[BH3-]
+2024-10-02 14:38:59,715 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:38:59,718 - INFO - Received response from LLM: {
+  "data": [
+    ["C[BH3]"],
+    ["C[BH2-].[H-]"],
+    ["C[BH2].[H][H]"],
+    ["C[BH2]Br"]
+  ],
+  "explanation": [
+    "Reduction of a trialkylborane using a hydride source such as LiAlH4 or NaBH4.",
+    "Deprotonation of a borane followed by hydride addition, using a strong base like LDA or n-BuLi.",
+    "Hydrogenation of an alkylborane using H2 gas and a transition metal catalyst like Pd or Pt.",
+    "Halogenation of an alkylborane followed by reduction, using a halogen like Br2 then a reducing agent like LiAlH4."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:38:59,723 - INFO - Molecule : C[BH3-] is invalid or cannot be parsed
+2024-10-02 14:38:59,723 - INFO - Molecule : C[BH3-] is substructure of target molecule
+2024-10-02 14:38:59,724 - INFO - Molecule : C[BH3-] is invalid or cannot be parsed
+2024-10-02 14:38:59,724 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:38:59,724 - INFO - Running LLM for the 0.2th time for molecule: C[BH3-]
+2024-10-02 14:38:59,724 - INFO - Calling LLM with molecule: C[BH3-]
+2024-10-02 14:39:09,775 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:39:09,776 - INFO - Received response from LLM: {
+  "data": [
+    ["C[BH3]"],
+    ["C[BH2-].[H-]"],
+    ["C[BH2].[H][H]"],
+    ["C[BH2]Br"]
+  ],
+  "explanation": [
+    "Reduction of a trialkylborane using a hydride source such as LiAlH4 or NaBH4",
+    "Deprotonation of a borane complex using a strong base such as n-butyllithium",
+    "Hydrogenation of an alkylborane using H2 gas and a transition metal catalyst",
+    "Halogenation of an alkylborane using a halogen source such as Br2, followed by reduction"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.6,
+    0.5
+  ]
+}
+2024-10-02 14:39:09,776 - INFO - Molecule : C[BH3-] is invalid or cannot be parsed
+2024-10-02 14:39:09,777 - INFO - Molecule : C[BH3-] is substructure of target molecule
+2024-10-02 14:39:09,777 - INFO - Molecule : C[BH3-] is invalid or cannot be parsed
+2024-10-02 14:39:09,777 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:39:09,777 - INFO - Running LLM for the 0.4th time for molecule: C[BH3-]
+2024-10-02 14:39:09,777 - INFO - Calling LLM with molecule: C[BH3-]
+2024-10-02 14:39:21,057 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:39:21,058 - INFO - Received response from LLM: {
+  "data": [
+    ["C[BH2-].[H-]"],
+    ["C[BH3]"],
+    ["C[BH2].[H][H]"],
+    ["C.BH3"]
+  ],
+  "explanation": [
+    "Hydride addition to a borane (C[BH2-]) using a hydride source such as sodium borohydride or lithium aluminum hydride.",
+    "One-electron reduction of a neutral borane (C[BH3]) using a reducing agent such as sodium or lithium metal.",
+    "Hydrogenation of a borane (C[BH2]) using hydrogen gas and a transition metal catalyst such as Pd/C or Pt/C.",
+    "Nucleophilic addition of a methyl anion (generated from methyllithium or methylmagnesium bromide) to borane (BH3)."
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.6,
+    0.5
+  ]
+}
+2024-10-02 14:39:21,059 - INFO - Molecule : C[BH3-] is substructure of target molecule
+2024-10-02 14:39:21,059 - INFO - Molecule : C[BH3-] is invalid or cannot be parsed
+2024-10-02 14:39:21,059 - INFO - Molecule : C[BH3-] is invalid or cannot be parsed
+2024-10-02 14:39:21,059 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:39:21,060 - INFO - LLM returned []
+2024-10-02 14:39:21,060 - INFO - LLM explained []
+2024-10-02 14:39:21,060 - INFO - temp_stat: [True]
+2024-10-02 14:39:21,060 - INFO - breaking
+2024-10-02 14:39:21,060 - INFO - AZ solved O
+2024-10-02 14:39:21,060 - INFO - temp_stat: [True, True]
+2024-10-02 14:39:21,060 - INFO - breaking
+2024-10-02 14:39:21,060 - INFO - AZ failed for [H], running LLM
+2024-10-02 14:39:21,060 - INFO - Running LLM for the 0.0th time for molecule: [H]
+2024-10-02 14:39:21,060 - INFO - Running LLM for the 0.2th time for molecule: [H]
+2024-10-02 14:39:21,060 - INFO - Running LLM for the 0.4th time for molecule: [H]
+2024-10-02 14:39:21,060 - INFO - LLM returned []
+2024-10-02 14:39:21,060 - INFO - LLM explained []
+2024-10-02 14:39:21,060 - INFO - temp_stat: [True]
+2024-10-02 14:39:21,060 - INFO - breaking
+2024-10-02 14:39:22,107 - INFO - AZ failed for Cc1cc(Cl)cnc1C(=O)Nc1ccc(F)c(C2(C)CC(C(F)(F)F)OC(N)=N2)c1, running LLM
+2024-10-02 14:39:22,107 - INFO - Running LLM for the 0.0th time for molecule: Cc1cc(Cl)cnc1C(=O)Nc1ccc(F)c(C2(C)CC(C(F)(F)F)OC(N)=N2)c1
+2024-10-02 14:39:22,107 - INFO - Calling LLM with molecule: Cc1cc(Cl)cnc1C(=O)Nc1ccc(F)c(C2(C)CC(C(F)(F)F)OC(N)=N2)c1
+2024-10-02 14:39:36,895 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:39:36,898 - INFO - Received response from LLM: {
+  "data": [
+    ["Cc1cc(Cl)cnc1C(=O)Cl", "Nc1ccc(F)c(C2(C)CC(C(F)(F)F)OC(N)=N2)c1"],
+    ["Cc1cc(Cl)cnc1C(=O)O", "Nc1ccc(F)c(C2(C)CC(C(F)(F)F)OC(N)=N2)c1"], 
+    ["Cc1cc(Cl)cnc1C#N", "OC1(C)CC(C(F)(F)F)OC(Nc2ccc(F)cc2)=N1"],
+    ["Cc1cc(Cl)cnc1C(=O)Nc1ccc(F)c(C(=O)C(F)(F)F)c1", "C1CC1C(N)=NOC(C(F)(F)F)C1"]
+  ],
+  "explanation": [
+    "Amide coupling between an acid chloride and an amine using a base or coupling reagent",
+    "Amide coupling between a carboxylic acid and an amine using a coupling reagent like HATU or EDC/HOBt",
+    "Nitrile hydrolysis to form amide using H2O2/NaOH or HCl followed by coupling with the amine",
+    "Transamidation reaction between an amide and the cyclic amidine using a Lewis acid catalyst"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:39:36,910 - INFO - Molecule : Cc1cc(Cl)cnc1C(=O)Nc1ccc(F)c(C2(C)CC(C(F)(F)F)OC(N)=N2)c1 is invalid or cannot be parsed
+2024-10-02 14:39:36,910 - INFO - Obtained 3 valid pathways after validity test: [['Cc1cc(Cl)cnc1C(=O)Cl', 'Nc1ccc(F)c(C2(C)CC(C(F)(F)F)OC(N)=N2)c1'], ['Cc1cc(Cl)cnc1C(=O)O', 'Nc1ccc(F)c(C2(C)CC(C(F)(F)F)OC(N)=N2)c1'], ['Cc1cc(Cl)cnc1C#N', 'OC1(C)CC(C(F)(F)F)OC(Nc2ccc(F)cc2)=N1']]
+2024-10-02 14:39:36,911 - INFO - LLM returned [['Cc1cc(Cl)cnc1C#N', 'OC1(C)CC(C(F)(F)F)OC(Nc2ccc(F)cc2)=N1'], ['Cc1cc(Cl)cnc1C(=O)O', 'Nc1ccc(F)c(C2(C)CC(C(F)(F)F)OC(N)=N2)c1'], ['Cc1cc(Cl)cnc1C(=O)Cl', 'Nc1ccc(F)c(C2(C)CC(C(F)(F)F)OC(N)=N2)c1']]
+2024-10-02 14:39:36,911 - INFO - LLM explained ['Amide coupling between an acid chloride and an amine using a base or coupling reagent', 'Amide coupling between a carboxylic acid and an amine using a coupling reagent like HATU or EDC/HOBt', 'Nitrile hydrolysis to form amide using H2O2/NaOH or HCl followed by coupling with the amine']
+2024-10-02 14:39:36,912 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:39:37,018 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:39:37,157 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:39:37,167 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:39:37,186 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:39:43,012 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:39:43,012 - INFO - Selected as stock: zinc
+2024-10-02 14:39:43,012 - INFO - Compounds in stock: 17422831
+2024-10-02 14:39:43,012 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:39:43,012 - INFO - Selected as filter policy: uspto
+2024-10-02 14:39:50,284 - INFO - AZ solved Cc1cc(Cl)cnc1C#N
+2024-10-02 14:39:50,285 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:39:50,396 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:39:50,535 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:39:50,548 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:39:50,568 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:39:56,466 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:39:56,466 - INFO - Selected as stock: zinc
+2024-10-02 14:39:56,466 - INFO - Compounds in stock: 17422831
+2024-10-02 14:39:56,466 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:39:56,467 - INFO - Selected as filter policy: uspto
+2024-10-02 14:40:32,405 - INFO - AZ failed for OC1(C)CC(C(F)(F)F)OC(Nc2ccc(F)cc2)=N1, running LLM
+2024-10-02 14:40:32,405 - INFO - Running LLM for the 0.0th time for molecule: OC1(C)CC(C(F)(F)F)OC(Nc2ccc(F)cc2)=N1
+2024-10-02 14:40:32,412 - INFO - Calling LLM with molecule: OC1(C)CC(C(F)(F)F)OC(Nc2ccc(F)cc2)=N1
+2024-10-02 14:40:46,111 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:40:46,114 - INFO - Received response from LLM: {
+  "data": [
+    ["OC1(C)CC(C(F)(F)F)OC(Cl)=N1", "Nc1ccc(F)cc1"],
+    ["OC1(C)CC(C(F)(F)F)OC(OC(C)=O)=N1", "Nc1ccc(F)cc1"],
+    ["OC1(C)CC(C(F)(F)F)OC(N)=N1", "FC1=CC=C(F)C=C1"],
+    ["OC1(C)CC(C(F)(F)F)OC(N)=N1", "FC1=CC=C(Br)C=C1", "Pd catalyst, base"]
+  ],
+  "explanation": [
+    "Nucleophilic addition-elimination reaction between an acid chloride and an aniline derivative",
+    "Nucleophilic acyl substitution reaction between an activated carbamate and an aniline derivative", 
+    "Nucleophilic aromatic substitution (SNAr) between an activated heterocycle and a fluorobenzene",
+    "Buchwald-Hartwig amination between an activated heterocycle and a bromoaniline derivative"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.6,
+    0.5
+  ]
+}
+2024-10-02 14:40:46,124 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(Nc2ccc(F)cc2)=N1 is invalid or cannot be parsed
+2024-10-02 14:40:46,124 - INFO - Obtained 4 valid pathways after validity test: [['OC1(C)CC(C(F)(F)F)OC(Cl)=N1', 'Nc1ccc(F)cc1'], ['OC1(C)CC(C(F)(F)F)OC(OC(C)=O)=N1', 'Nc1ccc(F)cc1'], ['OC1(C)CC(C(F)(F)F)OC(N)=N1', 'FC1=CC=C(F)C=C1'], ['OC1(C)CC(C(F)(F)F)OC(N)=N1', 'FC1=CC=C(Br)C=C1']]
+2024-10-02 14:40:46,124 - INFO - LLM returned [['OC1(C)CC(C(F)(F)F)OC(N)=N1', 'FC1=CC=C(F)C=C1'], ['OC1(C)CC(C(F)(F)F)OC(N)=N1', 'FC1=CC=C(Br)C=C1'], ['OC1(C)CC(C(F)(F)F)OC(Cl)=N1', 'Nc1ccc(F)cc1'], ['OC1(C)CC(C(F)(F)F)OC(OC(C)=O)=N1', 'Nc1ccc(F)cc1']]
+2024-10-02 14:40:46,124 - INFO - LLM explained ['Nucleophilic addition-elimination reaction between an acid chloride and an aniline derivative', 'Nucleophilic acyl substitution reaction between an activated carbamate and an aniline derivative', 'Nucleophilic aromatic substitution (SNAr) between an activated heterocycle and a fluorobenzene', 'Buchwald-Hartwig amination between an activated heterocycle and a bromoaniline derivative']
+2024-10-02 14:40:46,125 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:40:46,211 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:40:46,344 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:40:46,353 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:40:46,372 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:40:52,191 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:40:52,191 - INFO - Selected as stock: zinc
+2024-10-02 14:40:52,191 - INFO - Compounds in stock: 17422831
+2024-10-02 14:40:52,191 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:40:52,191 - INFO - Selected as filter policy: uspto
+2024-10-02 14:41:25,332 - INFO - AZ failed for OC1(C)CC(C(F)(F)F)OC(N)=N1, running LLM
+2024-10-02 14:41:25,332 - INFO - Running LLM for the 0.0th time for molecule: OC1(C)CC(C(F)(F)F)OC(N)=N1
+2024-10-02 14:41:25,332 - INFO - Calling LLM with molecule: OC1(C)CC(C(F)(F)F)OC(N)=N1
+2024-10-02 14:41:37,481 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:41:37,483 - INFO - Received response from LLM: {
+  "data": [
+    ["OC1(C)CC(C(F)(F)F)OC(N)=N1"],
+    ["OC1(C)CC(C(F)(F)F)OC(=O)N1", "NH3"],
+    ["OC1(C)CC(C(F)(F)F)O/C(N)=N/O"],
+    ["OC1(C)CC(C(F)(F)F)OC(Cl)=N1", "NH3"]
+  ],
+  "explanation": [
+    "The target molecule is already relatively simple. No productive retrosynthetic disconnection identified.",
+    "Amide formation: The target molecule could be formed via aminolysis of the corresponding lactone with ammonia.",
+    "Oxime reduction: The target molecule could be formed via reduction of the corresponding oxime.",
+    "Nucleophilic aromatic substitution: The target molecule could be formed via SNAr reaction of the corresponding chloro-oxadiazine with ammonia."
+  ],
+  "confidence_scores": [
+    1.0,
+    0.8,
+    0.6,
+    0.7
+  ]
+}
+2024-10-02 14:41:37,484 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(N)=N1 is same as target molecule
+2024-10-02 14:41:37,485 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(N)=N1 is invalid or cannot be parsed
+2024-10-02 14:41:37,485 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(N)=N1 is invalid or cannot be parsed
+2024-10-02 14:41:37,485 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(N)=N1 is invalid or cannot be parsed
+2024-10-02 14:41:37,485 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:41:37,485 - INFO - Running LLM for the 0.2th time for molecule: OC1(C)CC(C(F)(F)F)OC(N)=N1
+2024-10-02 14:41:37,485 - INFO - Calling LLM with molecule: OC1(C)CC(C(F)(F)F)OC(N)=N1
+2024-10-02 14:41:48,635 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:41:48,636 - INFO - Received response from LLM: {
+  "data": [
+    ["OC1(C)CC(C(F)(F)F)OC(N)=N1"],
+    ["OC1(C)CC(C(F)(F)F)OC(=O)N1", "NH3"],
+    ["OC1(C)CC(C(F)(F)F)O/C(N)=N/O"],
+    ["OC1(C)CC(C(F)(F)F)OC(Cl)=N1", "NH3"]
+  ],
+  "explanation": [
+    "The target molecule is already relatively simple. No further meaningful retrosynthesis is possible.",
+    "Amide formation via aminolysis of a lactone, using ammonia as the nucleophile.",
+    "Cyclization of an oxime via condensation reaction.",
+    "Nucleophilic aromatic substitution of the chloride with ammonia."
+  ],
+  "confidence_scores": [
+    1.0,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-10-02 14:41:48,643 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(N)=N1 is same as target molecule
+2024-10-02 14:41:48,643 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(N)=N1 is invalid or cannot be parsed
+2024-10-02 14:41:48,643 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(N)=N1 is invalid or cannot be parsed
+2024-10-02 14:41:48,643 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(N)=N1 is invalid or cannot be parsed
+2024-10-02 14:41:48,644 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:41:48,644 - INFO - Running LLM for the 0.4th time for molecule: OC1(C)CC(C(F)(F)F)OC(N)=N1
+2024-10-02 14:41:48,644 - INFO - Calling LLM with molecule: OC1(C)CC(C(F)(F)F)OC(N)=N1
+2024-10-02 14:42:02,246 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:42:02,247 - INFO - Received response from LLM: {
+  "data": [
+    ["OC1(C)CC(C(F)(F)F)OC(N)=N1"],
+    ["OC1(C)CC(C(F)(F)F)OC(=O)N1", "NH3"],
+    ["OC1(C)CC(C(F)(F)F)O/C(N)=N/O"],
+    ["OC1(C)CC(C(F)(F)F)OC(Cl)=N1", "NaN3"]
+  ],
+  "explanation": [
+    "The target molecule is already relatively simple and may not require further retrosynthesis.",
+    "Amide formation: The oxadiazinone ring could be formed via amide synthesis from the corresponding ester and ammonia.",
+    "Ring closure: The oxadiazinone ring could be formed via condensation of an α-hydroxyamidoxime intermediate.",
+    "Nucleophilic aromatic substitution: The chloro-oxadiazine precursor could be synthesized, then subjected to NaN3 to introduce the amine."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.6,
+    0.5
+  ]
+}
+2024-10-02 14:42:02,247 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(N)=N1 is same as target molecule
+2024-10-02 14:42:02,248 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(N)=N1 is invalid or cannot be parsed
+2024-10-02 14:42:02,248 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(N)=N1 is invalid or cannot be parsed
+2024-10-02 14:42:02,248 - INFO - Molecule : OC1(C)CC(C(F)(F)F)OC(N)=N1 is invalid or cannot be parsed
+2024-10-02 14:42:02,248 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:42:02,254 - INFO - LLM returned []
+2024-10-02 14:42:02,254 - INFO - LLM explained []
+2024-10-02 14:42:02,256 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:42:02,362 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:42:02,497 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:42:02,505 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:42:02,525 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:42:08,303 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:42:08,303 - INFO - Selected as stock: zinc
+2024-10-02 14:42:08,304 - INFO - Compounds in stock: 17422831
+2024-10-02 14:42:08,304 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:42:08,304 - INFO - Selected as filter policy: uspto
+2024-10-02 14:42:10,835 - INFO - AZ failed for FC1=CC=C(F)C=C1, running LLM
+2024-10-02 14:42:10,835 - INFO - Running LLM for the 0.0th time for molecule: FC1=CC=C(F)C=C1
+2024-10-02 14:42:10,835 - INFO - Calling LLM with molecule: FC1=CC=C(F)C=C1
+2024-10-02 14:42:20,865 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:42:20,868 - INFO - Received response from LLM: {
+  "data": [
+    ["FC1=CC=C(Br)C=C1"],
+    ["FC1=CC=C(I)C=C1"],
+    ["FC1=CC=C(Cl)C=C1"],
+    ["OC1=CC=C(F)C=C1"]
+  ],
+  "explanation": [
+    "Halogen exchange reaction. Replace the fluorine with bromine using a brominating agent like NBS.",
+    "Halogen exchange reaction. Replace the fluorine with iodine using an iodinating agent like NIS.",
+    "Halogen exchange reaction. Replace the fluorine with chlorine using a chlorinating agent like NCS.", 
+    "Nucleophilic aromatic substitution. React with a hydroxide nucleophile under basic conditions to displace the fluorine."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.9, 
+    0.9,
+    0.7
+  ]
+}
+2024-10-02 14:42:20,870 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:42:20,870 - INFO - Running LLM for the 0.2th time for molecule: FC1=CC=C(F)C=C1
+2024-10-02 14:42:20,870 - INFO - Calling LLM with molecule: FC1=CC=C(F)C=C1
+2024-10-02 14:42:31,155 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:42:31,156 - INFO - Received response from LLM: {
+  "data": [
+    ["FC1=CC=C(Br)C=C1"],
+    ["FC1=CC=C(I)C=C1"],
+    ["FC1=CC=C(Cl)C=C1"],
+    ["OC1=CC=C(F)C=C1"]
+  ],
+  "explanation": [
+    "Halogen exchange reaction. The fluorine atom can be replaced by a bromine atom using a brominating agent like NBS.",
+    "Halogen exchange reaction. The fluorine atom can be replaced by an iodine atom using an iodinating agent like NIS.",
+    "Halogen exchange reaction. The fluorine atom can be replaced by a chlorine atom using a chlorinating agent like NCS.", 
+    "Hydroxylation of the fluorobenzene ring. The fluorine atom can be replaced by a hydroxyl group using a strong base like NaOH at high temperatures."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.9,
+    0.9,
+    0.7
+  ]
+}
+2024-10-02 14:42:31,157 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:42:31,158 - INFO - Running LLM for the 0.4th time for molecule: FC1=CC=C(F)C=C1
+2024-10-02 14:42:31,158 - INFO - Calling LLM with molecule: FC1=CC=C(F)C=C1
+2024-10-02 14:42:41,266 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:42:41,267 - INFO - Received response from LLM: {
+  "data": [
+    ["FC1=CC=C(Br)C=C1"],
+    ["FC1=CC=C(I)C=C1"],
+    ["FC1=CC=C(Cl)C=C1"],
+    ["FC1=CC=C(N)C=C1"]
+  ],
+  "explanation": [
+    "Halogen exchange reaction. The fluorine could be replaced by a bromine using a brominating agent like NBS.",
+    "Halogen exchange reaction. The fluorine could be replaced by an iodine using an iodinating agent like NIS.",
+    "Halogen exchange reaction. The fluorine could be replaced by a chlorine using a chlorinating agent like NCS.", 
+    "Nucleophilic aromatic substitution. The fluorine could be displaced by an amino group using ammonia."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.9, 
+    0.9,
+    0.7
+  ]
+}
+2024-10-02 14:42:41,268 - INFO - Obtained 0 valid pathways after validity test: []
+2024-10-02 14:42:41,268 - INFO - LLM returned []
+2024-10-02 14:42:41,269 - INFO - LLM explained []
+2024-10-02 14:42:41,269 - INFO - temp_stat: []
+2024-10-02 14:42:41,269 - INFO - breaking
+2024-10-02 14:42:41,269 - INFO - temp_stat: [True, True]
+2024-10-02 14:42:41,269 - INFO - breaking
+2024-10-02 14:42:41,804 - INFO - AZ failed for CNc1nc(C2(C(=O)O)C=CON2)cs1, running LLM
+2024-10-02 14:42:41,804 - INFO - Running LLM for the 0.0th time for molecule: CNc1nc(C2(C(=O)O)C=CON2)cs1
+2024-10-02 14:42:41,804 - INFO - Calling LLM with molecule: CNc1nc(C2(C(=O)O)C=CON2)cs1
+2024-10-02 14:42:53,771 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:42:53,774 - INFO - Received response from LLM: {
+  "data": [
+    ["CNc1nc(C(=O)O)cs1", "C1=CON(C1)C=O"],
+    ["CNc1nc(C(=O)O)cs1", "C1=CONC1"],
+    ["CNc1nc(C2(C(=O)O)C=CON2)cs1"]
+  ],
+  "explanation": [
+    "Disconnection of the oxazolidinone ring via a cycloaddition reaction. Key conditions: heat or Lewis acid catalyst.",
+    "Disconnection of the oxazolidinone ring via condensation of an amino acid with an aldehyde. Key conditions: acid catalyst, removal of water.",
+    "Direct precursor via a functional group interconversion (FGI) of the carboxylic acid to an ester or amide. Key reagents: alcohol or amine, coupling reagent (e.g. DCC, EDC)."
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.9
+  ]
+}
+2024-10-02 14:42:53,781 - INFO - Molecule : CNc1nc(C2(C(=O)O)C=CON2)cs1 is same as target molecule
+2024-10-02 14:42:53,781 - INFO - Obtained 2 valid pathways after validity test: [['CNc1nc(C(=O)O)cs1', 'C1=CON(C1)C=O'], ['CNc1nc(C(=O)O)cs1', 'C1=CONC1']]
+2024-10-02 14:42:53,787 - INFO - LLM returned [['CNc1nc(C(=O)O)cs1', 'C1=CON(C1)C=O'], ['CNc1nc(C(=O)O)cs1', 'C1=CONC1']]
+2024-10-02 14:42:53,787 - INFO - LLM explained ['Disconnection of the oxazolidinone ring via a cycloaddition reaction. Key conditions: heat or Lewis acid catalyst.', 'Disconnection of the oxazolidinone ring via condensation of an amino acid with an aldehyde. Key conditions: acid catalyst, removal of water.']
+2024-10-02 14:42:53,788 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:42:53,892 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:42:54,029 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:42:54,039 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:42:54,058 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:42:59,809 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:42:59,809 - INFO - Selected as stock: zinc
+2024-10-02 14:42:59,809 - INFO - Compounds in stock: 17422831
+2024-10-02 14:42:59,809 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:42:59,809 - INFO - Selected as filter policy: uspto
+2024-10-02 14:43:10,867 - INFO - AZ solved CNc1nc(C(=O)O)cs1
+2024-10-02 14:43:10,868 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:43:10,952 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:43:11,087 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:43:11,096 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:43:11,116 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:43:16,997 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:43:16,997 - INFO - Selected as stock: zinc
+2024-10-02 14:43:16,997 - INFO - Compounds in stock: 17422831
+2024-10-02 14:43:16,997 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:43:16,997 - INFO - Selected as filter policy: uspto
+2024-10-02 14:43:22,697 - INFO - AZ failed for C1=CON(C1)C=O, running LLM
+2024-10-02 14:43:22,697 - INFO - Running LLM for the 0.0th time for molecule: C1=CON(C1)C=O
+2024-10-02 14:43:22,697 - INFO - Calling LLM with molecule: C1=CON(C1)C=O
+2024-10-02 14:43:31,723 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:43:31,725 - INFO - Received response from LLM: {
+  "data": [
+    ["C1=CON(C1)C"],
+    ["C1=CONC1", "C(=O)Cl"],
+    ["C1=CON(C1)"]
+  ],
+  "explanation": [
+    "Reduction of the amide carbonyl to a methylene using a reducing agent like LiAlH4 or borane",
+    "Acylation of 2-oxazolidinone with an acyl chloride like acetyl chloride, benzoyl chloride, etc.",
+    "Oxidation of the methylene adjacent to the amide nitrogen using an oxidant like SeO2, PDC, etc."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7
+  ]
+}
+2024-10-02 14:43:31,727 - INFO - Obtained 1 valid pathways after validity test: [['C1=CONC1', 'C(=O)Cl']]
+2024-10-02 14:43:31,727 - INFO - LLM returned [['C1=CONC1', 'C(=O)Cl']]
+2024-10-02 14:43:31,727 - INFO - LLM explained ['Acylation of 2-oxazolidinone with an acyl chloride like acetyl chloride, benzoyl chloride, etc.']
+2024-10-02 14:43:31,728 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:43:31,836 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:43:31,975 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:43:31,984 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:43:32,004 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:43:37,803 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:43:37,803 - INFO - Selected as stock: zinc
+2024-10-02 14:43:37,803 - INFO - Compounds in stock: 17422831
+2024-10-02 14:43:37,803 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:43:37,803 - INFO - Selected as filter policy: uspto
+2024-10-02 14:43:39,749 - INFO - AZ solved C1=CONC1
+2024-10-02 14:43:39,750 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:43:39,860 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:43:39,999 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:43:40,013 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:43:40,033 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 14:43:45,830 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 14:43:45,830 - INFO - Selected as stock: zinc
+2024-10-02 14:43:45,830 - INFO - Compounds in stock: 17422831
+2024-10-02 14:43:45,830 - INFO - Selected as expansion policy: uspto
+2024-10-02 14:43:45,830 - INFO - Selected as filter policy: uspto
+2024-10-02 14:43:46,897 - INFO - AZ failed for C(=O)Cl, running LLM
+2024-10-02 14:43:46,897 - INFO - Running LLM for the 0.0th time for molecule: C(=O)Cl
+2024-10-02 14:43:46,897 - INFO - Calling LLM with molecule: C(=O)Cl
+2024-10-02 14:43:53,498 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 14:43:53,501 - INFO - Received response from LLM: {
+  "data": [
+    ["C(=O)O", "Cl"],
+    ["C(=O)OH", "Cl"]
+  ],
+  "explanation": [
+    "Acid chloride formation from carboxylic acid and chlorine gas. Requires heating and anhydrous conditions.",
+    "Acid chloride formation from carboxylic acid and thionyl chloride or oxalyl chloride. Requires anhydrous conditions."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.95
+  ]
+}
+2024-10-02 14:43:53,507 - INFO - Molecule : C(=O)Cl is invalid or cannot be parsed
+2024-10-02 14:43:53,507 - INFO - Obtained 1 valid pathways after validity test: [['C(=O)O', 'Cl']]
+2024-10-02 14:43:53,507 - INFO - LLM returned [['C(=O)O', 'Cl']]
+2024-10-02 14:43:53,507 - INFO - LLM explained ['Acid chloride formation from carboxylic acid and chlorine gas. Requires heating and anhydrous conditions.']
+2024-10-02 14:43:53,508 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 14:43:53,615 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 14:43:53,753 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 14:43:53,767 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 14:43:53,787 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto

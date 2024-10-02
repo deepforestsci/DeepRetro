@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "C=C(C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8",
+                        "mass": 56.062600255999996
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)c1ccc(CCC2CCCC2=O)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H24O",
+                        "mass": 244.182715388
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)c1ccc(CCC2CCCC2=O)c(C(C)(C)C)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H32O",
+                        "mass": 300.245315644
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H8O",
+                        "mass": 84.057514876
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)c1ccc(CC=O)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H16O",
+                        "mass": 176.120115132
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)c1ccc(CCC2CCCC2=O)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H24O",
+                        "mass": 244.182715388
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "10",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

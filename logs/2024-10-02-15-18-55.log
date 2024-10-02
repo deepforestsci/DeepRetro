@@ -1,0 +1,71 @@
+2024-10-02 15:18:55,700 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 15:18:55,821 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 15:18:55,968 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 15:18:55,987 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 15:18:56,006 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 15:19:03,007 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 15:19:03,007 - INFO - Selected as stock: zinc
+2024-10-02 15:19:03,008 - INFO - Compounds in stock: 17422831
+2024-10-02 15:19:03,008 - INFO - Selected as expansion policy: uspto
+2024-10-02 15:19:03,008 - INFO - Selected as filter policy: uspto
+2024-10-02 15:19:48,252 - INFO - AZ failed for CCCCSC(Cc1ccc(Cl)cc1Cl)n1ccnc1, running LLM
+2024-10-02 15:19:48,252 - INFO - Running LLM for the 0.0th time for molecule: CCCCSC(Cc1ccc(Cl)cc1Cl)n1ccnc1
+2024-10-02 15:19:48,252 - INFO - Calling LLM with molecule: CCCCSC(Cc1ccc(Cl)cc1Cl)n1ccnc1
+2024-10-02 15:20:02,920 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-10-02 15:20:02,926 - INFO - Received response from LLM: {
+  "data": [
+    ["CCCCSCl.Cc1ccc(Cl)cc1Cl"],
+    ["CCCCSC(=O)Cl.Cc1ccc(Cl)cc1Cl", "C1=CN=CN1"],
+    ["CCCCSC(Cc1ccc(Cl)cc1Cl)Cl.C1=CN=CN1"],
+    ["CCCCSC#N.Cc1ccc(Cl)cc1Cl", "C1=CN=CN1"]
+  ],
+  "explanation": [
+    "Nucleophilic substitution of the alkyl chloride with the thiol, followed by nucleophilic addition of the resulting thiolate to 2,4-dichlorobenzyl chloride",
+    "Nucleophilic acyl substitution of the thioacyl chloride with imidazole, along with a separate synthesis of 2,4-dichlorobenzyl chloride",
+    "Nucleophilic substitution of the α-chloro sulfide with imidazole, with the α-chloro sulfide formed from the thiol and 2,4-dichlorobenzyl chloride", 
+    "Cycloaddition of the thiocyanate with imidazole, along with a separate synthesis of 2,4-dichlorobenzyl chloride"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.6,
+    0.4
+  ]
+}
+2024-10-02 15:20:02,931 - INFO - Obtained 2 valid pathways after validity test: [['CCCCSC(=O)Cl.Cc1ccc(Cl)cc1Cl', 'C1=CN=CN1'], ['CCCCSC#N.Cc1ccc(Cl)cc1Cl', 'C1=CN=CN1']]
+2024-10-02 15:20:02,933 - INFO - LLM returned [['CCCCSC#N.Cc1ccc(Cl)cc1Cl', 'C1=CN=CN1'], ['CCCCSC(=O)Cl.Cc1ccc(Cl)cc1Cl', 'C1=CN=CN1']]
+2024-10-02 15:20:02,933 - INFO - LLM explained ['Nucleophilic acyl substitution of the thioacyl chloride with imidazole, along with a separate synthesis of 2,4-dichlorobenzyl chloride', 'Cycloaddition of the thiocyanate with imidazole, along with a separate synthesis of 2,4-dichlorobenzyl chloride']
+2024-10-02 15:20:02,934 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 15:20:03,056 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 15:20:03,220 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 15:20:03,238 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 15:20:03,259 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 15:20:10,105 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 15:20:10,105 - INFO - Selected as stock: zinc
+2024-10-02 15:20:10,105 - INFO - Compounds in stock: 17422831
+2024-10-02 15:20:10,105 - INFO - Selected as expansion policy: uspto
+2024-10-02 15:20:10,105 - INFO - Selected as filter policy: uspto
+2024-10-02 15:20:14,933 - INFO - AZ solved CCCCSC#N.Cc1ccc(Cl)cc1Cl
+2024-10-02 15:20:14,935 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 15:20:15,051 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 15:20:15,266 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 15:20:15,284 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 15:20:15,304 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 15:20:21,423 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 15:20:21,423 - INFO - Selected as stock: zinc
+2024-10-02 15:20:21,424 - INFO - Compounds in stock: 17422831
+2024-10-02 15:20:21,424 - INFO - Selected as expansion policy: uspto
+2024-10-02 15:20:21,424 - INFO - Selected as filter policy: uspto
+2024-10-02 15:20:28,871 - INFO - AZ solved C1=CN=CN1
+2024-10-02 15:20:28,871 - INFO - temp_stat: [True, True]
+2024-10-02 15:20:28,871 - INFO - breaking
+2024-10-02 15:20:30,146 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_model.onnx to uspto
+2024-10-02 15:20:30,205 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-10-02 15:20:30,347 - INFO - Loading template-based expansion policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-10-02 15:20:30,357 - INFO - Loading templates from /home/azureuser/retrollm/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-10-02 15:20:30,376 - INFO - Loading filter policy model from /home/azureuser/retrollm/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-10-02 15:20:36,418 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-10-02 15:20:36,418 - INFO - Selected as stock: zinc
+2024-10-02 15:20:36,418 - INFO - Compounds in stock: 17422831
+2024-10-02 15:20:36,418 - INFO - Selected as expansion policy: uspto
+2024-10-02 15:20:36,418 - INFO - Selected as filter policy: uspto

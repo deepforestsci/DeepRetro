@@ -1,0 +1,74 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "C[C@@H](N)c1ccncc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H10N2",
+                        "mass": 122.08439831999999
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CCOC(=O)c1c(CCc2ccc(C(F)(F)F)cc2)nc2c(c1-c1ccc(C(=O)N[C@H](C)c3ccncc3)cc1)C(=O)N1CCC[C@@H]21",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C36H33F3N4O4",
+                        "mass": 642.2453901960001
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "C[C@@H](NCc1ccccc1)c1ccncc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H16N2",
+                        "mass": 212.131348512
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "C[C@@H](N)c1ccncc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H10N2",
+                        "mass": 122.08439831999999
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

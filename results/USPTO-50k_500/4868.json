@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)NN",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H12N2O2",
+                        "mass": 132.089877624
+                    }
+                },
+                {
+                    "smiles": "O=C(O)Cc1c(F)cc2ncc(Br)cc2c1F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H6BrF2NO2",
+                        "mass": 300.954996972
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "NNC(=O)Cc1c(F)cc2ncc(Br)cc2c1F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H8BrF2N3O",
+                        "mass": 314.98188041599997
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "Nc1cc(F)c(CC(=O)O)c(F)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7F2NO2",
+                        "mass": 187.044484904
+                    }
+                },
+                {
+                    "smiles": "O=[N+]([O-])c1ccc(Br)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4BrNO2",
+                        "mass": 200.942540468
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(O)Cc1c(F)cc2ncc(Br)cc2c1F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H6BrF2NO2",
+                        "mass": 300.954996972
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

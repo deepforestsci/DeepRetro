@@ -1,0 +1,134 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "NC1CCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H9N",
+                        "mass": 71.073499288
+                    }
+                },
+                {
+                    "smiles": "N#Cc1cc(C2CO2)cc(Br)c1N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H7BrN2O",
+                        "mass": 237.974174944
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "N#Cc1cc(C(O)CNC2CCC2)cc(Br)c1N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H16BrN3O",
+                        "mass": 309.047674232
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "N#Cc1cc(C2CO2)ccc1N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8N2O",
+                        "mass": 160.063662876
+                    }
+                },
+                {
+                    "smiles": "O=C1CCC(=O)N1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4BrNO2",
+                        "mass": 176.942540468
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "N#Cc1cc(C2CO2)cc(Br)c1N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H7BrN2O",
+                        "mass": 237.974174944
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.86,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "N#Cc1cc(C=O)ccc1N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H6N2O",
+                        "mass": 146.048012812
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N#Cc1cc(C2CO2)ccc1N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8N2O",
+                        "mass": 160.063662876
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.79,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

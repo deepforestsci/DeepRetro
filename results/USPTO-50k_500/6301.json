@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COC(=O)[C@@H](N)CO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H9NO3",
+                        "mass": 119.058243148
+                    }
+                },
+                {
+                    "smiles": "O=C(Nc1ccc(C(=O)O)c(F)c1)OCc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H12FNO4",
+                        "mass": 289.075036084
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COC(=O)C(CO)NC(=O)c1ccc(NC(=O)OCc2ccccc2)cc1F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H19FN2O6",
+                        "mass": 390.12271454800003
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.93,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "Nc1ccc(C(=O)O)c(F)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H6FNO2",
+                        "mass": 155.038256652
+                    }
+                },
+                {
+                    "smiles": "O=C(Cl)OCc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7ClO2",
+                        "mass": 170.013457144
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(Nc1ccc(C(=O)O)c(F)c1)OCc1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H12FNO4",
+                        "mass": 289.075036084
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.71,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

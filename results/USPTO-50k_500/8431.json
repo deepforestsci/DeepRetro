@@ -1,0 +1,159 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "4"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": [],
+        "4": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "N#CC(N)=C(C#N)N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4N4",
+                        "mass": 108.04359612799999
+                    }
+                },
+                {
+                    "smiles": "O=Cc1c(Cl)cc(C(F)(F)F)cc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H3Cl2F3O",
+                        "mass": 241.951304736
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "N#CC(N)=C(C#N)N=Cc1c(Cl)cc(C(F)(F)F)cc1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H5Cl2F3N4",
+                        "mass": 331.98433618
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "N#CC(N)=C(C#N)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H3N3O",
+                        "mass": 109.027611716
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "N#CC(N)=C(C#N)N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4N4",
+                        "mass": 108.04359612799999
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N#CC(N)=C(C#N)O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H3N3O",
+                        "mass": 109.027611716
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(=O)N1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4ClNO2",
+                        "mass": 132.993056048
+                    }
+                },
+                {
+                    "smiles": "O=Cc1ccc(C(F)(F)F)cc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H4ClF3O",
+                        "mass": 207.990277088
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=Cc1c(Cl)cc(C(F)(F)F)cc1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H3Cl2F3O",
+                        "mass": 241.951304736
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

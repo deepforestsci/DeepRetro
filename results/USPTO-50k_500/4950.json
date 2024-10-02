@@ -1,0 +1,39 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "Cc1nn(C)c(C(N)=O)c1[N+](=O)[O-]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8N4O3",
+                        "mass": 184.059640116
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Cc1nn(C)c(C(N)=O)c1N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H10N4O",
+                        "mass": 154.08546094
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

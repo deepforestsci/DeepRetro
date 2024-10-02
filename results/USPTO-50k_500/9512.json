@@ -1,0 +1,126 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)c1cc(CO)c(O)c(-c2cc(C(F)(F)F)cc(C(F)(F)F)c2)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H18F6O2",
+                        "mass": 392.121099136
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CO2",
+                        "mass": 43.98982924
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)c1cc(C=O)c(O)c(-c2cc(C(F)(F)F)cc(C(F)(F)F)c2)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H16F6O2",
+                        "mass": 390.105449072
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "2",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)c1ccc(O)c(CO)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H16O2",
+                        "mass": 180.115029752
+                    }
+                },
+                {
+                    "smiles": "FC(F)(F)c1cccc(C(F)(F)F)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H4F6",
+                        "mass": 214.021719448
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)c1cc(CO)c(O)c(-c2cc(C(F)(F)F)cc(C(F)(F)F)c2)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H18F6O2",
+                        "mass": 392.121099136
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "Nc1c(C(F)(F)F)cccc1C(F)(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H5F6N",
+                        "mass": 229.03261848
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "FC(F)(F)c1cccc(C(F)(F)F)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H4F6",
+                        "mass": 214.021719448
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,74 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)CNC(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H5NO4",
+                        "mass": 119.02185764000001
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COc1ccc(-c2nc(C(=O)NCC(=O)O)c(O)c3c(-c4ccc(Cl)cc4)nsc23)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C22H16ClN3O5S",
+                        "mass": 469.049919292
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)CNC(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H13NO4",
+                        "mass": 175.084457896
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(O)CNC(=O)O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H5NO4",
+                        "mass": 119.02185764000001
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.92,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

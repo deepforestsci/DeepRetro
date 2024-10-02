@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C(Nc1cnc(-c2ccccn2)nc1O)OCc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H14N4O3",
+                        "mass": 322.10659030799997
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Nc1cnc(-c2ccccn2)nc1O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8N4O",
+                        "mass": 188.069810876
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.62,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "OCc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8O",
+                        "mass": 108.057514876
+                    }
+                },
+                {
+                    "smiles": "O=C(O)c1cnc(-c2ccccn2)nc1O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H7N3O3",
+                        "mass": 217.048741084
+                    }
+                },
+                {
+                    "smiles": "[N-]=[N+]=NP(=O)(c1ccccc1)c1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H10N3OP",
+                        "mass": 243.05614857
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(Nc1cnc(-c2ccccn2)nc1O)OCc1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H14N4O3",
+                        "mass": 322.10659030799997
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,82 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)NNC(=O)c1ccc(C(C)(C)C)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H24N2O3",
+                        "mass": 292.178692628
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)c1ccc(C(=O)NN)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H16N2O",
+                        "mass": 192.126263132
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)NN",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H12N2O2",
+                        "mass": 132.089877624
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)c1ccc(C(=O)O)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H14O2",
+                        "mass": 178.099379688
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)NNC(=O)c1ccc(C(C)(C)C)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H24N2O3",
+                        "mass": 292.178692628
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.83,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

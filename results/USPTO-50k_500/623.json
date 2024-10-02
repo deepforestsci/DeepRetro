@@ -1,0 +1,82 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCCN(C(=O)c2ccc(F)cc2)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H12FNO2",
+                        "mass": 221.085206844
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(c1ccc(F)cc1)N1CCCC(O)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H14FNO2",
+                        "mass": 223.100856908
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCCNC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9NO",
+                        "mass": 99.068413908
+                    }
+                },
+                {
+                    "smiles": "O=C(Cl)c1ccc(F)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H4ClFO",
+                        "mass": 157.993470648
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C1CCCN(C(=O)c2ccc(F)cc2)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H12FNO2",
+                        "mass": 221.085206844
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

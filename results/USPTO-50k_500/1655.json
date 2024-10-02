@@ -1,0 +1,47 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "OCCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7BrO",
+                        "mass": 137.968026944
+                    }
+                },
+                {
+                    "smiles": "O=C(c1ccc(F)cc1)C1CCNCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H14FNO",
+                        "mass": 207.105942288
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(c1ccc(F)cc1)C1CCN(CCCO)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H20FNO2",
+                        "mass": 265.1478071
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.79,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CC1(C)OB(c2ccc3cn[nH]c3c2)OC1(C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H17BN2O2",
+                        "mass": 244.138308184
+                    }
+                },
+                {
+                    "smiles": "COc1ccc2[nH]c(=O)c3sccc3c2c1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H8BrNO2S",
+                        "mass": 308.945911596
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COc1ccc2[nH]c(=O)c3sccc3c2c1-c1ccc2cn[nH]c2c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H13N3O2S",
+                        "mass": 347.0728476560001
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(=O)N1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4BrNO2",
+                        "mass": 176.942540468
+                    }
+                },
+                {
+                    "smiles": "COc1ccc2[nH]c(=O)c3sccc3c2c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H9NO2S",
+                        "mass": 231.035399528
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COc1ccc2[nH]c(=O)c3sccc3c2c1Br",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H8BrNO2S",
+                        "mass": 308.945911596
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.86,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

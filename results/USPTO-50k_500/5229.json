@@ -1,0 +1,82 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CC(=O)CCOc1c(F)cc(F)cc1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H9BrF2O2",
+                        "mass": 277.975398068
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC1(O)CCOc2c(F)cc(F)cc21",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H10F2O2",
+                        "mass": 200.064886
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.93,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CC(=O)CCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H7BrO",
+                        "mass": 149.968026944
+                    }
+                },
+                {
+                    "smiles": "Oc1c(F)cc(F)cc1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H3BrF2O",
+                        "mass": 207.933533256
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(=O)CCOc1c(F)cc(F)cc1Br",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H9BrF2O2",
+                        "mass": 277.975398068
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

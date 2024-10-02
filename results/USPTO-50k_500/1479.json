@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=P(Cl)(Cl)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl3OP",
+                        "mass": 151.87523428999998
+                    }
+                },
+                {
+                    "smiles": "O=S(=O)(O)c1ccc(CBr)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7BrO3S",
+                        "mass": 249.929927184
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=S(=O)(Cl)c1ccc(CBr)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H6BrClO2S",
+                        "mass": 267.896040212
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "Cc1ccc(S(=O)(=O)O)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8O3S",
+                        "mass": 172.019415116
+                    }
+                },
+                {
+                    "smiles": "O=C1CCC(=O)N1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4BrNO2",
+                        "mass": 176.942540468
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=S(=O)(O)c1ccc(CBr)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7BrO3S",
+                        "mass": 249.929927184
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.88,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

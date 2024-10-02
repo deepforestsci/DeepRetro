@@ -1,0 +1,91 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COc1ccccc1NC(=O)[C@@H]1Cc2[nH]cnc2CN1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H16N4O2",
+                        "mass": 272.127325752
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3ClO",
+                        "mass": 77.987242396
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1ccccc1NC(=O)[C@@H]1Cc2[nH]cnc2CN1C(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H18N4O3",
+                        "mass": 314.13789043599996
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.72,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COc1ccccc1N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H9NO",
+                        "mass": 123.068413908
+                    }
+                },
+                {
+                    "smiles": "O=C(O)[C@@H]1Cc2[nH]cnc2CN1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H9N3O2",
+                        "mass": 167.069476528
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COc1ccccc1NC(=O)[C@@H]1Cc2[nH]cnc2CN1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H16N4O2",
+                        "mass": 272.127325752
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.97,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

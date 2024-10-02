@@ -1,0 +1,47 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C(CBr)c1cccs1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H5BrOS",
+                        "mass": 203.92444788
+                    }
+                },
+                {
+                    "smiles": "O=C(c1ccc(Cl)cc1)C1CCNCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H14ClNO",
+                        "mass": 223.076391748
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(CN1CCC(C(=O)c2ccc(Cl)cc2)CC1)c1cccs1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H18ClNO2S",
+                        "mass": 347.074677496
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.73,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

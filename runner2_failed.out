@@ -1,0 +1,15 @@
+2024-10-02 16:40:14.382917: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2024-10-02 16:40:14.383993: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-10-02 16:40:14.475617: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-10-02 16:40:14.809819: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-10-02 16:40:15.674678: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+  0%|          | 0/15 [00:00<?, ?it/s]  7%|▋         | 1/15 [00:02<00:29,  2.07s/it] 13%|█▎        | 2/15 [00:04<00:27,  2.13s/it] 20%|██        | 3/15 [00:05<00:21,  1.79s/it] 27%|██▋       | 4/15 [00:06<00:13,  1.25s/it] 33%|███▎      | 5/15 [00:07<00:13,  1.37s/it] 40%|████      | 6/15 [00:09<00:14,  1.65s/it] 47%|████▋     | 7/15 [00:12<00:15,  1.89s/it] 53%|█████▎    | 8/15 [00:22<00:31,  4.49s/it] 67%|██████▋   | 10/15 [01:09<01:08, 13.61s/it] 73%|███████▎  | 11/15 [04:51<04:25, 66.41s/it] 80%|████████  | 12/15 [07:20<04:25, 88.51s/it] 87%|████████▋ | 13/15 [09:38<03:24, 102.18s/it] 93%|█████████▎| 14/15 [12:03<01:54, 114.15s/it]100%|██████████| 15/15 [15:49<00:00, 146.28s/it]100%|██████████| 15/15 [15:49<00:00, 63.28s/it] 
+Error in molecule: 3548
+Error: maximum recursion depth exceeded while calling a Python object
+Error in molecule: 4411
+Error: list index out of range
+Error in molecule: 4704
+Error: maximum recursion depth exceeded while calling a Python object
+Error in molecule: 5143
+Error: Please Retry

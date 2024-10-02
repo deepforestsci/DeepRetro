@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "Nc1ccccc1OCCCO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H13NO2",
+                        "mass": 167.094628656
+                    }
+                },
+                {
+                    "smiles": "O=C(O)c1cc(Cl)c(OCc2ccccc2)c(Cl)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H10Cl2O3",
+                        "mass": 296.00069953999997
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(Nc1ccccc1OCCCO)c1cc(Cl)c(OCc2ccccc2)c(Cl)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C23H21Cl2NO4",
+                        "mass": 445.084763512
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.89,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "BrCc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7Br",
+                        "mass": 169.973112324
+                    }
+                },
+                {
+                    "smiles": "O=C(O)c1cc(Cl)c(O)c(Cl)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H4Cl2O3",
+                        "mass": 205.953749348
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(O)c1cc(Cl)c(OCc2ccccc2)c(Cl)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H10Cl2O3",
+                        "mass": 296.00069953999997
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.88,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

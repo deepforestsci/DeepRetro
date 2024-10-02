@@ -1,0 +1,54 @@
+2024-10-02 17:06:29,721 - INFO - AZ failed for CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1, running LLM
+2024-10-02 17:06:29,721 - INFO - Running LLM for the 0.0th time for molecule: CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1
+2024-10-02 17:06:29,721 - INFO - Running LLM for the 0.2th time for molecule: CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1
+2024-10-02 17:06:29,722 - INFO - Running LLM for the 0.4th time for molecule: CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1
+2024-10-02 17:06:29,722 - INFO - LLM returned []
+2024-10-02 17:06:29,722 - INFO - LLM explained []
+2024-10-02 17:06:29,722 - INFO - AZ failed for CCOC(=O)/C=C/c1c(O)c(=O)[nH]c2cc(Cl)ccc2c1=O, running LLM
+2024-10-02 17:06:29,723 - INFO - Running LLM for the 0.0th time for molecule: CCOC(=O)/C=C/c1c(O)c(=O)[nH]c2cc(Cl)ccc2c1=O
+2024-10-02 17:06:29,723 - INFO - Running LLM for the 0.2th time for molecule: CCOC(=O)/C=C/c1c(O)c(=O)[nH]c2cc(Cl)ccc2c1=O
+2024-10-02 17:06:29,723 - INFO - Running LLM for the 0.4th time for molecule: CCOC(=O)/C=C/c1c(O)c(=O)[nH]c2cc(Cl)ccc2c1=O
+2024-10-02 17:06:29,723 - INFO - LLM returned []
+2024-10-02 17:06:29,723 - INFO - LLM explained []
+2024-10-02 17:06:29,724 - INFO - AZ failed for COC=CC[C@H]1CC[C@H](c2ccc(C#N)cc2)CC1, running LLM
+2024-10-02 17:06:29,724 - INFO - Running LLM for the 0.0th time for molecule: COC=CC[C@H]1CC[C@H](c2ccc(C#N)cc2)CC1
+2024-10-02 17:06:29,724 - INFO - Running LLM for the 0.2th time for molecule: COC=CC[C@H]1CC[C@H](c2ccc(C#N)cc2)CC1
+2024-10-02 17:06:29,724 - INFO - Running LLM for the 0.4th time for molecule: COC=CC[C@H]1CC[C@H](c2ccc(C#N)cc2)CC1
+2024-10-02 17:06:29,724 - INFO - LLM returned []
+2024-10-02 17:06:29,724 - INFO - LLM explained []
+2024-10-02 17:06:29,726 - INFO - AZ failed for NCCc1cnn2ccc3c(c12)CCO3, running LLM
+2024-10-02 17:06:29,726 - INFO - Running LLM for the 0.0th time for molecule: NCCc1cnn2ccc3c(c12)CCO3
+2024-10-02 17:06:29,726 - INFO - Running LLM for the 0.2th time for molecule: NCCc1cnn2ccc3c(c12)CCO3
+2024-10-02 17:06:29,726 - INFO - Running LLM for the 0.4th time for molecule: NCCc1cnn2ccc3c(c12)CCO3
+2024-10-02 17:06:29,726 - INFO - LLM returned []
+2024-10-02 17:06:29,726 - INFO - LLM explained []
+2024-10-02 17:06:48,723 - INFO - AZ failed for CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1, running LLM
+2024-10-02 17:06:48,723 - INFO - Running LLM for the 0.0th time for molecule: CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1
+2024-10-02 17:06:48,723 - INFO - Running LLM for the 0.2th time for molecule: CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1
+2024-10-02 17:06:48,723 - INFO - Running LLM for the 0.4th time for molecule: CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1
+2024-10-02 17:06:48,723 - INFO - LLM returned []
+2024-10-02 17:06:48,723 - INFO - LLM explained []
+2024-10-02 17:06:48,724 - INFO - AZ failed for CCOC(=O)/C=C/c1c(O)c(=O)[nH]c2cc(Cl)ccc2c1=O, running LLM
+2024-10-02 17:06:48,724 - INFO - Running LLM for the 0.0th time for molecule: CCOC(=O)/C=C/c1c(O)c(=O)[nH]c2cc(Cl)ccc2c1=O
+2024-10-02 17:06:48,724 - INFO - Running LLM for the 0.2th time for molecule: CCOC(=O)/C=C/c1c(O)c(=O)[nH]c2cc(Cl)ccc2c1=O
+2024-10-02 17:06:48,724 - INFO - Running LLM for the 0.4th time for molecule: CCOC(=O)/C=C/c1c(O)c(=O)[nH]c2cc(Cl)ccc2c1=O
+2024-10-02 17:06:48,724 - INFO - LLM returned []
+2024-10-02 17:06:48,725 - INFO - LLM explained []
+2024-10-02 17:06:48,726 - INFO - AZ failed for COC=CC[C@H]1CC[C@H](c2ccc(C#N)cc2)CC1, running LLM
+2024-10-02 17:06:48,726 - INFO - Running LLM for the 0.0th time for molecule: COC=CC[C@H]1CC[C@H](c2ccc(C#N)cc2)CC1
+2024-10-02 17:06:48,726 - INFO - Running LLM for the 0.2th time for molecule: COC=CC[C@H]1CC[C@H](c2ccc(C#N)cc2)CC1
+2024-10-02 17:06:48,726 - INFO - Running LLM for the 0.4th time for molecule: COC=CC[C@H]1CC[C@H](c2ccc(C#N)cc2)CC1
+2024-10-02 17:06:48,726 - INFO - LLM returned []
+2024-10-02 17:06:48,726 - INFO - LLM explained []
+2024-10-02 17:06:48,727 - INFO - AZ failed for NCCc1cnn2ccc3c(c12)CCO3, running LLM
+2024-10-02 17:06:48,727 - INFO - Running LLM for the 0.0th time for molecule: NCCc1cnn2ccc3c(c12)CCO3
+2024-10-02 17:06:48,727 - INFO - Running LLM for the 0.2th time for molecule: NCCc1cnn2ccc3c(c12)CCO3
+2024-10-02 17:06:48,727 - INFO - Running LLM for the 0.4th time for molecule: NCCc1cnn2ccc3c(c12)CCO3
+2024-10-02 17:06:48,728 - INFO - LLM returned []
+2024-10-02 17:06:48,728 - INFO - LLM explained []
+2024-10-02 17:07:25,431 - INFO - AZ failed for CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1, running LLM
+2024-10-02 17:07:25,431 - INFO - Running LLM for the 0.0th time for molecule: CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1
+2024-10-02 17:07:25,431 - INFO - Running LLM for the 0.2th time for molecule: CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1
+2024-10-02 17:07:25,431 - INFO - Running LLM for the 0.4th time for molecule: CN1CCN(Cc2c(CO)c(Cl)nc3cc4c(cc23)OCCO4)CC1
+2024-10-02 17:07:25,431 - INFO - LLM returned []
+2024-10-02 17:07:25,431 - INFO - LLM explained []

@@ -1,0 +1,39 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CC(=O)N[C@@H](C(C)C)[C@H](O)C(F)(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H14F3NO2",
+                        "mass": 213.097663348
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)[C@H](N)[C@H](O)C(F)(F)F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H12F3NO",
+                        "mass": 171.087098664
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

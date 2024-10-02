@@ -1,0 +1,17 @@
+2024-10-02 15:18:27.985983: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2024-10-02 15:18:27.986487: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-10-02 15:18:27.989275: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-10-02 15:18:28.025151: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-10-02 15:18:28.720863: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+  0%|          | 0/15 [00:00<?, ?it/s]  7%|▋         | 1/15 [03:39<51:18, 219.92s/it] 13%|█▎        | 2/15 [05:05<30:33, 141.01s/it] 20%|██        | 3/15 [06:12<21:26, 107.20s/it] 27%|██▋       | 4/15 [07:40<18:16, 99.65s/it]  33%|███▎      | 5/15 [10:08<19:31, 117.15s/it] 40%|████      | 6/15 [17:35<34:23, 229.25s/it] 47%|████▋     | 7/15 [21:19<30:19, 227.39s/it] 53%|█████▎    | 8/15 [24:41<25:35, 219.39s/it] 60%|██████    | 9/15 [38:08<40:18, 403.09s/it] 67%|██████▋   | 10/15 [39:26<25:13, 302.77s/it] 73%|███████▎  | 11/15 [43:50<19:22, 290.73s/it] 80%|████████  | 12/15 [59:41<24:35, 491.76s/it] 87%|████████▋ | 13/15 [1:01:51<12:44, 382.10s/it] 93%|█████████▎| 14/15 [1:03:38<04:59, 299.06s/it]100%|██████████| 15/15 [1:05:40<00:00, 245.78s/it]100%|██████████| 15/15 [1:05:40<00:00, 262.73s/it]
+Error in molecule: 5411
+Error: maximum recursion depth exceeded while calling a Python object
+Error in molecule: 5790
+Error: maximum recursion depth exceeded while calling a Python object
+Error in molecule: 6575
+Error: list index out of range
+Error in molecule: 7030
+Error: maximum recursion depth exceeded while calling a Python object
+Error in molecule: 7273
+Error: Please Retry

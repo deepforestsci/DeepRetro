@@ -1,0 +1,91 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CC(=O)NC1CCN(c2ccc(Cl)c3cccnc23)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H18ClN3O",
+                        "mass": 303.113839876
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3ClO",
+                        "mass": 77.987242396
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(=O)NC1CCN(c2c(C(C)=O)cc(Cl)c3cccnc23)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H20ClN3O2",
+                        "mass": 345.12440456
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CC(=O)NC1CCNCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H14N2O",
+                        "mass": 142.110613068
+                    }
+                },
+                {
+                    "smiles": "Fc1ccc(Cl)c2cccnc12",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H5ClFN",
+                        "mass": 181.00945506
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(=O)NC1CCN(c2ccc(Cl)c3cccnc23)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H18ClN3O",
+                        "mass": 303.113839876
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,47 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CCOS(=O)(=O)OCC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H10O4S",
+                        "mass": 154.0299798
+                    }
+                },
+                {
+                    "smiles": "Cc1ccc(F)c(C(=O)O)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7FO2",
+                        "mass": 154.043007684
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CCOC(=O)c1cc(C)ccc1F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H11FO2",
+                        "mass": 182.074307812
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

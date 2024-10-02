@@ -1,0 +1,91 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "N#Cc1ccc(-c2noc(-c3cc(F)cc(C#N)c3)n2)nc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H6FN5O",
+                        "mass": 291.05563803200005
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N#Cc1cc(F)cc(-c2nc(-c3ccc(C(=O)O)cn3)no2)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H7FN4O3",
+                        "mass": 310.05021830400005
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "N#Cc1ccc(C(=N)NO)nc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H6N4O",
+                        "mass": 162.054160812
+                    }
+                },
+                {
+                    "smiles": "N#Cc1cc(F)cc(C(=O)O)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H4FNO2",
+                        "mass": 165.022606588
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "N#Cc1ccc(-c2noc(-c3cc(F)cc(C#N)c3)n2)nc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H6FN5O",
+                        "mass": 291.05563803200005
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.92,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

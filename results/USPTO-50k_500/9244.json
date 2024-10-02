@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)c1ccccc1C(F)(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H5F3O2",
+                        "mass": 190.02416406
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCN(C(=O)CNC(=O)c2ccc(-c3ccccc3)cc2)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C24H29N3O4",
+                        "mass": 423.21580640800005
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(NCC(=O)N1CCN(C(=O)c2ccccc2C(F)(F)F)CC1)c1ccc(-c2ccccc2)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C27H24F3N3O3",
+                        "mass": 495.176976288
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)c1ccc(-c2ccccc2)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H10O2",
+                        "mass": 198.06807956
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCN(C(=O)CN)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H21N3O3",
+                        "mass": 243.158291532
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCN(C(=O)CNC(=O)c2ccc(-c3ccccc3)cc2)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C24H29N3O4",
+                        "mass": 423.21580640800005
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.79,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

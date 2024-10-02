@@ -1,0 +1,39 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COC1(OC)CCC(C)(C=O)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H18O3",
+                        "mass": 186.125594436
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COC1(OC)CCC(C)(CO)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H20O3",
+                        "mass": 188.1412445
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "10",
+                    "confidenceestimate": 0.93,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

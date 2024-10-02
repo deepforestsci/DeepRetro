@@ -1,0 +1,82 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "NCC1CCCCN1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H14N2",
+                        "mass": 114.11569844799999
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)OC(=O)OC(=O)OC(C)(C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H18O5",
+                        "mass": 218.115423676
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCCCC1CN",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H22N2O2",
+                        "mass": 214.168127944
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "NCc1ccccn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8N2",
+                        "mass": 108.06874825599999
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "NCC1CCCCN1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H14N2",
+                        "mass": 114.11569844799999
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

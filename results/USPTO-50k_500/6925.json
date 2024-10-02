@@ -1,0 +1,195 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [
+            "5"
+        ],
+        "5": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)OC(=O)OC(C)(C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H18O5",
+                        "mass": 218.115423676
+                    }
+                },
+                {
+                    "smiles": "CC1Cc2ccc(Br)cc2CN1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12BrN",
+                        "mass": 225.015311484
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC1Cc2ccc(Br)cc2CN1C(=O)OC(C)(C)C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H20BrNO2",
+                        "mass": 325.06774098
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.67,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CC1Cc2ccc(Br)cc2C=N1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H10BrN",
+                        "mass": 222.99966142
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC1Cc2ccc(Br)cc2CN1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12BrN",
+                        "mass": 225.015311484
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.97,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "CC(Cc1ccc(Br)cc1)NC=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12BrNO",
+                        "mass": 241.010226104
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC1Cc2ccc(Br)cc2C=N1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H10BrN",
+                        "mass": 222.99966142
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "CCOC=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6O2",
+                        "mass": 74.036779432
+                    }
+                },
+                {
+                    "smiles": "CC(N)Cc1ccc(Br)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12BrN",
+                        "mass": 213.015311484
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(Cc1ccc(Br)cc1)NC=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12BrNO",
+                        "mass": 241.010226104
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.72,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "CC(=Cc1ccc(Br)cc1)[N+](=O)[O-]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8BrNO2",
+                        "mass": 240.973840596
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(N)Cc1ccc(Br)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12BrN",
+                        "mass": 213.015311484
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.84,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

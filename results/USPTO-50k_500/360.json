@@ -1,0 +1,47 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "FC(F)(F)c1n[nH]c2c1COCC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7F3N2O",
+                        "mass": 192.051047504
+                    }
+                },
+                {
+                    "smiles": "O=C(c1ccc(F)cc1F)N1CC(O)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H9F2NO2",
+                        "mass": 213.060134968
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(c1ccc(-n2nc(C(F)(F)F)c3c2CCOC3)cc1F)N1CC(O)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H15F4N3O3",
+                        "mass": 385.10495422
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

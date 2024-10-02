@@ -1,0 +1,133 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "OCCc1ccc(B(O)O)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H11BO3",
+                        "mass": 166.080124612
+                    }
+                },
+                {
+                    "smiles": "FC(F)(F)c1cc(CBr)cc(-c2cccc(Cl)c2)n1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H8BrClF3N",
+                        "mass": 348.94807369600005
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "OCCc1ccc(Cc2cc(-c3cccc(Cl)c3)nc(C(F)(F)F)c2)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H17ClF3NO",
+                        "mass": 391.095076504
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(=O)N1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4BrNO2",
+                        "mass": 176.942540468
+                    }
+                },
+                {
+                    "smiles": "Cc1cc(-c2cccc(Cl)c2)nc(C(F)(F)F)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H9ClF3N",
+                        "mass": 271.03756162800005
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "FC(F)(F)c1cc(CBr)cc(-c2cccc(Cl)c2)n1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H8BrClF3N",
+                        "mass": 348.94807369600005
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.74,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "OB(O)c1cccc(Cl)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6BClO2",
+                        "mass": 156.014937512
+                    }
+                },
+                {
+                    "smiles": "Cc1cc(Br)nc(C(F)(F)F)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H5BrF3N",
+                        "mass": 238.95574592
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Cc1cc(-c2cccc(Cl)c2)nc(C(F)(F)F)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H9ClF3N",
+                        "mass": 271.03756162800005
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.83,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

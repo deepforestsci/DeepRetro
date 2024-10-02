@@ -1,0 +1,133 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CC(C)C(=O)Nc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H13NO",
+                        "mass": 163.099714036
+                    }
+                },
+                {
+                    "smiles": "Cc1ccc(OCCCCN2CC=CCC2)cc1C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H25NO",
+                        "mass": 259.19361442
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Cc1ccc(OCCCCN2CCC(c3cccc(NC(=O)C(C)C)c3)CC2)cc1C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C27H38N2O2",
+                        "mass": 422.2933284559999
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "Cc1ccc(O)cc1C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H10O",
+                        "mass": 122.07316494
+                    }
+                },
+                {
+                    "smiles": "ClCCCCN1CC=CCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H16ClN",
+                        "mass": 173.097127192
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Cc1ccc(OCCCCN2CC=CCC2)cc1C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H25NO",
+                        "mass": 259.19361442
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.81,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "C1=CCNCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9N",
+                        "mass": 83.073499288
+                    }
+                },
+                {
+                    "smiles": "ClCCCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8BrCl",
+                        "mass": 169.949790036
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "ClCCCCN1CC=CCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H16ClN",
+                        "mass": 173.097127192
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.74,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

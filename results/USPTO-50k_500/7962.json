@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "N#Cc1ccccc1O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H5NO",
+                        "mass": 119.03711378
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCC(n2ncc3c(Cl)ncnc32)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H20ClN5O2",
+                        "mass": 337.13055256
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCC(n2ncc3c(Oc4ccccc4C#N)ncnc32)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C22H24N6O3",
+                        "mass": 420.19098862800007
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "Clc1ncnc2[nH]ncc12",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H3ClN4",
+                        "mass": 154.004623776
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCC(O)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H19NO3",
+                        "mass": 201.136493468
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCC(n2ncc3c(Cl)ncnc32)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H20ClN5O2",
+                        "mass": 337.13055256
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

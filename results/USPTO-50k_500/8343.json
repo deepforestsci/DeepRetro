@@ -1,0 +1,47 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CN(C)C=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7NO",
+                        "mass": 73.052763844
+                    }
+                },
+                {
+                    "smiles": "O=C(O)c1cccc([N+](=O)[O-])c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H5NO4",
+                        "mass": 167.02185764
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CNC(=O)c1cccc([N+](=O)[O-])c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H8N2O3",
+                        "mass": 180.053492116
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

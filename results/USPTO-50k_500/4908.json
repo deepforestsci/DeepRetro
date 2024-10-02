@@ -1,0 +1,47 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CC(C)NCC(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H11NO2",
+                        "mass": 117.078978592
+                    }
+                },
+                {
+                    "smiles": "N=C(NO)c1cncnc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H6N4O",
+                        "mass": 138.054160812
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)NCc1nc(-c2cncnc2)no1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H13N5O",
+                        "mass": 219.112010036
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

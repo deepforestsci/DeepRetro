@@ -1,0 +1,133 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "Clc1ccc(Br)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4BrCl",
+                        "mass": 189.918489908
+                    }
+                },
+                {
+                    "smiles": "N#Cc1cc(B(O)O)c(-c2ccccc2Cl)nc1N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H9BClN3O2",
+                        "mass": 273.047634608
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "N#Cc1cc(-c2ccc(Cl)cc2)c(-c2ccccc2Cl)nc1N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H11Cl2N3",
+                        "mass": 339.03300271200004
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.78,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COB(OC)OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H9BO3",
+                        "mass": 104.06447454799999
+                    }
+                },
+                {
+                    "smiles": "N#Cc1ccc(-c2ccccc2Cl)nc1N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H8ClN3",
+                        "mass": 229.040674936
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "N#Cc1cc(B(O)O)c(-c2ccccc2Cl)nc1N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H9BClN3O2",
+                        "mass": 273.047634608
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "2",
+                    "confidenceestimate": 0.76,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "N#Cc1ccc(Cl)nc1N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4ClN3",
+                        "mass": 153.009374808
+                    }
+                },
+                {
+                    "smiles": "OB(O)c1ccccc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6BClO2",
+                        "mass": 156.014937512
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "N#Cc1ccc(-c2ccccc2Cl)nc1N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H8ClN3",
+                        "mass": 229.040674936
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

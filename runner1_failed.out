@@ -1,0 +1,21 @@
+2024-10-02 15:46:25.435460: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2024-10-02 15:46:25.437013: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-10-02 15:46:25.547914: I external/local_tsl/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
+2024-10-02 15:46:26.001314: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-10-02 15:46:26.975518: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+  0%|          | 0/15 [00:00<?, ?it/s]  7%|▋         | 1/15 [00:13<03:03, 13.14s/it] 13%|█▎        | 2/15 [00:15<01:30,  6.92s/it] 20%|██        | 3/15 [00:30<02:07, 10.60s/it] 27%|██▋       | 4/15 [00:45<02:13, 12.18s/it] 33%|███▎      | 5/15 [00:58<02:06, 12.69s/it] 53%|█████▎    | 8/15 [01:12<00:54,  7.77s/it] 60%|██████    | 9/15 [01:14<00:38,  6.35s/it] 67%|██████▋   | 10/15 [01:15<00:25,  5.20s/it] 80%|████████  | 12/15 [01:18<00:10,  3.63s/it] 87%|████████▋ | 13/15 [02:09<00:28, 14.31s/it] 93%|█████████▎| 14/15 [05:03<00:53, 53.45s/it]100%|██████████| 15/15 [07:17<00:00, 74.16s/it]100%|██████████| 15/15 [07:17<00:00, 29.15s/it]
+Error in molecule: 119
+Error: Please Retry
+Error in molecule: 346
+Error: Please Retry
+Error in molecule: 483
+Error: Please Retry
+Error in molecule: 1618
+Error: Please Retry
+Error in molecule: 2310
+Error: list index out of range
+Error in molecule: 2625
+Error: list index out of range
+Error in molecule: 3027
+Error: Please Retry

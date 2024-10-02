@@ -1,0 +1,39 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=[N+]([O-])c1cccnc1N1CCNCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12N4O2",
+                        "mass": 208.096025624
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Nc1cccnc1N1CCNCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H14N4",
+                        "mass": 178.12184644799999
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.71,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

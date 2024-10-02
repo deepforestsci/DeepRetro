@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COc1ccc(Cn2nccc2N)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H13N3O",
+                        "mass": 203.105862036
+                    }
+                },
+                {
+                    "smiles": "Cc1cccc(-n2nnnc2SCC(=O)O)c1C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H12N4O2S",
+                        "mass": 264.068096624
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COc1ccc(Cn2nccc2NC(=O)CSc2nnnn2-c2cccc(C)c2C)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C22H23N7O2S",
+                        "mass": 449.1633939760001
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.97,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CCOC(=O)CBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H7BrO2",
+                        "mass": 165.962941564
+                    }
+                },
+                {
+                    "smiles": "Cc1cccc(-n2nnnc2S)c1C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H10N4S",
+                        "mass": 206.06261732
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Cc1cccc(-n2nnnc2SCC(=O)O)c1C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H12N4O2S",
+                        "mass": 264.068096624
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

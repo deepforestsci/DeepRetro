@@ -1,0 +1,133 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1NCCNC1c1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12N2O",
+                        "mass": 176.094963004
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCC(=O)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H17NO3",
+                        "mass": 199.120843404
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCC(N2CCNC(=O)C2c2ccccc2)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H29N3O3",
+                        "mass": 359.220891788
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "NCCN",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H8N2",
+                        "mass": 60.06874825599999
+                    }
+                },
+                {
+                    "smiles": "CCOC(=O)C(Br)c1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H11BrO2",
+                        "mass": 241.994241692
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C1NCCNC1c1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12N2O",
+                        "mass": 176.094963004
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.74,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "CCOC(=O)Cc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12O2",
+                        "mass": 164.083729624
+                    }
+                },
+                {
+                    "smiles": "O=C1CCC(=O)N1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4BrNO2",
+                        "mass": 176.942540468
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CCOC(=O)C(Br)c1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H11BrO2",
+                        "mass": 241.994241692
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.72,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

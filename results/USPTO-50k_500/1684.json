@@ -1,0 +1,132 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CN1C(=O)CSc2ccccc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9NOS",
+                        "mass": 179.040484908
+                    }
+                },
+                {
+                    "smiles": "FCCN1CCN(c2ccc(F)cc2)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H16F2N2",
+                        "mass": 226.128154952
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CN1C(=O)C(CCN2CCN(c3ccc(F)cc3)CC2)Sc2ccccc21",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H24FN3OS",
+                        "mass": 385.16241160799996
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COS(=O)(=O)OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6O4S",
+                        "mass": 125.99867967200001
+                    }
+                },
+                {
+                    "smiles": "O=C1CSc2ccccc2N1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7NOS",
+                        "mass": 165.024834844
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CN1C(=O)CSc2ccccc21",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9NOS",
+                        "mass": 179.040484908
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "FCCN1CCNCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H13FN2",
+                        "mass": 132.106276636
+                    }
+                },
+                {
+                    "smiles": "Fc1ccc(Br)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4BrF",
+                        "mass": 173.948040448
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "FCCN1CCN(c2ccc(F)cc2)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H16F2N2",
+                        "mass": 226.128154952
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

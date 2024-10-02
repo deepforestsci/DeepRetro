@@ -1,0 +1,30 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CCCO[C@H]1CCC[C@H]([NH3+])C(=O)O[C@@H](C)[C@@H]1CCC(C)C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H34NO3+",
+                        "mass": 300.25332036809
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

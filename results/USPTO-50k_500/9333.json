@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)CBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3BrO2",
+                        "mass": 137.931641436
+                    }
+                },
+                {
+                    "smiles": "OCCOCCOCCOCCOCCOCCOCC(F)(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H27F3O7",
+                        "mass": 364.170887864
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(O)COCCOCCOCCOCCOCCOCCOCC(F)(F)F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H29F3O9",
+                        "mass": 422.176367168
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.89,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "OCCOCC(F)(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H7F3O2",
+                        "mass": 144.039814124
+                    }
+                },
+                {
+                    "smiles": "OCCOCCOCCOCCOCCO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H22O6",
+                        "mass": 238.141638424
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "OCCOCCOCCOCCOCCOCCOCC(F)(F)F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H27F3O7",
+                        "mass": 364.170887864
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

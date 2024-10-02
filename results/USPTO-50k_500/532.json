@@ -1,0 +1,47 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C(Nc1cc[nH]n1)c1c(F)cccc1F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H7F2N3O",
+                        "mass": 223.055718284
+                    }
+                },
+                {
+                    "smiles": "Cc1cc([N+](=O)[O-])ccc1CBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H8BrNO2",
+                        "mass": 228.973840596
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Cc1cc([N+](=O)[O-])ccc1Cn1ccc(NC(=O)c2c(F)cccc2F)n1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H14F2N4O3",
+                        "mass": 372.103396748
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.88,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

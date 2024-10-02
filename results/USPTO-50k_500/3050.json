@@ -1,0 +1,47 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=Cc1ccc(Cl)cc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H4Cl2O",
+                        "mass": 173.963920108
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCC(N)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H20N2O2",
+                        "mass": 200.15247788
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCC(NCc2ccc(Cl)cc2Cl)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H24Cl2N2O2",
+                        "mass": 358.121483368
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.82,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

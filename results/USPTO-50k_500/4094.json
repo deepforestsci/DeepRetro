@@ -1,0 +1,133 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)Cc1ccc(F)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7FO2",
+                        "mass": 154.043007684
+                    }
+                },
+                {
+                    "smiles": "CCCCC(O)c1cccc(-c2ccc(C(F)(F)F)cc2)n1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H18F3NO",
+                        "mass": 309.13404885600005
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CCCCC(Oc1ccc(CC(=O)O)cc1)c1cccc(-c2ccc(C(F)(F)F)cc2)n1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C25H24F3NO3",
+                        "mass": 443.170828288
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CCCCC=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H10O",
+                        "mass": 86.07316494
+                    }
+                },
+                {
+                    "smiles": "FC(F)(F)c1ccc(-c2cccc(Br)n2)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H7BrF3N",
+                        "mass": 300.971395984
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CCCCC(O)c1cccc(-c2ccc(C(F)(F)F)cc2)n1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H18F3NO",
+                        "mass": 309.13404885600005
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.83,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "OB(O)c1ccc(C(F)(F)F)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H6BF3O2",
+                        "mass": 190.041294492
+                    }
+                },
+                {
+                    "smiles": "Brc1cccc(Br)n1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H3Br2N",
+                        "mass": 234.863223296
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "FC(F)(F)c1ccc(-c2cccc(Br)n2)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H7BrF3N",
+                        "mass": 300.971395984
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

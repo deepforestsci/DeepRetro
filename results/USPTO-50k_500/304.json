@@ -1,0 +1,132 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CNCCCSc1ccc(OC)c(OC)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H19NO2S",
+                        "mass": 241.113649848
+                    }
+                },
+                {
+                    "smiles": "COc1cc2c(cc1OC)CC(=O)N(CCCBr)CC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H20BrNO3",
+                        "mass": 341.06265559999997
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COc1ccc(SCCCN(C)CCCN2CCc3cc(OC)c(OC)cc3CC2=O)cc1OC",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C27H38N2O5S",
+                        "mass": 502.2501433159999
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.94,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CNCCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H10BrN",
+                        "mass": 150.99966142
+                    }
+                },
+                {
+                    "smiles": "COc1ccc(S)cc1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H10O2S",
+                        "mass": 170.04015056
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CNCCCSc1ccc(OC)c(OC)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H19NO2S",
+                        "mass": 241.113649848
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.88,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "BrCCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6Br2",
+                        "mass": 199.883624392
+                    }
+                },
+                {
+                    "smiles": "COc1cc2c(cc1OC)CC(=O)NCC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H15NO3",
+                        "mass": 221.10519334
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COc1cc2c(cc1OC)CC(=O)N(CCCBr)CC2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H20BrNO3",
+                        "mass": 341.06265559999997
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.89,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

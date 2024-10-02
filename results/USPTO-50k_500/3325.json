@@ -1,0 +1,125 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C=Nc1ccc(Br)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H4BrNO",
+                        "mass": 196.947625848
+                    }
+                },
+                {
+                    "smiles": "COc1ccc(N)cc1-c1c(F)cnn1C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H12FN3O",
+                        "mass": 221.096440224
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COc1ccc(NC(=O)Nc2ccc(Br)cc2)cc1-c1c(F)cnn1C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H16BrFN4O2",
+                        "mass": 418.0440660720001
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COc1ccc([N+](=O)[O-])cc1-c1c(F)cnn1C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H10FN3O3",
+                        "mass": 251.0706194
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COc1ccc(N)cc1-c1c(F)cnn1C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H12FN3O",
+                        "mass": 221.096440224
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.84,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "F[N+]12CC[N+](CCl)(CC1)CC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H14ClFN2+2",
+                        "mass": 180.08185718817998
+                    }
+                },
+                {
+                    "smiles": "COc1ccc([N+](=O)[O-])cc1-c1ccnn1C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H11N3O3",
+                        "mass": 233.080041212
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COc1ccc([N+](=O)[O-])cc1-c1c(F)cnn1C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H10FN3O3",
+                        "mass": 251.0706194
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.97,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,90 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "CC(C)S(=O)c1nc[nH]n1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9N3OS",
+                        "mass": 159.046632908
+                    }
+                },
+                {
+                    "smiles": "CCCN(CCC)C(=O)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H14ClNO",
+                        "mass": 163.076391748
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CCCN(CCC)C(=O)n1cnc(S(=O)C(C)C)n1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H22N4O2S",
+                        "mass": 286.146346944
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CC(C)Sc1nc[nH]n1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9N3S",
+                        "mass": 143.051718288
+                    }
+                },
+                {
+                    "smiles": "O=C(OO)c1cccc(Cl)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H5ClO3",
+                        "mass": 171.99272169999998
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)S(=O)c1nc[nH]n1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9N3OS",
+                        "mass": 159.046632908
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.77,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

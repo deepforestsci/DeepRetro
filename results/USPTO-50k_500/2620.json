@@ -1,0 +1,125 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "C#CCN(CC1OCCO1)C(=O)Nc1ncc(I)s1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H12IN3O3S",
+                        "mass": 392.96441024399996
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "C#CCN(CC=O)C(=O)Nc1ncc(I)s1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8IN3O2S",
+                        "mass": 348.93819549600005
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "C#CCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H3Br",
+                        "mass": 117.941812196
+                    }
+                },
+                {
+                    "smiles": "O=C(NCC1OCCO1)Nc1ncc(I)s1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H10IN3O3S",
+                        "mass": 354.94876017999997
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "C#CCN(CC1OCCO1)C(=O)Nc1ncc(I)s1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H12IN3O3S",
+                        "mass": 392.96441024399996
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(=O)N1I",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4INO2",
+                        "mass": 224.928676368
+                    }
+                },
+                {
+                    "smiles": "O=C(NCC1OCCO1)Nc1nccs1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H11N3O3S",
+                        "mass": 229.052112212
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(NCC1OCCO1)Nc1ncc(I)s1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H10IN3O3S",
+                        "mass": 354.94876017999997
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

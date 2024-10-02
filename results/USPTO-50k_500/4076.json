@@ -1,0 +1,125 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "Fc1cccc(-n2cccc2)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H8FN",
+                        "mass": 161.064077476
+                    }
+                },
+                {
+                    "smiles": "Nc1ccc(C2CCCCC2)cc1[N+](=O)[O-]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H16N2O2",
+                        "mass": 220.121177752
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=[N+]([O-])c1cc(C2CCCCC2)ccc1Nc1cccc(-n2cccc2)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C22H23N3O2",
+                        "mass": 361.17902697600005
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.81,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "Nc1ccc(C2=CCCCC2)cc1[N+](=O)[O-]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H14N2O2",
+                        "mass": 218.105527688
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Nc1ccc(C2CCCCC2)cc1[N+](=O)[O-]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H16N2O2",
+                        "mass": 220.121177752
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.96,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "OB(O)C1=CCCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H11BO2",
+                        "mass": 126.08520999199999
+                    }
+                },
+                {
+                    "smiles": "Nc1ccc(Br)cc1[N+](=O)[O-]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H5BrN2O2",
+                        "mass": 215.9534395
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Nc1ccc(C2=CCCCC2)cc1[N+](=O)[O-]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H14N2O2",
+                        "mass": 218.105527688
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.88,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

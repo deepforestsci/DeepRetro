@@ -1,0 +1,39 @@
+{
+    "dependencies": {
+        "1": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COC(=O)c1cccc2ncsc12",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H7NO2S",
+                        "mass": 193.019749464
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C(O)c1cccc2ncsc12",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H5NO2S",
+                        "mass": 179.0040994
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}
