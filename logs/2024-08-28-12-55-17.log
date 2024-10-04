@@ -1,0 +1,36 @@
+2024-08-28 12:55:18,543 - INFO - AZ failed for CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1, running LLM
+2024-08-28 12:55:18,544 - INFO - Running LLM for the 0.0th time for molecule: CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1
+2024-08-28 12:55:18,544 - INFO - LLM returned [['CN1CCC2(SC(C)NC2)CC1', 'O=C(CCC1=CNC2=C1C=CC=C2)Cl']]
+2024-08-28 12:55:18,544 - INFO - LLM explained ['Nucleophilic substitution reaction between the secondary amine and an acyl chloride']
+2024-08-28 12:55:18,544 - INFO - AZ failed for CN1CCC2(SC(C)NC2)CC1, running LLM
+2024-08-28 12:55:18,544 - INFO - Running LLM for the 0.0th time for molecule: CN1CCC2(SC(C)NC2)CC1
+2024-08-28 12:55:18,545 - INFO - LLM returned [['CN1CCC2(SC(=O)NC2)CC1', 'CC(=O)Cl']]
+2024-08-28 12:55:18,545 - INFO - LLM explained ['Condensation of a 2-aminothiazoline with acetyl chloride']
+2024-08-28 12:55:18,545 - INFO - AZ solved CN1CCC2(SC(=O)NC2)CC1
+2024-08-28 12:55:18,545 - INFO - AZ solved CC(=O)Cl
+2024-08-28 12:55:18,545 - INFO - temp_stat: [True, True]
+2024-08-28 12:55:18,545 - INFO - breaking
+2024-08-28 12:55:18,545 - INFO - AZ failed for O=C(CCC1=CNC2=C1C=CC=C2)Cl, running LLM
+2024-08-28 12:55:18,545 - INFO - Running LLM for the 0.0th time for molecule: O=C(CCC1=CNC2=C1C=CC=C2)Cl
+2024-08-28 12:55:18,545 - INFO - LLM returned [['O=C(O)CCC1=CNC2=C1C=CC=C2', 'Cl']]
+2024-08-28 12:55:18,545 - INFO - LLM explained ['Acid chloride formation from carboxylic acid using thionyl chloride or oxalyl chloride']
+2024-08-28 12:55:18,546 - INFO - AZ solved O=C(O)CCC1=CNC2=C1C=CC=C2
+2024-08-28 12:55:18,546 - INFO - AZ solved Cl
+2024-08-28 12:55:18,546 - INFO - temp_stat: [True, True]
+2024-08-28 12:55:18,546 - INFO - breaking
+2024-08-28 12:55:18,546 - INFO - temp_stat: [True, True]
+2024-08-28 12:55:18,546 - INFO - breaking
+2024-08-28 12:56:08,749 - INFO - AZ failed for CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1, running LLM
+2024-08-28 12:56:08,749 - INFO - Running LLM for the 0.0th time for molecule: CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1
+2024-08-28 12:56:08,750 - INFO - LLM returned [['CN1CCC2(SC(C)NC2)CC1', 'O=C(CCC1=CNC2=C1C=CC=C2)Cl']]
+2024-08-28 12:56:08,750 - INFO - LLM explained ['Amide coupling between the secondary amine and a carboxylic acid, using a coupling reagent like HATU or EDC/HOBt']
+2024-08-28 12:56:08,752 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-08-28 12:56:08,815 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-08-28 12:56:08,955 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-08-28 12:56:08,970 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-08-28 12:56:08,989 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-08-28 12:56:13,492 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-08-28 12:56:13,493 - INFO - Selected as stock: zinc
+2024-08-28 12:56:13,493 - INFO - Compounds in stock: 17422831
+2024-08-28 12:56:13,493 - INFO - Selected as expansion policy: uspto
+2024-08-28 12:56:13,493 - INFO - Selected as filter policy: uspto

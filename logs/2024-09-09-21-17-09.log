@@ -1,0 +1,201 @@
+2024-09-09 21:17:09,953 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-09 21:17:10,640 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-09 21:17:10,854 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-09 21:17:10,940 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-09 21:17:10,972 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-09 21:17:19,966 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-09 21:17:19,966 - INFO - Selected as stock: zinc
+2024-09-09 21:17:19,966 - INFO - Compounds in stock: 17422831
+2024-09-09 21:17:19,966 - INFO - Selected as expansion policy: uspto
+2024-09-09 21:17:19,966 - INFO - Selected as filter policy: uspto
+2024-09-09 21:17:41,232 - INFO - AZ failed for ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43, running LLM
+2024-09-09 21:17:41,232 - INFO - Running LLM for the 0.0th time for molecule: ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43
+2024-09-09 21:17:41,233 - INFO - Calling LLM with molecule: ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43
+2024-09-09 21:17:53,957 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-09 21:17:53,960 - INFO - Received response from LLM: {
+  "data": [
+    ["ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43", "CN"],
+    ["ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43", "COC"],
+    ["OC(C(Cl)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43", "CCl"],
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43", "COC(=O)C"]
+  ],
+  "explanation": [
+    "N-methylation of the secondary amine using methyl iodide or dimethyl sulfate",
+    "O-methylation of the phenol using methyl iodide or dimethyl sulfate and a base",
+    "Chlorination of the phenol using thionyl chloride or phosphorus pentachloride",
+    "Aldol condensation of the ketone with methyl formate, followed by elimination"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-09 21:17:53,966 - INFO - Obtained 4 valid pathways after validity test: [['ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'CN'], ['ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43', 'COC'], ['OC(C(Cl)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43', 'CCl'], ['ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43', 'COC(=O)C']]
+2024-09-09 21:17:53,966 - INFO - LLM returned [['ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43', 'COC(=O)C'], ['ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'CN'], ['ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43', 'COC'], ['OC(C(Cl)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43', 'CCl']]
+2024-09-09 21:17:53,967 - INFO - LLM explained ['N-methylation of the secondary amine using methyl iodide or dimethyl sulfate', 'O-methylation of the phenol using methyl iodide or dimethyl sulfate and a base', 'Chlorination of the phenol using thionyl chloride or phosphorus pentachloride', 'Aldol condensation of the ketone with methyl formate, followed by elimination']
+2024-09-09 21:17:53,968 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-09 21:17:54,037 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-09 21:17:54,197 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-09 21:17:54,209 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-09 21:17:54,231 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-09 21:17:58,987 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-09 21:17:58,987 - INFO - Selected as stock: zinc
+2024-09-09 21:17:58,987 - INFO - Compounds in stock: 17422831
+2024-09-09 21:17:58,987 - INFO - Selected as expansion policy: uspto
+2024-09-09 21:17:58,987 - INFO - Selected as filter policy: uspto
+2024-09-09 21:18:24,426 - INFO - AZ failed for ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43, running LLM
+2024-09-09 21:18:24,426 - INFO - Running LLM for the 0.0th time for molecule: ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43
+2024-09-09 21:18:24,427 - INFO - Calling LLM with molecule: ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43
+2024-09-09 21:18:36,219 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-09 21:18:36,222 - INFO - Received response from LLM: {
+  "data": [
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43", "CN"],
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N)CC2.Cl", "CCN(C)C"],
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N)CCC4=CC=CC=C43", "ClCCN(C)C"]
+  ],
+  "explanation": [
+    "N-methylation of the secondary amine using a methylating agent like methyl iodide or dimethyl sulfate",
+    "Nucleophilic substitution of the alkyl chloride with methylamine, likely under basic conditions",
+    "Reductive amination of the primary amine with formaldehyde and a reducing agent like sodium triacetoxyborohydride, followed by N-methylation"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7
+  ]
+}
+2024-09-09 21:18:36,224 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:18:36,225 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:18:36,226 - INFO - Obtained 1 valid pathways after validity test: [['ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'CN']]
+2024-09-09 21:18:36,226 - INFO - LLM returned [['ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'CN']]
+2024-09-09 21:18:36,226 - INFO - LLM explained ['N-methylation of the secondary amine using a methylating agent like methyl iodide or dimethyl sulfate']
+2024-09-09 21:18:36,228 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-09 21:18:36,288 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-09 21:18:36,438 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-09 21:18:36,445 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-09 21:18:36,465 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-09 21:18:41,184 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-09 21:18:41,184 - INFO - Selected as stock: zinc
+2024-09-09 21:18:41,184 - INFO - Compounds in stock: 17422831
+2024-09-09 21:18:41,184 - INFO - Selected as expansion policy: uspto
+2024-09-09 21:18:41,185 - INFO - Selected as filter policy: uspto
+2024-09-09 21:19:07,364 - INFO - AZ failed for ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43, running LLM
+2024-09-09 21:19:07,365 - INFO - Running LLM for the 0.0th time for molecule: ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43
+2024-09-09 21:19:07,365 - INFO - Calling LLM with molecule: ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43
+2024-09-09 21:19:24,803 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-09 21:19:24,806 - INFO - Received response from LLM: {
+  "data": [
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N)CCC4=CC=CC=C43", "ClCCN"],
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N)CCC4=CC=CC=C43", "BrCCN"],
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N)CCC4=CC=CC=C43", "ICCN"],
+    ["ClC(C=C1)=CC2=C1C3=C(CCC4=CC=CC=C43)CN2", "NH3"],
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](O)CCC4=CC=CC=C43", "NH3"]
+  ],
+  "explanation": [
+    "Alkylation of the secondary amine with chloroethylamine, using a base like K2CO3 or NaH",
+    "Alkylation of the secondary amine with bromoethylamine, using a base like K2CO3 or NaH", 
+    "Alkylation of the secondary amine with iodoethylamine, using a base like K2CO3 or NaH",
+    "Nucleophilic substitution of the alkyl chloride with ammonia, likely requiring heat",
+    "Nucleophilic substitution of an alcohol with ammonia, using activating agents like PPh3/DEAD or via mesylate"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-09 21:19:24,807 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:24,807 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:24,808 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:24,809 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:24,809 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:24,809 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:24,809 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-09 21:19:24,810 - INFO - Running LLM for the 0.2th time for molecule: ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43
+2024-09-09 21:19:24,810 - INFO - Calling LLM with molecule: ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43
+2024-09-09 21:19:40,531 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-09 21:19:40,532 - INFO - Received response from LLM: {
+  "data": [
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N)CCC4=CC=CC=C43", "ClCN"],
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N)CCC4=CC=CC=C43", "BrCN"],
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N)CCC4=CC=CC=C43", "ICN"],
+    ["ClC(C=C1)=CC2=C1C3=C(CCC4=CC=CC=C43)C=C2", "H2NCH2CH2NH2"]
+  ],
+  "explanation": [
+    "Alkylation of the secondary amine with chloroacetonitrile, using a base like K2CO3 or NaH",
+    "Alkylation of the secondary amine with bromoacetonitrile, using a base like K2CO3 or NaH", 
+    "Alkylation of the secondary amine with iodoacetonitrile, using a base like K2CO3 or NaH",
+    "Buchwald-Hartwig amination of the aryl chloride with ethylenediamine, using a Pd catalyst and base"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-09 21:19:40,532 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:40,533 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:40,534 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:40,535 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:40,535 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-09 21:19:40,535 - INFO - Running LLM for the 0.4th time for molecule: ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43
+2024-09-09 21:19:40,535 - INFO - Calling LLM with molecule: ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43
+2024-09-09 21:19:56,173 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-09 21:19:56,174 - INFO - Received response from LLM: {
+  "data": [
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N)CCC4=CC=CC=C43", "ClCN"],
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NC(=O)C)CCC4=CC=CC=C43"],
+    ["ClC(C=C1)=CC2=C1[C@@H]3[C@@H](N)CCC4=CC=CC=C43", "BrCCBr"],
+    ["ClC(C=C1)=CC2=C1C=C[C@@H]3CCC4=CC=CC=C4[C@@H]23", "CH2=CHCN"]
+  ],
+  "explanation": [
+    "Reductive amination of the ketone with methylamine, using a reducing agent like NaBH4 or H2/catalyst",
+    "Amide formation from the corresponding amine using acetyl chloride or acetic anhydride",
+    "Alkylation of the amine with 1,2-dibromoethane under basic conditions",
+    "Intramolecular Diels-Alder reaction of the corresponding triene system, likely requiring heat"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-09 21:19:56,175 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:56,176 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:56,176 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:56,177 - INFO - Molecule : ClC(C=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is invalid or cannot be parsed
+2024-09-09 21:19:56,177 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-09 21:19:56,178 - INFO - LLM returned []
+2024-09-09 21:19:56,178 - INFO - LLM explained []
+2024-09-09 21:19:56,180 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-09 21:19:56,241 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-09 21:19:56,390 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-09 21:19:56,397 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-09 21:19:56,418 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-09 21:20:01,213 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-09 21:20:01,213 - INFO - Selected as stock: zinc
+2024-09-09 21:20:01,213 - INFO - Compounds in stock: 17422831
+2024-09-09 21:20:01,213 - INFO - Selected as expansion policy: uspto
+2024-09-09 21:20:01,213 - INFO - Selected as filter policy: uspto
+2024-09-09 21:20:02,949 - INFO - AZ solved CN
+2024-09-09 21:20:02,950 - INFO - temp_stat: [True]
+2024-09-09 21:20:02,950 - INFO - breaking
+2024-09-09 21:20:02,951 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-09 21:20:03,014 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-09 21:20:03,159 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-09 21:20:03,168 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-09 21:20:03,190 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-09 21:20:07,981 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-09 21:20:07,981 - INFO - Selected as stock: zinc
+2024-09-09 21:20:07,981 - INFO - Compounds in stock: 17422831
+2024-09-09 21:20:07,981 - INFO - Selected as expansion policy: uspto
+2024-09-09 21:20:07,981 - INFO - Selected as filter policy: uspto
+2024-09-09 21:20:10,923 - INFO - AZ solved COC(=O)C
+2024-09-09 21:20:10,923 - INFO - temp_stat: [True, True]
+2024-09-09 21:20:10,923 - INFO - breaking

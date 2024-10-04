@@ -1,0 +1,10 @@
+2024-09-12 12:47:08,871 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-12 12:47:08,937 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-12 12:47:09,079 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-12 12:47:09,091 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-12 12:47:09,112 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-12 12:47:13,598 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-12 12:47:13,598 - INFO - Selected as stock: zinc
+2024-09-12 12:47:13,598 - INFO - Compounds in stock: 17422831
+2024-09-12 12:47:13,598 - INFO - Selected as expansion policy: uspto
+2024-09-12 12:47:13,598 - INFO - Selected as filter policy: uspto

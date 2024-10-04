@@ -1,0 +1,238 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [
+            "5"
+        ],
+        "5": [
+            "6"
+        ],
+        "6": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COC[C@H](c1cnn2cc([C@@H](NC(=O)OC(C)(C)C)C3CCC(F)(F)CC3)nc2c1)N1C[C@@H](C(F)(F)F)NC1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C25H33F5N6O4",
+                        "mass": 576.2483446360001
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COC[C@H](c1cnn2cc([C@@H](N)C3CCC(F)(F)CC3)nc2c1)N1C[C@@H](C(F)(F)F)NC1=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H25F5N6O2",
+                        "mass": 476.19591514000007
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.89,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CI",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3I",
+                        "mass": 141.927948096
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)OC(=O)N[C@H](c1cn2ncc([C@@H](CO)N3C[C@@H](C(F)(F)F)NC3=O)cc2n1)C1CCC(F)(F)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C24H31F5N6O4",
+                        "mass": 562.2326945719999
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COC[C@H](c1cnn2cc([C@@H](NC(=O)OC(C)(C)C)C3CCC(F)(F)CC3)nc2c1)N1C[C@@H](C(F)(F)F)NC1=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C25H33F5N6O4",
+                        "mass": 576.2483446360001
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.77,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N[C@H](c1cn2ncc([C@@H](CO[Si](C)(C)C(C)(C)C)N3C[C@@H](C(F)(F)F)NC3=O)cc2n1)C1CCC(F)(F)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C30H45F5N6O4Si",
+                        "mass": 676.3191715500001
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N[C@H](c1cn2ncc([C@@H](CO)N3C[C@@H](C(F)(F)F)NC3=O)cc2n1)C1CCC(F)(F)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C24H31F5N6O4",
+                        "mass": 562.2326945719999
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.82,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)OC(=O)OC(C)(C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H18O5",
+                        "mass": 218.115423676
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)[Si](C)(C)OC[C@H](c1cnn2cc([C@@H](N)C3CCC(F)(F)CC3)nc2c1)N1C[C@@H](C(F)(F)F)NC1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C25H37F5N6O2Si",
+                        "mass": 576.2667420540001
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N[C@H](c1cn2ncc([C@@H](CO[Si](C)(C)C(C)(C)C)N3C[C@@H](C(F)(F)F)NC3=O)cc2n1)C1CCC(F)(F)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C30H45F5N6O4Si",
+                        "mass": 676.3191715500001
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "7",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)[Si](C)(C)OC[C@H](c1cnn2cc([C@@H](N=[N+]=[N-])C3CCC(F)(F)CC3)nc2c1)N1C[C@@H](C(F)(F)F)NC1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C25H35F5N8O2Si",
+                        "mass": 602.25723999
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)[Si](C)(C)OC[C@H](c1cnn2cc([C@@H](N)C3CCC(F)(F)CC3)nc2c1)N1C[C@@H](C(F)(F)F)NC1=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C25H37F5N6O2Si",
+                        "mass": 576.2667420540001
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "7",
+                    "confidenceestimate": 0.83,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)[Si](C)(C)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H15ClSi",
+                        "mass": 150.06315469
+                    }
+                },
+                {
+                    "smiles": "[N-]=[N+]=N[C@H](c1cn2ncc([C@@H](CO)N3C[C@@H](C(F)(F)F)NC3=O)cc2n1)C1CCC(F)(F)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H21F5N8O2",
+                        "mass": 488.170763012
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)[Si](C)(C)OC[C@H](c1cnn2cc([C@@H](N=[N+]=[N-])C3CCC(F)(F)CC3)nc2c1)N1C[C@@H](C(F)(F)F)NC1=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C25H35F5N8O2Si",
+                        "mass": 602.25723999
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "7",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

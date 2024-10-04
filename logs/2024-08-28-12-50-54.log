@@ -1,0 +1,286 @@
+2024-08-28 12:50:54,580 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-08-28 12:50:54,644 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-08-28 12:50:54,794 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-08-28 12:50:54,808 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-08-28 12:50:54,830 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-08-28 12:50:59,476 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-08-28 12:50:59,477 - INFO - Selected as stock: zinc
+2024-08-28 12:50:59,477 - INFO - Compounds in stock: 17422831
+2024-08-28 12:50:59,477 - INFO - Selected as expansion policy: uspto
+2024-08-28 12:50:59,477 - INFO - Selected as filter policy: uspto
+2024-08-28 12:51:14,081 - INFO - AZ failed for CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1, running LLM
+2024-08-28 12:51:14,081 - INFO - Running LLM for the 0.0th time for molecule: CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1
+2024-08-28 12:51:14,081 - INFO - Calling LLM with molecule: CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1
+2024-08-28 12:51:26,379 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-08-28 12:51:26,382 - INFO - Received response from LLM: {
+  "data": [
+    ["CN1CCC2(SC(C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1", "CC(=O)Cl"],
+    ["CN1CCC2(SC(C)NC2)CC1", "O=C(CCC1=CNC2=C1C=CC=C2)Cl"],
+    ["CN1CCC2(SC(C)N(C(CCc3cnc4ccccc34)O)C2)CC1", "H"],
+    ["CN1CCC2(SC(C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1", "[H]"]
+  ],
+  "explanation": [
+    "Acylation reaction between the secondary amine and an acyl chloride, using a base like triethylamine",
+    "Nucleophilic substitution reaction between the secondary amine and an acyl chloride",
+    "Reduction of the amide to an amine using a strong reducing agent like LiAlH4",
+    "Hydrogenation of the alkene using a catalyst like Pd/C under H2 atmosphere"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.7,
+    0.6
+  ]
+}
+2024-08-28 12:51:26,384 - INFO - Molecule : CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1 is same as target molecule
+2024-08-28 12:51:26,386 - INFO - Molecule : CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1 is invalid or cannot be parsed
+2024-08-28 12:51:26,386 - INFO - Molecule : CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1 is invalid or cannot be parsed
+2024-08-28 12:51:26,387 - INFO - Molecule : CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1 is same as target molecule
+2024-08-28 12:51:26,387 - INFO - Obtained 1 valid pathways after validity test: [['CN1CCC2(SC(C)NC2)CC1', 'O=C(CCC1=CNC2=C1C=CC=C2)Cl']]
+2024-08-28 12:51:26,388 - INFO - LLM returned [['CN1CCC2(SC(C)NC2)CC1', 'O=C(CCC1=CNC2=C1C=CC=C2)Cl']]
+2024-08-28 12:51:26,388 - INFO - LLM explained ['Nucleophilic substitution reaction between the secondary amine and an acyl chloride']
+2024-08-28 12:51:26,390 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-08-28 12:51:26,450 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-08-28 12:51:26,598 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-08-28 12:51:26,608 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-08-28 12:51:26,630 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-08-28 12:51:31,007 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-08-28 12:51:31,007 - INFO - Selected as stock: zinc
+2024-08-28 12:51:31,008 - INFO - Compounds in stock: 17422831
+2024-08-28 12:51:31,008 - INFO - Selected as expansion policy: uspto
+2024-08-28 12:51:31,008 - INFO - Selected as filter policy: uspto
+2024-08-28 12:51:49,824 - INFO - AZ failed for CN1CCC2(SC(C)NC2)CC1, running LLM
+2024-08-28 12:51:49,824 - INFO - Running LLM for the 0.0th time for molecule: CN1CCC2(SC(C)NC2)CC1
+2024-08-28 12:51:49,824 - INFO - Calling LLM with molecule: CN1CCC2(SC(C)NC2)CC1
+2024-08-28 12:52:04,333 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-08-28 12:52:04,336 - INFO - Received response from LLM: {
+  "data": [
+    ["CN1CCC2(SC(C)=NC2)CC1"],
+    ["CN1CCC2(SC(C)NC2Cl)CC1", "CN1CCC2(SC(C)NC2Br)CC1", "CN1CCC2(SC(C)NC2I)CC1"],
+    ["CN1CCC2(SC(C)N)CC1", "ClC1NC2(CC3CNC(C)C3)SC1C"],
+    ["CN1CCC(CC1)SC1NC(C)CS1"]
+  ],
+  "explanation": [
+    "Reduction of the imine double bond in the thiazole ring using a reducing agent like NaBH4 or LiAlH4.",
+    "Nucleophilic substitution of a halogen (Cl, Br, I) at the 2-position of the thiazole ring by the secondary amine.",
+    "Condensation reaction between a 2-aminothiazole derivative and a 1,4-disubstituted piperidine derivative under acidic conditions.",
+    "Ring closure reaction between a linear precursor containing a thioamide and an alkyl halide under basic conditions."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-08-28 12:52:04,338 - INFO - Molecule : CN1CCC2(SC(C)NC2)CC1 is substructure of target molecule
+2024-08-28 12:52:04,338 - INFO - Molecule : CN1CCC2(SC(C)NC2)CC1 is substructure of target molecule
+2024-08-28 12:52:04,339 - INFO - Molecule : CN1CCC2(SC(C)NC2)CC1 is substructure of target molecule
+2024-08-28 12:52:04,339 - INFO - Molecule : CN1CCC2(SC(C)NC2)CC1 is invalid or cannot be parsed
+2024-08-28 12:52:04,339 - INFO - Molecule : CN1CCC2(SC(C)NC2)CC1 is invalid or cannot be parsed
+2024-08-28 12:52:04,339 - INFO - Obtained 0 valid pathways after validity test: []
+2024-08-28 12:52:04,340 - INFO - Running LLM for the 0.2th time for molecule: CN1CCC2(SC(C)NC2)CC1
+2024-08-28 12:52:04,340 - INFO - Calling LLM with molecule: CN1CCC2(SC(C)NC2)CC1
+2024-08-28 12:52:15,233 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-08-28 12:52:15,234 - INFO - Received response from LLM: {
+  "data": [
+    ["CN1CCC2(SC(C)=NC2)CC1"],
+    ["CN1CCC2(SC(C)NC2Cl)CC1"],
+    ["CN1CCC2(SC(C(=O)Cl)NC2)CC1", "CN1CCC2(SC(C(O)Cl)NC2)CC1"],
+    ["CN1CCC2(SC(C)NC2)CC1.S"]
+  ],
+  "explanation": [
+    "Reduction of the imine double bond in the thiazole ring",
+    "Nucleophilic substitution of the chlorine with hydride or another reducing agent",
+    "Reduction of an acyl chloride or α-chloroketone, which could be formed from the corresponding carboxylic acid or ketone",
+    "Oxidation of the sulfur atom, likely using a mild oxidant like hydrogen peroxide or mCPBA"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-08-28 12:52:15,235 - INFO - Molecule : CN1CCC2(SC(C)NC2)CC1 is substructure of target molecule
+2024-08-28 12:52:15,236 - INFO - Molecule : CN1CCC2(SC(C)NC2)CC1 is substructure of target molecule
+2024-08-28 12:52:15,236 - INFO - Molecule : CN1CCC2(SC(C)NC2)CC1 is substructure of target molecule
+2024-08-28 12:52:15,237 - INFO - Molecule : CN1CCC2(SC(C)NC2)CC1 is substructure of target molecule
+2024-08-28 12:52:15,237 - INFO - Obtained 0 valid pathways after validity test: []
+2024-08-28 12:52:15,237 - INFO - Running LLM for the 0.4th time for molecule: CN1CCC2(SC(C)NC2)CC1
+2024-08-28 12:52:15,237 - INFO - Calling LLM with molecule: CN1CCC2(SC(C)NC2)CC1
+2024-08-28 12:52:25,198 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-08-28 12:52:25,199 - INFO - Received response from LLM: {
+  "data": [
+    ["CN1CCC2(SC(C)=NC2)CC1"],
+    ["CN1CCC2(SC(C)NC2)CC1.O"],
+    ["CN1CCC2(SC(=C)NC2)CC1"],
+    ["CN1CCC2(SC(C)N=C2)CC1"]
+  ],
+  "explanation": [
+    "Reduction of imine to amine using a reducing agent such as NaBH4 or H2/catalyst",
+    "Oxidation of the sulfur atom to the sulfoxide using an oxidant like mCPBA or H2O2", 
+    "Deprotonation of the alpha carbon next to the imine using a strong base like LDA or NaH",
+    "Tautomerization of the imine to the enamine form, which may be favored under certain conditions"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-08-28 12:52:25,201 - INFO - Molecule : CN1CCC2(SC(C)NC2)CC1 is substructure of target molecule
+2024-08-28 12:52:25,202 - INFO - Obtained 0 valid pathways after validity test: []
+2024-08-28 12:52:25,202 - INFO - LLM returned []
+2024-08-28 12:52:25,202 - INFO - LLM explained []
+2024-08-28 12:52:25,204 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-08-28 12:52:25,260 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-08-28 12:52:25,402 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-08-28 12:52:25,409 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-08-28 12:52:25,430 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-08-28 12:52:29,941 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-08-28 12:52:29,941 - INFO - Selected as stock: zinc
+2024-08-28 12:52:29,941 - INFO - Compounds in stock: 17422831
+2024-08-28 12:52:29,941 - INFO - Selected as expansion policy: uspto
+2024-08-28 12:52:29,941 - INFO - Selected as filter policy: uspto
+2024-08-28 12:52:30,659 - INFO - AZ failed for O=C(CCC1=CNC2=C1C=CC=C2)Cl, running LLM
+2024-08-28 12:52:30,659 - INFO - Running LLM for the 0.0th time for molecule: O=C(CCC1=CNC2=C1C=CC=C2)Cl
+2024-08-28 12:52:30,660 - INFO - Calling LLM with molecule: O=C(CCC1=CNC2=C1C=CC=C2)Cl
+2024-08-28 12:52:41,146 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-08-28 12:52:41,149 - INFO - Received response from LLM: {
+  "data": [
+    ["O=C(O)CCC1=CNC2=C1C=CC=C2", "Cl"],
+    ["O=C(Cl)CCC1=CNC2=C1C=CC=C2", "H"],
+    ["OC(CCC1=CNC2=C1C=CC=C2)Cl"],
+    ["O=C(CCC1=CNC2=C1C=CC=C2)O", "SOCl2"]
+  ],
+  "explanation": [
+    "Acid chloride formation from carboxylic acid using thionyl chloride or oxalyl chloride",
+    "Reduction of acid chloride to aldehyde using hydrogen gas and a metal catalyst like Pd",
+    "Nucleophilic addition of chloride to an aldehyde, forming an alpha-chloro alcohol", 
+    "Conversion of carboxylic acid to acid chloride using thionyl chloride"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.6,
+    0.8
+  ]
+}
+2024-08-28 12:52:41,151 - INFO - Molecule : O=C(CCC1=CNC2=C1C=CC=C2)Cl is same as target molecule
+2024-08-28 12:52:41,151 - INFO - Molecule : O=C(CCC1=CNC2=C1C=CC=C2)Cl is invalid or cannot be parsed
+2024-08-28 12:52:41,152 - INFO - Molecule : O=C(CCC1=CNC2=C1C=CC=C2)Cl is invalid or cannot be parsed
+2024-08-28 12:52:41,152 - INFO - Obtained 1 valid pathways after validity test: [['O=C(O)CCC1=CNC2=C1C=CC=C2', 'Cl']]
+2024-08-28 12:52:41,152 - INFO - LLM returned [['O=C(O)CCC1=CNC2=C1C=CC=C2', 'Cl']]
+2024-08-28 12:52:41,152 - INFO - LLM explained ['Acid chloride formation from carboxylic acid using thionyl chloride or oxalyl chloride']
+2024-08-28 12:52:41,154 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-08-28 12:52:41,216 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-08-28 12:52:41,359 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-08-28 12:52:41,371 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-08-28 12:52:41,391 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-08-28 12:52:45,929 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-08-28 12:52:45,929 - INFO - Selected as stock: zinc
+2024-08-28 12:52:45,929 - INFO - Compounds in stock: 17422831
+2024-08-28 12:52:45,929 - INFO - Selected as expansion policy: uspto
+2024-08-28 12:52:45,929 - INFO - Selected as filter policy: uspto
+2024-08-28 12:52:54,270 - INFO - AZ solved O=C(O)CCC1=CNC2=C1C=CC=C2
+2024-08-28 12:52:54,271 - INFO - AZ solved Cl
+2024-08-28 12:52:54,271 - INFO - temp_stat: [True, True]
+2024-08-28 12:52:54,271 - INFO - breaking
+2024-08-28 12:52:54,271 - INFO - temp_stat: [True]
+2024-08-28 12:52:54,271 - INFO - breaking
+2024-08-28 12:53:35,676 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-08-28 12:53:35,736 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-08-28 12:53:35,869 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-08-28 12:53:35,876 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-08-28 12:53:35,895 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-08-28 12:53:40,238 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-08-28 12:53:40,239 - INFO - Selected as stock: zinc
+2024-08-28 12:53:40,239 - INFO - Compounds in stock: 17422831
+2024-08-28 12:53:40,239 - INFO - Selected as expansion policy: uspto
+2024-08-28 12:53:40,239 - INFO - Selected as filter policy: uspto
+2024-08-28 12:53:57,248 - INFO - AZ failed for CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1, running LLM
+2024-08-28 12:53:57,248 - INFO - Running LLM for the 0.0th time for molecule: CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1
+2024-08-28 12:53:57,248 - INFO - Calling LLM with molecule: CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1
+2024-08-28 12:54:10,238 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-08-28 12:54:10,241 - INFO - Received response from LLM: {
+  "data": [
+    ["CN1CCC2(SC(C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1", "CC(=O)Cl"],
+    ["CN1CCC2(SC(C)NC2)CC1", "O=C(CCC1=CNC2=C1C=CC=C2)Cl"],
+    ["CN1CCC2(SC(C)N(C(CCc3cnc4ccccc34)O)C2)CC1", "H"],
+    ["CN1CCC2(SC(C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1", "[H]"]
+  ],
+  "explanation": [
+    "Acylation reaction between the secondary amine and an acyl chloride, using a base like triethylamine",
+    "Nucleophilic substitution reaction between the secondary amine and an acyl chloride",
+    "Reduction of the amide to an amine using a strong reducing agent like LiAlH4",
+    "Hydrogenation of the alkene using a catalyst like Pd/C under H2 atmosphere"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.7,
+    0.6
+  ]
+}
+2024-08-28 12:54:10,243 - INFO - Molecule : CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1 is same as target molecule
+2024-08-28 12:54:10,245 - INFO - Molecule : CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1 is invalid or cannot be parsed
+2024-08-28 12:54:10,245 - INFO - Molecule : CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1 is invalid or cannot be parsed
+2024-08-28 12:54:10,245 - INFO - Molecule : CN1CCC2(S[C@@H](C)N(C(CCC3=CNC4=C3C=CC=C4)=O)C2)CC1 is same as target molecule
+2024-08-28 12:54:10,246 - INFO - Obtained 1 valid pathways after validity test: [['CN1CCC2(SC(C)NC2)CC1', 'O=C(CCC1=CNC2=C1C=CC=C2)Cl']]
+2024-08-28 12:54:10,246 - INFO - LLM returned [['CN1CCC2(SC(C)NC2)CC1', 'O=C(CCC1=CNC2=C1C=CC=C2)Cl']]
+2024-08-28 12:54:10,246 - INFO - LLM explained ['Nucleophilic substitution reaction between the secondary amine and an acyl chloride']
+2024-08-28 12:54:10,248 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-08-28 12:54:10,310 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-08-28 12:54:10,441 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-08-28 12:54:10,447 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-08-28 12:54:10,465 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-08-28 12:54:14,857 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-08-28 12:54:14,857 - INFO - Selected as stock: zinc
+2024-08-28 12:54:14,857 - INFO - Compounds in stock: 17422831
+2024-08-28 12:54:14,857 - INFO - Selected as expansion policy: uspto
+2024-08-28 12:54:14,857 - INFO - Selected as filter policy: uspto
+2024-08-28 12:54:34,578 - INFO - AZ failed for CN1CCC2(SC(C)NC2)CC1, running LLM
+2024-08-28 12:54:34,578 - INFO - Running LLM for the 0.0th time for molecule: CN1CCC2(SC(C)NC2)CC1
+2024-08-28 12:54:34,578 - INFO - Calling LLM with molecule: CN1CCC2(SC(C)NC2)CC1
+2024-08-28 12:54:43,998 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-08-28 12:54:44,000 - INFO - Received response from LLM: {
+  "data": [
+    ["CN1CCC2(SC(C)=NC2)CC1"],
+    ["CN1CCC2(SC(C)NC2Cl)CC1"],
+    ["CN1CCC2(SC(=O)NC2)CC1", "CC(=O)Cl"],
+    ["CN1CCC2(SH)NC2CC1", "CC(=O)Cl"]
+  ],
+  "explanation": [
+    "Reduction of the imine double bond in the thiazole ring",
+    "Dechlorination of the 2-chlorothiazole derivative", 
+    "Condensation of a 2-aminothiazoline with acetyl chloride",
+    "Condensation of a 2-aminothiazoline with acetyl chloride, formed by ring opening of the thiazoline"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-08-28 12:54:44,002 - INFO - Molecule : CN1CCC2(SC(C)NC2)CC1 is substructure of target molecule
+2024-08-28 12:54:44,003 - INFO - Molecule : CN1CCC2(SC(C)NC2)CC1 is invalid or cannot be parsed
+2024-08-28 12:54:44,003 - INFO - Obtained 1 valid pathways after validity test: [['CN1CCC2(SC(=O)NC2)CC1', 'CC(=O)Cl']]
+2024-08-28 12:54:44,003 - INFO - LLM returned [['CN1CCC2(SC(=O)NC2)CC1', 'CC(=O)Cl']]
+2024-08-28 12:54:44,004 - INFO - LLM explained ['Condensation of a 2-aminothiazoline with acetyl chloride']
+2024-08-28 12:54:44,004 - INFO - AZ solved CN1CCC2(SC(=O)NC2)CC1
+2024-08-28 12:54:44,004 - INFO - AZ solved CC(=O)Cl
+2024-08-28 12:54:44,004 - INFO - temp_stat: [True, True]
+2024-08-28 12:54:44,004 - INFO - breaking
+2024-08-28 12:54:44,004 - INFO - AZ failed for O=C(CCC1=CNC2=C1C=CC=C2)Cl, running LLM
+2024-08-28 12:54:44,004 - INFO - Running LLM for the 0.0th time for molecule: O=C(CCC1=CNC2=C1C=CC=C2)Cl
+2024-08-28 12:54:44,004 - INFO - LLM returned [['O=C(O)CCC1=CNC2=C1C=CC=C2', 'Cl']]
+2024-08-28 12:54:44,005 - INFO - LLM explained ['Acid chloride formation from carboxylic acid using thionyl chloride or oxalyl chloride']
+2024-08-28 12:54:44,005 - INFO - AZ solved O=C(O)CCC1=CNC2=C1C=CC=C2
+2024-08-28 12:54:44,005 - INFO - AZ solved Cl
+2024-08-28 12:54:44,005 - INFO - temp_stat: [True, True]
+2024-08-28 12:54:44,005 - INFO - breaking
+2024-08-28 12:54:44,005 - INFO - temp_stat: [True, True]
+2024-08-28 12:54:44,005 - INFO - breaking

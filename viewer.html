@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Retrosynthesis Viewer</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+	<script src="https://unpkg.com/openchemlib/dist/openchemlib-full.js"></script>
+	<style>
+		/* Basic styles */
+		body {
+			font-family: Arial, sans-serif;
+			margin: 20px;
+		}
+
+		#fileInput {
+			margin-bottom: 20px;
+		}
+
+		.links line {
+			stroke: #999;
+			stroke-opacity: 0.6;
+		}
+
+		.nodes circle {
+			stroke: #69b3a2;
+			stroke-width: 2px;
+		}
+
+		.node-molecule {
+			pointer-events: none;
+			/* Allow mouse events to pass through the molecule SVG */
+		}
+
+		.tooltip {
+			position: absolute;
+			text-align: left;
+			width: auto;
+			padding: 10px;
+			font: 12px sans-serif;
+			background: lightsteelblue;
+			border: 0px;
+			border-radius: 8px;
+			pointer-events: none;
+			max-width: 200px;
+			/* Limit the width of the tooltip */
+		}
+	</style>
+</head>
+
+<body>
+	<input type="file" id="fileInput" accept=".json">
+	<div id="graph"></div>
+	<script src="appv2.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1388 @@
+2024-09-30 00:36:59,835 - INFO - AZ failed for Cc1cc(C[C@@H](OC(=O)N2CCC(N3CCc4ccccc4NC3=O)CC2)C(=O)N2CCC(C3CCN(S(C)(=O)=O)CC3)CC2)cc2nc[nH]c12, running LLM
+2024-09-30 00:36:59,835 - INFO - Running LLM for the 0.0th time for molecule: Cc1cc(C[C@@H](OC(=O)N2CCC(N3CCc4ccccc4NC3=O)CC2)C(=O)N2CCC(C3CCN(S(C)(=O)=O)CC3)CC2)cc2nc[nH]c12
+2024-09-30 00:36:59,837 - INFO - LLM returned [['Cc1cc(C=O)cc2nc[nH]c12', 'OC(C[C@@H](OC(=O)N1CCC(N2CCc3ccccc3NC2=O)CC1)C(=O)N1CCC(C2CCN(S(C)(=O)=O)CC2)CC1)C(=O)O'], ['Cc1cc(CO)cc2nc[nH]c12', 'O=C(C[C@@H](OC(=O)N1CCC(N2CCc3ccccc3NC2=O)CC1)C(=O)N1CCC(C2CCN(S(C)(=O)=O)CC2)CC1)O'], ['Cc1cc(C[C@@H](O)C(=O)N2CCC(C3CCN(S(C)(=O)=O)CC3)CC2)cc2nc[nH]c12', 'O=C(Cl)N1CCC(N2CCc3ccccc3NC2=O)CC1'], ['Cc1cc(C[C@@H](OC(=O)N2CCC(N3CCc4ccccc4NC3=O)CC2)C(=O)O)cc2nc[nH]c12', 'N1CCC(C2CCN(S(C)(=O)=O)CC2)CC1']]
+2024-09-30 00:36:59,837 - INFO - LLM explained ['Esterification reaction between the alcohol and the acid chloride, using a base like triethylamine or pyridine', 'Amide coupling between the carboxylic acid and the secondary amine, using a coupling reagent like HATU or EDC/HOBt', 'Grignard addition of a methylmagnesium halide to the aldehyde to form a secondary alcohol, followed by esterification and amide coupling', 'Oxidation of the primary alcohol to an aldehyde (e.g. using PCC or Swern conditions), followed by Grignard addition, esterification and amide coupling']
+2024-09-30 00:36:59,837 - INFO - AZ solved Cc1cc(C=O)cc2nc[nH]c12
+2024-09-30 00:36:59,837 - INFO - AZ failed for OC(C[C@@H](OC(=O)N1CCC(N2CCc3ccccc3NC2=O)CC1)C(=O)N1CCC(C2CCN(S(C)(=O)=O)CC2)CC1)C(=O)O, running LLM
+2024-09-30 00:36:59,837 - INFO - Running LLM for the 0.0th time for molecule: OC(C[C@@H](OC(=O)N1CCC(N2CCc3ccccc3NC2=O)CC1)C(=O)N1CCC(C2CCN(S(C)(=O)=O)CC2)CC1)C(=O)O
+2024-09-30 00:36:59,837 - INFO - LLM returned [['OC(C[C@@H](O)C(=O)N1CCC(C2CCN(S(C)(=O)=O)CC2)CC1)C(=O)O', 'O=C(Cl)N1CCC(N2CCc3ccccc3NC2=O)CC1'], ['OC(C[C@@H](OC(=O)N1CCC(N)CC1)C(=O)N1CCC(C2CCN(S(C)(=O)=O)CC2)CC1)C(=O)O', 'O=C1Nc2ccccc2CN1']]
+2024-09-30 00:36:59,838 - INFO - LLM explained ['Amide formation between a primary amine and an acid anhydride', 'Esterification between an alcohol and an acid chloride']
+2024-09-30 00:36:59,838 - INFO - AZ solved OC(C[C@@H](O)C(=O)N1CCC(C2CCN(S(C)(=O)=O)CC2)CC1)C(=O)O
+2024-09-30 00:36:59,838 - INFO - AZ solved O=C(Cl)N1CCC(N2CCc3ccccc3NC2=O)CC1
+2024-09-30 00:36:59,838 - INFO - temp_stat: [True, True]
+2024-09-30 00:36:59,838 - INFO - breaking
+2024-09-30 00:36:59,838 - INFO - temp_stat: [True, True]
+2024-09-30 00:36:59,838 - INFO - breaking
+2024-09-30 00:37:01,427 - INFO - AZ solved COc1ccc(F)c(F)c1C(=O)c1cnc(NC2CNC2)nc1N
+2024-09-30 00:37:01,936 - INFO - AZ solved COC=Cc1cccc(OC)c1OC
+2024-09-30 00:37:02,135 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:37:02,204 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:37:02,306 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:37:02,313 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:37:02,330 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:37:06,518 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:37:06,518 - INFO - Selected as stock: zinc
+2024-09-30 00:37:06,518 - INFO - Compounds in stock: 17422831
+2024-09-30 00:37:06,518 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:37:06,518 - INFO - Selected as filter policy: uspto
+2024-09-30 00:38:50,831 - INFO - AZ solved CCCN(CCC)C(=O)n1cnc(S(=O)C(C)C)n1
+2024-09-30 00:38:51,332 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:38:51,396 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:38:51,497 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:38:51,504 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:38:51,518 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:38:56,535 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:38:56,536 - INFO - Selected as stock: zinc
+2024-09-30 00:38:56,536 - INFO - Compounds in stock: 17422831
+2024-09-30 00:38:56,536 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:38:56,536 - INFO - Selected as filter policy: uspto
+2024-09-30 00:40:11,148 - INFO - AZ solved O=C(c1ccc([N+](=O)[O-])cc1)N1CCc2cc(S(=O)(=O)N3C[C@H](c4ccccc4)NC3=O)ccc21
+2024-09-30 00:40:11,846 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:40:11,955 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:40:12,069 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:40:12,079 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:40:12,101 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:40:16,742 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:40:16,743 - INFO - Selected as stock: zinc
+2024-09-30 00:40:16,743 - INFO - Compounds in stock: 17422831
+2024-09-30 00:40:16,743 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:40:16,743 - INFO - Selected as filter policy: uspto
+2024-09-30 00:41:42,294 - INFO - AZ solved CCC(C)COC(C)=O
+2024-09-30 00:41:42,445 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:41:42,527 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:41:42,626 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:41:42,633 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:41:42,647 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:41:47,057 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:41:47,058 - INFO - Selected as stock: zinc
+2024-09-30 00:41:47,058 - INFO - Compounds in stock: 17422831
+2024-09-30 00:41:47,058 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:41:47,058 - INFO - Selected as filter policy: uspto
+2024-09-30 00:42:13,433 - INFO - AZ solved Cc1ccc(S(=O)(=O)O)cc1
+2024-09-30 00:42:13,718 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:42:13,795 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:42:13,902 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:42:13,913 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:42:13,930 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:42:19,643 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:42:19,644 - INFO - Selected as stock: zinc
+2024-09-30 00:42:19,644 - INFO - Compounds in stock: 17422831
+2024-09-30 00:42:19,644 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:42:19,644 - INFO - Selected as filter policy: uspto
+2024-09-30 00:42:54,580 - INFO - AZ solved COc1ccc(C(=O)c2sc(C(C)C)cc2O)cc1
+2024-09-30 00:42:55,330 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:42:55,375 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:42:55,472 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:42:55,480 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:42:55,493 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:42:59,673 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:42:59,674 - INFO - Selected as stock: zinc
+2024-09-30 00:42:59,674 - INFO - Compounds in stock: 17422831
+2024-09-30 00:42:59,674 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:42:59,674 - INFO - Selected as filter policy: uspto
+2024-09-30 00:44:05,569 - INFO - AZ solved CN(C(=O)OC(C)(C)C)[C@@H](C=O)Cc1ccccc1
+2024-09-30 00:44:05,870 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:44:05,915 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:44:06,009 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:44:06,017 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:44:06,032 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:44:10,008 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:44:10,008 - INFO - Selected as stock: zinc
+2024-09-30 00:44:10,008 - INFO - Compounds in stock: 17422831
+2024-09-30 00:44:10,008 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:44:10,008 - INFO - Selected as filter policy: uspto
+2024-09-30 00:45:02,917 - INFO - AZ solved CCN(CC)C(=O)c1ccc(OC)cc1-c1ncccc1C
+2024-09-30 00:45:03,387 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:45:03,465 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:45:03,570 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:45:03,581 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:45:03,598 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:45:07,717 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:45:07,717 - INFO - Selected as stock: zinc
+2024-09-30 00:45:07,717 - INFO - Compounds in stock: 17422831
+2024-09-30 00:45:07,717 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:45:07,717 - INFO - Selected as filter policy: uspto
+2024-09-30 00:45:59,718 - INFO - AZ failed for CC1CCCC(C)(C)C1CCC(C)[N+](C)(C)C, running LLM
+2024-09-30 00:45:59,718 - INFO - Running LLM for the 0.0th time for molecule: CC1CCCC(C)(C)C1CCC(C)[N+](C)(C)C
+2024-09-30 00:45:59,718 - INFO - Calling LLM with molecule: CC1CCCC(C)(C)C1CCC(C)[N+](C)(C)C
+2024-09-30 00:46:12,064 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:46:12,080 - INFO - Received response from LLM: {
+  "data": [
+    ["CC1CCCC(C)(C)C1CCC(C)N(C)C", "C[N+](C)C"],
+    ["CC1CCCC(C)(C)C1CCC(C)Cl", "CN(C)C"],
+    ["CC1CCCC(C)(C)C1CCC(C)Br", "CN(C)C"],
+    ["CC1CCCC(C)(C)C1CCC(C)I", "CN(C)C"]
+  ],
+  "explanation": [
+    "Quaternary ammonium salt formation from tertiary amine and alkyl halide",
+    "Nucleophilic substitution of alkyl chloride with dimethylamine", 
+    "Nucleophilic substitution of alkyl bromide with dimethylamine",
+    "Nucleophilic substitution of alkyl iodide with dimethylamine"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.8,
+    0.7
+  ]
+}
+2024-09-30 00:46:12,087 - INFO - Obtained 4 valid pathways after validity test: [['CC1CCCC(C)(C)C1CCC(C)N(C)C', 'C[N+](C)C'], ['CC1CCCC(C)(C)C1CCC(C)Cl', 'CN(C)C'], ['CC1CCCC(C)(C)C1CCC(C)Br', 'CN(C)C'], ['CC1CCCC(C)(C)C1CCC(C)I', 'CN(C)C']]
+2024-09-30 00:46:12,088 - INFO - LLM returned [['CC1CCCC(C)(C)C1CCC(C)Cl', 'CN(C)C'], ['CC1CCCC(C)(C)C1CCC(C)N(C)C', 'C[N+](C)C'], ['CC1CCCC(C)(C)C1CCC(C)Br', 'CN(C)C'], ['CC1CCCC(C)(C)C1CCC(C)I', 'CN(C)C']]
+2024-09-30 00:46:12,088 - INFO - LLM explained ['Quaternary ammonium salt formation from tertiary amine and alkyl halide', 'Nucleophilic substitution of alkyl chloride with dimethylamine', 'Nucleophilic substitution of alkyl bromide with dimethylamine', 'Nucleophilic substitution of alkyl iodide with dimethylamine']
+2024-09-30 00:46:12,091 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:46:12,185 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:46:12,314 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:46:12,338 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:46:12,355 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:46:17,646 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:46:17,647 - INFO - Selected as stock: zinc
+2024-09-30 00:46:17,647 - INFO - Compounds in stock: 17422831
+2024-09-30 00:46:17,647 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:46:17,647 - INFO - Selected as filter policy: uspto
+2024-09-30 00:46:55,684 - INFO - AZ failed for CC1CCCC(C)(C)C1CCC(C)Cl, running LLM
+2024-09-30 00:46:55,684 - INFO - Running LLM for the 0.0th time for molecule: CC1CCCC(C)(C)C1CCC(C)Cl
+2024-09-30 00:46:55,684 - INFO - Calling LLM with molecule: CC1CCCC(C)(C)C1CCC(C)Cl
+2024-09-30 00:47:06,234 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:47:06,241 - INFO - Received response from LLM: {
+  "data": [
+    ["CC1CCCC(C)(C)C1CCC(C)O", "HCl"],
+    ["CC1CCCC(C)(C)C1CCC(C)Br", "LiCl"],
+    ["CC1CCCC(C)(C)C1CCC(C)I", "NaCl"],
+    ["CC1CCCC(C)(C)C1CCC(C)OS(=O)(=O)C", "LiCl"]
+  ],
+  "explanation": [
+    "Nucleophilic substitution of an alcohol with HCl",
+    "Halogen exchange reaction of an alkyl bromide with LiCl", 
+    "Halogen exchange reaction of an alkyl iodide with NaCl",
+    "Nucleophilic substitution of an alkyl sulfonate ester with LiCl"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 00:47:06,244 - INFO - Molecule : CC1CCCC(C)(C)C1CCC(C)Cl is invalid or cannot be parsed
+2024-09-30 00:47:06,245 - INFO - Molecule : CC1CCCC(C)(C)C1CCC(C)Cl is invalid or cannot be parsed
+2024-09-30 00:47:06,246 - INFO - Molecule : CC1CCCC(C)(C)C1CCC(C)Cl is invalid or cannot be parsed
+2024-09-30 00:47:06,247 - INFO - Molecule : CC1CCCC(C)(C)C1CCC(C)Cl is invalid or cannot be parsed
+2024-09-30 00:47:06,247 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 00:47:06,247 - INFO - Running LLM for the 0.2th time for molecule: CC1CCCC(C)(C)C1CCC(C)Cl
+2024-09-30 00:47:06,247 - INFO - Calling LLM with molecule: CC1CCCC(C)(C)C1CCC(C)Cl
+2024-09-30 00:47:16,884 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:47:16,888 - INFO - Received response from LLM: {
+  "data": [
+    ["CC1CCCC(C)(C)C1CCC(C)O", "HCl"],
+    ["CC1CCCC(C)(C)C1CCC(C)Br", "LiCl"],
+    ["CC1CCCC(C)(C)C1CCC(C)I", "NaCl"],
+    ["CC1CCCC(C)(C)C1CCC(C)OC(=O)Cl", "H2O"]
+  ],
+  "explanation": [
+    "Nucleophilic substitution of an alcohol with HCl",
+    "Halogen exchange reaction between an alkyl bromide and LiCl",
+    "Halogen exchange reaction between an alkyl iodide and NaCl", 
+    "Hydrolysis of an acyl chloride"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 00:47:16,891 - INFO - Molecule : CC1CCCC(C)(C)C1CCC(C)Cl is invalid or cannot be parsed
+2024-09-30 00:47:16,892 - INFO - Molecule : CC1CCCC(C)(C)C1CCC(C)Cl is invalid or cannot be parsed
+2024-09-30 00:47:16,893 - INFO - Molecule : CC1CCCC(C)(C)C1CCC(C)Cl is invalid or cannot be parsed
+2024-09-30 00:47:16,894 - INFO - Molecule : CC1CCCC(C)(C)C1CCC(C)Cl is invalid or cannot be parsed
+2024-09-30 00:47:16,894 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 00:47:16,895 - INFO - Running LLM for the 0.4th time for molecule: CC1CCCC(C)(C)C1CCC(C)Cl
+2024-09-30 00:47:16,895 - INFO - Calling LLM with molecule: CC1CCCC(C)(C)C1CCC(C)Cl
+2024-09-30 00:47:26,933 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:47:26,936 - INFO - Received response from LLM: {
+  "data": [
+    ["CC1CCCC(C)(C)C1CCC(C)O", "HCl"],
+    ["CC1CCCC(C)(C)C1CCC(C)Br", "LiCl"],
+    ["CC1CCCC(C)(C)C1CCC(C)I", "NaCl"],
+    ["CC1CCCC(C)(C)C1CCC(C)OS(=O)(=O)C", "LiCl"]
+  ],
+  "explanation": [
+    "Nucleophilic substitution of an alcohol with HCl",
+    "Halogen exchange reaction of an alkyl bromide with LiCl", 
+    "Finkelstein reaction of an alkyl iodide with NaCl",
+    "Nucleophilic substitution of a sulfonate ester with LiCl"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 00:47:26,939 - INFO - Molecule : CC1CCCC(C)(C)C1CCC(C)Cl is invalid or cannot be parsed
+2024-09-30 00:47:26,940 - INFO - Molecule : CC1CCCC(C)(C)C1CCC(C)Cl is invalid or cannot be parsed
+2024-09-30 00:47:26,941 - INFO - Molecule : CC1CCCC(C)(C)C1CCC(C)Cl is invalid or cannot be parsed
+2024-09-30 00:47:26,942 - INFO - Molecule : CC1CCCC(C)(C)C1CCC(C)Cl is invalid or cannot be parsed
+2024-09-30 00:47:26,942 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 00:47:26,942 - INFO - LLM returned []
+2024-09-30 00:47:26,942 - INFO - LLM explained []
+2024-09-30 00:47:26,947 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:47:27,059 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:47:27,172 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:47:27,181 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:47:27,219 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:47:32,019 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:47:32,019 - INFO - Selected as stock: zinc
+2024-09-30 00:47:32,019 - INFO - Compounds in stock: 17422831
+2024-09-30 00:47:32,019 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:47:32,019 - INFO - Selected as filter policy: uspto
+2024-09-30 00:48:42,816 - INFO - AZ failed for CN(C)C, running LLM
+2024-09-30 00:48:42,817 - INFO - Running LLM for the 0.0th time for molecule: CN(C)C
+2024-09-30 00:48:42,817 - INFO - Calling LLM with molecule: CN(C)C
+2024-09-30 00:48:50,224 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:48:50,261 - INFO - Received response from LLM: {
+  "data": [
+    ["CNC", "CI"],
+    ["CN", "CN"]
+  ],
+  "explanation": [
+    "Methylation of dimethylamine with methyl iodide. Requires basic conditions.",
+    "Nucleophilic substitution reaction between two methylamine molecules. Requires high temperature and pressure, or a suitable catalyst."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.6
+  ]
+}
+2024-09-30 00:48:50,265 - INFO - Obtained 2 valid pathways after validity test: [['CNC', 'CI'], ['CN', 'CN']]
+2024-09-30 00:48:50,265 - INFO - LLM returned [['CN', 'CN'], ['CNC', 'CI']]
+2024-09-30 00:48:50,266 - INFO - LLM explained ['Methylation of dimethylamine with methyl iodide. Requires basic conditions.', 'Nucleophilic substitution reaction between two methylamine molecules. Requires high temperature and pressure, or a suitable catalyst.']
+2024-09-30 00:48:50,266 - INFO - AZ solved CN
+2024-09-30 00:48:50,266 - INFO - AZ solved CN
+2024-09-30 00:48:50,266 - INFO - temp_stat: [True, True]
+2024-09-30 00:48:50,266 - INFO - breaking
+2024-09-30 00:48:50,266 - INFO - temp_stat: [True]
+2024-09-30 00:48:50,266 - INFO - breaking
+2024-09-30 00:48:51,059 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:48:51,290 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:48:51,440 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:48:51,451 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:48:51,473 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:49:00,018 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:49:00,020 - INFO - Selected as stock: zinc
+2024-09-30 00:49:00,020 - INFO - Compounds in stock: 17422831
+2024-09-30 00:49:00,020 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:49:00,020 - INFO - Selected as filter policy: uspto
+2024-09-30 00:49:33,413 - INFO - AZ solved COc1cccc(NC(=O)c2ccccc2C)c1
+2024-09-30 00:49:33,771 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:49:33,847 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:49:34,009 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:49:34,022 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:49:34,038 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:49:40,254 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:49:40,255 - INFO - Selected as stock: zinc
+2024-09-30 00:49:40,255 - INFO - Compounds in stock: 17422831
+2024-09-30 00:49:40,255 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:49:40,255 - INFO - Selected as filter policy: uspto
+2024-09-30 00:51:42,168 - INFO - AZ failed for COc1cc(S(=O)(=O)N2CCC3(CC2)CN(C2CC2)C(=O)CO3)ccc1Br, running LLM
+2024-09-30 00:51:42,169 - INFO - Running LLM for the 0.0th time for molecule: COc1cc(S(=O)(=O)N2CCC3(CC2)CN(C2CC2)C(=O)CO3)ccc1Br
+2024-09-30 00:51:42,169 - INFO - Calling LLM with molecule: COc1cc(S(=O)(=O)N2CCC3(CC2)CN(C2CC2)C(=O)CO3)ccc1Br
+2024-09-30 00:51:56,395 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:51:56,410 - INFO - Received response from LLM: {
+  "data": [
+    ["COc1cc(S(=O)(=O)N2CCC3(CC2)CN(C2CC2)C(=O)CO3)ccc1", "Br"],
+    ["COc1ccc(Br)cc1", "O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2"],
+    ["COc1cc(S(=O)(=O)N2CCC3(CC2)CNC(=O)CO3)ccc1Br", "C1CC1"],
+    ["COc1cc(S(=O)(=O)N2CCC3(CC2)CN(C(=O)CO3)C2CC2)ccc1Br"]
+  ],
+  "explanation": [
+    "Bromination of the aromatic ring using bromine",
+    "Sulfonamide formation via reaction of the sulfonyl chloride with the secondary amine",
+    "N-alkylation of the cyclic amide using cyclopropylamine",
+    "Lactone formation via intramolecular esterification of the alcohol and carboxylic acid"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.8,
+    0.75
+  ]
+}
+2024-09-30 00:51:56,419 - INFO - Molecule : COc1cc(S(=O)(=O)N2CCC3(CC2)CN(C2CC2)C(=O)CO3)ccc1Br is same as target molecule
+2024-09-30 00:51:56,419 - INFO - Obtained 3 valid pathways after validity test: [['COc1cc(S(=O)(=O)N2CCC3(CC2)CN(C2CC2)C(=O)CO3)ccc1', 'Br'], ['COc1ccc(Br)cc1', 'O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2'], ['COc1cc(S(=O)(=O)N2CCC3(CC2)CNC(=O)CO3)ccc1Br', 'C1CC1']]
+2024-09-30 00:51:56,420 - INFO - LLM returned [['COc1ccc(Br)cc1', 'O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2'], ['COc1cc(S(=O)(=O)N2CCC3(CC2)CN(C2CC2)C(=O)CO3)ccc1', 'Br'], ['COc1cc(S(=O)(=O)N2CCC3(CC2)CNC(=O)CO3)ccc1Br', 'C1CC1']]
+2024-09-30 00:51:56,420 - INFO - LLM explained ['Bromination of the aromatic ring using bromine', 'Sulfonamide formation via reaction of the sulfonyl chloride with the secondary amine', 'N-alkylation of the cyclic amide using cyclopropylamine']
+2024-09-30 00:51:56,423 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:51:56,527 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:51:56,639 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:51:56,648 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:51:56,663 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:52:00,878 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:52:00,878 - INFO - Selected as stock: zinc
+2024-09-30 00:52:00,878 - INFO - Compounds in stock: 17422831
+2024-09-30 00:52:00,878 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:52:00,878 - INFO - Selected as filter policy: uspto
+2024-09-30 00:52:30,504 - INFO - AZ solved COc1ccc(Br)cc1
+2024-09-30 00:52:30,506 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:52:30,576 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:52:30,686 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:52:30,696 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:52:30,712 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:52:35,689 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:52:35,691 - INFO - Selected as stock: zinc
+2024-09-30 00:52:35,691 - INFO - Compounds in stock: 17422831
+2024-09-30 00:52:35,691 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:52:35,691 - INFO - Selected as filter policy: uspto
+2024-09-30 00:53:33,585 - INFO - AZ failed for O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2, running LLM
+2024-09-30 00:53:33,585 - INFO - Running LLM for the 0.0th time for molecule: O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2
+2024-09-30 00:53:33,585 - INFO - Calling LLM with molecule: O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2
+2024-09-30 00:53:46,107 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:53:46,114 - INFO - Received response from LLM: {
+  "data": [
+    ["O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2", "O"],
+    ["O=S(=O)(O)N1CCC2(CC1)CN(C1CC1)C(=O)CO2", "SOCl2"],
+    ["O=C1COC2(CCN(S(=O)(=O)Cl)CC2)CN1C1CC1", "CH2O"],
+    ["O=S(=O)(Cl)N1CCC(CN(C1CC1)C(=O)CO)CC1", "CH2BrCl"]
+  ],
+  "explanation": [
+    "Hydrolysis of the sulfonyl chloride using water",
+    "Chlorination of the sulfonic acid using thionyl chloride",
+    "Reductive amination using formaldehyde to form the N-cyclopropyl tertiary amine", 
+    "Intramolecular SN2 reaction using bromochloromethane to form the fused bicyclic ring system"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.8,
+    0.7
+  ]
+}
+2024-09-30 00:53:46,119 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is same as target molecule
+2024-09-30 00:53:46,122 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is invalid or cannot be parsed
+2024-09-30 00:53:46,123 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is same as target molecule
+2024-09-30 00:53:46,123 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is invalid or cannot be parsed
+2024-09-30 00:53:46,124 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is invalid or cannot be parsed
+2024-09-30 00:53:46,124 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 00:53:46,126 - INFO - Running LLM for the 0.2th time for molecule: O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2
+2024-09-30 00:53:46,126 - INFO - Calling LLM with molecule: O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2
+2024-09-30 00:53:58,949 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:53:58,952 - INFO - Received response from LLM: {
+  "data": [
+    ["O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2", "O"],
+    ["O=S(=O)(O)N1CCC2(CC1)CN(C1CC1)C(=O)CO2", "SOCl2"],
+    ["O=C1COC2(CCN(S(=O)(=O)Cl)CC2)CN1C1CC1", "CH2O"],
+    ["O=S(=O)(Cl)N1CCC(CN(C1CC1)C(=O)CO)CC1", "CH2BrCl"]
+  ],
+  "explanation": [
+    "Hydrolysis of the sulfonyl chloride using water",
+    "Chlorination of the sulfonic acid using thionyl chloride",
+    "Reductive amination using formaldehyde to form the N-cyclopropyl tertiary amine", 
+    "Intramolecular alkylation using bromochloromethane to form the fused bicyclic ring system"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.8,
+    0.7
+  ]
+}
+2024-09-30 00:53:58,956 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is same as target molecule
+2024-09-30 00:53:58,959 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is invalid or cannot be parsed
+2024-09-30 00:53:58,961 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is same as target molecule
+2024-09-30 00:53:58,961 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is invalid or cannot be parsed
+2024-09-30 00:53:58,963 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is invalid or cannot be parsed
+2024-09-30 00:53:58,963 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 00:53:58,964 - INFO - Running LLM for the 0.4th time for molecule: O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2
+2024-09-30 00:53:58,964 - INFO - Calling LLM with molecule: O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2
+2024-09-30 00:54:12,129 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:54:12,132 - INFO - Received response from LLM: {
+  "data": [
+    ["O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2", "O"],
+    ["O=S(=O)(O)N1CCC2(CC1)CN(C1CC1)C(=O)CO2", "SOCl2"],
+    ["O=C1COC2(CCN(S(=O)(=O)Cl)CC2)CN1C1CC1", "CH2O"],
+    ["O=S(=O)(Cl)N1CCC(CN(C1CC1)C(=O)CO)CC1", "CH2BrCl"]
+  ],
+  "explanation": [
+    "Hydrolysis of the sulfonyl chloride using water",
+    "Chlorination of the sulfonic acid using thionyl chloride",
+    "Reductive amination of the ketone using cyclopropylamine and formaldehyde",
+    "Intramolecular SN2 reaction to form the bicyclic ring system using bromochloromethane"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.8,
+    0.7
+  ]
+}
+2024-09-30 00:54:12,136 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is same as target molecule
+2024-09-30 00:54:12,138 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is invalid or cannot be parsed
+2024-09-30 00:54:12,138 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is same as target molecule
+2024-09-30 00:54:12,139 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is invalid or cannot be parsed
+2024-09-30 00:54:12,141 - INFO - Molecule : O=S(=O)(Cl)N1CCC2(CC1)CN(C1CC1)C(=O)CO2 is invalid or cannot be parsed
+2024-09-30 00:54:12,141 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 00:54:12,141 - INFO - LLM returned []
+2024-09-30 00:54:12,141 - INFO - LLM explained []
+2024-09-30 00:54:12,141 - INFO - temp_stat: [True]
+2024-09-30 00:54:12,141 - INFO - breaking
+2024-09-30 00:54:12,480 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:54:12,544 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:54:12,640 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:54:12,658 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:54:12,697 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:54:17,766 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:54:17,767 - INFO - Selected as stock: zinc
+2024-09-30 00:54:17,767 - INFO - Compounds in stock: 17422831
+2024-09-30 00:54:17,767 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:54:17,767 - INFO - Selected as filter policy: uspto
+2024-09-30 00:55:10,996 - INFO - AZ failed for CCCCC1CN(CCc2ccccc2)CCC1=NO, running LLM
+2024-09-30 00:55:10,996 - INFO - Running LLM for the 0.0th time for molecule: CCCCC1CN(CCc2ccccc2)CCC1=NO
+2024-09-30 00:55:10,996 - INFO - Calling LLM with molecule: CCCCC1CN(CCc2ccccc2)CCC1=NO
+2024-09-30 00:55:24,430 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:55:24,438 - INFO - Received response from LLM: {
+  "data": [
+    ["CCCCC1CN(CCc2ccccc2)CCC1=N", "O"],
+    ["CCCCC1CN(CCc2ccccc2)CCC1", "[N+]([O-])=O"],
+    ["CCCCC1C=NCCC1", "NCCc1ccccc1"],
+    ["CCCC/C=C1\\NCCC1", "NCCc1ccccc1"]
+  ],
+  "explanation": [
+    "Reduction of the nitrone to an imine and hydroxylamine using a reducing agent like NaBH4 or LiAlH4",
+    "Condensation reaction between a secondary amine and nitrous acid (HNO2) to form the nitrone",
+    "Reductive amination between a cyclic imine and benzylamine, using a reducing agent like NaBH4 or H2 with a catalyst",
+    "Reductive amination between a cyclic enamine and benzylamine, using a reducing agent like NaBH4 or H2 with a catalyst"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 00:55:24,448 - INFO - Obtained 4 valid pathways after validity test: [['CCCCC1CN(CCc2ccccc2)CCC1=N', 'O'], ['CCCCC1CN(CCc2ccccc2)CCC1', '[N+]([O-])=O'], ['CCCCC1C=NCCC1', 'NCCc1ccccc1'], ['CCCC/C=C1\\NCCC1', 'NCCc1ccccc1']]
+2024-09-30 00:55:24,449 - INFO - LLM returned [['CCCCC1C=NCCC1', 'NCCc1ccccc1'], ['CCCC/C=C1\\NCCC1', 'NCCc1ccccc1'], ['CCCCC1CN(CCc2ccccc2)CCC1', '[N+]([O-])=O'], ['CCCCC1CN(CCc2ccccc2)CCC1=N', 'O']]
+2024-09-30 00:55:24,449 - INFO - LLM explained ['Reduction of the nitrone to an imine and hydroxylamine using a reducing agent like NaBH4 or LiAlH4', 'Condensation reaction between a secondary amine and nitrous acid (HNO2) to form the nitrone', 'Reductive amination between a cyclic imine and benzylamine, using a reducing agent like NaBH4 or H2 with a catalyst', 'Reductive amination between a cyclic enamine and benzylamine, using a reducing agent like NaBH4 or H2 with a catalyst']
+2024-09-30 00:55:24,453 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:55:24,539 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:55:24,633 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:55:24,642 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:55:24,655 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:55:28,770 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:55:28,771 - INFO - Selected as stock: zinc
+2024-09-30 00:55:28,771 - INFO - Compounds in stock: 17422831
+2024-09-30 00:55:28,771 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:55:28,771 - INFO - Selected as filter policy: uspto
+2024-09-30 00:56:28,941 - INFO - AZ failed for CCCCC1C=NCCC1, running LLM
+2024-09-30 00:56:28,941 - INFO - Running LLM for the 0.0th time for molecule: CCCCC1C=NCCC1
+2024-09-30 00:56:28,941 - INFO - Calling LLM with molecule: CCCCC1C=NCCC1
+2024-09-30 00:56:41,422 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:56:41,428 - INFO - Received response from LLM: {
+  "data": [
+    ["CCCCC1CCNCC1"],
+    ["CCCCC1C=NCCC1O", "[H][H]"],
+    ["CCCCC1C=NCCC1Cl", "[H][H]"],
+    ["CCCCC1C(=O)NCCC1", "[H][H]"]
+  ],
+  "explanation": [
+    "Reduction of the imine (C=N) to a secondary amine using a reducing agent like sodium cyanoborohydride or sodium triacetoxyborohydride",
+    "Dehydration of a hemiaminal intermediate, which could be formed by addition of water to the imine",
+    "Reduction of an imidoyl chloride, which could be formed by chlorination of the imine using a chlorinating agent like thionyl chloride", 
+    "Reduction of a lactam, which could be formed by oxidation of the imine using an oxidant like meta-chloroperoxybenzoic acid (mCPBA)"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.6,
+    0.5
+  ]
+}
+2024-09-30 00:56:41,430 - INFO - Molecule : CCCCC1C=NCCC1 is substructure of target molecule
+2024-09-30 00:56:41,431 - INFO - Molecule : CCCCC1C=NCCC1 is substructure of target molecule
+2024-09-30 00:56:41,432 - INFO - Obtained 1 valid pathways after validity test: [['CCCCC1C(=O)NCCC1', '[H][H]']]
+2024-09-30 00:56:41,432 - INFO - LLM returned [['CCCCC1C(=O)NCCC1', '[H][H]']]
+2024-09-30 00:56:41,432 - INFO - LLM explained ['Reduction of a lactam, which could be formed by oxidation of the imine using an oxidant like meta-chloroperoxybenzoic acid (mCPBA)']
+2024-09-30 00:56:41,435 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:56:41,514 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:56:41,611 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:56:41,619 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:56:41,633 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:56:45,945 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:56:45,946 - INFO - Selected as stock: zinc
+2024-09-30 00:56:45,946 - INFO - Compounds in stock: 17422831
+2024-09-30 00:56:45,946 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:56:45,946 - INFO - Selected as filter policy: uspto
+2024-09-30 00:57:17,191 - INFO - AZ solved CCCCC1C(=O)NCCC1
+2024-09-30 00:57:17,193 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:57:17,237 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:57:17,333 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:57:17,341 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:57:17,354 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:57:21,693 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:57:21,694 - INFO - Selected as stock: zinc
+2024-09-30 00:57:21,694 - INFO - Compounds in stock: 17422831
+2024-09-30 00:57:21,694 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:57:21,694 - INFO - Selected as filter policy: uspto
+2024-09-30 00:57:22,956 - INFO - AZ failed for [H][H], running LLM
+2024-09-30 00:57:22,956 - INFO - Running LLM for the 0.0th time for molecule: [H][H]
+2024-09-30 00:57:22,956 - INFO - Calling LLM with molecule: [H][H]
+2024-09-30 00:57:30,392 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:57:30,400 - INFO - Received response from LLM: {
+  "data": [],
+  "explanation": [
+    "The given molecule is molecular hydrogen (H2), which is the simplest possible molecule. It cannot be broken down further via retrosynthesis as it does not have any precursor molecules. Hydrogen gas is typically produced industrially via steam reforming of hydrocarbons like methane, or via electrolysis of water, rather than by chemical synthesis."
+  ],
+  "confidence_scores": [
+    1.0
+  ]
+}
+2024-09-30 00:57:30,401 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 00:57:30,402 - INFO - Running LLM for the 0.2th time for molecule: [H][H]
+2024-09-30 00:57:30,402 - INFO - Calling LLM with molecule: [H][H]
+2024-09-30 00:57:38,126 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:57:38,130 - INFO - Received response from LLM: {
+  "data": [],
+  "explanation": [
+    "The given molecule is molecular hydrogen (H2), which is the simplest possible molecule. It cannot be broken down further via retrosynthesis as it is already in its most basic form. Hydrogen gas is typically produced industrially via steam reforming of hydrocarbons like methane, but this is not a retrosynthetic step."
+  ],
+  "confidence_scores": [
+    1.0
+  ]
+}
+2024-09-30 00:57:38,133 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 00:57:38,133 - INFO - Running LLM for the 0.4th time for molecule: [H][H]
+2024-09-30 00:57:38,134 - INFO - Calling LLM with molecule: [H][H]
+2024-09-30 00:57:46,200 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 00:57:46,210 - INFO - Received response from LLM: {
+  "data": [],
+  "explanation": [
+    "The given molecule is molecular hydrogen (H2), which is the simplest possible molecule. It cannot be broken down further via retrosynthesis as it is already in its most basic form. Hydrogen gas is typically produced industrially via steam reforming of hydrocarbons like methane, but this does not constitute a retrosynthetic step."
+  ],
+  "confidence_scores": [
+    1.0
+  ]
+}
+2024-09-30 00:57:46,212 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 00:57:46,213 - INFO - LLM returned []
+2024-09-30 00:57:46,213 - INFO - LLM explained []
+2024-09-30 00:57:46,213 - INFO - temp_stat: [True]
+2024-09-30 00:57:46,213 - INFO - breaking
+2024-09-30 00:57:46,219 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:57:46,311 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:57:46,423 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:57:46,433 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:57:46,448 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:57:51,411 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:57:51,412 - INFO - Selected as stock: zinc
+2024-09-30 00:57:51,412 - INFO - Compounds in stock: 17422831
+2024-09-30 00:57:51,412 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:57:51,412 - INFO - Selected as filter policy: uspto
+2024-09-30 00:58:17,231 - INFO - AZ solved NCCc1ccccc1
+2024-09-30 00:58:17,231 - INFO - temp_stat: [True, True]
+2024-09-30 00:58:17,231 - INFO - breaking
+2024-09-30 00:58:18,050 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:58:18,143 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:58:18,249 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:58:18,259 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:58:18,273 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:58:22,927 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:58:22,929 - INFO - Selected as stock: zinc
+2024-09-30 00:58:22,929 - INFO - Compounds in stock: 17422831
+2024-09-30 00:58:22,929 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:58:22,929 - INFO - Selected as filter policy: uspto
+2024-09-30 00:59:05,706 - INFO - AZ solved COc1cc([N+](=O)[O-])ccc1NC(=O)OCc1ccccc1
+2024-09-30 00:59:05,921 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:59:05,969 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:59:06,066 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:59:06,074 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:59:06,088 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:59:10,143 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:59:10,144 - INFO - Selected as stock: zinc
+2024-09-30 00:59:10,144 - INFO - Compounds in stock: 17422831
+2024-09-30 00:59:10,144 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:59:10,144 - INFO - Selected as filter policy: uspto
+2024-09-30 00:59:42,882 - INFO - AZ solved CSc1ccccc1CN1CCC(=O)C(C(c2ccccc2)c2ccccc2)C1
+2024-09-30 00:59:43,102 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 00:59:43,188 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 00:59:43,287 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 00:59:43,297 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 00:59:43,310 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 00:59:47,601 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 00:59:47,602 - INFO - Selected as stock: zinc
+2024-09-30 00:59:47,602 - INFO - Compounds in stock: 17422831
+2024-09-30 00:59:47,602 - INFO - Selected as expansion policy: uspto
+2024-09-30 00:59:47,602 - INFO - Selected as filter policy: uspto
+2024-09-30 01:00:09,653 - INFO - AZ failed for COC(=O)c1cccc(C(=O)N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2)c1, running LLM
+2024-09-30 01:00:09,653 - INFO - Running LLM for the 0.0th time for molecule: COC(=O)c1cccc(C(=O)N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2)c1
+2024-09-30 01:00:09,653 - INFO - Calling LLM with molecule: COC(=O)c1cccc(C(=O)N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2)c1
+2024-09-30 01:00:27,534 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:00:27,548 - INFO - Received response from LLM: {
+  "data": [
+    ["COC(=O)c1cccc(C(=O)Cl)c1", "N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2"],
+    ["COC(=O)c1cccc(C(=O)O)c1", "N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2"],
+    ["COC(=O)c1cccc(C#N)c1", "N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2"],
+    ["COC(=O)c1cccc(C(=O)N2CCC(CCN3C4CCC3CC(N)C4)(c3ccccc3)CC2)c1", "c1nc2ccccc2c(C)n1"]
+  ],
+  "explanation": [
+    "Amide coupling reaction between an acid chloride and a secondary amine, using a base like triethylamine or pyridine",
+    "Amide coupling reaction between a carboxylic acid and a secondary amine, using a coupling reagent like HATU or EDC/HOBt", 
+    "Nucleophilic addition of the secondary amine to an aryl nitrile, followed by rearrangement. May require harsh conditions",
+    "Nucleophilic aromatic substitution of the chloro or fluoro derivative with 2-methylbenzimidazole, using a base like NaH or NaOtBu"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.6,
+    0.7
+  ]
+}
+2024-09-30 01:00:27,562 - INFO - Obtained 4 valid pathways after validity test: [['COC(=O)c1cccc(C(=O)Cl)c1', 'N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2'], ['COC(=O)c1cccc(C(=O)O)c1', 'N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2'], ['COC(=O)c1cccc(C#N)c1', 'N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2'], ['COC(=O)c1cccc(C(=O)N2CCC(CCN3C4CCC3CC(N)C4)(c3ccccc3)CC2)c1', 'c1nc2ccccc2c(C)n1']]
+2024-09-30 01:00:27,562 - INFO - LLM returned [['COC(=O)c1cccc(C#N)c1', 'N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2'], ['COC(=O)c1cccc(C(=O)O)c1', 'N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2'], ['COC(=O)c1cccc(C(=O)Cl)c1', 'N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2'], ['COC(=O)c1cccc(C(=O)N2CCC(CCN3C4CCC3CC(N)C4)(c3ccccc3)CC2)c1', 'c1nc2ccccc2c(C)n1']]
+2024-09-30 01:00:27,562 - INFO - LLM explained ['Amide coupling reaction between an acid chloride and a secondary amine, using a base like triethylamine or pyridine', 'Amide coupling reaction between a carboxylic acid and a secondary amine, using a coupling reagent like HATU or EDC/HOBt', 'Nucleophilic addition of the secondary amine to an aryl nitrile, followed by rearrangement. May require harsh conditions', 'Nucleophilic aromatic substitution of the chloro or fluoro derivative with 2-methylbenzimidazole, using a base like NaH or NaOtBu']
+2024-09-30 01:00:27,563 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:00:27,609 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:00:27,709 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:00:27,717 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:00:27,730 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:00:32,220 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:00:32,221 - INFO - Selected as stock: zinc
+2024-09-30 01:00:32,221 - INFO - Compounds in stock: 17422831
+2024-09-30 01:00:32,221 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:00:32,221 - INFO - Selected as filter policy: uspto
+2024-09-30 01:01:10,320 - INFO - AZ solved COC(=O)c1cccc(C#N)c1
+2024-09-30 01:01:10,322 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:01:10,368 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:01:10,472 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:01:10,481 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:01:10,495 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:01:15,294 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:01:15,295 - INFO - Selected as stock: zinc
+2024-09-30 01:01:15,295 - INFO - Compounds in stock: 17422831
+2024-09-30 01:01:15,295 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:01:15,295 - INFO - Selected as filter policy: uspto
+2024-09-30 01:01:40,610 - INFO - AZ failed for N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2, running LLM
+2024-09-30 01:01:40,610 - INFO - Running LLM for the 0.0th time for molecule: N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2
+2024-09-30 01:01:40,611 - INFO - Calling LLM with molecule: N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2
+2024-09-30 01:01:53,987 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:01:53,997 - INFO - Received response from LLM: {
+  "data": [
+    ["N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CN2", "BrC1CCCCC1"],
+    ["N2CCC(CCN3C4CCC3CC(N)C4)(c3ccccc3)CC2", "Cc1nc2ccccc2n1Cl"],
+    ["N2CCC(CCN3C4CCC3CCC4)(c3ccccc3)CC2", "Cc1nc2ccccc2n1C3CC4CCC3C4Br"],
+    ["N2CCC(CCN3C4CCC3CC(n3ccnc5ccccc53)C4)(c3ccccc3)CC2", "CC#N"]
+  ],
+  "explanation": [
+    "Nucleophilic substitution of the benzyl bromide with the secondary amine",
+    "Nucleophilic aromatic substitution of the chloroimidazole with the secondary amine", 
+    "Alkylation of the imidazole with the bromide under basic conditions",
+    "Methylation of the imidazole using acetonitrile and a strong base"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 01:01:54,011 - INFO - Molecule : N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CC2 is invalid or cannot be parsed
+2024-09-30 01:01:54,012 - INFO - Obtained 3 valid pathways after validity test: [['N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CN2', 'BrC1CCCCC1'], ['N2CCC(CCN3C4CCC3CC(N)C4)(c3ccccc3)CC2', 'Cc1nc2ccccc2n1Cl'], ['N2CCC(CCN3C4CCC3CCC4)(c3ccccc3)CC2', 'Cc1nc2ccccc2n1C3CC4CCC3C4Br']]
+2024-09-30 01:01:54,016 - INFO - LLM returned [['N2CCC(CCN3C4CCC3CCC4)(c3ccccc3)CC2', 'Cc1nc2ccccc2n1C3CC4CCC3C4Br'], ['N2CCC(CCN3C4CCC3CC(N)C4)(c3ccccc3)CC2', 'Cc1nc2ccccc2n1Cl'], ['N2CCC(CCN3C4CCC3CC(n3c(C)nc5ccccc53)C4)(c3ccccc3)CN2', 'BrC1CCCCC1']]
+2024-09-30 01:01:54,016 - INFO - LLM explained ['Nucleophilic substitution of the benzyl bromide with the secondary amine', 'Nucleophilic aromatic substitution of the chloroimidazole with the secondary amine', 'Alkylation of the imidazole with the bromide under basic conditions']
+2024-09-30 01:01:54,018 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:01:54,122 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:01:54,233 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:01:54,241 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:01:54,256 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:01:58,313 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:01:58,313 - INFO - Selected as stock: zinc
+2024-09-30 01:01:58,313 - INFO - Compounds in stock: 17422831
+2024-09-30 01:01:58,313 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:01:58,313 - INFO - Selected as filter policy: uspto
+2024-09-30 01:02:29,104 - INFO - AZ failed for N2CCC(CCN3C4CCC3CCC4)(c3ccccc3)CC2, running LLM
+2024-09-30 01:02:29,104 - INFO - Running LLM for the 0.0th time for molecule: N2CCC(CCN3C4CCC3CCC4)(c3ccccc3)CC2
+2024-09-30 01:02:29,104 - INFO - Calling LLM with molecule: N2CCC(CCN3C4CCC3CCC4)(c3ccccc3)CC2
+2024-09-30 01:02:44,653 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:02:44,661 - INFO - Received response from LLM: {
+  "data": [
+    ["N2CCC(CCN3C4CCC3CCC4)CC2", "c1ccccc1"],
+    ["N2CCC(CCN3C4CCC3CCC4)CC2", "Br-c1ccccc1"],
+    ["N2CCC(CCN3C4CCC3CCC4)CC2", "Cl-c1ccccc1"],
+    ["N2CCC(CCN3C4CCC3CCC4)(CO)CC2", "c1ccccc1"]
+  ],
+  "explanation": [
+    "Disconnection of the C-C bond between the piperazine and phenyl rings via Buchwald-Hartwig amination using a palladium catalyst and a base",
+    "Disconnection of the C-C bond between the piperazine and phenyl rings via Buchwald-Hartwig amination using a palladium catalyst, a base, and a bromobenzene coupling partner", 
+    "Disconnection of the C-C bond between the piperazine and phenyl rings via Buchwald-Hartwig amination using a palladium catalyst, a base, and a chlorobenzene coupling partner",
+    "Disconnection of the C-C bond between the piperazine and phenyl rings via nucleophilic addition of a phenyl Grignard reagent or phenyllithium to a piperazine ketone, followed by reduction of the resulting alcohol"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 01:02:44,673 - INFO - Obtained 4 valid pathways after validity test: [['N2CCC(CCN3C4CCC3CCC4)CC2', 'c1ccccc1'], ['N2CCC(CCN3C4CCC3CCC4)CC2', 'Br-c1ccccc1'], ['N2CCC(CCN3C4CCC3CCC4)CC2', 'Cl-c1ccccc1'], ['N2CCC(CCN3C4CCC3CCC4)(CO)CC2', 'c1ccccc1']]
+2024-09-30 01:02:44,675 - INFO - LLM returned [['N2CCC(CCN3C4CCC3CCC4)CC2', 'c1ccccc1'], ['N2CCC(CCN3C4CCC3CCC4)CC2', 'Br-c1ccccc1'], ['N2CCC(CCN3C4CCC3CCC4)CC2', 'Cl-c1ccccc1'], ['N2CCC(CCN3C4CCC3CCC4)(CO)CC2', 'c1ccccc1']]
+2024-09-30 01:02:44,675 - INFO - LLM explained ['Disconnection of the C-C bond between the piperazine and phenyl rings via Buchwald-Hartwig amination using a palladium catalyst and a base', 'Disconnection of the C-C bond between the piperazine and phenyl rings via Buchwald-Hartwig amination using a palladium catalyst, a base, and a bromobenzene coupling partner', 'Disconnection of the C-C bond between the piperazine and phenyl rings via Buchwald-Hartwig amination using a palladium catalyst, a base, and a chlorobenzene coupling partner', 'Disconnection of the C-C bond between the piperazine and phenyl rings via nucleophilic addition of a phenyl Grignard reagent or phenyllithium to a piperazine ketone, followed by reduction of the resulting alcohol']
+2024-09-30 01:02:44,678 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:02:44,766 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:02:44,862 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:02:44,868 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:02:44,881 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:02:48,938 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:02:48,939 - INFO - Selected as stock: zinc
+2024-09-30 01:02:48,939 - INFO - Compounds in stock: 17422831
+2024-09-30 01:02:48,939 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:02:48,939 - INFO - Selected as filter policy: uspto
+2024-09-30 01:03:31,889 - INFO - AZ failed for N2CCC(CCN3C4CCC3CCC4)CC2, running LLM
+2024-09-30 01:03:31,889 - INFO - Running LLM for the 0.0th time for molecule: N2CCC(CCN3C4CCC3CCC4)CC2
+2024-09-30 01:03:31,889 - INFO - Calling LLM with molecule: N2CCC(CCN3C4CCC3CCC4)CC2
+2024-09-30 01:03:44,351 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:03:44,363 - INFO - Received response from LLM: {
+  "data": [
+    ["N2CCC(CCN3C4CCC3CCC4)CN2", "BrCC(Br)CCN1C2CCC1CCC2"],
+    ["N2CCC(CCN3C4CCC3CCC4)CO2", "OCC(O)CCN1C2CCC1CCC2"],
+    ["N2CCC(CCN3C4CCC3CCC4)CCl", "ClCC(Cl)CCN1C2CCC1CCC2"],
+    ["N2CCC(CCN3C4CCC3CCC4)CI", "ICC(I)CCN1C2CCC1CCC2"]
+  ],
+  "explanation": [
+    "Intramolecular nucleophilic substitution (SN2) reaction, using a dihalide precursor",
+    "Intramolecular nucleophilic substitution (SN2) reaction, using a diol precursor",
+    "Intramolecular nucleophilic substitution (SN2) reaction, using a dichloride precursor", 
+    "Intramolecular nucleophilic substitution (SN2) reaction, using a diiodide precursor"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.85,
+    0.75
+  ]
+}
+2024-09-30 01:03:44,369 - INFO - Molecule : N2CCC(CCN3C4CCC3CCC4)CC2 is invalid or cannot be parsed
+2024-09-30 01:03:44,370 - INFO - Molecule : N2CCC(CCN3C4CCC3CCC4)CC2 is invalid or cannot be parsed
+2024-09-30 01:03:44,371 - INFO - Obtained 2 valid pathways after validity test: [['N2CCC(CCN3C4CCC3CCC4)CN2', 'BrCC(Br)CCN1C2CCC1CCC2'], ['N2CCC(CCN3C4CCC3CCC4)CO2', 'OCC(O)CCN1C2CCC1CCC2']]
+2024-09-30 01:03:44,372 - INFO - LLM returned [['N2CCC(CCN3C4CCC3CCC4)CN2', 'BrCC(Br)CCN1C2CCC1CCC2'], ['N2CCC(CCN3C4CCC3CCC4)CO2', 'OCC(O)CCN1C2CCC1CCC2']]
+2024-09-30 01:03:44,372 - INFO - LLM explained ['Intramolecular nucleophilic substitution (SN2) reaction, using a dihalide precursor', 'Intramolecular nucleophilic substitution (SN2) reaction, using a diol precursor']
+2024-09-30 01:03:44,375 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:03:44,448 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:03:44,543 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:03:44,549 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:03:44,562 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:03:48,836 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:03:48,836 - INFO - Selected as stock: zinc
+2024-09-30 01:03:48,836 - INFO - Compounds in stock: 17422831
+2024-09-30 01:03:48,836 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:03:48,836 - INFO - Selected as filter policy: uspto
+2024-09-30 01:05:19,104 - INFO - AZ failed for N2CCC(CCN3C4CCC3CCC4)CN2, running LLM
+2024-09-30 01:05:19,104 - INFO - Running LLM for the 0.0th time for molecule: N2CCC(CCN3C4CCC3CCC4)CN2
+2024-09-30 01:05:19,104 - INFO - Calling LLM with molecule: N2CCC(CCN3C4CCC3CCC4)CN2
+2024-09-30 01:05:33,120 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:05:33,129 - INFO - Received response from LLM: {
+  "data": [
+    ["N2CCC(CCN3C4CCC3CCC4)CN2", "BrCCBr"],
+    ["N2CCC(CCN)CN2", "N3C4CCC3CCC4"],
+    ["N2CCCCN2", "N3C4CCC3CCC4", "BrCN"],
+    ["N2CCC(CC(=O)N3C4CCC3CCC4)CN2", "BH3"]
+  ],
+  "explanation": [
+    "Alkylation reaction between the secondary amine and 1,2-dibromoethane, using a base like K2CO3 or NaH",
+    "Reductive amination between the primary amine and the ketone, using a reducing agent like NaBH4 or H2/catalyst",
+    "Sequential N-alkylation reactions, first with BrCN to form the diamine, then alkylation with the bicyclic ketone",
+    "Reduction of the amide using a strong reducing agent like BH3, likely forming a borane-amine complex intermediate"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 01:05:33,132 - INFO - Molecule : N2CCC(CCN3C4CCC3CCC4)CN2 is same as target molecule
+2024-09-30 01:05:33,138 - INFO - Molecule : N2CCC(CCN3C4CCC3CCC4)CN2 is substructure of target molecule
+2024-09-30 01:05:33,139 - INFO - Molecule : N2CCC(CCN3C4CCC3CCC4)CN2 is invalid or cannot be parsed
+2024-09-30 01:05:33,139 - INFO - Obtained 2 valid pathways after validity test: [['N2CCC(CCN)CN2', 'N3C4CCC3CCC4'], ['N2CCCCN2', 'N3C4CCC3CCC4', 'BrCN']]
+2024-09-30 01:05:33,140 - INFO - LLM returned [['N2CCCCN2', 'N3C4CCC3CCC4', 'BrCN'], ['N2CCC(CCN)CN2', 'N3C4CCC3CCC4']]
+2024-09-30 01:05:33,140 - INFO - LLM explained ['Reductive amination between the primary amine and the ketone, using a reducing agent like NaBH4 or H2/catalyst', 'Sequential N-alkylation reactions, first with BrCN to form the diamine, then alkylation with the bicyclic ketone']
+2024-09-30 01:05:33,144 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:05:33,234 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:05:33,329 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:05:33,338 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:05:33,352 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:05:38,402 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:05:38,403 - INFO - Selected as stock: zinc
+2024-09-30 01:05:38,403 - INFO - Compounds in stock: 17422831
+2024-09-30 01:05:38,403 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:05:38,403 - INFO - Selected as filter policy: uspto
+2024-09-30 01:05:40,098 - INFO - AZ solved N2CCCCN2
+2024-09-30 01:05:40,099 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:05:40,148 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:05:40,256 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:05:40,265 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:05:40,279 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:05:44,768 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:05:44,768 - INFO - Selected as stock: zinc
+2024-09-30 01:05:44,768 - INFO - Compounds in stock: 17422831
+2024-09-30 01:05:44,768 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:05:44,768 - INFO - Selected as filter policy: uspto
+2024-09-30 01:06:57,535 - INFO - AZ failed for N3C4CCC3CCC4, running LLM
+2024-09-30 01:06:57,536 - INFO - Running LLM for the 0.0th time for molecule: N3C4CCC3CCC4
+2024-09-30 01:06:57,536 - INFO - Calling LLM with molecule: N3C4CCC3CCC4
+2024-09-30 01:07:08,971 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:07:08,979 - INFO - Received response from LLM: {
+  "data": [
+    ["N3C4CCC3CC=C4"],
+    ["N3C4CCC3CC(O)C4"],
+    ["N3C4CCC3CC(Br)C4", "N3C4CCC3CC(I)C4"],
+    ["N3C4CCC3CC(N)C4"]
+  ],
+  "explanation": [
+    "Reduction of the alkene via catalytic hydrogenation",
+    "Reduction of the alcohol, e.g. using a silane reducing agent or Wolff-Kishner reduction", 
+    "Reduction of the alkyl halide, e.g. using a hydride reducing agent or catalytic hydrogenation",
+    "Reductive amination using hydrogen and a catalyst, or stepwise reduction of an imine intermediate"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 01:07:08,983 - INFO - Molecule : N3C4CCC3CCC4 is substructure of target molecule
+2024-09-30 01:07:08,983 - INFO - Molecule : N3C4CCC3CCC4 is substructure of target molecule
+2024-09-30 01:07:08,984 - INFO - Molecule : N3C4CCC3CCC4 is substructure of target molecule
+2024-09-30 01:07:08,984 - INFO - Molecule : N3C4CCC3CCC4 is substructure of target molecule
+2024-09-30 01:07:08,985 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 01:07:08,985 - INFO - Running LLM for the 0.2th time for molecule: N3C4CCC3CCC4
+2024-09-30 01:07:08,985 - INFO - Calling LLM with molecule: N3C4CCC3CCC4
+2024-09-30 01:07:21,992 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:07:21,996 - INFO - Received response from LLM: {
+  "data": [
+    ["N3C4CCC3CC=C4"],
+    ["N3C4CCC3CC(O)C4"],
+    ["N3C4CCC3CC(Br)C4", "N3C4CCC3CC(I)C4"],
+    ["N3C4CCC3CC(N)C4"]
+  ],
+  "explanation": [
+    "Partial reduction of one of the rings to form a cyclohexene. Requires a selective reducing agent like dissolving metal reduction.",
+    "Reduction of a cyclohexanone intermediate. Requires a reducing agent like NaBH4 or LiAlH4.",
+    "Reduction of a haloalkane like a bromide or iodide, which could be formed by halogenation of the saturated ring. Requires a reducing agent like LiAlH4 or catalytic hydrogenation.",
+    "Reduction of an amine, which could be formed by reductive amination of a ketone. Requires a reducing agent like NaBH4 or LiAlH4 with an ammonia source."
+  ],
+  "confidence_scores": [
+    0.7,
+    0.8, 
+    0.6,
+    0.5
+  ]
+}
+2024-09-30 01:07:22,001 - INFO - Molecule : N3C4CCC3CCC4 is substructure of target molecule
+2024-09-30 01:07:22,002 - INFO - Molecule : N3C4CCC3CCC4 is substructure of target molecule
+2024-09-30 01:07:22,003 - INFO - Molecule : N3C4CCC3CCC4 is substructure of target molecule
+2024-09-30 01:07:22,003 - INFO - Molecule : N3C4CCC3CCC4 is substructure of target molecule
+2024-09-30 01:07:22,004 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 01:07:22,004 - INFO - Running LLM for the 0.4th time for molecule: N3C4CCC3CCC4
+2024-09-30 01:07:22,004 - INFO - Calling LLM with molecule: N3C4CCC3CCC4
+2024-09-30 01:07:33,194 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:07:33,196 - INFO - Received response from LLM: {
+  "data": [
+    ["N3C4CCC3CC=C4"],
+    ["N3C4CCC3CC(O)C4"],
+    ["N3C4CCC3CC(Br)C4", "N3C4CCC3CC(I)C4"],
+    ["N3C4CCC3CC(N)C4"]
+  ],
+  "explanation": [
+    "Partial reduction of one of the rings to form a cyclohexene. Requires a selective reducing agent like dissolving metal reduction.",
+    "Reduction of a cyclohexanone intermediate. Requires a reducing agent like LiAlH4 or NaBH4.",
+    "Reduction of a haloalkane like a bromide or iodide, which could be formed by halogenation of the saturated ring. Requires a reducing agent like LiAlH4 or catalytic hydrogenation.",
+    "Reduction of an amine, which could be formed by reductive amination of a ketone. Requires a reducing agent like NaBH4 or catalytic hydrogenation."
+  ],
+  "confidence_scores": [
+    0.7,
+    0.8, 
+    0.6,
+    0.5
+  ]
+}
+2024-09-30 01:07:33,199 - INFO - Molecule : N3C4CCC3CCC4 is substructure of target molecule
+2024-09-30 01:07:33,200 - INFO - Molecule : N3C4CCC3CCC4 is substructure of target molecule
+2024-09-30 01:07:33,201 - INFO - Molecule : N3C4CCC3CCC4 is substructure of target molecule
+2024-09-30 01:07:33,201 - INFO - Molecule : N3C4CCC3CCC4 is substructure of target molecule
+2024-09-30 01:07:33,201 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 01:07:33,202 - INFO - LLM returned []
+2024-09-30 01:07:33,202 - INFO - LLM explained []
+2024-09-30 01:07:33,206 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:07:33,328 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:07:33,434 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:07:33,442 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:07:33,455 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:07:38,049 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:07:38,050 - INFO - Selected as stock: zinc
+2024-09-30 01:07:38,050 - INFO - Compounds in stock: 17422831
+2024-09-30 01:07:38,050 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:07:38,050 - INFO - Selected as filter policy: uspto
+2024-09-30 01:08:11,635 - INFO - AZ solved BrCN
+2024-09-30 01:08:11,636 - INFO - temp_stat: [True, True]
+2024-09-30 01:08:11,636 - INFO - breaking
+2024-09-30 01:08:11,637 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:08:11,687 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:08:11,783 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:08:11,791 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:08:11,805 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:08:16,899 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:08:16,900 - INFO - Selected as stock: zinc
+2024-09-30 01:08:16,900 - INFO - Compounds in stock: 17422831
+2024-09-30 01:08:16,900 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:08:16,900 - INFO - Selected as filter policy: uspto
+2024-09-30 01:09:20,289 - INFO - AZ failed for BrCC(Br)CCN1C2CCC1CCC2, running LLM
+2024-09-30 01:09:20,289 - INFO - Running LLM for the 0.0th time for molecule: BrCC(Br)CCN1C2CCC1CCC2
+2024-09-30 01:09:20,289 - INFO - Calling LLM with molecule: BrCC(Br)CCN1C2CCC1CCC2
+2024-09-30 01:09:33,956 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:09:33,969 - INFO - Received response from LLM: {
+  "data": [
+    ["BrCC(Br)CCBr", "C1CCC2CCCN2C1"],
+    ["BrCC(Br)CCCl", "C1CCC2CCCN2C1"],
+    ["BrCC(Br)CCOH", "C1CCC2CCCN2C1"],
+    ["BrCC(Br)CCN1C2CCC1CC2", "C=O"]
+  ],
+  "explanation": [
+    "Alkylation of the secondary amine with 1,3-dibromopropane under basic conditions (e.g. K2CO3, acetone)",
+    "Alkylation of the secondary amine with 1-bromo-3-chloropropane under basic conditions (e.g. K2CO3, acetone)", 
+    "Alkylation of the secondary amine with 3-bromo-1-propanol under Mitsunobu conditions (e.g. DIAD, PPh3)",
+    "Reductive amination of the ketone with 1,3-dibromopropan-2-amine, using a reducing agent like NaBH4 or NaBH(OAc)3"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 01:09:33,975 - INFO - Molecule : BrCC(Br)CCN1C2CCC1CCC2 is invalid or cannot be parsed
+2024-09-30 01:09:33,979 - INFO - Obtained 3 valid pathways after validity test: [['BrCC(Br)CCBr', 'C1CCC2CCCN2C1'], ['BrCC(Br)CCCl', 'C1CCC2CCCN2C1'], ['BrCC(Br)CCN1C2CCC1CC2', 'C=O']]
+2024-09-30 01:09:33,980 - INFO - LLM returned [['BrCC(Br)CCCl', 'C1CCC2CCCN2C1'], ['BrCC(Br)CCBr', 'C1CCC2CCCN2C1'], ['BrCC(Br)CCN1C2CCC1CC2', 'C=O']]
+2024-09-30 01:09:33,980 - INFO - LLM explained ['Alkylation of the secondary amine with 1,3-dibromopropane under basic conditions (e.g. K2CO3, acetone)', 'Alkylation of the secondary amine with 1-bromo-3-chloropropane under basic conditions (e.g. K2CO3, acetone)', 'Reductive amination of the ketone with 1,3-dibromopropan-2-amine, using a reducing agent like NaBH4 or NaBH(OAc)3']
+2024-09-30 01:09:33,984 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:09:34,071 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:09:34,172 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:09:34,180 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:09:34,195 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:09:38,405 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:09:38,406 - INFO - Selected as stock: zinc
+2024-09-30 01:09:38,407 - INFO - Compounds in stock: 17422831
+2024-09-30 01:09:38,407 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:09:38,407 - INFO - Selected as filter policy: uspto
+2024-09-30 01:11:40,206 - INFO - AZ failed for BrCC(Br)CCCl, running LLM
+2024-09-30 01:11:40,206 - INFO - Running LLM for the 0.0th time for molecule: BrCC(Br)CCCl
+2024-09-30 01:11:40,206 - INFO - Calling LLM with molecule: BrCC(Br)CCCl
+2024-09-30 01:11:50,754 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:11:50,763 - INFO - Received response from LLM: {
+  "data": [
+    ["BrCCCCCl", "CBr4"],
+    ["ClCCCCCl", "Br2"],
+    ["CCCC=C", "Br2", "HCl"]
+  ],
+  "explanation": [
+    "Alkyl halide synthesis: React 1-bromo-3-chloropropane with carbon tetrabromide under free radical conditions.",
+    "Alkyl halide synthesis: React 1,3-dichloropropane with bromine under free radical conditions.",
+    "Alkene halogenation: React 1-pentene with bromine and hydrogen chloride, anti-Markovnikov addition."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7
+  ]
+}
+2024-09-30 01:11:50,766 - INFO - Molecule : BrCC(Br)CCCl is invalid or cannot be parsed
+2024-09-30 01:11:50,767 - INFO - Molecule : BrCC(Br)CCCl is invalid or cannot be parsed
+2024-09-30 01:11:50,767 - INFO - Molecule : BrCC(Br)CCCl is invalid or cannot be parsed
+2024-09-30 01:11:50,768 - INFO - Molecule : BrCC(Br)CCCl is invalid or cannot be parsed
+2024-09-30 01:11:50,768 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 01:11:50,768 - INFO - Running LLM for the 0.2th time for molecule: BrCC(Br)CCCl
+2024-09-30 01:11:50,768 - INFO - Calling LLM with molecule: BrCC(Br)CCCl
+2024-09-30 01:12:01,904 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:12:01,906 - INFO - Received response from LLM: {
+  "data": [
+    ["BrCCCCCl", "CBr4"],
+    ["ClCCCCCl", "Br2"],
+    ["CCCC=C", "Br2", "HCl"],
+    ["CC(Br)CCCl", "HBr"]
+  ],
+  "explanation": [
+    "Geminal dibromination of 1-bromo-4-chlorobutane using carbon tetrabromide and a radical initiator",
+    "Free radical bromination of 1,4-dichlorobutane",
+    "Electrophilic addition of bromine to 1-chloro-3-pentene, followed by hydrohalogenation with HCl", 
+    "Hydrohalogenation of 1-bromo-4-chloro-2-butene with hydrobromic acid"
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.6,
+    0.5
+  ]
+}
+2024-09-30 01:12:01,908 - INFO - Molecule : BrCC(Br)CCCl is invalid or cannot be parsed
+2024-09-30 01:12:01,909 - INFO - Molecule : BrCC(Br)CCCl is invalid or cannot be parsed
+2024-09-30 01:12:01,909 - INFO - Molecule : BrCC(Br)CCCl is invalid or cannot be parsed
+2024-09-30 01:12:01,910 - INFO - Molecule : BrCC(Br)CCCl is invalid or cannot be parsed
+2024-09-30 01:12:01,910 - INFO - Molecule : BrCC(Br)CCCl is invalid or cannot be parsed
+2024-09-30 01:12:01,910 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 01:12:01,912 - INFO - Running LLM for the 0.4th time for molecule: BrCC(Br)CCCl
+2024-09-30 01:12:01,912 - INFO - Calling LLM with molecule: BrCC(Br)CCCl
+2024-09-30 01:12:13,759 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:12:13,763 - INFO - Received response from LLM: {
+  "data": [
+    ["BrCCCCCl", "CBr4"],
+    ["BrCC(O)CCCl"],
+    ["BrCC(Br)CCBr", "HCl"]
+  ],
+  "explanation": [
+    "Geminal dibromination of 1-bromo-4-chlorobutane using CBr4 and a strong base like LDA or NaHMDS",
+    "Oxidation of a secondary alcohol using PCC, PDC, or Swern oxidation, followed by dibromination of the resulting ketone using Br2 or PBr3",
+    "Nucleophilic substitution of a terminal bromide using HCl or another chloride source like LiCl or NaCl"
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 01:12:13,766 - INFO - Molecule : BrCC(Br)CCCl is invalid or cannot be parsed
+2024-09-30 01:12:13,768 - INFO - Molecule : BrCC(Br)CCCl is invalid or cannot be parsed
+2024-09-30 01:12:13,768 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 01:12:13,769 - INFO - LLM returned []
+2024-09-30 01:12:13,769 - INFO - LLM explained []
+2024-09-30 01:12:13,774 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:12:13,908 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:12:14,009 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:12:14,025 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:12:14,041 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:12:19,081 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:12:19,084 - INFO - Selected as stock: zinc
+2024-09-30 01:12:19,084 - INFO - Compounds in stock: 17422831
+2024-09-30 01:12:19,084 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:12:19,084 - INFO - Selected as filter policy: uspto
+2024-09-30 01:13:09,598 - INFO - AZ failed for C1CCC2CCCN2C1, running LLM
+2024-09-30 01:13:09,598 - INFO - Running LLM for the 0.0th time for molecule: C1CCC2CCCN2C1
+2024-09-30 01:13:09,598 - INFO - Calling LLM with molecule: C1CCC2CCCN2C1
+2024-09-30 01:13:23,875 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:13:23,878 - INFO - Received response from LLM: {
+  "data": [
+    ["C1CCC2CCCNC12"],
+    ["C1CCC2CCNC2C1", "C1CCC2CCNCC12"],
+    ["C1CCC2CC=NC2C1", "[H]"],
+    ["C1CCC2CCNC2C1", "[O]"]
+  ],
+  "explanation": [
+    "Reduction of the imine to a secondary amine using a reducing agent like NaBH4 or LiAlH4",
+    "Intramolecular SN2 reaction of a primary amine with an alkyl halide or tosylate, forming the bicyclic ring system",
+    "Hydrogenation of an enamine using H2 with a metal catalyst like Pd/C or PtO2",
+    "Reductive amination of a ketone with a primary amine, using a reducing agent like NaBH4 or NaBH3CN"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 01:13:23,882 - INFO - Obtained 3 valid pathways after validity test: [['C1CCC2CCNC2C1', 'C1CCC2CCNCC12'], ['C1CCC2CC=NC2C1', '[H]'], ['C1CCC2CCNC2C1', '[O]']]
+2024-09-30 01:13:23,883 - INFO - LLM returned [['C1CCC2CC=NC2C1', '[H]'], ['C1CCC2CCNC2C1', 'C1CCC2CCNCC12'], ['C1CCC2CCNC2C1', '[O]']]
+2024-09-30 01:13:23,883 - INFO - LLM explained ['Intramolecular SN2 reaction of a primary amine with an alkyl halide or tosylate, forming the bicyclic ring system', 'Hydrogenation of an enamine using H2 with a metal catalyst like Pd/C or PtO2', 'Reductive amination of a ketone with a primary amine, using a reducing agent like NaBH4 or NaBH3CN']
+2024-09-30 01:13:23,887 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:13:24,004 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:13:24,103 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:13:24,115 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:13:24,129 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:13:28,718 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:13:28,719 - INFO - Selected as stock: zinc
+2024-09-30 01:13:28,719 - INFO - Compounds in stock: 17422831
+2024-09-30 01:13:28,719 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:13:28,719 - INFO - Selected as filter policy: uspto
+2024-09-30 01:14:40,547 - INFO - AZ failed for C1CCC2CC=NC2C1, running LLM
+2024-09-30 01:14:40,548 - INFO - Running LLM for the 0.0th time for molecule: C1CCC2CC=NC2C1
+2024-09-30 01:14:40,548 - INFO - Calling LLM with molecule: C1CCC2CC=NC2C1
+2024-09-30 01:14:51,484 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:14:51,495 - INFO - Received response from LLM: {
+  "data": [
+    ["C1CCC2CCNC2C1"],
+    ["C1CCC2CCNC2C1", "O"],
+    ["C1CCC2CC(Br)=NC2C1", "H"],
+    ["C1CCC2CCNC2C1", "O"]
+  ],
+  "explanation": [
+    "Reduction of imine to secondary amine using reducing agents like NaBH4 or H2/catalyst",
+    "Oxidation of secondary amine to imine using oxidizing agents like MnO2 or Swern oxidation",
+    "Hydrodebromination of vinyl bromide using reducing agents like Bu3SnH or H2/Pd catalyst",
+    "Dehydration of hemiaminal intermediate formed from reaction of ketone and secondary amine"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 01:14:51,501 - INFO - Molecule : C1CCC2CC=NC2C1 is substructure of target molecule
+2024-09-30 01:14:51,502 - INFO - Molecule : C1CCC2CC=NC2C1 is invalid or cannot be parsed
+2024-09-30 01:14:51,503 - INFO - Obtained 2 valid pathways after validity test: [['C1CCC2CCNC2C1', 'O'], ['C1CCC2CCNC2C1', 'O']]
+2024-09-30 01:14:51,504 - INFO - LLM returned [['C1CCC2CCNC2C1', 'O'], ['C1CCC2CCNC2C1', 'O']]
+2024-09-30 01:14:51,504 - INFO - LLM explained ['Oxidation of secondary amine to imine using oxidizing agents like MnO2 or Swern oxidation', 'Dehydration of hemiaminal intermediate formed from reaction of ketone and secondary amine']
+2024-09-30 01:14:51,507 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:14:51,609 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:14:51,721 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:14:51,730 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:14:51,753 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:14:56,364 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:14:56,366 - INFO - Selected as stock: zinc
+2024-09-30 01:14:56,366 - INFO - Compounds in stock: 17422831
+2024-09-30 01:14:56,366 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:14:56,366 - INFO - Selected as filter policy: uspto
+2024-09-30 01:15:47,793 - INFO - AZ failed for C1CCC2CCNC2C1, running LLM
+2024-09-30 01:15:47,794 - INFO - Running LLM for the 0.0th time for molecule: C1CCC2CCNC2C1
+2024-09-30 01:15:47,794 - INFO - Calling LLM with molecule: C1CCC2CCNC2C1
+2024-09-30 01:15:59,258 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:15:59,264 - INFO - Received response from LLM: {
+  "data": [
+    ["C1CCC2=CCNC2C1"],
+    ["C1CCC(N)CC1", "O=C1CCCC1"],
+    ["C1CCC(Cl)CC1", "NCC"]
+  ],
+  "explanation": [
+    "Reduction of the imine double bond using a reducing agent such as NaBH4 or H2/catalyst.",
+    "Reductive amination between cyclohexylamine and cyclopentanone using a reducing agent like NaBH4 or NaBH3CN.",
+    "N-alkylation of cyclohexylamine with chlorocyclopentane under basic conditions (e.g., K2CO3, NaHCO3)."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.6
+  ]
+}
+2024-09-30 01:15:59,269 - INFO - Obtained 2 valid pathways after validity test: [['C1CCC(N)CC1', 'O=C1CCCC1'], ['C1CCC(Cl)CC1', 'NCC']]
+2024-09-30 01:15:59,270 - INFO - LLM returned [['C1CCC(N)CC1', 'O=C1CCCC1'], ['C1CCC(Cl)CC1', 'NCC']]
+2024-09-30 01:15:59,270 - INFO - LLM explained ['Reductive amination between cyclohexylamine and cyclopentanone using a reducing agent like NaBH4 or NaBH3CN.', 'N-alkylation of cyclohexylamine with chlorocyclopentane under basic conditions (e.g., K2CO3, NaHCO3).']
+2024-09-30 01:15:59,273 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:15:59,328 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:15:59,438 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:15:59,447 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:15:59,463 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:16:04,418 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:16:04,419 - INFO - Selected as stock: zinc
+2024-09-30 01:16:04,420 - INFO - Compounds in stock: 17422831
+2024-09-30 01:16:04,420 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:16:04,420 - INFO - Selected as filter policy: uspto
+2024-09-30 01:16:23,664 - INFO - AZ solved C1CCC(N)CC1
+2024-09-30 01:16:23,665 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:16:23,719 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:16:23,823 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:16:23,831 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:16:23,846 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:16:29,079 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:16:29,081 - INFO - Selected as stock: zinc
+2024-09-30 01:16:29,081 - INFO - Compounds in stock: 17422831
+2024-09-30 01:16:29,081 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:16:29,081 - INFO - Selected as filter policy: uspto
+2024-09-30 01:16:49,525 - INFO - AZ solved O=C1CCCC1
+2024-09-30 01:16:49,525 - INFO - temp_stat: [True, True]
+2024-09-30 01:16:49,525 - INFO - breaking
+2024-09-30 01:16:49,526 - INFO - AZ solved O
+2024-09-30 01:16:49,526 - INFO - temp_stat: [True, True]
+2024-09-30 01:16:49,526 - INFO - breaking
+2024-09-30 01:16:49,527 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:16:49,577 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:16:49,676 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:16:49,685 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:16:49,698 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:16:54,294 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:16:54,295 - INFO - Selected as stock: zinc
+2024-09-30 01:16:54,295 - INFO - Compounds in stock: 17422831
+2024-09-30 01:16:54,295 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:16:54,295 - INFO - Selected as filter policy: uspto
+2024-09-30 01:16:55,542 - INFO - AZ failed for [H], running LLM
+2024-09-30 01:16:55,542 - INFO - Running LLM for the 0.0th time for molecule: [H]
+2024-09-30 01:16:55,542 - INFO - Calling LLM with molecule: [H]
+2024-09-30 01:17:00,715 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:17:00,725 - INFO - Received response from LLM: {
+  "data": [],
+  "explanation": [
+    "The given molecule is simply a hydrogen atom. There are no meaningful retrosynthetic disconnections that can be made, as hydrogen is already the simplest possible chemical species. Retrosynthetic analysis is not applicable in this case."
+  ],
+  "confidence_scores": [
+    1.0
+  ]
+}
+2024-09-30 01:17:00,726 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 01:17:00,727 - INFO - Running LLM for the 0.2th time for molecule: [H]
+2024-09-30 01:17:00,727 - INFO - Calling LLM with molecule: [H]
+2024-09-30 01:17:07,786 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:17:07,788 - INFO - Received response from LLM: {
+  "data": [],
+  "explanation": [
+    "The given molecule is simply a hydrogen atom. There are no meaningful retrosynthetic disconnections that can be made, as hydrogen is already the simplest possible molecule. Retrosynthetic analysis is not applicable in this case."
+  ],
+  "confidence_scores": [
+    1.0
+  ]
+}
+2024-09-30 01:17:07,789 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 01:17:07,792 - INFO - Running LLM for the 0.4th time for molecule: [H]
+2024-09-30 01:17:07,792 - INFO - Calling LLM with molecule: [H]
+2024-09-30 01:17:16,591 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:17:16,593 - INFO - Received response from LLM: {
+  "data": [],
+  "explanation": [
+    "The given molecule is simply hydrogen gas (H2). This is an atom, not a molecule that can be subjected to retrosynthesis. Hydrogen gas is a fundamental substance that cannot be broken down into simpler precursor molecules through chemical reactions. It is often used as a reagent or reactant in synthetic chemistry, but is not typically a target for retrosynthesis itself."
+  ],
+  "confidence_scores": [
+    1.0
+  ]
+}
+2024-09-30 01:17:16,595 - INFO - Obtained 0 valid pathways after validity test: []
+2024-09-30 01:17:16,595 - INFO - LLM returned []
+2024-09-30 01:17:16,596 - INFO - LLM explained []
+2024-09-30 01:17:16,596 - INFO - temp_stat: [True]
+2024-09-30 01:17:16,596 - INFO - breaking
+2024-09-30 01:17:16,596 - INFO - temp_stat: [True]
+2024-09-30 01:17:16,596 - INFO - breaking
+2024-09-30 01:17:16,596 - INFO - temp_stat: [True, True]
+2024-09-30 01:17:16,596 - INFO - breaking
+2024-09-30 01:17:16,600 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:17:16,684 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:17:16,783 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:17:16,791 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:17:16,805 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:17:21,563 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:17:21,564 - INFO - Selected as stock: zinc
+2024-09-30 01:17:21,565 - INFO - Compounds in stock: 17422831
+2024-09-30 01:17:21,565 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:17:21,565 - INFO - Selected as filter policy: uspto
+2024-09-30 01:17:25,290 - INFO - AZ solved c1ccccc1
+2024-09-30 01:17:25,290 - INFO - temp_stat: [True, True]
+2024-09-30 01:17:25,290 - INFO - breaking
+2024-09-30 01:17:25,291 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:17:25,332 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:17:25,428 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:17:25,434 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:17:25,447 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:17:29,720 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:17:29,722 - INFO - Selected as stock: zinc
+2024-09-30 01:17:29,722 - INFO - Compounds in stock: 17422831
+2024-09-30 01:17:29,722 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:17:29,722 - INFO - Selected as filter policy: uspto
+2024-09-30 01:18:07,929 - INFO - AZ failed for Cc1nc2ccccc2n1C3CC4CCC3C4Br, running LLM
+2024-09-30 01:18:07,930 - INFO - Running LLM for the 0.0th time for molecule: Cc1nc2ccccc2n1C3CC4CCC3C4Br
+2024-09-30 01:18:07,930 - INFO - Calling LLM with molecule: Cc1nc2ccccc2n1C3CC4CCC3C4Br
+2024-09-30 01:18:18,811 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:18:18,817 - INFO - Received response from LLM: {
+  "data": [
+    ["Cc1nc2ccccc2n1C3CC4CCC3C4", "Br"],
+    ["Cc1nc2ccccc2n1", "BrC1CC2CCC1C2"],
+    ["Cc1nc2ccccc2n1C3CC4CCC3C4", "[Pb]"]
+  ],
+  "explanation": [
+    "Alkylation of the imidazole nitrogen with an alkyl bromide, using a base such as K2CO3 or NaH",
+    "N-alkylation of the imidazole with a bromocyclobutylcyclopropane fragment, using a base",
+    "Halogen-metal exchange of the bromide using an organometallic reagent like n-BuLi, followed by quenching with an electrophile"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.6
+  ]
+}
+2024-09-30 01:18:18,826 - INFO - Molecule : Cc1nc2ccccc2n1C3CC4CCC3C4Br is invalid or cannot be parsed
+2024-09-30 01:18:18,828 - INFO - Obtained 2 valid pathways after validity test: [['Cc1nc2ccccc2n1C3CC4CCC3C4', 'Br'], ['Cc1nc2ccccc2n1C3CC4CCC3C4', '[Pb]']]
+2024-09-30 01:18:18,829 - INFO - LLM returned [['Cc1nc2ccccc2n1C3CC4CCC3C4', 'Br'], ['Cc1nc2ccccc2n1C3CC4CCC3C4', '[Pb]']]
+2024-09-30 01:18:18,830 - INFO - LLM explained ['Alkylation of the imidazole nitrogen with an alkyl bromide, using a base such as K2CO3 or NaH', 'Halogen-metal exchange of the bromide using an organometallic reagent like n-BuLi, followed by quenching with an electrophile']
+2024-09-30 01:18:18,835 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:18:18,951 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:18:19,047 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:18:19,058 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:18:19,074 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:18:23,175 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:18:23,175 - INFO - Selected as stock: zinc
+2024-09-30 01:18:23,175 - INFO - Compounds in stock: 17422831
+2024-09-30 01:18:23,175 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:18:23,175 - INFO - Selected as filter policy: uspto
+2024-09-30 01:18:46,451 - INFO - AZ failed for Cc1nc2ccccc2n1C3CC4CCC3C4, running LLM
+2024-09-30 01:18:46,451 - INFO - Running LLM for the 0.0th time for molecule: Cc1nc2ccccc2n1C3CC4CCC3C4
+2024-09-30 01:18:46,451 - INFO - Calling LLM with molecule: Cc1nc2ccccc2n1C3CC4CCC3C4
+2024-09-30 01:18:58,331 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:18:58,341 - INFO - Received response from LLM: {
+  "data": [
+    ["Cc1nc2ccccc2n1", "C1CC2CCC1C2"],
+    ["Cc1nc2ccccc2n1Cl", "C1CC2CCC1C2"],
+    ["Cc1nc2ccccc2n1C3CC4CCC3C4O", null]
+  ],
+  "explanation": [
+    "Alkylation of 2-methyl benzimidazole with bicyclo[3.1.0]hexane under basic conditions (e.g. NaH, DMF)",
+    "Nucleophilic substitution of 2-chloro-1-methyl benzimidazole with bicyclo[3.1.0]hexane under basic conditions (e.g. K2CO3, DMF)", 
+    "Reduction of the corresponding alcohol (Cc1nc2ccccc2n1C3CC4CCC3C4O) using a hydride reducing agent (e.g. LiAlH4, THF)"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.8,
+    0.7
+  ]
+}
+2024-09-30 01:18:58,342 - INFO - Error in parsing response: malformed node or string on line 5: <ast.Name object at 0x33e45f910>
+2024-09-30 01:18:58,346 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:18:58,419 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:18:58,522 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:18:58,531 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:18:58,544 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:19:02,950 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:19:02,952 - INFO - Selected as stock: zinc
+2024-09-30 01:19:02,952 - INFO - Compounds in stock: 17422831
+2024-09-30 01:19:02,952 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:19:02,952 - INFO - Selected as filter policy: uspto
+2024-09-30 01:20:06,649 - INFO - AZ solved CC(C)[C@H](N)[C@H](O)C(F)(F)F
+2024-09-30 01:20:06,856 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:20:06,934 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:20:07,033 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:20:07,042 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:20:07,064 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:20:11,519 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:20:11,520 - INFO - Selected as stock: zinc
+2024-09-30 01:20:11,520 - INFO - Compounds in stock: 17422831
+2024-09-30 01:20:11,520 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:20:11,520 - INFO - Selected as filter policy: uspto
+2024-09-30 01:20:40,701 - INFO - AZ failed for COc1ccc(-c2cc3c(cn2)CN(C(C)=O)c2ccccc2C=C3)cn1, running LLM
+2024-09-30 01:20:40,701 - INFO - Running LLM for the 0.0th time for molecule: COc1ccc(-c2cc3c(cn2)CN(C(C)=O)c2ccccc2C=C3)cn1
+2024-09-30 01:20:40,701 - INFO - Calling LLM with molecule: COc1ccc(-c2cc3c(cn2)CN(C(C)=O)c2ccccc2C=C3)cn1
+2024-09-30 01:20:56,244 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-30 01:20:56,250 - INFO - Received response from LLM: {
+  "data": [
+    ["COc1ccc(-c2cc3c(cn2)CN(C(C)=O)c2ccccc2CC3)cn1", "C(=O)C"],
+    ["COc1ccc(-c2cc3c(cn2)CNc2ccccc2C=C3)cn1", "CC(=O)Cl"],
+    ["COc1ccc(-c2cc3c(cn2)CN(C(C)=O)c2ccccc2C3)cn1", "[H]"],
+    ["COc1ccc(-c2ccnc(Br)c2)cn1", "N1c2ccccc2C=Cc2c1cc(C(=O)C)n2"]
+  ],
+  "explanation": [
+    "Amide formation from the corresponding amine and acetyl chloride or acetic anhydride",
+    "N-acetylation of the secondary amine using acetyl chloride or acetic anhydride",
+    "Reduction of the alkene using H2 with a catalyst like Pd/C or Pt",
+    "Buchwald-Hartwig coupling between the bromopyridine and the cyclic secondary amine"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.8,
+    0.7
+  ]
+}
+2024-09-30 01:20:56,263 - INFO - Molecule : COc1ccc(-c2cc3c(cn2)CN(C(C)=O)c2ccccc2C=C3)cn1 is invalid or cannot be parsed
+2024-09-30 01:20:56,264 - INFO - Obtained 3 valid pathways after validity test: [['COc1ccc(-c2cc3c(cn2)CN(C(C)=O)c2ccccc2CC3)cn1', 'C(=O)C'], ['COc1ccc(-c2cc3c(cn2)CNc2ccccc2C=C3)cn1', 'CC(=O)Cl'], ['COc1ccc(-c2cc3c(cn2)CN(C(C)=O)c2ccccc2C3)cn1', '[H]']]
+2024-09-30 01:20:56,265 - INFO - LLM returned [['COc1ccc(-c2cc3c(cn2)CNc2ccccc2C=C3)cn1', 'CC(=O)Cl'], ['COc1ccc(-c2cc3c(cn2)CN(C(C)=O)c2ccccc2C3)cn1', '[H]'], ['COc1ccc(-c2cc3c(cn2)CN(C(C)=O)c2ccccc2CC3)cn1', 'C(=O)C']]
+2024-09-30 01:20:56,265 - INFO - LLM explained ['Amide formation from the corresponding amine and acetyl chloride or acetic anhydride', 'N-acetylation of the secondary amine using acetyl chloride or acetic anhydride', 'Reduction of the alkene using H2 with a catalyst like Pd/C or Pt']
+2024-09-30 01:20:56,268 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-30 01:20:56,348 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-30 01:20:56,453 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-30 01:20:56,462 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-30 01:20:56,475 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-30 01:21:00,733 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-30 01:21:00,734 - INFO - Selected as stock: zinc
+2024-09-30 01:21:00,734 - INFO - Compounds in stock: 17422831
+2024-09-30 01:21:00,734 - INFO - Selected as expansion policy: uspto
+2024-09-30 01:21:00,734 - INFO - Selected as filter policy: uspto

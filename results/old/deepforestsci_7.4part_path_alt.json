@@ -1,0 +1,82 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(-c2cccc(CN(C)CC(OC)OC)c2)ccc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H24ClNO3",
+                        "mass": 349.144471308
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(OC)=C(Cl)C=C3",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C22H28ClNO3",
+                        "mass": 389.175771436
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(N)ccc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8ClNO",
+                        "mass": 157.029441556
+                    }
+                },
+                {
+                    "smiles": "COC(CN(C)Cc1ccccc1)OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H19NO2",
+                        "mass": 209.141578848
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COc1cc(-c2cccc(CN(C)CC(OC)OC)c2)ccc1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H24ClNO3",
+                        "mass": 349.144471308
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

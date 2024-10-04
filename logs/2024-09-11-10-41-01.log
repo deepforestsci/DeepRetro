@@ -1,0 +1,62 @@
+2024-09-11 10:41:02,038 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-11 10:41:02,103 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-11 10:41:02,242 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-11 10:41:02,254 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-11 10:41:02,273 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-11 10:41:06,767 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-11 10:41:06,767 - INFO - Selected as stock: zinc
+2024-09-11 10:41:06,767 - INFO - Compounds in stock: 17422831
+2024-09-11 10:41:06,767 - INFO - Selected as expansion policy: uspto
+2024-09-11 10:41:06,767 - INFO - Selected as filter policy: uspto
+2024-09-11 10:41:38,579 - INFO - AZ failed for N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(OC)=C(Cl)C=C3, running LLM
+2024-09-11 10:41:38,579 - INFO - Running LLM for the 0.0th time for molecule: N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(OC)=C(Cl)C=C3
+2024-09-11 10:41:38,579 - INFO - Calling LLM with molecule: N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(OC)=C(Cl)C=C3
+2024-09-11 10:41:53,039 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-09-11 10:41:53,042 - INFO - Received response from LLM: {
+  "data": [
+    ["N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(O)=C(Cl)C=C3", "COC1=CC(Cl)=CC=C1"],
+    ["N(CC(O)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(OC)=C(Cl)C=C3", "COCl"],
+    ["N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC=C(Cl)C=C3", "CH3OCl"],
+    ["N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CCC=C2)C3=CC(OC)=C(Cl)C=C3", "[H]"]
+  ],
+  "explanation": [
+    "O-demethylation of the methoxy group on the chlorophenyl ring using a demethylating agent like BBr3",
+    "O-methylation of the free phenol using methyl chloride (CH3Cl) and a base",
+    "Chlorination of the phenyl ring using a chlorinating agent like N-chlorosuccinimide (NCS)",
+    "Reduction of the alkene in the tetrahydronaphthalene ring using a reducing agent like H2 with a catalyst"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.85,
+    0.8,
+    0.7
+  ]
+}
+2024-09-11 10:41:53,046 - INFO - Molecule : N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(OC)=C(Cl)C=C3 is invalid or cannot be parsed
+2024-09-11 10:41:53,047 - INFO - Obtained 3 valid pathways after validity test: [['N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(O)=C(Cl)C=C3', 'COC1=CC(Cl)=CC=C1'], ['N(CC(O)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(OC)=C(Cl)C=C3', 'COCl'], ['N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CCC=C2)C3=CC(OC)=C(Cl)C=C3', '[H]']]
+2024-09-11 10:41:53,048 - INFO - LLM returned [['N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(O)=C(Cl)C=C3', 'COC1=CC(Cl)=CC=C1'], ['N(CC(O)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(OC)=C(Cl)C=C3', 'COCl'], ['N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CCC=C2)C3=CC(OC)=C(Cl)C=C3', '[H]']]
+2024-09-11 10:41:53,048 - INFO - LLM explained ['O-demethylation of the methoxy group on the chlorophenyl ring using a demethylating agent like BBr3', 'O-methylation of the free phenol using methyl chloride (CH3Cl) and a base', 'Reduction of the alkene in the tetrahydronaphthalene ring using a reducing agent like H2 with a catalyst']
+2024-09-11 10:41:53,050 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-11 10:41:53,109 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-11 10:41:53,241 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-11 10:41:53,251 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-11 10:41:53,270 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-11 10:41:57,664 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-11 10:41:57,664 - INFO - Selected as stock: zinc
+2024-09-11 10:41:57,664 - INFO - Compounds in stock: 17422831
+2024-09-11 10:41:57,664 - INFO - Selected as expansion policy: uspto
+2024-09-11 10:41:57,664 - INFO - Selected as filter policy: uspto
+2024-09-11 10:42:16,359 - INFO - AZ failed for N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(O)=C(Cl)C=C3, running LLM
+2024-09-11 10:42:16,360 - INFO - Running LLM for the 0.0th time for molecule: N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(O)=C(Cl)C=C3
+2024-09-11 10:42:16,360 - INFO - Calling LLM with molecule: N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(O)=C(Cl)C=C3
+2024-09-11 10:42:17,001 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 529 "
+2024-09-11 10:42:17,001 - INFO - Retrying request to /v1/messages in 0.980038 seconds
+2024-09-11 10:42:19,131 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 529 "
+2024-09-11 10:42:19,132 - INFO - Retrying request to /v1/messages in 1.524324 seconds
+2024-09-11 10:42:21,270 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 529 "
+2024-09-11 10:42:21,271 - INFO - Error in calling LLM: Error code: 529 - {'type': 'error', 'error': {'type': 'overloaded_error', 'message': 'Overloaded'}}
+2024-09-11 10:42:22,818 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 529 "
+2024-09-11 10:42:22,818 - INFO - Retrying request to /v1/messages in 0.930585 seconds
+2024-09-11 10:42:24,396 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 529 "
+2024-09-11 10:42:24,396 - INFO - Retrying request to /v1/messages in 1.981447 seconds
+2024-09-11 10:42:27,560 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 529 "

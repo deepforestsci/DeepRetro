@@ -1,0 +1,12 @@
+2024-09-04 15:26:05,365 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-09-04 15:26:06,117 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-09-04 15:26:06,334 - INFO - Loading template-based expansion policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-09-04 15:26:06,425 - INFO - Loading templates from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-09-04 15:26:06,451 - INFO - Loading filter policy model from /home/byteskyuser/Retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-09-04 15:26:15,370 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-09-04 15:26:15,371 - INFO - Selected as stock: zinc
+2024-09-04 15:26:15,371 - INFO - Compounds in stock: 17422831
+2024-09-04 15:26:15,371 - INFO - Selected as expansion policy: uspto
+2024-09-04 15:26:15,371 - INFO - Selected as filter policy: uspto
+2024-09-04 15:26:30,318 - INFO - AZ solved FC1=CC(C[C@@H](CN)NC(C2=CC(C3=C(Cl)C=NN3C)=C(Cl)S2)=O)=CC=C1
+2024-09-04 15:27:25,482 - INFO - AZ solved FC1=CC(C[C@@H](CN)NC(C2=CC(C3=C(Cl)C=NN3C)=C(Cl)S2)=O)=CC=C1
