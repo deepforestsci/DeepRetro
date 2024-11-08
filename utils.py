@@ -4,16 +4,14 @@ import os
 from typing import Any, Dict, List, Optional, Sequence
 import time
 from rdkit import Chem
-from rdkit.Chem import AllChem, rdMolDescriptors
-from rdkit.Chem.rdMolDescriptors import CalcMolFormula
-from rdkit.Chem.Descriptors import ExactMolWt
 from anthropic import Anthropic
 from aizynthfinder.aizynthfinder import AiZynthFinder
-import diskcache as dc
 import logging
 from variables import BASIC_MOLECULES, SYS_PROMPT, USER_PROMPT, ENCODING_SCALABILITY, REACTION_ENCODING_NAMES
 from variables import bcolors
-import joblib
+from utils_molecule import validity_check, calc_chemical_formula, calc_mol_wt
+from utils_molecule import get_reaction_type
+from cache import cache_results
 from dotenv import load_dotenv
 
 # load environment variables
@@ -23,15 +21,21 @@ AZ_MODEL_CONFIG_PATH = os.getenv('AZ_MODEL_CONFIG_PATH')
 
 # Set up logging
 # log file based on time
+# make a folder for each day
+if not os.path.exists('logs'):
+    os.makedirs('logs')
+
+if not os.path.exists(f'logs/{time.strftime("%Y-%m-%d")}'):
+    os.makedirs(f'logs/{time.strftime("%Y-%m-%d")}')
+
 logging.basicConfig(
-    filename=f"logs/{time.strftime('%Y-%m-%d-%H-%M-%S')}.log",
+    filename=
+    f"logs/{time.strftime('%Y-%m-%d')}/{time.strftime('%H-%M-%S')}.log",
     level=logging.INFO,  # Log level (INFO will log both inputs and outputs)
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
 )
-logging.info("Logging started")
-
-# Create a disk cache
-cache = dc.Cache('cache_dir_chall_failed')
+logger = logging.getLogger(__name__)
+logger.info("Logging started")
 
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 
@@ -39,9 +43,14 @@ client = Anthropic(api_key=ANTHROPIC_API_KEY)
 try:
     with open("aizynthfinder/models/config.yml", "r") as file:
         config_filename = "aizynthfinder/models/config.yml"
+        logger.info(
+            f"Configuration file found in `aizynthfinder/models/config.yml`")
 except FileNotFoundError:
     with open("../aizynthfinder/models/config.yml", "r") as file:
         config_filename = "../aizynthfinder/models/config.yml"
+        logger.info(
+            f"Configuration file found in `../aizynthfinder/models/config.yml`"
+        )
 except FileNotFoundError:
     logging.error(
         f"{bcolors.FAIL}Configuration file not found in `aizynthfinder/models/config.yml` or `../aizynthfinder/models/config.yml`{bcolors.ENDC}"
@@ -49,90 +58,8 @@ except FileNotFoundError:
     raise FileNotFoundError(
         f"Configuration file not found in `aizynthfinder/models/config.yml` or `../aizynthfinder/models/config.yml`"
     )
-# config_filename = "../aizynthfinder/models/config.yml"
-
-
-def clear_cache():
-    """Clear the cache"""
-    cache.clear()
-
-
-def cache_results(func):
-    """Decorator to cache results using diskcache"""
-
-    def wrapper(*args, **kwargs):
-        cache_key = func.__name__ + "_" + str(args) + str(
-            kwargs)  # Unique key with function name
-        if cache_key in cache:
-            return cache[cache_key]
-        else:
-            result = func(*args, **kwargs)
-            cache[cache_key] = result
-            return result
-
-    return wrapper
-
 
 # TODO: add try except block for invalid smiles in the entire pipeline
-
-
-def is_valid_smiles(smiles: str) -> bool:
-    """Check if the SMILES string is valid
-
-    Parameters
-    ----------
-    smiles : str
-        smiles string
-
-    Returns
-    -------
-    bool
-        True if the smiles is valid, False otherwise
-    """
-    try:
-        mol = Chem.MolFromSmiles(smiles)
-    except:
-        return False
-    if mol is None:
-        return False
-    # Additional checks if needed
-    return True
-
-
-def substructure_matching(target_smiles: str, query_smiles: str) -> int:
-    """Check if the query substructure is present in the target molecule
-
-    Parameters
-    ----------
-    target_smiles : str
-        SMILES string of the target molecule
-    query_smiles : str
-        SMILES string of the query molecule
-
-    Returns
-    -------
-    int
-        1 if the query substructure is present in the target molecule, 0 otherwise
-    """
-    # Convert SMILES to RDKit molecule objects
-    try:
-        target_molecule = Chem.MolFromSmiles(target_smiles)
-    except:
-        logging.info(f"Error in parsing target molecule: {target_smiles}")
-
-    try:
-        query_molecule = Chem.MolFromSmiles(query_smiles)
-    except:
-        logging.info(f"Error in parsing query molecule: {query_smiles}")
-
-    # Check if the query substructure is present in the target molecule
-    try:
-        if target_molecule.HasSubstructMatch(query_molecule):
-            return 1
-        else:
-            return 0
-    except:
-        return 0
 
 
 @cache_results
@@ -142,7 +69,7 @@ def call_LLM(molecule: str,
              messages: Optional[list[dict]] = None):
     """Calls the LLM model to predict the next step"""
 
-    logging.info(f"Calling LLM with molecule: {molecule}")
+    logger.info(f"Calling LLM with molecule: {molecule}")
     if messages is None:
         messages = [{
             "role":
@@ -163,7 +90,7 @@ def call_LLM(molecule: str,
                                          top_p=0.9)
         res_text = message.content[0].text
     except Exception as e:
-        logging.info(f"Error in calling LLM: {e}")
+        logger.info(f"Error in calling LLM: {e}")
         message = client.messages.create(model=LLM,
                                          max_tokens=1024,
                                          temperature=temperature,
@@ -171,12 +98,12 @@ def call_LLM(molecule: str,
                                          messages=messages,
                                          top_p=0.9)
         res_text = message.content[0].text
-    logging.info(f"Received response from LLM: {res_text}")
+    logger.info(f"Received response from LLM: {res_text}")
 
     try:
         result_list = ast.literal_eval(res_text)
     except Exception as e:
-        logging.info(f"Error in parsing response: {e}")
+        logger.info(f"Error in parsing response: {e}")
         raise ValueError("Please Retry")
     res_molecules = result_list['data']
     res_explanations = result_list['explanation']
@@ -192,7 +119,7 @@ def llm_pipeline(molecule: str,
     output_pathways = []
     run = 0.0
     while (output_pathways == [] and run < 0.6):
-        logging.info(
+        logger.info(
             f"Running LLM for the {run}th time for molecule: {molecule}")
         res_molecules, res_explanations, res_confidence = call_LLM(
             molecule, LLM, run, messages)
@@ -212,54 +139,6 @@ def llm_pipeline(molecule: str,
         key=lambda x: Chem.Descriptors.ExactMolWt(Chem.MolFromSmiles(x[0])))
     # TODO: fix the matching of output pathways and confidence
     return output_pathways, output_explanations, output_confidence
-
-
-@cache_results
-def validity_check(molecule, res_molecules, res_explanations, res_confidence):
-    valid_pathways = []
-    valid_explanations = []
-    valid_confidence = []
-    for idx, smile_list in enumerate(res_molecules):
-        valid = []
-        if isinstance(smile_list, list):
-            for smiles in smile_list:
-                if is_valid_smiles(smiles):
-                    if are_molecules_same(molecule, smiles):
-                        logging.info(
-                            f"Molecule : {molecule} is same as target molecule"
-                        )
-                    elif substructure_matching(smiles, molecule):
-                        logging.info(
-                            f"Molecule : {molecule} is substructure of target molecule"
-                        )
-                    else:
-                        valid.append(smiles)
-                else:
-                    logging.info(
-                        f"Molecule : {molecule} is invalid or cannot be parsed"
-                    )
-            if len(valid) >= 2:
-                valid_pathways.append(valid)
-                valid_explanations.append(res_explanations[idx])
-                valid_confidence.append(res_confidence[idx])
-        else:
-            if is_valid_smiles(smile_list):
-                if are_molecules_same(molecule, smiles):
-                    logging.info("Molecule is same as target molecule")
-                elif substructure_matching(smiles, molecule):
-                    logging.info(
-                        f"Molecule : {molecule} is substructure of target molecule {smiles}"
-                    )
-                else:
-                    valid_pathways.append([smile_list])
-                    valid_explanations.append(res_explanations[idx])
-                    valid_confidence.append(res_confidence[idx])
-            else:
-                logging.info("Molecule is invalid or cannot be parsed")
-    logging.info(
-        f"Obtained {len(valid_pathways)} valid pathways after validity test: {valid_pathways}"
-    )
-    return valid_pathways, valid_explanations, valid_confidence
 
 
 def llm_pipeline_alt(molecule: str,
@@ -540,10 +419,6 @@ def fix_dependencies(dependencies, step_list):
                     ]
 
         pass
-
-    # print("--------------------")
-    # print(f"Storage: {storage}")
-    # print(f"Fixed Dependencies: {fixed_dependencies}")
     return fixed_dependencies
 
 
@@ -556,48 +431,6 @@ def calc_scalability_index(mol1, mol2):
     """Calculate the scalability index of a reaction"""
     _, type = get_reaction_type(mol1, mol2)
     return str(ENCODING_SCALABILITY[type])
-
-
-def calc_chemical_formula(mol: str):
-    """Calculate the chemical formula of a molecule
-
-    Parameters
-    ----------
-    mol : str
-        SMILES string of the molecule
-
-    Returns
-    -------
-    str
-        molecular formula of the molecule
-    """
-    try:
-        formula = CalcMolFormula(Chem.MolFromSmiles(mol))
-    except:
-        formula = "N/A"
-        logging.info(f"Error in calculating formula: {mol}")
-    return formula
-
-
-def calc_mol_wt(mol: str) -> float:
-    """Calculate the molecular weight of a molecule
-
-    Parameters
-    ----------
-    mol : str
-        SMILES string of the molecule
-
-    Returns
-    -------
-    float
-        molecular weight of the molecule
-    """
-    try:
-        mol_wt = ExactMolWt(Chem.MolFromSmiles(mol))
-    except:
-        mol_wt = 0.0
-        logging.info(f"Error in calculating molecular weight: {mol}")
-    return mol_wt
 
 
 def calc_confidence_estimate(probability: float) -> float:
@@ -630,72 +463,13 @@ def calc_confidence_estimate(probability: float) -> float:
     return probability
 
 
-def compute_fingerprint(smiles, radius=2, nBits=2048):
-    mol = Chem.MolFromSmiles(smiles)
-    if mol is None:
-        return None
-    fingerprint = AllChem.GetMorganFingerprintAsBitVect(mol,
-                                                        radius,
-                                                        nBits=nBits)
-    return list(fingerprint)
-
-
-def sub_structure_matching(target_smiles: str, query_smiles: str) -> bool:
-    """Check if the query substructure is present in the target molecule"""
-    target_molecule = Chem.MolFromSmiles(target_smiles)
-    query_molecule = Chem.MolFromSmiles(query_smiles)
-
-    if target_molecule.HasSubstructMatch(query_molecule):
-        return True
-    else:
-        return False
-
-
-def get_reaction_type(mol1, mol2):
-    """Get the reaction type of a reaction"""
-    clf = joblib.load('../reaction_prediction/rfc.pkl')
-    mol1_fingerprint = compute_fingerprint(mol1)
-    mol2_fingerprint = compute_fingerprint(mol2)
-    reaction_type = clf.predict([mol1_fingerprint + mol2_fingerprint])
-    return REACTION_ENCODING_NAMES[reaction_type[0]], reaction_type[0]
-
-
-def are_molecules_same(smiles1: str, smiles2: str) -> bool:
-    # Convert SMILES strings to RDKit molecule objects
-    mol1 = Chem.MolFromSmiles(smiles1)
-    mol2 = Chem.MolFromSmiles(smiles2)
-
-    if mol1 is None or mol2 is None:
-        raise ValueError("Invalid SMILES string provided.")
-
-    # Get canonical SMILES for both molecules
-    canonical_smiles1 = Chem.MolToSmiles(mol1, canonical=True)
-    canonical_smiles2 = Chem.MolToSmiles(mol2, canonical=True)
-
-    # Alternatively, compare molecular fingerprints
-    fingerprint1 = rdMolDescriptors.GetMorganFingerprintAsBitVect(mol1,
-                                                                  radius=2,
-                                                                  nBits=1024)
-    fingerprint2 = rdMolDescriptors.GetMorganFingerprintAsBitVect(mol2,
-                                                                  radius=2,
-                                                                  nBits=1024)
-
-    # Check if canonical SMILES or fingerprints match
-    if canonical_smiles1 == canonical_smiles2:
-        return True
-    elif fingerprint1 == fingerprint2:
-        return True
-    else:
-        return False
-
-
 # recursive function to run pritvi
 def rec_run_prithvi(molecule):
     solved, result_dict = run_az(molecule)
     result_dict = result_dict[0]
     if not solved:
 
-        logging.info(f"AZ failed for {molecule}, running LLM")
+        logger.info(f"AZ failed for {molecule}, running LLM")
         out_pathways, out_explained, out_confidence = llm_pipeline(molecule)
         result_dict = {
             'type':
@@ -716,8 +490,8 @@ def rec_run_prithvi(molecule):
                 "children": []
             }]
         }
-        logging.info(f"LLM returned {out_pathways}")
-        logging.info(f"LLM explained {out_explained}")
+        logger.info(f"LLM returned {out_pathways}")
+        logger.info(f"LLM explained {out_explained}")
         for pathway in out_pathways:
             if isinstance(pathway, list):
                 temp_stat = []
@@ -726,17 +500,17 @@ def rec_run_prithvi(molecule):
                     if stat:
                         temp_stat.append(True)
                         result_dict['children'][0]['children'].append(res)
-                logging.info(f"temp_stat: {temp_stat}")
+                logger.info(f"temp_stat: {temp_stat}")
                 if all(temp_stat):
                     solved = True
             else:
                 res, solved = rec_run_prithvi(pathway)
                 result_dict['children'][0]['children'].append(res)
             if solved:
-                logging.info('breaking')
+                logger.info('breaking')
                 break
     else:
-        logging.info(f"AZ solved {molecule}")
+        logger.info(f"AZ solved {molecule}")
     # print(f"Solved : {solved}, Returning {result_dict}")
     return result_dict, solved
 
