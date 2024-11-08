@@ -1,5 +1,6 @@
 """Utils for Retrosynthesis"""
 import ast
+import os
 from typing import Any, Dict, List, Optional, Sequence
 import time
 from rdkit import Chem
@@ -13,6 +14,12 @@ import logging
 from variables import BASIC_MOLECULES, SYS_PROMPT, USER_PROMPT, ENCODING_SCALABILITY, REACTION_ENCODING_NAMES
 from variables import bcolors
 import joblib
+from dotenv import load_dotenv
+
+# load environment variables
+load_dotenv()
+ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
+AZ_MODEL_CONFIG_PATH = os.getenv('AZ_MODEL_CONFIG_PATH')
 
 # Set up logging
 # log file based on time
@@ -21,16 +28,28 @@ logging.basicConfig(
     level=logging.INFO,  # Log level (INFO will log both inputs and outputs)
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
 )
+logging.info("Logging started")
 
 # Create a disk cache
 cache = dc.Cache('cache_dir_chall_failed')
 
-client = Anthropic(
-    api_key=
-    "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",
-)
+client = Anthropic(api_key=ANTHROPIC_API_KEY)
 
-config_filename = "../aizynthfinder/models/config.yml"
+# Check if the configuration file exists in `aizynthfinder/models/config.yml`, else check `../aizynthfinder/models/config.yml` if still not foubnd, raise an error
+try:
+    with open("aizynthfinder/models/config.yml", "r") as file:
+        config_filename = "aizynthfinder/models/config.yml"
+except FileNotFoundError:
+    with open("../aizynthfinder/models/config.yml", "r") as file:
+        config_filename = "../aizynthfinder/models/config.yml"
+except FileNotFoundError:
+    logging.error(
+        f"{bcolors.FAIL}Configuration file not found in `aizynthfinder/models/config.yml` or `../aizynthfinder/models/config.yml`{bcolors.ENDC}"
+    )
+    raise FileNotFoundError(
+        f"Configuration file not found in `aizynthfinder/models/config.yml` or `../aizynthfinder/models/config.yml`"
+    )
+# config_filename = "../aizynthfinder/models/config.yml"
 
 
 def clear_cache():
@@ -80,7 +99,21 @@ def is_valid_smiles(smiles: str) -> bool:
     return True
 
 
-def substructure_matching(target_smiles: str, query_smiles: str):
+def substructure_matching(target_smiles: str, query_smiles: str) -> int:
+    """Check if the query substructure is present in the target molecule
+
+    Parameters
+    ----------
+    target_smiles : str
+        SMILES string of the target molecule
+    query_smiles : str
+        SMILES string of the query molecule
+
+    Returns
+    -------
+    int
+        1 if the query substructure is present in the target molecule, 0 otherwise
+    """
     # Convert SMILES to RDKit molecule objects
     try:
         target_molecule = Chem.MolFromSmiles(target_smiles)

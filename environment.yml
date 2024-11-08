@@ -1,0 +1,20 @@
+name: dfs_si_challenge
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9
+  - pip
+  - pip:
+    - numpy<2
+    - pandas
+    - scikit-learn
+    - rdkit
+    - aizynthfinder[all]
+    - anthropic
+    - openai
+    - litellm
+    - tqdm
+    - matplotlib
+    - dotenv
+
