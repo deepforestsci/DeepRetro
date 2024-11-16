@@ -19,7 +19,8 @@ download_public_data aizynthfinder/models/
 6. Run the jupyter notebook to generate the retrosynthesis predictions.
 
 ## ToDos
-- [ ] Add Flask API for retrosynthesis predictions
+- [x] Add Flask API for retrosynthesis predictions
+- [ ] Change logging style to jobID based logging
 - [ ] Add Dockerfile for easy deployment
 - [ ] Add tests for the retrosynthesis predictions
 - [ ] Add CI/CD pipeline for the project
