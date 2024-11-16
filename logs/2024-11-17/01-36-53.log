@@ -1,0 +1,17 @@
+2024-11-17 01:36:53,567 - INFO - Logging started
+2024-11-17 01:36:53,580 - INFO - Configuration file found in `../aizynthfinder/models/config.yml`
+2024-11-17 01:36:53,595 - WARNING -  * Debugger is active!
+2024-11-17 01:36:53,604 - INFO -  * Debugger PIN: 707-719-596
+2024-11-17 01:37:14,200 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-11-17 01:37:14,251 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-11-17 01:37:14,358 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-11-17 01:37:14,366 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-11-17 01:37:14,380 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-11-17 01:37:18,589 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-11-17 01:37:18,590 - INFO - Selected as stock: zinc
+2024-11-17 01:37:18,590 - INFO - Compounds in stock: 17422831
+2024-11-17 01:37:18,590 - INFO - Selected as expansion policy: uspto
+2024-11-17 01:37:18,590 - INFO - Selected as filter policy: uspto
+2024-11-17 01:38:11,541 - INFO - AZ solved CC(N)C(=O)NC1=C(C)C=CC=C1C
+2024-11-17 01:38:11,546 - INFO - 127.0.0.1 - - [17/Nov/2024 01:38:11] "[35m[1mPOST /api/retrosynthesis HTTP/1.1[0m" 500 -
+2024-11-17 01:38:36,734 - INFO -  * Detected change in '/Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/utils.py', reloading

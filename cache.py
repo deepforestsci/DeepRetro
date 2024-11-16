@@ -1,7 +1,7 @@
 import diskcache as dc
 
 # Create a disk cache
-cache = dc.Cache('cache_dir_chall_failed')
+cache = dc.Cache('cache_api')
 
 
 def clear_cache():

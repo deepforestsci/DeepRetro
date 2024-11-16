@@ -1,0 +1,25 @@
+2024-11-17 01:43:18,030 - INFO - Logging started
+2024-11-17 01:43:18,044 - INFO - Configuration file found in `../aizynthfinder/models/config.yml`
+2024-11-17 01:43:18,062 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-11-17 01:43:18,063 - INFO - [33mPress CTRL+C to quit[0m
+2024-11-17 01:43:18,063 - INFO -  * Restarting with stat
+2024-11-17 01:43:18,992 - INFO - Logging started
+2024-11-17 01:43:19,005 - INFO - Configuration file found in `../aizynthfinder/models/config.yml`
+2024-11-17 01:43:19,022 - WARNING -  * Debugger is active!
+2024-11-17 01:43:19,029 - INFO -  * Debugger PIN: 707-719-596
+2024-11-17 01:43:22,537 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-11-17 01:43:22,616 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-11-17 01:43:22,731 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-11-17 01:43:22,742 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-11-17 01:43:22,757 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-11-17 01:43:27,912 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-11-17 01:43:27,913 - INFO - Selected as stock: zinc
+2024-11-17 01:43:27,913 - INFO - Compounds in stock: 17422831
+2024-11-17 01:43:27,913 - INFO - Selected as expansion policy: uspto
+2024-11-17 01:43:27,913 - INFO - Selected as filter policy: uspto
+2024-11-17 01:44:22,711 - INFO - AZ solved CC(N)C(=O)NC1=C(C)C=CC=C1C
+2024-11-17 01:44:22,712 - INFO - 127.0.0.1 - - [17/Nov/2024 01:44:22] "[35m[1mPOST /api/retrosynthesis HTTP/1.1[0m" 500 -
+2024-11-17 01:45:23,776 - INFO -  * Detected change in '/Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/api.py', reloading
+2024-11-17 01:45:25,844 - INFO -  * Restarting with stat
+2024-11-17 01:45:42,990 - INFO -  * Restarting with stat

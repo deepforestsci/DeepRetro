@@ -305,12 +305,9 @@ def parse_step(data,
             "products": [{
                 "smiles": data['smiles'],
                 "product_metadata": {
-                    "name":
-                    "",
-                    "chemical_formula":
-                    CalcMolFormula(Chem.MolFromSmiles(data['smiles'])),
-                    "mass":
-                    ExactMolWt(Chem.MolFromSmiles(data['smiles']))
+                    "name": "",
+                    "chemical_formula": calc_chemical_formula(data['smiles']),
+                    "mass": calc_mol_wt(data['smiles'])
                 }
             }],
             "conditions": [],

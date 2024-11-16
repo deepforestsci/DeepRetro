@@ -1,0 +1,5 @@
+2024-11-17 01:39:32,142 - INFO - Logging started
+2024-11-17 01:39:32,156 - INFO - Configuration file found in `../aizynthfinder/models/config.yml`
+2024-11-17 01:39:32,172 - WARNING -  * Debugger is active!
+2024-11-17 01:39:32,180 - INFO -  * Debugger PIN: 707-719-596
+2024-11-17 01:39:47,850 - INFO -  * Detected change in '/Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/utils.py', reloading

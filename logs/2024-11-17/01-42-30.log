@@ -1,0 +1,7 @@
+2024-11-17 01:42:30,919 - INFO - Logging started
+2024-11-17 01:42:30,932 - INFO - Configuration file found in `../aizynthfinder/models/config.yml`
+2024-11-17 01:42:30,952 - WARNING -  * Debugger is active!
+2024-11-17 01:42:30,959 - INFO -  * Debugger PIN: 707-719-596
+2024-11-17 01:42:30,990 - INFO - AZ solved CC(N)C(=O)NC1=C(C)C=CC=C1C
+2024-11-17 01:42:30,991 - INFO - 127.0.0.1 - - [17/Nov/2024 01:42:30] "[35m[1mPOST /api/retrosynthesis HTTP/1.1[0m" 500 -
+2024-11-17 01:43:12,949 - INFO -  * Detected change in '/Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/cache.py', reloading
