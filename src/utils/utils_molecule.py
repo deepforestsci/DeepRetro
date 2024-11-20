@@ -4,8 +4,8 @@ from rdkit.Chem.rdMolDescriptors import CalcMolFormula
 from rdkit.Chem.Descriptors import ExactMolWt
 import logging
 import joblib
-from variables import REACTION_ENCODING_NAMES
-from cache import cache_results
+from src.variables import REACTION_ENCODING_NAMES
+from src.cache import cache_results
 
 logger = logging.getLogger(__name__)
 
@@ -208,9 +208,9 @@ def sub_structure_matching(target_smiles: str, query_smiles: str) -> bool:
         return False
 
 
-def get_reaction_type(mol1, mol2):
+def get_reaction_type(mol1, mol2, model_path):
     """Get the reaction type of a reaction"""
-    clf = joblib.load('../reaction_prediction/rfc.pkl')
+    clf = joblib.load(model_path)
     mol1_fingerprint = compute_fingerprint(mol1)
     mol2_fingerprint = compute_fingerprint(mol2)
     reaction_type = clf.predict([mol1_fingerprint + mol2_fingerprint])

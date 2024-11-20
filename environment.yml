@@ -17,4 +17,5 @@ dependencies:
     - tqdm
     - matplotlib
     - dotenv
+    - rootutils
 

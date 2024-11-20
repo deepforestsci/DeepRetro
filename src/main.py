@@ -1,144 +1,73 @@
 """Utils for Retrosynthesis"""
-import ast
 import os
 from typing import Any, Dict, List, Optional, Sequence
 import time
 from rdkit import Chem
-from anthropic import Anthropic
 from aizynthfinder.aizynthfinder import AiZynthFinder
 import logging
-from variables import BASIC_MOLECULES, SYS_PROMPT, USER_PROMPT, ENCODING_SCALABILITY, REACTION_ENCODING_NAMES
-from variables import bcolors
-from utils_molecule import validity_check, calc_chemical_formula, calc_mol_wt
-from utils_molecule import get_reaction_type
-from cache import cache_results
+import rootutils
 from dotenv import load_dotenv
+
+root_dir = rootutils.setup_root(__file__,
+                                indicator=".project-root",
+                                pythonpath=True)
+
+from src.variables import BASIC_MOLECULES, ENCODING_SCALABILITY
+from src.variables import bcolors
+from src.utils.utils_molecule import validity_check, calc_chemical_formula, calc_mol_wt
+from src.utils.utils_molecule import get_reaction_type
+from src.utils.backup.utils_llm_old import call_LLM, llm_pipeline
+from src.cache import cache_results
 
 # load environment variables
 load_dotenv()
-ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
-AZ_MODEL_CONFIG_PATH = os.getenv('AZ_MODEL_CONFIG_PATH')
+
+# setup rootutils
+
+AZ_MODEL_CONFIG_PATH = f"{root_dir}/{os.getenv('AZ_MODEL_CONFIG_PATH')}"
+RXN_CLASSIFICATION_MODEL_PATH = f"{root_dir}/{os.getenv('RXN_CLASSIFICATION_MODEL_PATH')}"
 
 # Set up logging
 # log file based on time
 # make a folder for each day
-if not os.path.exists('logs'):
-    os.makedirs('logs')
+if not os.path.exists(f'{root_dir}/logs'):
+    os.makedirs(f'{root_dir}/logs')
 
-if not os.path.exists(f'logs/{time.strftime("%Y-%m-%d")}'):
-    os.makedirs(f'logs/{time.strftime("%Y-%m-%d")}')
+if not os.path.exists(f'{root_dir}/logs/{time.strftime("%Y-%m-%d")}'):
+    os.makedirs(f'{root_dir}/logs/{time.strftime("%Y-%m-%d")}')
 
 logging.basicConfig(
     filename=
-    f"logs/{time.strftime('%Y-%m-%d')}/{time.strftime('%H-%M-%S')}.log",
+    f"{root_dir}/logs/{time.strftime('%Y-%m-%d')}/{time.strftime('%H-%M-%S')}.log",
     level=logging.INFO,  # Log level (INFO will log both inputs and outputs)
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
 )
 logger = logging.getLogger(__name__)
 logger.info("Logging started")
 
-client = Anthropic(api_key=ANTHROPIC_API_KEY)
-
 # Check if the configuration file exists in `aizynthfinder/models/config.yml`, else check `../aizynthfinder/models/config.yml` if still not foubnd, raise an error
 try:
-    with open("aizynthfinder/models/config.yml", "r") as file:
-        config_filename = "aizynthfinder/models/config.yml"
+    with open(f"{root_dir}/aizynthfinder/models/config.yml", "r") as file:
+        config_filename = f"{root_dir}/aizynthfinder/models/config.yml"
         logger.info(
             f"Configuration file found in `aizynthfinder/models/config.yml`")
 except FileNotFoundError:
-    with open("../aizynthfinder/models/config.yml", "r") as file:
-        config_filename = "../aizynthfinder/models/config.yml"
-        logger.info(
-            f"Configuration file found in `../aizynthfinder/models/config.yml`"
+    try:
+        with open(f"{root_dir}/../aizynthfinder/models/config.yml",
+                  "r") as file:
+            config_filename = f"{root_dir}/../aizynthfinder/models/config.yml"
+            logger.info(
+                f"Configuration file found in `../aizynthfinder/models/config.yml`"
+            )
+    except FileNotFoundError:
+        logging.error(
+            f"Configuration file not found in `aizynthfinder/models/config.yml` or `../aizynthfinder/models/config.yml`"
         )
-except FileNotFoundError:
-    logging.error(
-        f"{bcolors.FAIL}Configuration file not found in `aizynthfinder/models/config.yml` or `../aizynthfinder/models/config.yml`{bcolors.ENDC}"
-    )
-    raise FileNotFoundError(
-        f"Configuration file not found in `aizynthfinder/models/config.yml` or `../aizynthfinder/models/config.yml`"
-    )
+        raise FileNotFoundError(
+            f"Configuration file not found in `aizynthfinder/models/config.yml` or `../aizynthfinder/models/config.yml`"
+        )
 
 # TODO: add try except block for invalid smiles in the entire pipeline
-
-
-@cache_results
-def call_LLM(molecule: str,
-             LLM: str = "claude-3-opus-20240229",
-             temperature: float = 0.0,
-             messages: Optional[list[dict]] = None):
-    """Calls the LLM model to predict the next step"""
-
-    logger.info(f"Calling LLM with molecule: {molecule}")
-    if messages is None:
-        messages = [{
-            "role":
-            "user",
-            "content": [{
-                'type':
-                "text",
-                "text":
-                USER_PROMPT.replace('{target_smiles}', molecule)
-            }]
-        }]
-    try:
-        message = client.messages.create(model=LLM,
-                                         max_tokens=1024,
-                                         temperature=temperature,
-                                         system=SYS_PROMPT,
-                                         messages=messages,
-                                         top_p=0.9)
-        res_text = message.content[0].text
-    except Exception as e:
-        logger.info(f"Error in calling LLM: {e}")
-        message = client.messages.create(model=LLM,
-                                         max_tokens=1024,
-                                         temperature=temperature,
-                                         system=SYS_PROMPT,
-                                         messages=messages,
-                                         top_p=0.9)
-        res_text = message.content[0].text
-    logger.info(f"Received response from LLM: {res_text}")
-
-    try:
-        result_list = ast.literal_eval(res_text)
-    except Exception as e:
-        logger.info(f"Error in parsing response: {e}")
-        raise ValueError("Please Retry")
-    res_molecules = result_list['data']
-    res_explanations = result_list['explanation']
-    res_confidence = result_list['confidence_scores']
-
-    return res_molecules, res_explanations, res_confidence
-
-
-def llm_pipeline(molecule: str,
-                 LLM: str = "claude-3-opus-20240229",
-                 messages: Optional[list[dict]] = None):
-    """Pipeline to call LLM and validate the results"""
-    output_pathways = []
-    run = 0.0
-    while (output_pathways == [] and run < 0.6):
-        logger.info(
-            f"Running LLM for the {run}th time for molecule: {molecule}")
-        res_molecules, res_explanations, res_confidence = call_LLM(
-            molecule, LLM, run, messages)
-        output_pathways, output_explanations, output_confidence = validity_check(
-            molecule, res_molecules, res_explanations, res_confidence)
-        run += 0.2
-    # mapped = []
-    # for idx, pathway in enumerate(output_pathways):
-    #     mapped.append(
-    #         [pathway, output_explanations[idx], output_confidence[idx]])
-    # # Sort the pathways by molecular weight. sort the explanations and confidence in the same order
-    # output_pathways, output_explanations, output_confidence = zip(
-    #     *sorted(zip(output_pathways, output_explanations, output_confidence),
-    #             key=lambda x: calc_mol_wt(x[0][0])))
-
-    output_pathways.sort(
-        key=lambda x: Chem.Descriptors.ExactMolWt(Chem.MolFromSmiles(x[0])))
-    # TODO: fix the matching of output pathways and confidence
-    return output_pathways, output_explanations, output_confidence
 
 
 def llm_pipeline_alt(molecule: str,
@@ -426,7 +355,7 @@ def calc_yield(mol1, mol2):
 
 def calc_scalability_index(mol1, mol2):
     """Calculate the scalability index of a reaction"""
-    _, type = get_reaction_type(mol1, mol2)
+    _, type = get_reaction_type(mol1, mol2, RXN_CLASSIFICATION_MODEL_PATH)
     return str(ENCODING_SCALABILITY[type])
 
 
