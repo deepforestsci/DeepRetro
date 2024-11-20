@@ -1,0 +1,83 @@
+2024-11-21 03:48:58,279 - INFO - Logging started
+2024-11-21 03:48:58,279 - INFO - Configuration file found in `../aizynthfinder/models/config.yml`
+2024-11-21 03:49:09,898 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-11-21 03:49:09,990 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-11-21 03:49:10,103 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-11-21 03:49:10,117 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-11-21 03:49:10,133 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-11-21 03:49:15,067 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-11-21 03:49:15,067 - INFO - Selected as stock: zinc
+2024-11-21 03:49:15,068 - INFO - Compounds in stock: 17422831
+2024-11-21 03:49:15,068 - INFO - Selected as expansion policy: uspto
+2024-11-21 03:49:15,068 - INFO - Selected as filter policy: uspto
+2024-11-21 03:50:42,626 - INFO - AZ failed for NC(=O)C1=NC(F)=CN=C1O, running LLM
+2024-11-21 03:50:42,627 - INFO - Running LLM for the 0.0th time for molecule: NC(=O)C1=NC(F)=CN=C1O
+2024-11-21 03:50:42,627 - INFO - Calling LLM with molecule: NC(=O)C1=NC(F)=CN=C1O
+2024-11-21 03:51:20,611 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2024-11-21 03:51:20,625 - INFO - Received response from LLM: Here is the single-step retrosynthesis analysis for the molecule NC(=O)C1=NC(F)=CN=C1O:
+
+<cot>
+<thinking>
+The target molecule contains a pyridine ring with an amide group, a fluorine, and a hydroxyl group as substituents. Key disconnections to consider are:
+1) Amide bond formation from a carboxylic acid and an amine 
+2) SNAr reaction to introduce the fluorine on the pyridine ring
+3) Oxidation to form the pyridine N-oxide
+4) Condensation reactions to form the pyridine ring
+</thinking>
+
+<thinking>
+Disconnection of the amide bond would give a carboxylic acid and a 2-amino-3-fluoro-pyridine N-oxide. The carboxylic acid could be a simple reagent like acetyl chloride. The aminopyridine N-oxide may be accessible by SNAr fluorination and oxidation of 2-aminopyridine.
+SMILES: CC(=O)Cl.Nc1ncc(F)c(O)n1
+</thinking>
+
+<thinking>
+The fluoropyridine could be formed via an SNAr reaction between 2-amino-3-hydroxy-pyridine N-oxide and a fluorinating agent like DAST or Selectfluor. The pyridine N-oxide would need to be synthesized separately, likely by oxidation of 2-amino-3-hydroxypyridine.
+SMILES: Nc1ncc(O)c(O)n1.FS(=O)(=O)c1ccc(C(F)(F)F)cc1
+</thinking>
+
+<thinking>
+The pyridine ring could potentially be formed by a condensation reaction, such as a Hantzsch pyridine synthesis between an enamine, an aldehyde, and an ammonia source. Specific precursors are hard to define without further literature review.
+SMILES: C=CC(N)=O.C=CC=O.NN
+</thinking>
+
+<thinking>
+Another potential pyridine ring formation could involve a cycloaddition between an oxazole and an alkyne, followed by oxidation. The oxazole would contain the amide and hydroxyl groups, while the alkyne would contain the fluorine. Specific precursors would depend on oxazole and alkyne synthesis methods.
+SMILES: C#CF.c1nc(C(N)=O)c(O)o1
+</thinking>
+
+</cot>
+
+<json>
+{
+  "data": [
+    ["CC(=O)Cl", "Nc1ncc(F)c(O)n1"],
+    ["Nc1ncc(O)c(O)n1", "FS(=O)(=O)c1ccc(C(F)(F)F)cc1"],
+    ["C=CC(N)=O", "C=CC=O", "NN"],
+    ["C#CF", "c1nc(C(N)=O)c(O)o1"]
+  ],
+  "explanation": [
+    "Amide bond formation between acetyl chloride and 2-amino-3-fluoro-pyridine N-oxide, accessed by SNAr fluorination and oxidation of 2-aminopyridine",
+    "SNAr fluorination of 2-amino-3-hydroxy-pyridine N-oxide with DAST or Selectfluor, pyridine N-oxide synthesized separately by oxidation", 
+    "Hantzsch pyridine synthesis condensation between an enamine, aldehyde, and ammonia source to form the pyridine ring",
+    "Cycloaddition between a functionalized oxazole and fluoroalkyne to form the pyridine ring, followed by oxidation"
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.5,
+    0.4
+  ]
+}
+</json>
+2024-11-21 03:51:20,625 - INFO - Error in parsing response: unmatched ')' (<unknown>, line 6)
+2024-11-21 03:51:20,633 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-11-21 03:51:20,739 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-11-21 03:51:20,863 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-11-21 03:51:20,874 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-11-21 03:51:20,891 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-11-21 03:51:25,649 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-11-21 03:51:25,650 - INFO - Selected as stock: zinc
+2024-11-21 03:51:25,650 - INFO - Compounds in stock: 17422831
+2024-11-21 03:51:25,650 - INFO - Selected as expansion policy: uspto
+2024-11-21 03:51:25,650 - INFO - Selected as filter policy: uspto
+2024-11-21 03:52:26,479 - INFO - AZ solved CC(N)C(=O)NC1=C(C)C=CC=C1C
