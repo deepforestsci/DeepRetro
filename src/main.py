@@ -16,7 +16,7 @@ from src.variables import BASIC_MOLECULES, ENCODING_SCALABILITY
 from src.variables import bcolors
 from src.utils.utils_molecule import validity_check, calc_chemical_formula, calc_mol_wt
 from src.utils.utils_molecule import get_reaction_type
-from src.utils.backup.utils_llm_old import call_LLM, llm_pipeline
+from src.utils.llm import call_LLM, llm_pipeline
 from src.cache import cache_results
 
 # load environment variables
@@ -68,21 +68,6 @@ except FileNotFoundError:
         )
 
 # TODO: add try except block for invalid smiles in the entire pipeline
-
-
-def llm_pipeline_alt(molecule: str,
-                     LLM: str = "claude-3-opus-20240229",
-                     messages: Optional[list[dict]] = None):
-    """Pipeline to call LLM and validate the results"""
-    # output_pathways = []
-    run = 0.0
-    res_pathways, res_explanations = call_LLM(molecule, LLM, run / 10,
-                                              messages)
-
-    output_pathways = validity_check(molecule, res_pathways)
-    run += 0.1
-
-    return output_pathways, res_explanations
 
 
 @cache_results

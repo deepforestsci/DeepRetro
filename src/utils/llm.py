@@ -1,5 +1,4 @@
 import ast
-import os
 import logging
 import litellm
 from typing import Optional
@@ -125,3 +124,53 @@ def validate_split_json(
         logger.info(f"Error in parsing response: {e}")
         return 500, [], [], []
     return 200, res_molecules, res_explanations, res_confidence
+
+
+def llm_pipeline(
+    molecule: str,
+    LLM: str = "claude-3-opus-20240229",
+    messages: Optional[list[dict]] = None
+) -> tuple[list[str], list[str], list[float]]:
+    """Pipeline to call LLM and validate the results
+
+    Parameters
+    ----------
+    molecule : str
+        The target molecule for retrosynthesis
+    LLM : str, optional
+        LLM to be used for retrosynthesis , by default "claude-3-opus-20240229"
+    messages : Optional[list[dict]], optional
+        Conversation history, by default None
+
+    Returns
+    -------
+    tuple[list[str], list[str], list[float]]
+        The output pathways, explanations and confidence scores
+    """
+    output_pathways = []
+    run = 0.0
+    while (output_pathways == [] and run < 0.6):
+        logger.info(f"Calling LLM with molecule: {molecule} and run: {run}")
+        status_code, res_text = call_LLM(molecule, LLM, messages=messages)
+        if status_code == 200:
+            status_code, thinking_steps, json_content = split_cot_json(
+                res_text)
+            if status_code == 200:
+                status_code, res_molecules, res_explanations, res_confidence = validate_split_json(
+                    json_content)
+                if status_code == 200:
+                    output_pathways, output_explanations, output_confidence = validity_check(
+                        molecule, res_molecules, res_explanations,
+                        res_confidence)
+                    run += 0.2
+                else:
+                    logger.info(
+                        f"Error in validating split json content: {res_text}")
+                    continue
+            else:
+                logger.info(f"Error in splitting cot json: {res_text}")
+                continue
+        else:
+            logger.info(f"Error in calling LLM: {res_text}")
+            continue
+    return output_pathways, output_explanations, output_confidence
