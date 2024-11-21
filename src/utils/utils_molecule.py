@@ -1,13 +1,20 @@
+import os
 from rdkit import Chem
 from rdkit.Chem import AllChem, rdMolDescriptors
 from rdkit.Chem.rdMolDescriptors import CalcMolFormula
 from rdkit.Chem.Descriptors import ExactMolWt
 import logging
 import joblib
-from src.variables import REACTION_ENCODING_NAMES
+import rootutils
+from src.variables import REACTION_ENCODING_NAMES, ENCODING_SCALABILITY
 from src.cache import cache_results
 
 logger = logging.getLogger(__name__)
+root_dir = rootutils.setup_root(__file__,
+                                indicator=".project-root",
+                                pythonpath=True)
+
+RXN_CLASSIFICATION_MODEL_PATH = f"{root_dir}/{os.getenv('RXN_CLASSIFICATION_MODEL_PATH')}"
 
 
 def is_valid_smiles(smiles: str) -> bool:
@@ -215,3 +222,39 @@ def get_reaction_type(mol1, mol2, model_path):
     mol2_fingerprint = compute_fingerprint(mol2)
     reaction_type = clf.predict([mol1_fingerprint + mol2_fingerprint])
     return REACTION_ENCODING_NAMES[reaction_type[0]], reaction_type[0]
+
+
+def calc_confidence_estimate(probability: float) -> float:
+    """Calculate the confidence estimate based on the probability
+
+    Parameters
+    ----------
+    probability : float
+        Probability of the prediction
+
+    Returns
+    -------
+    float
+        Confidence estimate
+    """
+    if isinstance(probability, list):
+        probability = probability[0]
+    if probability < 0.3:
+        probability = 1 - probability
+    elif probability < 0.45 and probability >= 0.3:
+        probability += 0.5
+    elif probability < 0.6 and probability >= 0.45:
+        probability += 0.3
+
+    # limit the confidence estimate to 2 decimal places, round to the
+    # nearest 0.01
+    probability = round(probability, 2)
+    if probability > 0.99:
+        probability = 0.99
+    return probability
+
+
+def calc_scalability_index(mol1, mol2):
+    """Calculate the scalability index of a reaction"""
+    _, type = get_reaction_type(mol1, mol2, RXN_CLASSIFICATION_MODEL_PATH)
+    return str(ENCODING_SCALABILITY[type])

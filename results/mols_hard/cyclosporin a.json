@@ -13,31 +13,22 @@
             "step": "1",
             "reactants": [
                 {
-                    "smiles": "Nc1ncc(F)c(O)n1",
+                    "smiles": "CC/C=C/C[C@H](C)O",
                     "reactant_metadata": {
                         "name": "",
-                        "chemical_formula": "C4H4FN3O",
-                        "mass": 129.033839968
+                        "chemical_formula": "C7H14O",
+                        "mass": 114.104465068
                     }
                 }
             ],
-            "reagents": [
-                {
-                    "smiles": "CC(=O)Cl",
-                    "reagent_metadata": {
-                        "name": "",
-                        "chemical_formula": "C2H3ClO",
-                        "mass": 77.987242396
-                    }
-                }
-            ],
+            "reagents": [],
             "products": [
                 {
-                    "smiles": "NC(=O)C1=NC(F)=CN=C1O",
+                    "smiles": "CC[C@H]1C(=O)N(CC(=O)N([C@H](C(=O)N[C@H](C(=O)N([C@H](C(=O)N[C@H](C(=O)N[C@@H](C(=O)N([C@H](C(=O)N([C@H](C(=O)N([C@H](C(=O)N([C@H](C(=O)N1)[C@@H]([C@H](C)C/C=C/C)O)C)C(C)C)C)CC(C)C)C)CC(C)C)C)C)C)CC(C)C)C)C(C)C)CC(C)C)C)C",
                     "product_metadata": {
                         "name": "",
-                        "chemical_formula": "C5H4FN3O2",
-                        "mass": 157.028754588
+                        "chemical_formula": "C62H111N11O12",
+                        "mass": 1201.841367992
                     }
                 }
             ],
@@ -54,22 +45,22 @@
             "step": "2",
             "reactants": [
                 {
-                    "smiles": "CC(C)(C)OC(=O)Nc1ncc(F)c(O)n1",
+                    "smiles": "CCC/C=C/C[C@H](C)O",
                     "reactant_metadata": {
                         "name": "",
-                        "chemical_formula": "C9H12FN3O3",
-                        "mass": 229.086269464
+                        "chemical_formula": "C8H16O",
+                        "mass": 128.120115132
                     }
                 }
             ],
             "reagents": [],
             "products": [
                 {
-                    "smiles": "Nc1ncc(F)c(O)n1",
+                    "smiles": "CC/C=C/C[C@H](C)O",
                     "product_metadata": {
                         "name": "",
-                        "chemical_formula": "C4H4FN3O",
-                        "mass": 129.033839968
+                        "chemical_formula": "C7H14O",
+                        "mass": 114.104465068
                     }
                 }
             ],
@@ -77,7 +68,7 @@
             "reactionmetrics": [
                 {
                     "scalabilityindex": "9",
-                    "confidenceestimate": 0.92,
+                    "confidenceestimate": 0.99,
                     "closestliterature": ""
                 }
             ]
@@ -86,38 +77,38 @@
             "step": "3",
             "reactants": [
                 {
-                    "smiles": "CC(C)(C)OC(N)=O",
+                    "smiles": "C=CCCC",
                     "reactant_metadata": {
                         "name": "",
-                        "chemical_formula": "C5H11NO2",
-                        "mass": 117.078978592
+                        "chemical_formula": "C5H10",
+                        "mass": 70.07825032
                     }
                 },
                 {
-                    "smiles": "Oc1nc(Cl)ncc1F",
+                    "smiles": "C=CC[C@H](C)O",
                     "reactant_metadata": {
                         "name": "",
-                        "chemical_formula": "C4H2ClFN2O",
-                        "mass": 147.983968584
+                        "chemical_formula": "C5H10O",
+                        "mass": 86.07316494
                     }
                 }
             ],
             "reagents": [],
             "products": [
                 {
-                    "smiles": "CC(C)(C)OC(=O)Nc1ncc(F)c(O)n1",
+                    "smiles": "CCC/C=C/C[C@H](C)O",
                     "product_metadata": {
                         "name": "",
-                        "chemical_formula": "C9H12FN3O3",
-                        "mass": 229.086269464
+                        "chemical_formula": "C8H16O",
+                        "mass": 128.120115132
                     }
                 }
             ],
             "conditions": [],
             "reactionmetrics": [
                 {
-                    "scalabilityindex": "3",
-                    "confidenceestimate": 0.89,
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
                     "closestliterature": ""
                 }
             ]
