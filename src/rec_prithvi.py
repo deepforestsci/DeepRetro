@@ -2,7 +2,6 @@
 
 from src.utils.llm import llm_pipeline
 from src.utils.az import run_az
-from src.utils.job_context import job_id_var
 from src.utils.job_context import logger as context_logger
 
 

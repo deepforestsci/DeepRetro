@@ -3,7 +3,7 @@ import os
 import time
 import rootutils
 from datetime import datetime
-from structlog.processors import ProcessorFormatter
+from structlog.stdlib import ProcessorFormatter
 import structlog
 
 root_dir = rootutils.setup_root(__file__,
@@ -28,7 +28,7 @@ def setup_logging():
         format='%(message)s',
         handlers=[
             logging.FileHandler(
-                f"app_{datetime.now().strftime('%Y-%m-%d')}.log"),
+                f"{date_dir}/app_{datetime.now().strftime('%Y-%m-%d')}.log"),
             logging.StreamHandler()
         ])
 
@@ -42,7 +42,7 @@ def setup_logging():
                 structlog.processors.CallsiteParameter.LINENO
             ]),
             structlog.processors.format_exc_info,
-            structlog.dev.ConsoleRenderer(),
+            structlog.dev.ConsoleRenderer(colors=False),
         ],
         context_class=dict,
         logger_factory=structlog.stdlib.LoggerFactory(),
@@ -54,13 +54,14 @@ def setup_logging():
 class JobSpecificFileHandler(logging.FileHandler):
 
     def __init__(self, job_id, *args, **kwargs):
-        filename = f'job_{job_id}.log'
+        filename = f'{date_dir}/job_{job_id}.log'
         super().__init__(filename, *args, **kwargs)
 
 
 def add_job_specific_handler(logger, job_id):
     handler = JobSpecificFileHandler(job_id)
-    formatter = ProcessorFormatter(processor=structlog.dev.ConsoleRenderer(), )
+    formatter = ProcessorFormatter(
+        processor=structlog.dev.ConsoleRenderer(colors=False), )
     handler.setFormatter(formatter)
     logger._logger.addHandler(handler)
     return handler

@@ -21,14 +21,13 @@ from src.utils.custom_logging import setup_logging
 load_dotenv()
 
 
-def main():
+def main(smiles: str) -> Any:
     # Initialize generic logging
     setup_logging()
 
     log = structlog.get_logger()
     log.info("Application initialization complete")
 
-    # Run retrosynthesis
-    smiles = "CC(=O)Oc1ccccc1C(=O)O"
     res = run_prithvi(smiles)
     logging.info(f"Retrosynthesis result: {res}")
+    return res

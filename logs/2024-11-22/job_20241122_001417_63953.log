@@ -1,0 +1,65 @@
+[1m[2m2024-11-21 18:44:17[0m [[32m[1minfo     [0m] [1mStarting new synthesis job 20241122_001417_63953 for molecule NC(=O)C1=NC(F)=CN=C1O[0m [36mfilename[0m=[35mprithvi.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m30[0m[0m
+[1m[2m2024-11-21 18:44:17[0m [[32m[1minfo     [0m] [1mAZ_MODEL_CONFIG_PATH found: /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/../aizynthfinder/models/config.yml[0m [36mfilename[0m=[35maz.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m35[0m[0m
+[1m[2m2024-11-21 18:45:49[0m [[32m[1minfo     [0m] [1mAZ failed for NC(=O)C1=NC(F)=CN=C1O, running LLM[0m [36mfilename[0m=[35mrec_prithvi.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m13[0m[0m
+[1m[2m2024-11-21 18:45:49[0m [[32m[1minfo     [0m] [1mCalling LLM with molecule: NC(=O)C1=NC(F)=CN=C1O and run: 0.0[0m [36mfilename[0m=[35mllm.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m154[0m[0m
+[1m[2m2024-11-21 18:46:19[0m [[32m[1minfo     [0m] [1mReceived response from LLM: Here is the single-step retrosynthesis analysis for the molecule NC(=O)C1=NC(F)=CN=C1O:
+
+<cot>
+<thinking>
+The target molecule contains a pyridine ring with an amide group, a fluorine, and a hydroxyl group as substituents. Key disconnection points to consider are:
+1) The amide C-N bond 
+2) The C-F bond
+3) The C-OH bond
+4) Bonds within the pyridine ring
+</thinking>
+
+<thinking>
+Disconnecting the amide C-N bond would give a carboxylic acid and an amine. The carboxylic acid could come from oxidation of an aldehyde or alcohol. The amine could come from reduction of a nitrile or nitro group. High confidence in this approach.
+</thinking>
+
+<thinking>
+The C-F bond could come from nucleophilic fluorination of the corresponding chloride or bromide compound. Moderate confidence as the pyridine ring may be sensitive to the fluorination conditions.
+</thinking>
+
+<thinking>
+The C-OH bond could come from oxidation of an aldehyde C-H bond. The aldehyde precursor may be accessed by reduction of a carboxylic acid or ester. High confidence in this approach.
+</thinking>
+
+<thinking>
+Disconnecting within the pyridine ring doesn't look promising, as it would require building the heterocycle which is likely more than one step. Low confidence in ring disconnections.
+</thinking>
+
+</cot>
+
+<json>
+{
+  "data": [
+    ["NC(=O)C1=NC(F)=CN=C1", "O"],
+    ["NC(=O)C1=NC(Cl)=CN=C1O", "F"],
+    ["NC(=O)C1=NC(Br)=CN=C1O", "F"],
+    ["O=CC1=NC(F)=CN=C1O", "NC"]
+  ],
+  "explanation": [
+    "Amide formation from a carboxylic acid and an amine. Oxidize the aldehyde to the acid, then couple with the amine.",
+    "Nucleophilic fluorination of the chloropyridine compound", 
+    "Nucleophilic fluorination of the bromopyridine compound",
+    "Oxidation of the aldehyde C-H to the alcohol. The aldehyde can come from partial reduction of a carboxylic acid or ester."
+  ],
+  "confidence_scores": [
+    0.9,
+    0.6,
+    0.6, 
+    0.8
+  ]
+}
+</json>[0m [36mfilename[0m=[35mllm.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m68[0m[0m
+[1m[2m2024-11-21 18:46:19[0m [[32m[1minfo     [0m] [1mObtained 4 valid pathways after validity test: [['NC(=O)C1=NC(F)=CN=C1', 'O'], ['NC(=O)C1=NC(Cl)=CN=C1O', 'F'], ['NC(=O)C1=NC(Br)=CN=C1O', 'F'], ['O=CC1=NC(F)=CN=C1O', 'NC']][0m [36mfilename[0m=[35mutils_molecule.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m144[0m[0m
+[1m[2m2024-11-21 18:46:19[0m [[32m[1minfo     [0m] [1mOutput Pathways: [['NC(=O)C1=NC(F)=CN=C1', 'O'], ['NC(=O)C1=NC(Cl)=CN=C1O', 'F'], ['NC(=O)C1=NC(Br)=CN=C1O', 'F'], ['O=CC1=NC(F)=CN=C1O', 'NC']],                            Output Explanations: ['Amide formation from a carboxylic acid and an amine. Oxidize the aldehyde to the acid, then couple with the amine.', 'Nucleophilic fluorination of the chloropyridine compound', 'Nucleophilic fluorination of the bromopyridine compound', 'Oxidation of the aldehyde C-H to the alcohol. The aldehyde can come from partial reduction of a carboxylic acid or ester.'],                                Output Confidence: [0.9, 0.6, 0.6, 0.8][0m [36mfilename[0m=[35mllm.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m166[0m[0m
+[1m[2m2024-11-21 18:46:19[0m [[32m[1minfo     [0m] [1mLLM returned [['NC(=O)C1=NC(F)=CN=C1', 'O'], ['NC(=O)C1=NC(Cl)=CN=C1O', 'F'], ['NC(=O)C1=NC(Br)=CN=C1O', 'F'], ['O=CC1=NC(F)=CN=C1O', 'NC']][0m [36mfilename[0m=[35mrec_prithvi.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m34[0m[0m
+[1m[2m2024-11-21 18:46:19[0m [[32m[1minfo     [0m] [1mLLM explained ['Amide formation from a carboxylic acid and an amine. Oxidize the aldehyde to the acid, then couple with the amine.', 'Nucleophilic fluorination of the chloropyridine compound', 'Nucleophilic fluorination of the bromopyridine compound', 'Oxidation of the aldehyde C-H to the alcohol. The aldehyde can come from partial reduction of a carboxylic acid or ester.'][0m [36mfilename[0m=[35mrec_prithvi.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m35[0m[0m
+[1m[2m2024-11-21 18:46:19[0m [[32m[1minfo     [0m] [1mAZ_MODEL_CONFIG_PATH found: /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/../aizynthfinder/models/config.yml[0m [36mfilename[0m=[35maz.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m35[0m[0m
+[1m[2m2024-11-21 18:48:12[0m [[32m[1minfo     [0m] [1mAZ solved NC(=O)C1=NC(F)=CN=C1[0m [36mfilename[0m=[35mrec_prithvi.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m54[0m[0m
+[1m[2m2024-11-21 18:48:12[0m [[32m[1minfo     [0m] [1mAZ_MODEL_CONFIG_PATH found: /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/../aizynthfinder/models/config.yml[0m [36mfilename[0m=[35maz.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m35[0m[0m
+[1m[2m2024-11-21 18:48:12[0m [[32m[1minfo     [0m] [1mAZ solved O                   [0m [36mfilename[0m=[35mrec_prithvi.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m54[0m[0m
+[1m[2m2024-11-21 18:48:12[0m [[32m[1minfo     [0m] [1mtemp_stat: [True, True]       [0m [36mfilename[0m=[35mrec_prithvi.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m44[0m[0m
+[1m[2m2024-11-21 18:48:12[0m [[32m[1minfo     [0m] [1mbreaking                      [0m [36mfilename[0m=[35mrec_prithvi.py[0m [36mjob_id[0m=[35m20241122_001417_63953[0m [36mlineno[0m=[35m51[0m[0m

@@ -6,28 +6,31 @@
         "2": [
             "3"
         ],
-        "3": []
+        "3": [
+            "4"
+        ],
+        "4": []
     },
     "steps": [
         {
             "step": "1",
             "reactants": [
                 {
-                    "smiles": "Nc1ncc(F)c(O)n1",
+                    "smiles": "NC(=O)c1cncc(F)n1",
                     "reactant_metadata": {
                         "name": "",
-                        "chemical_formula": "C4H4FN3O",
-                        "mass": 129.033839968
+                        "chemical_formula": "C5H4FN3O",
+                        "mass": 141.033839968
                     }
                 }
             ],
             "reagents": [
                 {
-                    "smiles": "CC(=O)Cl",
+                    "smiles": "O",
                     "reagent_metadata": {
                         "name": "",
-                        "chemical_formula": "C2H3ClO",
-                        "mass": 77.987242396
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
                     }
                 }
             ],
@@ -44,8 +47,8 @@
             "conditions": [],
             "reactionmetrics": [
                 {
-                    "scalabilityindex": "8",
-                    "confidenceestimate": 0.8,
+                    "scalabilityindex": "10",
+                    "confidenceestimate": 0.9,
                     "closestliterature": ""
                 }
             ]
@@ -54,30 +57,38 @@
             "step": "2",
             "reactants": [
                 {
-                    "smiles": "CC(C)(C)OC(=O)Nc1ncc(F)c(O)n1",
+                    "smiles": "O=C(O)O",
                     "reactant_metadata": {
                         "name": "",
-                        "chemical_formula": "C9H12FN3O3",
-                        "mass": 229.086269464
+                        "chemical_formula": "CH2O3",
+                        "mass": 62.000393923999994
+                    }
+                },
+                {
+                    "smiles": "N#Cc1cncc(F)n1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H2FN3",
+                        "mass": 123.023275284
                     }
                 }
             ],
             "reagents": [],
             "products": [
                 {
-                    "smiles": "Nc1ncc(F)c(O)n1",
+                    "smiles": "NC(=O)c1cncc(F)n1",
                     "product_metadata": {
                         "name": "",
-                        "chemical_formula": "C4H4FN3O",
-                        "mass": 129.033839968
+                        "chemical_formula": "C5H4FN3O",
+                        "mass": 141.033839968
                     }
                 }
             ],
             "conditions": [],
             "reactionmetrics": [
                 {
-                    "scalabilityindex": "9",
-                    "confidenceestimate": 0.92,
+                    "scalabilityindex": "10",
+                    "confidenceestimate": 0.99,
                     "closestliterature": ""
                 }
             ]
@@ -86,38 +97,78 @@
             "step": "3",
             "reactants": [
                 {
-                    "smiles": "CC(C)(C)OC(N)=O",
+                    "smiles": "C[Si](C)(C)C#N",
                     "reactant_metadata": {
                         "name": "",
-                        "chemical_formula": "C5H11NO2",
-                        "mass": 117.078978592
+                        "chemical_formula": "C4H9NSi",
+                        "mass": 99.050425818
                     }
                 },
                 {
-                    "smiles": "Oc1nc(Cl)ncc1F",
+                    "smiles": "[O-][n+]1ccncc1F",
                     "reactant_metadata": {
                         "name": "",
-                        "chemical_formula": "C4H2ClFN2O",
-                        "mass": 147.983968584
+                        "chemical_formula": "C4H3FN2O",
+                        "mass": 114.022940936
                     }
                 }
             ],
             "reagents": [],
             "products": [
                 {
-                    "smiles": "CC(C)(C)OC(=O)Nc1ncc(F)c(O)n1",
+                    "smiles": "N#Cc1cncc(F)n1",
                     "product_metadata": {
                         "name": "",
-                        "chemical_formula": "C9H12FN3O3",
-                        "mass": 229.086269464
+                        "chemical_formula": "C5H2FN3",
+                        "mass": 123.023275284
                     }
                 }
             ],
             "conditions": [],
             "reactionmetrics": [
                 {
-                    "scalabilityindex": "3",
-                    "confidenceestimate": 0.89,
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": ""
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "Fc1cnccn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H3FN2",
+                        "mass": 98.028026316
+                    }
+                },
+                {
+                    "smiles": "O=C(OO)c1cccc(Cl)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H5ClO3",
+                        "mass": 171.99272169999998
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "[O-][n+]1ccncc1F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H3FN2O",
+                        "mass": 114.022940936
+                    }
+                }
+            ],
+            "conditions": [],
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "10",
+                    "confidenceestimate": 0.74,
                     "closestliterature": ""
                 }
             ]
