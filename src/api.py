@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from functools import wraps
 from rdkit import Chem  # For SMILES validation (optional)
-from utils import run_prithvi
+from src.prithvi import run_prithvi
 
 app = Flask(__name__)
 

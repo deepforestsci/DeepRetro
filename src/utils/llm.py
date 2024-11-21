@@ -1,5 +1,4 @@
 import ast
-import logging
 import litellm
 from typing import Optional
 from dotenv import load_dotenv
@@ -7,10 +6,9 @@ from litellm import completion
 from src.variables import USER_PROMPT, SYS_PROMPT
 from src.cache import cache_results
 from src.utils.utils_molecule import calc_mol_wt, validity_check
+from src.utils.job_context import logger as context_logger
 
 load_dotenv()
-
-logger = logging.getLogger(__name__)
 
 # set the success callback to langfuse for logging
 litellm.success_callback = ["langfuse"]
@@ -32,7 +30,7 @@ def call_LLM(molecule: str,
              temperature: float = 0.0,
              messages: Optional[list[dict]] = None):
     """Calls the LLM model to predict the next step"""
-
+    logger = context_logger.get()
     # logger.info(f"Calling {LLM} with molecule: {molecule}")
     if messages is None:
         messages = [{
@@ -84,6 +82,7 @@ def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
     tuple[int, list[str], str]
         The status code, thinking steps and json content
     """
+    logger = context_logger.get()
     try:
         # extract the content within <cot> </cot> tags as thinking content
         thinking_content = res_text[res_text.find("<cot>\n") +
@@ -115,6 +114,7 @@ def validate_split_json(
     tuple[int, list[str], list[str], list[int]]
         The status code, list of molecules, list of explanations and list of confidence scores
     """
+    logger = context_logger.get()
     try:
         result_list = ast.literal_eval(json_content)
         res_molecules = result_list['data']
@@ -147,6 +147,7 @@ def llm_pipeline(
     tuple[list[str], list[str], list[float]]
         The output pathways, explanations and confidence scores
     """
+    logger = context_logger.get()
     output_pathways = []
     run = 0.0
     while (output_pathways == [] and run < 0.6):
@@ -162,9 +163,9 @@ def llm_pipeline(
                     output_pathways, output_explanations, output_confidence = validity_check(
                         molecule, res_molecules, res_explanations,
                         res_confidence)
-                    logger.info(
-                        f"Output Pathways: {output_pathways}, Output Explanations: {output_explanations}, Output Confidence: {output_confidence}"
-                    )
+                    logger.info(f"Output Pathways: {output_pathways},\
+                            Output Explanations: {output_explanations},\
+                                Output Confidence: {output_confidence}")
                     run += 0.2
                 else:
                     logger.info(

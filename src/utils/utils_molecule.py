@@ -3,13 +3,13 @@ from rdkit import Chem
 from rdkit.Chem import AllChem, rdMolDescriptors
 from rdkit.Chem.rdMolDescriptors import CalcMolFormula
 from rdkit.Chem.Descriptors import ExactMolWt
-import logging
+
 import joblib
 import rootutils
 from src.variables import REACTION_ENCODING_NAMES, ENCODING_SCALABILITY
 from src.cache import cache_results
+from src.utils.job_context import logger as context_logger
 
-logger = logging.getLogger(__name__)
 root_dir = rootutils.setup_root(__file__,
                                 indicator=".project-root",
                                 pythonpath=True)
@@ -54,6 +54,7 @@ def substructure_matching(target_smiles: str, query_smiles: str) -> int:
     int
         1 if the query substructure is present in the target molecule, 0 otherwise
     """
+    logger = context_logger.get()
     # Convert SMILES to RDKit molecule objects
     try:
         target_molecule = Chem.MolFromSmiles(target_smiles)
@@ -77,6 +78,29 @@ def substructure_matching(target_smiles: str, query_smiles: str) -> int:
 
 @cache_results
 def validity_check(molecule, res_molecules, res_explanations, res_confidence):
+    """Check the validity of the molecules obtained from LLM
+
+    Parameters
+    ----------
+    molecule : str
+        Target molecule for retrosynthesis
+    res_molecules : list
+        List of molecules obtained from LLM
+    res_explanations : list
+        List of explanations obtained from LLM
+    res_confidence : list
+        List of confidence scores obtained from LLM
+
+    Returns
+    -------
+    list
+        List of valid pathways
+    list
+        List of valid explanations
+    list
+        List of valid confidence scores
+    """
+    logger = context_logger.get()
     valid_pathways = []
     valid_explanations = []
     valid_confidence = []
@@ -136,6 +160,7 @@ def calc_mol_wt(mol: str) -> float:
     float
         molecular weight of the molecule
     """
+    logger = context_logger.get()
     try:
         mol_wt = ExactMolWt(Chem.MolFromSmiles(mol))
     except:
@@ -157,6 +182,7 @@ def calc_chemical_formula(mol: str):
     str
         molecular formula of the molecule
     """
+    logger = context_logger.get()
     try:
         formula = CalcMolFormula(Chem.MolFromSmiles(mol))
     except:
@@ -258,3 +284,8 @@ def calc_scalability_index(mol1, mol2):
     """Calculate the scalability index of a reaction"""
     _, type = get_reaction_type(mol1, mol2, RXN_CLASSIFICATION_MODEL_PATH)
     return str(ENCODING_SCALABILITY[type])
+
+
+def calc_yield(mol1, mol2):
+    """Calculate the yield of a reaction"""
+    return "#"
