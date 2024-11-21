@@ -1,0 +1,431 @@
+2024-11-21 18:19:19,285 - INFO - Logging started
+2024-11-21 18:19:19,285 - INFO - AZ_MODEL_CONFIG_PATH found: /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/../aizynthfinder/models/config.yml
+2024-11-21 18:19:33,339 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-11-21 18:19:33,475 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-11-21 18:19:33,592 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-11-21 18:19:33,604 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-11-21 18:19:33,620 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-11-21 18:19:38,504 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-11-21 18:19:38,505 - INFO - Selected as stock: zinc
+2024-11-21 18:19:38,505 - INFO - Compounds in stock: 17422831
+2024-11-21 18:19:38,505 - INFO - Selected as expansion policy: uspto
+2024-11-21 18:19:38,505 - INFO - Selected as filter policy: uspto
+2024-11-21 18:21:04,337 - INFO - AZ failed for NC(=O)C1=NC(F)=CN=C1O, running LLM
+2024-11-21 18:21:04,337 - INFO - Calling LLM with molecule: NC(=O)C1=NC(F)=CN=C1O and run: 0.0
+2024-11-21 18:21:05,603 - INFO - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+2024-11-21 18:21:41,414 - INFO - Wrapper: Completed Call, calling success_handler
+2024-11-21 18:21:41,419 - INFO - Received response from LLM: Here is the single-step retrosynthesis analysis for the molecule NC(=O)C1=NC(F)=CN=C1O:
+
+<cot>
+<thinking>
+The target molecule contains a pyridine ring with an amide group, a fluorine, and a hydroxyl group as substituents. Key disconnections to consider are:
+1) Amide bond formation from a carboxylic acid and an amine 
+2) SNAr reaction to introduce the fluorine on the pyridine ring
+3) Oxidation to form the pyridine N-oxide
+4) Condensation reactions to form the pyridine ring
+</thinking>
+
+<thinking>
+Disconnection of the amide bond would give a carboxylic acid and a 2-amino-3-fluoro-pyridine N-oxide. The carboxylic acid could be a simple reagent like acetyl chloride. The aminopyridine N-oxide may be accessible by SNAr fluorination and oxidation of 2-aminopyridine.
+SMILES: CC(=O)Cl.Nc1ncc(F)c(O)n1
+</thinking>
+
+<thinking>
+The fluoropyridine could be formed via an SNAr reaction between 2-amino-3-hydroxy-pyridine N-oxide and a fluorinating agent like DAST or Selectfluor. The pyridine N-oxide would need to be synthesized separately, likely by oxidation of 2-amino-3-hydroxypyridine.
+SMILES: Nc1ncc(O)c(O)n1.FS(=O)(=O)c1ccc(C(F)(F)F)cc1
+</thinking>
+
+<thinking>
+The pyridine ring could potentially be formed by a condensation reaction, such as a Hantzsch pyridine synthesis between an enamine, an aldehyde, and an ammonia source. Specific precursors are hard to define without further literature review.
+SMILES: C=CC(N)=O.C=CC=O.NN
+</thinking>
+
+<thinking>
+Another potential pyridine ring formation could involve a cycloaddition between an oxazole and an alkyne, followed by oxidation. The oxazole would contain the amide and hydroxyl groups, while the alkyne would contain the fluorine. Specific precursors would depend on oxazole and alkyne synthesis methods.
+SMILES: C#CF.c1nc(C(N)=O)c(O)o1
+</thinking>
+
+</cot>
+
+<json>
+{
+  "data": [
+    ["CC(=O)Cl", "Nc1ncc(F)c(O)n1"],
+    ["Nc1ncc(O)c(O)n1", "FS(=O)(=O)c1ccc(C(F)(F)F)cc1"],
+    ["C=CC(N)=O", "C=CC=O", "NN"],
+    ["C#CF", "c1nc(C(N)=O)c(O)o1"]
+  ],
+  "explanation": [
+    "Amide bond formation between acetyl chloride and 2-amino-3-fluoro-pyridine N-oxide, accessed by SNAr fluorination and oxidation of 2-aminopyridine",
+    "SNAr fluorination of 2-amino-3-hydroxy-pyridine N-oxide with DAST or Selectfluor, pyridine N-oxide synthesized separately by oxidation", 
+    "Hantzsch pyridine synthesis condensation between an enamine, aldehyde, and ammonia source to form the pyridine ring",
+    "Cycloaddition between a functionalized oxazole and fluoroalkyne to form the pyridine ring, followed by oxidation"
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.5,
+    0.4
+  ]
+}
+</json>
+2024-11-21 18:21:41,422 - INFO - Langfuse Layer Logging - logging success
+2024-11-21 18:21:41,432 - INFO - Obtained 4 valid pathways after validity test: [['CC(=O)Cl', 'Nc1ncc(F)c(O)n1'], ['Nc1ncc(O)c(O)n1', 'FS(=O)(=O)c1ccc(C(F)(F)F)cc1'], ['C=CC(N)=O', 'C=CC=O', 'NN'], ['C#CF', 'c1nc(C(N)=O)c(O)o1']]
+2024-11-21 18:21:41,432 - INFO - LLM returned [['CC(=O)Cl', 'Nc1ncc(F)c(O)n1'], ['Nc1ncc(O)c(O)n1', 'FS(=O)(=O)c1ccc(C(F)(F)F)cc1'], ['C=CC(N)=O', 'C=CC=O', 'NN'], ['C#CF', 'c1nc(C(N)=O)c(O)o1']]
+2024-11-21 18:21:41,432 - INFO - LLM explained ['Amide bond formation between acetyl chloride and 2-amino-3-fluoro-pyridine N-oxide, accessed by SNAr fluorination and oxidation of 2-aminopyridine', 'SNAr fluorination of 2-amino-3-hydroxy-pyridine N-oxide with DAST or Selectfluor, pyridine N-oxide synthesized separately by oxidation', 'Hantzsch pyridine synthesis condensation between an enamine, aldehyde, and ammonia source to form the pyridine ring', 'Cycloaddition between a functionalized oxazole and fluoroalkyne to form the pyridine ring, followed by oxidation']
+2024-11-21 18:21:41,432 - INFO - AZ solved CC(=O)Cl
+2024-11-21 18:21:41,440 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-11-21 18:21:41,559 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-11-21 18:21:41,662 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-11-21 18:21:41,675 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-11-21 18:21:41,689 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-11-21 18:21:46,333 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-11-21 18:21:46,334 - INFO - Selected as stock: zinc
+2024-11-21 18:21:46,334 - INFO - Compounds in stock: 17422831
+2024-11-21 18:21:46,334 - INFO - Selected as expansion policy: uspto
+2024-11-21 18:21:46,334 - INFO - Selected as filter policy: uspto
+2024-11-21 18:22:47,867 - INFO - AZ solved Nc1ncc(F)c(O)n1
+2024-11-21 18:22:47,867 - INFO - temp_stat: [True, True]
+2024-11-21 18:22:47,867 - INFO - breaking
+2024-11-21 18:22:48,943 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-11-21 18:22:49,013 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-11-21 18:22:49,117 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-11-21 18:22:49,126 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-11-21 18:22:49,142 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-11-21 18:22:54,024 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-11-21 18:22:54,025 - INFO - Selected as stock: zinc
+2024-11-21 18:22:54,025 - INFO - Compounds in stock: 17422831
+2024-11-21 18:22:54,025 - INFO - Selected as expansion policy: uspto
+2024-11-21 18:22:54,025 - INFO - Selected as filter policy: uspto
+2024-11-21 18:23:51,686 - INFO - AZ solved CC(N)C(=O)NC1=C(C)C=CC=C1C
+2024-11-21 18:25:38,302 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-11-21 18:25:38,371 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-11-21 18:25:38,476 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-11-21 18:25:38,487 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-11-21 18:25:38,502 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-11-21 18:25:43,334 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-11-21 18:25:43,335 - INFO - Selected as stock: zinc
+2024-11-21 18:25:43,335 - INFO - Compounds in stock: 17422831
+2024-11-21 18:25:43,336 - INFO - Selected as expansion policy: uspto
+2024-11-21 18:25:43,336 - INFO - Selected as filter policy: uspto
+2024-11-21 18:26:30,314 - INFO - AZ failed for CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O, running LLM
+2024-11-21 18:26:30,314 - INFO - Calling LLM with molecule: CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O and run: 0.0
+2024-11-21 18:26:30,317 - INFO - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+2024-11-21 18:27:40,940 - INFO - Wrapper: Completed Call, calling success_handler
+2024-11-21 18:27:40,948 - INFO - Received response from LLM: Here is my retrosynthetic analysis of the given molecule:
+
+<cot>
+<thinking>
+The target molecule is a complex glycopeptide antibiotic, likely related to vancomycin. Key structural features include:
+- A heptapeptide backbone with several non-proteinogenic amino acids 
+- Aromatic rings, including chlorinated tyrosine residues, that form cross-links
+- Disaccharide attached to one of the tyrosine residues
+- Long aliphatic chain amide substituent on the N-terminus
+Potential disconnection points for retrosynthesis:
+1) Amide bonds in the peptide backbone 
+2) Biaryl and aryl ether linkages between aromatic rings
+3) Glycosidic bond attaching disaccharide
+4) Aliphatic amide on the N-terminus
+</thinking>
+
+<thinking>
+Retrosynthesis suggestion 1:
+Disconnect the aliphatic amide and the adjacent amide bond. This gives the free amine of the cyclic peptide and the aliphatic carboxylic acid. The peptide could be made via standard solid-phase peptide synthesis followed by oxidative cross-linking of the aromatic rings. The carboxylic acid could be made by oxidation of the corresponding aldehyde.
+</thinking>
+
+<thinking>
+Retrosynthesis suggestion 2:  
+Disconnect the biaryl linkages between the aromatic rings. This gives chlorinated tyrosine building blocks that could be incorporated during SPPS of the linear peptide. Subsequent oxidative coupling would form the cyclized peptide.
+</thinking>
+
+<thinking>
+Retrosynthesis suggestion 3:
+Disconnect the glycosidic bond to give the cyclic peptide aglycon and a disaccharide donor. The disaccharide could be prepared via glycosylation reactions from monosaccharide building blocks. The aglycon would be made as described previously.
+</thinking>
+
+<thinking>
+Retrosynthesis suggestion 4:
+Disconnect an amide bond in the peptide backbone to give two smaller peptide fragments. Allows more convergent synthesis. The C-terminal fragment contains the disaccharide and could be prepared via glycopeptide synthesis. The fragments would be coupled and cyclized to give the final product.
+</thinking>
+
+</cot>
+
+<json>
+{
+  "data": [
+    ["CC(C)CCCCCCCCC(=O)O", "N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)N)O)O)Cl)O)C(=O)O)O)O"],
+    ["OC1=C(C=C(C=C1Cl)[C@H](C(=O)N[C@@H](C(=O)N[C@@H](CC1=CC=C(O)C=C1)C(=O)N[C@@H](C(=O)N[C@@H](CC1=CC=C(O)C(=C1)Cl)C(=O)N[C@@H](C(=O)N[C@@H](C(=O)N[C@@H](CC1=CC=C(O)C=C1O)C(=O)O)CC(C)C)CC1=CC=C(O)C=C1)CC(C)C)CC1=CC=C(O)C=C1)Cc1ccc(O)c(Cl)c1", "OC1=C(C=C(C=C1Cl)[C@H](C(=O)N[C@@H](C(=O)N[C@@H](CC1=CC=C(O)C=C1)C(=O)N[C@@H](C(=O)N[C@@H](CC1=CC=C(O)C(=C1)Cl)C(=O)N[C@@H](C(=O)N[C@@H](C(=O)N[C@@H](CC1=CC=C(O)C=C1O)C(=O)O)CC(C)C)CC1=CC=C(O)C=C1)CC(C)C)CC1=CC=C(O)C=C1)Cc1ccc(O)c(Cl)c1"],
+    ["OC[C@H]1O[C@@H](O[C@H]2[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O2)[C@H](O)[C@@H](O)[C@@H]1O", "N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O)C8=C(C=CC(=C8)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)O)O)Cl)O)C(=O)O)O)O"],
+    ["N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC1=C2C=C3C=C1OC4=C(C=C(C=C4)[C@H]([C@H]5C(=O)N[C@@H](C6=C(C(=CC(=C6)O)O)C7=C(C=CC(=C7)[C@H](C(=O)N5)NC(=O)[C@@H]3NC(=O)[C@@H]1C1=C(C(=CC(=C1)O)O)Cl)O)C(=O)O)O)O", "CC(C)CCCCCCCCC(=O)N[C@@H](C(=O)O)CC1=CC=C(O)C=C1"]
+  ],
+  "explanation": [
+    "Disconnect aliphatic amide and adjacent peptide bond. Peptide made via SPPS and oxidative cross-linking. Carboxylic acid by aldehyde oxidation.",
+    "Disconnect biaryl linkages. Chlorotyrosine building blocks incorporated during SPPS, followed by oxidative coupling to cyclize.", 
+    "Disconnect glycosidic bond to give peptide aglycon and disaccharide donor. Disaccharide made via glycosylation reactions.",
+    "Disconnect amide bond to give two peptide fragments for convergent synthesis. C-terminal fragment contains disaccharide. Fragments coupled and cyclized."
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.9,
+    0.6
+  ]
+}
+</json>
+2024-11-21 18:27:40,951 - INFO - Langfuse Layer Logging - logging success
+2024-11-21 18:27:40,960 - INFO - Molecule : CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O is invalid or cannot be parsed
+2024-11-21 18:27:40,961 - INFO - Molecule : CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O is invalid or cannot be parsed
+2024-11-21 18:27:40,961 - INFO - Molecule : CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O is invalid or cannot be parsed
+2024-11-21 18:27:40,965 - INFO - Molecule : CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O is invalid or cannot be parsed
+2024-11-21 18:27:40,965 - INFO - Molecule : CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O is invalid or cannot be parsed
+2024-11-21 18:27:40,968 - INFO - Obtained 0 valid pathways after validity test: []
+2024-11-21 18:27:40,968 - INFO - Calling LLM with molecule: CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O and run: 0.2
+2024-11-21 18:27:40,970 - INFO - Calling LLM with molecule: CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O and run: 0.4
+2024-11-21 18:27:40,970 - INFO - LLM returned []
+2024-11-21 18:27:40,970 - INFO - LLM explained []
+2024-11-21 18:27:40,974 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-11-21 18:27:41,043 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-11-21 18:27:41,142 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-11-21 18:27:41,153 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-11-21 18:27:41,167 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-11-21 18:27:45,948 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-11-21 18:27:45,949 - INFO - Selected as stock: zinc
+2024-11-21 18:27:45,949 - INFO - Compounds in stock: 17422831
+2024-11-21 18:27:45,949 - INFO - Selected as expansion policy: uspto
+2024-11-21 18:27:45,949 - INFO - Selected as filter policy: uspto
+2024-11-21 18:28:39,322 - INFO - AZ failed for CC[C@H]1C(=O)N(CC(=O)N([C@H](C(=O)N[C@H](C(=O)N([C@H](C(=O)N[C@H](C(=O)N[C@@H](C(=O)N([C@H](C(=O)N([C@H](C(=O)N([C@H](C(=O)N([C@H](C(=O)N1)[C@@H]([C@H](C)C/C=C/C)O)C)C(C)C)C)CC(C)C)C)CC(C)C)C)C)C)CC(C)C)C)C(C)C)CC(C)C)C)C, running LLM
+2024-11-21 18:28:39,322 - INFO - Calling LLM with molecule: CC[C@H]1C(=O)N(CC(=O)N([C@H](C(=O)N[C@H](C(=O)N([C@H](C(=O)N[C@H](C(=O)N[C@@H](C(=O)N([C@H](C(=O)N([C@H](C(=O)N([C@H](C(=O)N([C@H](C(=O)N1)[C@@H]([C@H](C)C/C=C/C)O)C)C(C)C)C)CC(C)C)C)CC(C)C)C)C)C)CC(C)C)C)C(C)C)CC(C)C)C)C and run: 0.0
+2024-11-21 18:28:39,322 - INFO - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+2024-11-21 18:29:22,324 - INFO - Wrapper: Completed Call, calling success_handler
+2024-11-21 18:29:22,328 - INFO - Received response from LLM: Here is the retrosynthetic analysis for the given molecule:
+
+<cot>
+<thinking>
+The target molecule is a cyclic peptide with 11 amino acid residues, including some non-proteinogenic amino acids like isoleucine, leucine, and valine derivatives. The peptide also contains a (2E,4E)-hexa-2,4-dien-1-ol group attached to one of the amino acids, likely derived from a modified isoleucine. 
+</thinking>
+
+<thinking>
+One approach to synthesize this peptide would be linear solid-phase peptide synthesis (SPPS), building the peptide chain one amino acid at a time on a solid support. The modified amino acid with the hexadienol group could be synthesized separately and incorporated during SPPS. After completion, the linear peptide would be cyclized in solution.
+</thinking>
+
+<thinking>
+Alternatively, the peptide could be synthesized in solution by sequentially coupling protected amino acid building blocks. Specialized coupling reagents would be needed to avoid epimerization. The hexadienol-modified amino acid building block would be prepared separately. After assembling the linear peptide, cyclization would give the final product.
+</thinking>
+
+<thinking>
+A more convergent approach could involve synthesizing protected peptide fragments by SPPS or solution-phase coupling, then joining the fragments and cyclizing to give the full cyclic peptide. Fragment condensation of 2-3 pieces could be an efficient strategy.
+</thinking>
+
+<thinking>
+Biosynthesis using a non-ribosomal peptide synthetase (NRPS) engineered to incorporate the desired amino acids is another possibility, though this would require extensive enzyme engineering. The hexadienol group would likely need to be installed by a separate tailoring enzyme after NRPS assembly of the core peptide.
+</thinking>
+
+</cot>
+
+<json>
+{
+  "data": [
+    ["CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O", "CC/C=C/C[C@H](C)O"],
+    ["CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)N)C(=O)O", "CC[C@H](NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O", "CC/C=C/C[C@H](C)O"],
+    ["CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O", "CC[C@H](NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O", "CC/C=C/C[C@H](C)O"],
+    ["Enzymatic synthesis using engineered NRPS and tailoring enzyme"]
+  ],
+  "explanation": [
+    "Linear solid-phase peptide synthesis (SPPS) of entire peptide, with separately synthesized hexadienol-modified amino acid. Cyclization in solution after cleavage from resin.",
+    "Solution-phase synthesis by sequential coupling of protected amino acid building blocks. Hexadienol-amino acid synthesized separately. Linear peptide cyclized after assembly.", 
+    "Convergent synthesis by joining protected peptide fragments made by SPPS or solution-phase coupling. Cyclization after fragment condensation.",
+    "Biosynthesis using engineered non-ribosomal peptide synthetase (NRPS) and tailoring enzyme to incorporate modified amino acid."
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.7,
+    0.4
+  ]
+}
+</json>
+2024-11-21 18:29:22,331 - INFO - Langfuse Layer Logging - logging success
+2024-11-21 18:29:22,355 - INFO - Molecule : CC[C@H]1C(=O)N(CC(=O)N([C@H](C(=O)N[C@H](C(=O)N([C@H](C(=O)N[C@H](C(=O)N[C@@H](C(=O)N([C@H](C(=O)N([C@H](C(=O)N([C@H](C(=O)N([C@H](C(=O)N1)[C@@H]([C@H](C)C/C=C/C)O)C)C(C)C)C)CC(C)C)C)CC(C)C)C)C)C)CC(C)C)C)C(C)C)CC(C)C)C)C is invalid or cannot be parsed
+2024-11-21 18:29:22,355 - INFO - Obtained 3 valid pathways after validity test: [['CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O', 'CC/C=C/C[C@H](C)O'], ['CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)N)C(=O)O', 'CC[C@H](NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O', 'CC/C=C/C[C@H](C)O'], ['CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O', 'CC[C@H](NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O', 'CC/C=C/C[C@H](C)O']]
+2024-11-21 18:29:22,356 - INFO - LLM returned [['CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O', 'CC/C=C/C[C@H](C)O'], ['CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)N)C(=O)O', 'CC[C@H](NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O', 'CC/C=C/C[C@H](C)O'], ['CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O', 'CC[C@H](NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O', 'CC/C=C/C[C@H](C)O']]
+2024-11-21 18:29:22,356 - INFO - LLM explained ['Linear solid-phase peptide synthesis (SPPS) of entire peptide, with separately synthesized hexadienol-modified amino acid. Cyclization in solution after cleavage from resin.', 'Solution-phase synthesis by sequential coupling of protected amino acid building blocks. Hexadienol-amino acid synthesized separately. Linear peptide cyclized after assembly.', 'Convergent synthesis by joining protected peptide fragments made by SPPS or solution-phase coupling. Cyclization after fragment condensation.']
+2024-11-21 18:29:22,357 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-11-21 18:29:22,464 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-11-21 18:29:22,573 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-11-21 18:29:22,585 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-11-21 18:29:22,598 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-11-21 18:29:27,016 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-11-21 18:29:27,017 - INFO - Selected as stock: zinc
+2024-11-21 18:29:27,017 - INFO - Compounds in stock: 17422831
+2024-11-21 18:29:27,017 - INFO - Selected as expansion policy: uspto
+2024-11-21 18:29:27,017 - INFO - Selected as filter policy: uspto
+2024-11-21 18:30:18,501 - INFO - AZ failed for CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O, running LLM
+2024-11-21 18:30:18,501 - INFO - Calling LLM with molecule: CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O and run: 0.0
+2024-11-21 18:30:18,502 - INFO - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+2024-11-21 18:30:49,493 - INFO - Wrapper: Completed Call, calling success_handler
+2024-11-21 18:30:49,506 - INFO - Received response from LLM: Here is the retrosynthesis analysis for the given molecule:
+
+<cot>
+<thinking>
+The target molecule is a peptide with 11 amino acid residues, including leucine, isoleucine, alanine, and valine based on the isobutyl and isopropyl side chains. The C-terminus is a free carboxylic acid.
+
+One approach to retrosynthesis would be to break the molecule into two fragments by hydrolysis of one of the amide bonds. This could be done using basic conditions like NaOH or LiOH. Suitable disconnection points would be between any of the amino acid residues.
+
+Alternatively, the molecule could be constructed by coupling the corresponding amine and carboxylic acid fragments using standard peptide coupling reagents like HATU, PyBOP, etc. The individual amino acids are commercially available or can be prepared by standard methods.
+
+Another potential route is enzymatic synthesis using a protease enzyme to couple suitably protected amino acid or peptide fragments. This can enable stereospecific couplings.
+
+Since the target is a relatively short peptide sequence, solid-phase peptide synthesis (SPPS) using Fmoc-protected amino acids would be an efficient route, building the peptide stepwise from the C-terminus on a solid support. This is probably the most straightforward approach.
+</thinking>
+
+<thinking>
+To summarize, potential retrosynthesis routes include:
+
+1. Basic hydrolysis to cleave an amide bond, giving two peptide fragments 
+2. Amide coupling of two fragments using peptide coupling reagents
+3. Enzymatic fragment coupling using a protease
+4. Stepwise SPPS using Fmoc-protected amino acids
+
+The SPPS approach is likely the most efficient and commonly used for a target of this size. Detailed SMILES are not provided since the amino acid building blocks are very simple.
+</thinking>
+</cot>
+
+<json>
+{
+  "data": [
+    ["Fmoc-Leu-OH", "H-Ile-Leu-Ala-Leu-Ile-Ala-Leu-Ile-Ala-Leu-OH"],
+    ["Boc-Leu-Ile-Leu-Ala-Leu-OH", "H-Ile-Ala-Leu-Ile-Ala-Leu-OH"],
+    ["Fmoc-Leu-Ile-Leu-Ala-Leu-Ile-Ala-Leu-OH", "H-Ile-Ala-Leu-OH"]
+  ],
+  "explanation": [
+    "Solid-phase peptide synthesis using Fmoc-protected amino acids, starting from the C-terminus",
+    "Solution-phase fragment coupling using suitable carboxylic acid and amine protecting groups", 
+    "Enzymatic fragment coupling using a protease enzyme and suitably protected peptide fragments"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.6
+  ]
+}
+</json>
+2024-11-21 18:30:49,510 - INFO - Molecule : CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O is invalid or cannot be parsed
+2024-11-21 18:30:49,510 - INFO - Molecule : CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O is invalid or cannot be parsed
+2024-11-21 18:30:49,511 - INFO - Molecule : CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O is invalid or cannot be parsed
+2024-11-21 18:30:49,511 - INFO - Molecule : CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O is invalid or cannot be parsed
+2024-11-21 18:30:49,511 - INFO - Molecule : CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O is invalid or cannot be parsed
+2024-11-21 18:30:49,511 - INFO - Molecule : CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O is invalid or cannot be parsed
+2024-11-21 18:30:49,511 - INFO - Obtained 0 valid pathways after validity test: []
+2024-11-21 18:30:49,511 - INFO - Calling LLM with molecule: CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O and run: 0.2
+2024-11-21 18:30:49,512 - INFO - Calling LLM with molecule: CC[C@H](NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C(C)C)NC(=O)[C@H](CC(C)C)NC(=O)[C@H](C)NC(=O)[C@H](CC(C)C)N)C(=O)O and run: 0.4
+2024-11-21 18:30:49,512 - INFO - LLM returned []
+2024-11-21 18:30:49,513 - INFO - LLM explained []
+2024-11-21 18:30:49,516 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-11-21 18:30:49,658 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-11-21 18:30:49,506 - ERROR - Langfuse Layer Error(): Exception occured - dictionary changed size during iteration
+Traceback (most recent call last):
+  File "/Users/shreyasv/Desktop/research/deepchem/.venv/lib/python3.11/site-packages/litellm/integrations/langfuse/langfuse.py", line 260, in log_event
+    print_verbose(f"OUTPUT IN LANGFUSE: {output}; original: {response_obj}")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shreyasv/Desktop/research/deepchem/.venv/lib/python3.11/site-packages/openai/_models.py", line 199, in __str__
+    return f'{self.__repr_name__()}({self.__repr_str__(", ")})'  # type: ignore[misc]
+                                     ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shreyasv/Desktop/research/deepchem/.venv/lib/python3.11/site-packages/pydantic/_internal/_repr.py", line 56, in __repr_str__
+    return join_str.join(repr(v) if a is None else f'{a}={v!r}' for a, v in self.__repr_args__())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shreyasv/Desktop/research/deepchem/.venv/lib/python3.11/site-packages/pydantic/_internal/_repr.py", line 56, in <genexpr>
+    return join_str.join(repr(v) if a is None else f'{a}={v!r}' for a, v in self.__repr_args__())
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shreyasv/Desktop/research/deepchem/.venv/lib/python3.11/site-packages/pydantic/main.py", line 1053, in __repr_args__
+    for k, v in self.__dict__.items():
+RuntimeError: dictionary changed size during iteration
+2024-11-21 18:30:49,773 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-11-21 18:30:49,784 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-11-21 18:30:49,800 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-11-21 18:30:54,634 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-11-21 18:30:54,637 - INFO - Selected as stock: zinc
+2024-11-21 18:30:54,638 - INFO - Compounds in stock: 17422831
+2024-11-21 18:30:54,638 - INFO - Selected as expansion policy: uspto
+2024-11-21 18:30:54,638 - INFO - Selected as filter policy: uspto
+2024-11-21 18:31:46,141 - INFO - AZ solved CC/C=C/C[C@H](C)O
+2024-11-21 18:31:46,141 - INFO - temp_stat: [True]
+2024-11-21 18:31:46,141 - INFO - breaking
+2024-11-21 18:31:46,545 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+2024-11-21 18:31:46,591 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+2024-11-21 18:31:46,697 - INFO - Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+2024-11-21 18:31:46,705 - INFO - Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+2024-11-21 18:31:46,719 - INFO - Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+2024-11-21 18:31:51,363 - INFO - Loading stock from InMemoryInchiKeyQuery to zinc
+2024-11-21 18:31:51,365 - INFO - Selected as stock: zinc
+2024-11-21 18:31:51,365 - INFO - Compounds in stock: 17422831
+2024-11-21 18:31:51,365 - INFO - Selected as expansion policy: uspto
+2024-11-21 18:31:51,365 - INFO - Selected as filter policy: uspto
+2024-11-21 18:32:44,894 - INFO - AZ failed for C[C@@H]1CCC2C[C@@H](/C(=C/C=C/C=C/[C@H](C[C@H](C(=O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](OC(=O)[C@@H]3CCCCN3C(=O)C(=O)[C@@]1(O2)O)[C@H](C)C[C@@H]4CC[C@H]([C@@H](C4)OC)O)C)/C)O)OC)C)C)/C)OC, running LLM
+2024-11-21 18:32:44,894 - INFO - Calling LLM with molecule: C[C@@H]1CCC2C[C@@H](/C(=C/C=C/C=C/[C@H](C[C@H](C(=O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](OC(=O)[C@@H]3CCCCN3C(=O)C(=O)[C@@]1(O2)O)[C@H](C)C[C@@H]4CC[C@H]([C@@H](C4)OC)O)C)/C)O)OC)C)C)/C)OC and run: 0.0
+2024-11-21 18:32:44,897 - INFO - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+2024-11-21 18:33:46,745 - INFO - Wrapper: Completed Call, calling success_handler
+2024-11-21 18:33:46,748 - INFO - Received response from LLM: Here is my retrosynthetic analysis of the given molecule:
+
+<cot>
+<thinking>
+The target molecule is a complex macrolide natural product, likely an antibiotic in the erythromycin family based on the 14-membered lactone ring and sugar moieties. Key structural features to consider for retrosynthesis:
+- 14-membered macrolactone ring 
+- Two sugar moieties (one cladinose, one desosamine) attached via glycosidic bonds
+- Polyene side chain
+- Stereocenters throughout the molecule
+</thinking>
+
+<thinking>
+One approach would be to form the macrolactone ring in the final step via macrolactonization of the corresponding seco acid. The seco acid could come from glycosylation of the aglycone with the two activated sugars. The aglycone with the polyene side chain could be formed via Stille coupling.
+</thinking>
+
+<thinking>
+Alternatively, the macrolactone could be formed via ring-closing metathesis (RCM) of an open-chain diene precursor. The diene precursor could be formed by a cross-coupling reaction to install the polyene side chain on an aglycone with a pre-formed macrocycle.
+</thinking>
+
+<thinking>
+Another approach would be to form the macrolactone via an intramolecular Nozaki-Hiyama-Kishi (NHK) reaction between an aldehyde and a vinyl halide. The vinyl halide side chain could be installed via cross-coupling, and the sugars introduced by glycosylation.
+</thinking>
+
+<thinking>
+The cladinose and desosamine sugars could be formed via multi-step syntheses from simpler chiral pool building blocks like sugars or amino acids. Attaching them via glycosylation would require the corresponding glycosyl donors (halides, trichloroacetimidates, etc.)
+</thinking>
+</cot>
+
+<json>
+{
+  "data": [
+    ["C[C@@H]1CCC2C[C@@H](/C(=C/C=C/C=C/[C@H](C[C@H](C(=O)O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](O)[C@H](C)C[C@@H]3CC[C@H]([C@@H](C3)OC)O)C)/C)O)OC)C)C)/C)OC.OC[C@H]1O[C@@H](O[C@H]2[C@@H](O)[C@H](O)[C@@H](CO)O[C@@H]2CN)C[C@@H](N(C)C)[C@@H]1O", "OC[C@H]1O[C@@H](O[C@H]2[C@@H](O)[C@H](O)[C@@H](CO)O[C@@H]2CN)C[C@@H](N(C)C)[C@@H]1O"],
+    ["C[C@@H]1CCC2C[C@@H](/C(=C/C=C/C=C/[C@H](C[C@H](C(=O)O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](O)[C@H](C)C[C@@H]3CC[C@H]([C@@H](C3)OC)O)C)/C)O)OC)C)C)/C)OC.OC[C@H]1O[C@@H](O[C@H]2[C@@H](O)[C@H](O)[C@@H](CO)O[C@@H]2CN)C[C@@H](N(C)C)[C@@H]1O", "OC[C@H]1O[C@@H](O[C@H]2[C@@H](O)[C@H](O)[C@@H](CO)O[C@@H]2CN)C[C@@H](N(C)C)[C@@H]1O"],
+    ["C[C@@H]1CCC2C[C@@H](/C(=C/C=C/C=C/[C@H](C[C@H](C=O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](O)[C@H](C)C[C@@H]3CC[C@H]([C@@H](C3)OC)O)C)/C)O)OC)C)C)/C)OC.OC[C@H]1O[C@@H](O[C@H]2[C@@H](O)[C@H](O)[C@@H](CO)O[C@@H]2CN)C[C@@H](N(C)C)[C@@H]1O", "C(I)=C[C@H](C[C@H](C(=O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](OC(=O)[C@@H]3CCCCN3)C(C)C[C@@H]4CC[C@H]([C@@H](C4)OC)O)C)/C)O)OC)C)C"],
+    ["C[C@@H]1CCC2C[C@@H](/C(=C/C=C/C=C/[C@H](C[C@H](C(=O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](O)[C@H](C)C[C@@H]3CC[C@H]([C@@H](C3)OC)O)C)/C)O)OC)C)C)/C)OC.OC[C@H]1O[C@@H](O[C@H]2[C@@H](O)[C@H](O)[C@@H](CO)O[C@@H]2CN)C[C@@H](N(C)C)[C@@H]1O", "OC[C@H]1O[C@@H](O[C@H]2[C@@H](O)[C@H](O)[C@@H](CO)O[C@@H]2CN)C[C@@H](N(C)C)[C@@H]1O"]
+  ],
+  "explanation": [
+    "Macrolactonization of the seco acid precursor, which could be formed by glycosylation of the aglycone (from Stille coupling) with the activated cladinose and desosamine sugars",
+    "Ring-closing metathesis (RCM) to form the macrolactone, with the diene precursor formed by cross-coupling to install the polyene side chain on a pre-formed macrocyclic aglycone, followed by glycosylation", 
+    "Nozaki-Hiyama-Kishi (NHK) macrocyclization between the aldehyde and vinyl iodide, with the side chain installed via cross-coupling and the sugars introduced by glycosylation",
+    "Esterification to attach the desosamine sugar at the end, with the macrolactone and cladinose already in place from one of the above methods"
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.6,
+    0.9
+  ]
+}
+</json>
+2024-11-21 18:33:46,749 - INFO - Langfuse Layer Logging - logging success
+2024-11-21 18:33:46,752 - INFO - Molecule : C[C@@H]1CCC2C[C@@H](/C(=C/C=C/C=C/[C@H](C[C@H](C(=O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](OC(=O)[C@@H]3CCCCN3C(=O)C(=O)[C@@]1(O2)O)[C@H](C)C[C@@H]4CC[C@H]([C@@H](C4)OC)O)C)/C)O)OC)C)C)/C)OC is invalid or cannot be parsed
+2024-11-21 18:33:46,754 - INFO - Molecule : C[C@@H]1CCC2C[C@@H](/C(=C/C=C/C=C/[C@H](C[C@H](C(=O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](OC(=O)[C@@H]3CCCCN3C(=O)C(=O)[C@@]1(O2)O)[C@H](C)C[C@@H]4CC[C@H]([C@@H](C4)OC)O)C)/C)O)OC)C)C)/C)OC is invalid or cannot be parsed
+2024-11-21 18:33:46,755 - INFO - Molecule : C[C@@H]1CCC2C[C@@H](/C(=C/C=C/C=C/[C@H](C[C@H](C(=O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](OC(=O)[C@@H]3CCCCN3C(=O)C(=O)[C@@]1(O2)O)[C@H](C)C[C@@H]4CC[C@H]([C@@H](C4)OC)O)C)/C)O)OC)C)C)/C)OC is invalid or cannot be parsed
+2024-11-21 18:33:46,757 - INFO - Molecule : C[C@@H]1CCC2C[C@@H](/C(=C/C=C/C=C/[C@H](C[C@H](C(=O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](OC(=O)[C@@H]3CCCCN3C(=O)C(=O)[C@@]1(O2)O)[C@H](C)C[C@@H]4CC[C@H]([C@@H](C4)OC)O)C)/C)O)OC)C)C)/C)OC is invalid or cannot be parsed
+2024-11-21 18:33:46,758 - INFO - Obtained 0 valid pathways after validity test: []
+2024-11-21 18:33:46,758 - INFO - Calling LLM with molecule: C[C@@H]1CCC2C[C@@H](/C(=C/C=C/C=C/[C@H](C[C@H](C(=O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](OC(=O)[C@@H]3CCCCN3C(=O)C(=O)[C@@]1(O2)O)[C@H](C)C[C@@H]4CC[C@H]([C@@H](C4)OC)O)C)/C)O)OC)C)C)/C)OC and run: 0.2
+2024-11-21 18:33:46,758 - INFO - Calling LLM with molecule: C[C@@H]1CCC2C[C@@H](/C(=C/C=C/C=C/[C@H](C[C@H](C(=O)[C@@H]([C@@H](/C(=C/[C@H](C(=O)C[C@H](OC(=O)[C@@H]3CCCCN3C(=O)C(=O)[C@@]1(O2)O)[C@H](C)C[C@@H]4CC[C@H]([C@@H](C4)OC)O)C)/C)O)OC)C)C)/C)OC and run: 0.4
+2024-11-21 18:33:46,758 - INFO - LLM returned []
+2024-11-21 18:33:46,758 - INFO - LLM explained []

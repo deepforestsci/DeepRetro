@@ -162,6 +162,9 @@ def llm_pipeline(
                     output_pathways, output_explanations, output_confidence = validity_check(
                         molecule, res_molecules, res_explanations,
                         res_confidence)
+                    logger.info(
+                        f"Output Pathways: {output_pathways}, Output Explanations: {output_explanations}, Output Confidence: {output_confidence}"
+                    )
                     run += 0.2
                 else:
                     logger.info(

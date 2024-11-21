@@ -1,0 +1,38 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+
+	"settings": {
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": "ms-python.pylint",
+		"pylint.importStrategy": "useBundled",
+		"autoDocstring.docstringFormat": "numpy",
+		"pythonIndent.trimLinesWithOnlyWhitespace": true,
+		"python.languageServer": "Pylance",
+		"python.autoComplete.extraPaths": [],
+		// "python.linting.enabled": true,
+		// "python.linting.pylintPath": "pylint",
+		"python.formatting.provider": "yapf",
+		// "python.linting.pylintEnabled": true,
+		"python.analysis.extraPaths": [],
+		"files.watcherExclude": {
+			"**/.conda": true
+		},
+		"search.exclude": {
+			"**/.conda**": true,
+			"**/.venv": true
+		},
+		"notebook.formatOnCellExecution": false,
+		"notebook.formatOnSave.enabled": true,
+		"notebook.defaultFormatter": "eeyore.yapf",
+		"[javascript]": {
+			"editor.defaultFormatter": "vscode.typescript-language-features"
+		},
+		"[html]": {
+			"editor.defaultFormatter": "vscode.html-language-features"
+		}
+	}
+}
