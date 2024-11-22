@@ -16,6 +16,6 @@ dependencies:
     - litellm
     - tqdm
     - matplotlib
-    - dotenv
+    - python-dotenv
     - rootutils
 
