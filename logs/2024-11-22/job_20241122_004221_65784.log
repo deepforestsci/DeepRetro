@@ -1,0 +1,75 @@
+2024-11-21 19:12:21 [info     ] Starting new synthesis job 20241122_004221_65784 for molecule CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O filename=prithvi.py job_id=20241122_004221_65784 lineno=30
+2024-11-21 19:12:21 [info     ] AZ_MODEL_CONFIG_PATH found: /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/../aizynthfinder/models/config.yml filename=az.py job_id=20241122_004221_65784 lineno=35
+2024-11-21 19:13:13 [info     ] AZ failed for CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O, running LLM filename=rec_prithvi.py job_id=20241122_004221_65784 lineno=13
+2024-11-21 19:13:13 [info     ] Calling LLM with molecule: CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O and run: 0.0 filename=llm.py job_id=20241122_004221_65784 lineno=154
+2024-11-21 19:14:27 [info     ] Received response from LLM: Here is my retrosynthetic analysis of the given molecule:
+
+<cot>
+<thinking>
+The target molecule is a complex glycopeptide antibiotic, likely related to vancomycin. Key structural features include:
+- A heptapeptide backbone with several non-proteinogenic amino acids 
+- Aromatic rings, including chlorinated tyrosine residues, that form cross-links
+- Disaccharide attached to one of the tyrosine residues
+- Long aliphatic chain amide substituent on the N-terminus
+Potential disconnection points for retrosynthesis:
+1) Amide bonds in the peptide backbone 
+2) Biaryl and aryl ether linkages between aromatic rings
+3) Glycosidic bond attaching disaccharide
+4) Aliphatic amide on the N-terminus
+</thinking>
+
+<thinking>
+Retrosynthesis suggestion 1:
+Disconnect the aliphatic amide and the adjacent amide bond. This gives the free amine of the linear heptapeptide and the fatty acid as separate precursors. The linear peptide could be made by standard Fmoc SPPS. The fatty acid could be activated as the acid chloride or NHS ester for coupling.
+</thinking>
+
+<thinking>
+Retrosynthesis suggestion 2:  
+Disconnect the biaryl and aryl ether linkages between the aromatic rings. This gives a more flexible linear heptapeptide with free phenols. The cyclization could be done via SNAr reactions between the phenols and aryl halides, likely requiring protection of other functional groups. The linear peptide could be made by SPPS.
+</thinking>
+
+<thinking>
+Retrosynthesis suggestion 3:
+Disconnect the glycosidic bond to give the aglycon peptide and a protected disaccharide donor. The disaccharide could be made by standard carbohydrate chemistry and activated as a glycosyl donor (halide, trichloroacetimidate, etc). The aglycon acceptor would need an unprotected phenol. Glycosylation could be promoted by Lewis acids like silver triflate.
+</thinking>
+
+<thinking>
+Retrosynthesis suggestion 4:
+Disconnect an amide bond in the middle of the peptide backbone. This gives two tetrapeptide fragments of similar complexity that could be coupled together. Suitable protecting groups and coupling reagents would be needed. Each fragment could potentially be made by SPPS, with the nonproteinogenic amino acids being synthesized separately and incorporated as protected building blocks.
+</thinking>
+
+</cot>
+
+<json>
+{
+  "data": [
+    ["CC(C)CCCCCCCCC(=O)Cl", "N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)O)O)O"],
+    ["OC1=CC(=CC=C1Cl)[C@H](NC(=O)[C@@H]2NC(=O)[C@@H](C3=C(C(=CC(=C3)O)O)Cl)NC(=O)[C@H](C3=CC(=C(C=C3)O)O[C@@H]3[C@H]([C@H]([C@@H]([C@H](O3)CO)O)O)O)NC2=O)C(=O)N[C@@H](CC1=CC=C(O)C=C1)C(=O)N[C@@H](C(C)C)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC1=CC=C(C=C1)O)C(=O)N[C@@H](CC(=O)N)C(=O)N[C@@H](CC1=CC=C(C=C1)Cl)C(=O)O"],
+    ["OC1=CC(=CC=C1Cl)[C@H](NC(=O)[C@@H]2NC(=O)[C@@H](C3=C(C(=CC(=C3)O)OC3=C(C=CC(=C3)[C@H](C(=O)N[C@H](CC3=CC=C(O)C=C3)C(=O)N2)NC(=O)CC(C)CCCCCCCCC)O)Cl)NC(=O)[C@H](C2=CC(=C(C=C2)O)O)NC1=O)C(=O)O", "OC1=C(C=C(C=C1)CO)O[C@H]1[C@@H]([C@H]([C@@H]([C@H](O1)CO)O)O)O"],
+    ["CC(C)C[C@H](NC(=O)[C@H](CC1=CC=C(C=C1)O)NC(=O)[C@@H](CC(=O)N)NC(=O)[C@H](CC1=CC=C(C=C1)Cl)NC(=O)CNC(=O)CC(C)CCCCCCCCC)C(=O)N[C@@H](CC1=CC=C(C=C1)Cl)C(=O)N[C@@H](C(C)C)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC1=CC=C(C=C1)O)C(=O)O", "OC1=CC(=CC=C1Cl)[C@H](NC(=O)[C@@H]1NC(=O)[C@@H](C2=C(C(=CC(=C2)O)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O1)C=C2)C(=O)N1)NC)O)Cl)NC(=O)[C@H](C1=CC(=C(C=C1)O)O[C@@H]1[C@H]([C@H]([C@@H]([C@H](O1)CO)O)O)O)NC(=O)CNC(=O)CC(C)CCCCCCCCC)C(=O)O"] 
+  ],
+  "explanation": [
+    "Disconnect the N-terminal fatty amide and adjacent amide bond. Couple the fatty acid (activated as acid chloride) with the free amine of the linear heptapeptide (made by SPPS).",
+    "Disconnect biaryl and aryl ether linkages. Cyclize linear peptide (made by SPPS) via SNAr reactions, with protection of other functional groups.",
+    "Disconnect glycosidic bond. Glycosylate aglycon peptide with protected disaccharide donor (made separately), using Lewis acid promotion.",
+    "Disconnect central amide bond. Couple two separately synthesized tetrapeptide fragments with suitable protecting groups and coupling reagents."
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.8, 
+    0.6
+  ]
+}
+</json> filename=llm.py job_id=20241122_004221_65784 lineno=68
+2024-11-21 19:14:27 [info     ] Molecule : CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O is invalid or cannot be parsed filename=utils_molecule.py job_id=20241122_004221_65784 lineno=123
+2024-11-21 19:14:27 [info     ] Molecule : CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O is invalid or cannot be parsed filename=utils_molecule.py job_id=20241122_004221_65784 lineno=123
+2024-11-21 19:14:27 [info     ] Molecule : CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O is invalid or cannot be parsed filename=utils_molecule.py job_id=20241122_004221_65784 lineno=123
+2024-11-21 19:14:27 [info     ] Obtained 0 valid pathways after validity test: [] filename=utils_molecule.py job_id=20241122_004221_65784 lineno=144
+2024-11-21 19:14:27 [info     ] Output Pathways: [],                            Output Explanations: [],                                Output Confidence: [] filename=llm.py job_id=20241122_004221_65784 lineno=166
+2024-11-21 19:14:27 [info     ] Calling LLM with molecule: CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O and run: 0.2 filename=llm.py job_id=20241122_004221_65784 lineno=154
+2024-11-21 19:14:27 [info     ] Output Pathways: [],                            Output Explanations: [],                                Output Confidence: [] filename=llm.py job_id=20241122_004221_65784 lineno=166
+2024-11-21 19:14:27 [info     ] Calling LLM with molecule: CC(C)CCCCCCCCC(=O)N[C@@H]1[C@H]([C@@H]([C@H](O[C@H]1OC2=C3C=C4C=C2OC5=C(C=C(C=C5)[C@H]([C@H]6C(=O)N[C@@H](C7=C(C(=CC(=C7)O)O[C@@H]8[C@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)C9=C(C=CC(=C9)[C@H](C(=O)N6)NC(=O)[C@@H]4NC(=O)[C@@H]1C2=C(C(=CC(=C2)OC2=C(C=CC(=C2)[C@H](C(=O)N[C@H](CC2=CC=C(O3)C=C2)C(=O)N1)NC)O)O)Cl)O)C(=O)NCCCN(C)C)O)Cl)C(=O)O)O)O and run: 0.4 filename=llm.py job_id=20241122_004221_65784 lineno=154
+2024-11-21 19:14:27 [info     ] Output Pathways: [],                            Output Explanations: [],                                Output Confidence: [] filename=llm.py job_id=20241122_004221_65784 lineno=166
+2024-11-21 19:14:27 [info     ] LLM returned []                filename=rec_prithvi.py job_id=20241122_004221_65784 lineno=34
+2024-11-21 19:14:27 [info     ] LLM explained []               filename=rec_prithvi.py job_id=20241122_004221_65784 lineno=35

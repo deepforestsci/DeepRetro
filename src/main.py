@@ -26,6 +26,7 @@ def main(smiles: str) -> Any:
     setup_logging()
 
     log = structlog.get_logger()
+    log.info("-" * 50)
     log.info("Application initialization complete")
 
     res = run_prithvi(smiles)
