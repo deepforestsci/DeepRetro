@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from functools import wraps
 from rdkit import Chem  # For SMILES validation (optional)
-from src.prithvi import run_prithvi
+from src.main import main
 
 app = Flask(__name__)
 
@@ -37,7 +37,7 @@ def retrosynthesis_api():
     # Check if the SMILES string is valid
     if not Chem.MolFromSmiles(smiles):
         return jsonify({"error": "Invalid SMILES string"}), 400
-    result = run_prithvi(smiles)
+    result = main(smiles)
     # try:
     #     result = run_prithvi(smiles)
     # except Exception as e:
