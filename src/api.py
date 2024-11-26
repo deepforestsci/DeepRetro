@@ -1,6 +1,15 @@
 from flask import Flask, request, jsonify
 from functools import wraps
+from dotenv import load_dotenv
 from rdkit import Chem  # For SMILES validation (optional)
+
+import rootutils
+
+root_dir = rootutils.setup_root(__file__,
+                                indicator=".project-root",
+                                pythonpath=True)
+
+load_dotenv()
 from src.main import main
 
 app = Flask(__name__)
