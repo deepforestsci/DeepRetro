@@ -152,7 +152,10 @@ def llm_pipeline(
     run = 0.0
     while (output_pathways == [] and run < 0.6):
         logger.info(f"Calling LLM with molecule: {molecule} and run: {run}")
-        status_code, res_text = call_LLM(molecule, LLM, messages=messages)
+        status_code, res_text = call_LLM(molecule,
+                                         LLM,
+                                         messages=messages,
+                                         temperature=run)
         if status_code == 200:
             status_code, thinking_steps, json_content = split_cot_json(
                 res_text)
@@ -163,10 +166,10 @@ def llm_pipeline(
                     output_pathways, output_explanations, output_confidence = validity_check(
                         molecule, res_molecules, res_explanations,
                         res_confidence)
-                    logger.info(f"Output Pathways: {output_pathways},\
-                            Output Explanations: {output_explanations},\
+                    logger.info(f"Output Pathways: {output_pathways},\n\
+                            Output Explanations: {output_explanations},\n\
                                 Output Confidence: {output_confidence}")
-                    run += 0.2
+                    run += 0.1
                 else:
                     logger.info(
                         f"Error in validating split json content: {res_text}")

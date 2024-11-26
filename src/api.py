@@ -1,9 +1,20 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from functools import wraps
+from dotenv import load_dotenv
 from rdkit import Chem  # For SMILES validation (optional)
-from src.prithvi import run_prithvi
+
+import rootutils
+
+root_dir = rootutils.setup_root(__file__,
+                                indicator=".project-root",
+                                pythonpath=True)
+
+load_dotenv()
+from src.main import main
 
 app = Flask(__name__)
+CORS(app)
 
 # Predefined API key for authentication
 API_KEY = "your-secure-api-key"
@@ -37,7 +48,7 @@ def retrosynthesis_api():
     # Check if the SMILES string is valid
     if not Chem.MolFromSmiles(smiles):
         return jsonify({"error": "Invalid SMILES string"}), 400
-    result = run_prithvi(smiles)
+    result = main(smiles)
     # try:
     #     result = run_prithvi(smiles)
     # except Exception as e:
