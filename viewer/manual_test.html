@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrosynthesis Analysis</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/openchemlib/dist/openchemlib-full.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --error: #dc2626;
+            --success: #16a34a;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        button {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .status.error {
+            background: #fef2f2;
+            color: var(--error);
+            border: 1px solid #fee2e2;
+        }
+
+        .status.success {
+            background: #f0fdf4;
+            color: var(--success);
+            border: 1px solid #dcfce7;
+        }
+
+        .result {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 16px;
+            white-space: pre-wrap;
+            display: none;
+            overflow-x: auto;
+        }
+
+        .examples {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        .toggle-view {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .test-controls {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Graph styles */
+        .links line {
+            stroke: #999;
+            stroke-opacity: 0.6;
+        }
+
+        .nodes circle {
+            stroke: #69b3a2;
+            stroke-width: 2px;
+        }
+
+        .node-molecule {
+            pointer-events: none;
+        }
+
+        .tooltip {
+            position: absolute;
+            text-align: left;
+            width: auto;
+            padding: 10px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+            max-width: 200px;
+        }
+
+        #graph {
+            width: 100%;
+            min-height: 600px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Retrosynthesis Analysis</h1>
+        
+        <div class="toggle-view">
+            <button onclick="toggleView('api')">API Test View</button>
+            <button onclick="toggleView('file')">File Upload View</button>
+        </div>
+
+        <div id="apiView">
+            <div class="input-group">
+                <input type="text" id="smiles" placeholder="Enter SMILES string" 
+                       aria-label="SMILES input">
+                <button onclick="analyze()" id="analyzeBtn">Analyze</button>
+            </div>
+
+            <div id="status" class="status"></div>
+            <pre id="result" class="result"></pre>
+
+            <div class="examples">
+                Example SMILES: CCO (Ethanol), CC(=O)O (Acetic acid), c1ccccc1 (Benzene)
+            </div>
+        </div>
+
+        <div id="fileView" style="display: none;">
+            <div class="test-controls">
+                <h3>Test with JSON File</h3>
+                <input type="file" id="fileInput" accept=".json">
+            </div>
+        </div>
+
+        <div id="graph"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:5000/api/retrosynthesis';
+        const API_KEY = 'your-secure-api-key';
+
+        function toggleView(view) {
+            document.getElementById('apiView').style.display = view === 'api' ? 'block' : 'none';
+            document.getElementById('fileView').style.display = view === 'file' ? 'block' : 'none';
+            // Clear the graph when switching views
+            document.getElementById('graph').innerHTML = '';
+            // Reset status and result
+            document.getElementById('status').style.display = 'none';
+            document.getElementById('result').style.display = 'none';
+        }
+
+        async function analyze() {
+            const smilesInput = document.getElementById('smiles');
+            const button = document.getElementById('analyzeBtn');
+            const status = document.getElementById('status');
+            const result = document.getElementById('result');
+            
+            const smiles = smilesInput.value.trim();
+            if (!smiles) return;
+
+            try {
+                // Update UI for loading state
+                button.disabled = true;
+                button.innerHTML = '<span class="loading"></span>Analyzing...';
+                status.style.display = 'none';
+                result.style.display = 'none';
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-KEY': API_KEY
+                    },
+                    body: JSON.stringify({ smiles })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error || 'Analysis failed');
+
+                // Format and display result
+                const formattedJson = JSON.stringify(data, null, 2);
+                result.textContent = formattedJson;
+                result.style.display = 'block';
+                
+                // Show success message
+                status.className = 'status success';
+                status.textContent = 'Analysis completed successfully';
+                status.style.display = 'block';
+
+                // Clear the previous graph
+                document.getElementById('graph').innerHTML = '';
+                
+                // The appv2.js will handle the visualization with the response data
+
+            } catch (error) {
+                // Show error message
+                status.className = 'status error';
+                status.textContent = `Error: ${error.message}`;
+                status.style.display = 'block';
+                
+                // Clear previous result
+                result.style.display = 'none';
+                result.textContent = '';
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Analyze';
+            }
+        }
+
+        // Allow Enter key to trigger analysis
+        document.getElementById('smiles').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') analyze();
+        });
+    </script>
+    <script src="appv2.js"></script>
+</body>
+</html>
