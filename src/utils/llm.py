@@ -15,12 +15,12 @@ litellm.success_callback = ["langfuse"]
 litellm.drop_params = True
 
 metadata = {
-    "generation_name": "sv_testing",  # set langfuse generation name
+    "generation_name": "prod",  # set langfuse generation name
     "project": "Retrosynthesis",  # set langfuse project name
-    "version": "0.0.2",  # set langfuse version
-    "trace_name": "sv_testing",  # set langfuse Trace Name
+    "version": "0.0.3",  # set langfuse version
+    "trace_name": "prod",  # set langfuse Trace Name
     "trace_user_id": "sv",  # set langfuse Trace User ID
-    "session_id": "session-1",  # set langfuse Session ID
+    "session_id": "prod",  # set langfuse Session ID
 }
 
 
