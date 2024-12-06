@@ -13,7 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
       reader.onload = function (e) {
         try {
           const data = JSON.parse(e.target.result);
-          renderGraph(data);
+
+          // Process the data to generate the required tree structure
+          const processedTree = processData(data);
+
+          // Use the new processedTree to render the graph
+          const rootStep = processedTree['1']; // Start with step 1 as the root
+          renderGraph(rootStep);
         } catch (error) {
           alert('Error parsing JSON: ' + error.message);
         }
@@ -23,135 +29,164 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-function buildHierarchy(stepId, dependencies, stepMap) {
-  const node = {
-    id: stepId,
-    ...stepMap[stepId],
-    children: []
-  };
+// Add the processData function here (you can add it above or below the DOMContentLoaded block)
+function processData(data) {
+  // Step 1: Create parent_id_list and map dependencies
+  const dependencyLength = Object.keys(data.dependencies).length;
+  let parent_id_list = new Array(dependencyLength + 2).fill(-1);  // Adding 2 instead of 1 to accommodate index properly
+  parent_id_list[0] = null;
+  parent_id_list[1] = 0;
 
-  const deps = dependencies[stepId] || [];
-  node.children = deps.map(depId => buildHierarchy(depId, dependencies, stepMap));
+  for (const step in data.dependencies) {
+    for (const child of data.dependencies[step]) {
+      parent_id_list[parseInt(child)] = parseInt(step);
+    }
+  }
 
-  return node;
+  // Step 2: Update data.steps with child_id and parent_id
+  let data_steps = data.steps;
+  for (const step in data.dependencies) {
+    data_steps[parseInt(step) - 1]['child_id'] = data.dependencies[step];
+    data_steps[parseInt(step) - 1]['parent_id'] = parent_id_list[parseInt(step)];
+  }
+
+  // Step 3: Convert data into a nested tree structure
+  function buildTree(data_steps, parent_id) {
+    let tree = {};
+    for (const step of data_steps) {
+      if (step.parent_id === parent_id) {
+        tree[parseInt(step.step)] = {
+          step: step,
+          children: buildTree(data_steps, parseInt(step.step))
+        };
+      }
+    }
+    return tree;
+  }
+
+  const tree = buildTree(data_steps, 0);
+  return tree;
 }
 
-function renderGraph(data) {
+
+
+function renderGraph(rootStep) {
   // Clear any existing SVG (if re-rendering)
   d3.select('#graph').selectAll('*').remove();
-  d3.select('body').selectAll('.tooltip').remove(); // Remove any existing tooltips
+  d3.select('body').selectAll('.tooltip').remove();
 
-  // Create a map from step number to step data
-  const stepMap = {};
-  data.steps.forEach(step => {
-    stepMap[step.step] = step;
-  });
+  // Build the tree structure using the new nested data format
+  const buildTree = (step) => {
+    const node = {
+      ...step.step,
+      children: Object.values(step.children).map(childStep => buildTree(childStep))
+    };
+    return node;
+  };
 
-  // Build the hierarchical data starting from Step 1
-  const root = buildHierarchy('1', data.dependencies, stepMap);
+  const root = buildTree(rootStep);
 
-  const width = 1400; // Increase width to accommodate the tree
-  const height = 800;
+  const graphContainer = d3.select('#graph')
+    .style('overflow', 'auto')
+    .style('position', 'relative');
 
-  const svg = d3.select('#graph').append('svg')
+  const width = 1600;
+  const height = 1000;
+  const circlePadding = 200;
+
+  const svg = graphContainer.append('svg')
     .attr('width', width)
-    .attr('height', height);
+    .attr('height', height)
+    .style('display', 'block')
+    .style('margin', 'auto');
 
-  // Adjust the transform to position the tree correctly
   const g = svg.append('g')
-    .attr('transform', 'translate(50,50)');
+    .attr('transform', `translate(${circlePadding},${circlePadding})`);
 
-  // Create a tree layout
   const treeLayout = d3.tree()
-    .size([height - 100, width - 100]); // Adjust size based on new width
+    .size([height - (2 * circlePadding), width - (2 * circlePadding)]);
 
-  // Assign x and y positions to the nodes
   const treeData = treeLayout(d3.hierarchy(root));
 
-  // Find the maximum y value (the rightmost position in the tree)
-  const maxY = d3.max(treeData.descendants(), d => d.y);
-
-  // Reverse the y-coordinates to orient the tree from right to left
-  treeData.descendants().forEach(d => {
-    d.y = maxY - d.y;
-  });
-
-  // Now, Step 1 should be at d.y = maxY - 0 = maxY
-
-  // Add links between nodes
+  // Add reaction arrows first (so they appear behind nodes)
   const link = g.selectAll('.link')
     .data(treeData.links())
-    .enter().append('path')
-    .attr('class', 'link')
-    .attr('d', d3.linkHorizontal()
-      .x(d => d.y)
-      .y(d => d.x))
+    .enter().append('g')
+    .attr('class', 'link');
+
+  // Draw paths between matching molecules
+  link.append('path')
+    .attr('d', d => {
+      const parentStep = d.source.data;
+      const childStep = d.target.data;
+
+      // Find matching molecules between parent products and child reactants
+      const matchingPairs = parentStep.products.flatMap(product =>
+        childStep.reactants.map(reactant => ({
+          product,
+          reactant,
+          matches: reactant.smiles === product.smiles
+        }))
+      ).filter(pair => pair.matches);
+
+      if (matchingPairs.length > 0) {
+        return d3.linkHorizontal()
+          .x(d => d.y)
+          .y(d => d.x)({
+            source: [d.source.y, d.source.x + (parentStep.products.length - 1) * 35 / 2],
+            target: [d.target.y, d.target.x + (childStep.reactants.length - 1) * 35 / 2]
+          });
+      }
+    })
     .attr('fill', 'none')
     .attr('stroke', '#555')
-    .attr('stroke-width', 2);
+    .attr('stroke-width', 2)
+    .attr('marker-end', 'url(#arrow)');
 
-  // Add nodes
-  const node = g.selectAll('.node')
-    .data(treeData.descendants())
-    .enter().append('g')
-    .attr('class', 'node')
-    .attr('transform', d => `translate(${d.y},${d.x})`);
+  // Add arrowhead marker
+  svg.append('defs').append('marker')
+    .attr('id', 'arrow')
+    .attr('viewBox', '0 -5 10 10')
+    .attr('refX', 8)
+    .attr('refY', 0)
+    .attr('markerWidth', 6)
+    .attr('markerHeight', 6)
+    .attr('orient', 'auto')
+    .append('path')
+    .attr('d', 'M0,-5L10,0L0,5')
+    .attr('fill', '#555');
 
-  // Render the molecule images on the nodes
-  node.each(function (d) {
-    const group = d3.select(this);
+  // Add arrows between parent and child nodes
+  link.append('line')
+    .attr('x1', d => d.source.y)
+    .attr('y1', d => d.source.x + (d.source.data.reactants.length - 1) * 35 / 2)
+    .attr('x2', d => d.target.y)
+    .attr('y2', d => d.target.x + (d.target.data.reactants.length - 1) * 35 / 2)
+    .attr('stroke', '#888')
+    .attr('stroke-width', 1)
+    .attr('marker-end', 'url(#arrow)');
 
-    // Add a circle behind the molecule for better visuals
-    group.append('circle')
-      .attr('r', 55)
-      .attr('fill', '#f0f8ff')
-      .attr('stroke', '#69b3a2')
-      .attr('stroke-width', 2);
+  // Add step labels on arrows
+  link.append('text')
+    .attr('x', d => (d.source.y + d.target.y) / 2)
+    .attr('y', d => (d.source.x + d.target.x) / 2 - 10)
+    .attr('text-anchor', 'middle')
+    .text(d => `Step ${d.target.data.step}`);
 
-    // Try to render the product molecule
-    try {
-      const product = d.data.products[0]; // Assuming the first product is the main one
-      console.log(product);
-      const mol = OCL.Molecule.fromSmiles(product.smiles);
-
-      // Remove chirality labels
-      const svgOptions = {
-        suppressChiralText: true
-      };
-      let moleculeSVG = mol.toSVG(100, 100, 'node-molecule', svgOptions);
-
-      // Parse the SVG string
-      const parser = new DOMParser();
-      const svgDoc = parser.parseFromString(moleculeSVG, 'image/svg+xml');
-      const svgElement = svgDoc.documentElement;
-
-      // Extract inner SVG content
-      const innerContent = svgElement.innerHTML;
-
-      // Append the inner content to the group
-      group.append('g')
-        .html(innerContent)
-        .attr('transform', 'translate(-50, -50)'); // Center the molecule
-
-    } catch (error) {
-      // Handle error in rendering molecule
-      group.append('text')
-        .attr('x', 0)
-        .attr('y', 0)
-        .text('Error rendering molecule');
-    }
-  });
-
-  // Tooltip for node details
+  // Tooltip for reaction metrics
   const tooltip = d3.select('body').append('div')
     .attr('class', 'tooltip')
     .style('opacity', 0);
 
-  node.on('mouseover', (event, d) => {
+  link.on('mouseover', (event, d) => {
     tooltip.transition()
       .duration(200)
       .style('opacity', .9);
-    tooltip.html(getStepDetails(d.data))
+    tooltip.html(`
+      <strong>Step ${d.target.data.step} Metrics</strong><br/>
+      <em>Scalability Index:</em> ${d.target.data.reactionmetrics[0].scalabilityindex}<br/>
+      <em>Confidence Estimate:</em> ${d.target.data.reactionmetrics[0].confidenceestimate}
+    `)
       .style('left', (event.pageX + 15) + 'px')
       .style('top', (event.pageY - 28) + 'px');
   })
@@ -160,13 +195,88 @@ function renderGraph(data) {
         .duration(500)
         .style('opacity', 0);
     });
-}
 
-function getStepDetails(step) {
-  let html = `<strong>Step ${step.id}</strong><br/>`;
+  // Add nodes
+  const node = g.selectAll('.node')
+    .data(treeData.descendants())
+    .enter().append('g')
+    .attr('class', 'node')
+    .attr('transform', d => `translate(${d.y},${d.x})`);
 
-  html += `<em>Scalability Index:</em> ${step.reactionmetrics[0].scalabilityindex}<br/>`;
-  html += `<em>Confidence Estimate:</em> ${step.reactionmetrics[0].confidenceestimate}<br/>`;
+  // Render molecules and add step labels for nodes (including step 1)
+  node.each(function (d) {
+    const group = d3.select(this);
+    try {
+      const molecules = [];
 
-  return html;
+      // Add step label and metadata for each step
+      group.append('text')
+        .attr('x', 0)
+        .attr('y', -50)
+        .attr('text-anchor', 'middle')
+        .text(`Step ${d.data.step}`);
+
+      if (d.data.step === '1') {
+        // For step 1, show products first then reactants horizontally
+        molecules.push(...d.data.products.map(m => ({ ...m, type: 'product' })));
+        molecules.push(...d.data.reactants.map(m => ({ ...m, type: 'reactant' })));
+
+        const xOffset = 100;
+        molecules.forEach((molecule, i) => {
+          const x = i * xOffset;
+
+          const molGroup = group.append('g')
+            .attr('transform', `translate(${x}, 0)`);
+
+          molGroup.append('circle')
+            .attr('r', 35)
+            .attr('fill', molecule.type === 'product' ? '#e8f5e9' : '#f0f8ff')
+            .attr('stroke', molecule.type === 'product' ? '#66bb6a' : '#69b3a2')
+            .attr('stroke-width', 2);
+
+          const mol = OCL.Molecule.fromSmiles(molecule.smiles);
+          let molSVG = mol.toSVG(60, 60, 'molecule', { suppressChiralText: true });
+
+          const parser = new DOMParser();
+          const svgDoc = parser.parseFromString(molSVG, 'image/svg+xml');
+
+          molGroup.append('g')
+            .html(svgDoc.documentElement.innerHTML)
+            .attr('transform', 'translate(-30, -30)');
+        });
+      } else {
+        // For other steps, show reactants only vertically
+        molecules.push(...d.data.reactants.map(m => ({ ...m, type: 'reactant' })));
+
+        const yOffset = 70;
+        molecules.forEach((molecule, i) => {
+          const y = i * yOffset;
+
+          const molGroup = group.append('g')
+            .attr('transform', `translate(0, ${y})`);
+
+          molGroup.append('circle')
+            .attr('r', 35)
+            .attr('fill', molecule.type === 'product' ? '#e8f5e9' : '#f0f8ff')
+            .attr('stroke', molecule.type === 'product' ? '#66bb6a' : '#69b3a2')
+            .attr('stroke-width', 2);
+
+          const mol = OCL.Molecule.fromSmiles(molecule.smiles);
+          let molSVG = mol.toSVG(60, 60, 'molecule', { suppressChiralText: true });
+
+          const parser = new DOMParser();
+          const svgDoc = parser.parseFromString(molSVG, 'image/svg+xml');
+
+          molGroup.append('g')
+            .html(svgDoc.documentElement.innerHTML)
+            .attr('transform', 'translate(-30, -30)');
+        });
+      }
+    } catch (error) {
+      group.append('text')
+        .attr('x', 0)
+        .attr('y', 0)
+        .text('Error rendering molecule');
+    }
+  });
 }
