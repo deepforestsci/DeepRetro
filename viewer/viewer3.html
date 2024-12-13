@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Retrosynthesis Viewer</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+		}
+
+		.molecule {
+			display: inline-block;
+			padding: 10px;
+			border: 1px solid #ddd;
+			border-radius: 5px;
+			margin: 20px;
+			text-align: center;
+		}
+
+		.molecule-container {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.arrow {
+			font-size: 24px;
+			margin: 0 20px;
+		}
+
+		svg {
+			width: 100%;
+			height: 400px;
+		}
+
+		line {
+			stroke: #000;
+			stroke-width: 2;
+		}
+	</style>
+</head>
+
+<body>
+	<div>
+		<textarea id="jsonInput" rows="10" cols="50"
+			placeholder="Paste your retrosynthesis JSON here..."></textarea><br>
+		<button onclick="loadJson()">Load Retrosynthesis Data</button>
+	</div>
+	<div id="viewer"></div>
+
+	<script>
+		let retrosynthesisData = {};
+
+		function loadJson() {
+			try {
+				const jsonInput = document.getElementById("jsonInput").value;
+				retrosynthesisData = JSON.parse(jsonInput);
+				renderViewer(retrosynthesisData);
+			} catch (e) {
+				alert("Invalid JSON format. Please check your input.");
+			}
+		}
+
+		function renderViewer(data) {
+			const viewer = document.getElementById("viewer");
+			viewer.innerHTML = '';
+
+			const molecules = [];
+			const arrows = [];
+
+			function traverse(stepId, parentCoords = null) {
+				const step = data[stepId].step;
+				const coords = { x: Math.random() * 800, y: Math.random() * 300 };
+
+				const moleculeDiv = document.createElement("div");
+				moleculeDiv.className = "molecule";
+				moleculeDiv.style.position = "absolute";
+				moleculeDiv.style.left = `${coords.x}px`;
+				moleculeDiv.style.top = `${coords.y}px`;
+				moleculeDiv.innerHTML = `<strong>Step ${step.step}</strong><br>Reactants: ${step.reactants.map(r => r.smiles).join(", ")}<br>Products: ${step.products.map(p => p.smiles).join(", ")}`;
+				viewer.appendChild(moleculeDiv);
+				molecules.push({ element: moleculeDiv, coords });
+
+				if (parentCoords) {
+					arrows.push({ from: parentCoords, to: coords });
+				}
+
+				step.child_id.forEach(childId => traverse(childId, coords));
+			}
+
+			traverse("1");
+
+			const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+			arrows.forEach(arrow => {
+				const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+				line.setAttribute("x1", arrow.from.x + 50);
+				line.setAttribute("y1", arrow.from.y + 50);
+				line.setAttribute("x2", arrow.to.x + 50);
+				line.setAttribute("y2", arrow.to.y + 50);
+				svg.appendChild(line);
+			});
+			viewer.appendChild(svg);
+		}
+	</script>
+</body>
+
+</html>
