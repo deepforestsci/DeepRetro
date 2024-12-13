@@ -1,0 +1,3 @@
+2024-11-26 11:07:40 [info     ] Starting new synthesis job 20241126_163740_59145 for molecule CC(N)C(=O)NC1=C(C)C=CC=C1C filename=prithvi.py job_id=20241126_163740_59145 lineno=30
+2024-11-26 11:07:40 [info     ] AZ_MODEL_CONFIG_PATH found: /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/../aizynthfinder/models/config.yml filename=az.py job_id=20241126_163740_59145 lineno=35
+2024-11-26 11:08:37 [info     ] AZ solved CC(N)C(=O)NC1=C(C)C=CC=C1C filename=rec_prithvi.py job_id=20241126_163740_59145 lineno=54

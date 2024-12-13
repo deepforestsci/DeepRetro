@@ -1,0 +1,3 @@
+2024-11-28 17:05:50 [info     ] Starting new synthesis job 20241128_223550_96399 for molecule c1ccccc1 filename=prithvi.py job_id=20241128_223550_96399 lineno=30
+2024-11-28 17:05:50 [info     ] AZ_MODEL_CONFIG_PATH found: /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/../aizynthfinder/models/config.yml filename=az.py job_id=20241128_223550_96399 lineno=35
+2024-11-28 17:05:57 [info     ] AZ solved c1ccccc1             filename=rec_prithvi.py job_id=20241128_223550_96399 lineno=54

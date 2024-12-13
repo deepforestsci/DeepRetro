@@ -1,0 +1,17 @@
+2024-11-28 17:05:50 [info     ] -------------------------------------------------- filename=main.py lineno=29
+2024-11-28 17:05:50 [info     ] Application initialization complete filename=main.py lineno=30
+2024-11-28 17:05:50 [info     ] Starting new synthesis job 20241128_223550_96399 for molecule c1ccccc1 filename=prithvi.py job_id=20241128_223550_96399 lineno=30
+2024-11-28 17:05:50 [info     ] AZ_MODEL_CONFIG_PATH found: /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/../aizynthfinder/models/config.yml filename=az.py job_id=20241128_223550_96399 lineno=35
+Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_model.onnx to uspto
+Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_templates.csv.gz to uspto
+Loading template-based expansion policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+Loading templates from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+Loading filter policy model from /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/uspto_filter_model.onnx to uspto
+Loading stock from InMemoryInchiKeyQuery to zinc
+Selected as stock: zinc
+Compounds in stock: 17422831
+Selected as expansion policy: uspto
+Selected as filter policy: uspto
+2024-11-28 17:05:57 [info     ] AZ solved c1ccccc1             filename=rec_prithvi.py job_id=20241128_223550_96399 lineno=54
+Retrosynthesis result: {'dependencies': {'1': []}, 'steps': [{'step': '1', 'reactants': [{'smiles': 'Clc1cccc(Cl)c1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H4Cl2', 'mass': 145.969005488}}], 'reagents': [], 'products': [{'smiles': 'c1ccccc1', 'product_metadata': {'name': '', 'chemical_formula': 'C6H6', 'mass': 78.046950192}}], 'conditions': [], 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.99, 'closestliterature': ''}]}]}
+127.0.0.1 - - [28/Nov/2024 22:35:58] "POST /api/retrosynthesis HTTP/1.1" 200 -
