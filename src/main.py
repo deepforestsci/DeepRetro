@@ -21,7 +21,7 @@ from src.utils.custom_logging import setup_logging
 load_dotenv()
 
 
-def main(smiles: str) -> Any:
+def main(smiles: str, llm: str = "claude-3-opus-20240229") -> Any:
     # Initialize generic logging
     setup_logging()
 
@@ -29,6 +29,6 @@ def main(smiles: str) -> Any:
     log.info("-" * 50)
     log.info("Application initialization complete")
 
-    res = run_prithvi(smiles)
+    res = run_prithvi(smiles, llm)
     logging.info(f"Retrosynthesis result: {res}")
     return res

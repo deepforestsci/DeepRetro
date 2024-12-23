@@ -8,6 +8,7 @@ from src.utils.parse import format_output
 from src.rec_prithvi import rec_run_prithvi
 from src.utils.job_context import logger as context_logger
 from src.utils.custom_logging import add_job_specific_handler
+from src.metadata import reagent_agent, conditions_agent, literature_agent
 
 root_dir = rootutils.setup_root(__file__,
                                 indicator=".project-root",
@@ -16,7 +17,7 @@ root_dir = rootutils.setup_root(__file__,
 date_dir = f'{root_dir}/logs/{time.strftime("%Y-%m-%d")}'
 
 
-def run_prithvi(molecule):
+def run_prithvi(molecule, llm="claude-3-opus-20240229"):
     # Generate a unique job ID using timestamp and a random suffix
     job_id = f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}"
 
@@ -30,11 +31,44 @@ def run_prithvi(molecule):
     log.info(f"Starting new synthesis job {job_id} for molecule {molecule}")
 
     try:
-        result_dict, solved = rec_run_prithvi(molecule, job_id)
+        result_dict, solved = rec_run_prithvi(molecule, job_id, llm)
         output_data = format_output(result_dict)
+        output_data = add_metadata(output_data)
         return output_data
     finally:
         # Clean up handlers
         log._logger.removeHandler(handler)
         handler.close()
         context_logger.reset(token)
+
+
+def add_metadata(output_data: dict) -> dict:
+    """method to add metadata to reaction metrics
+
+    Parameters
+    ----------
+    output_data : dict
+        json output without metadata
+
+    Returns
+    -------
+    dict
+        json output with metadata
+    """
+    for idx, step in enumerate(output_data['steps']):
+        status, reagents = reagent_agent(step['reactants'], step['products'])
+        output_data['steps'][idx]['reagents'].extend(reagents)
+
+        status, conditions = conditions_agent(step['reactants'],
+                                              step['products'],
+                                              step['reagents'])
+        output_data['steps'][idx]['conditions'] = conditions
+
+        status, literature = literature_agent(step['reactants'],
+                                              step['products'],
+                                              step['reagents'],
+                                              step['conditions'])
+        output_data['steps'][idx]['reactionmetrics'][0][
+            'closestliterature'] = literature
+
+    return output_data

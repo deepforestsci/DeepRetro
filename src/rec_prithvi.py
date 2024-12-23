@@ -5,13 +5,32 @@ from src.utils.az import run_az
 from src.utils.job_context import logger as context_logger
 
 
-def rec_run_prithvi(molecule, job_id):
+def rec_run_prithvi(molecule: str,
+                    job_id,
+                    llm: str = "claude-3-opus-20240229"):
+    """Recursive function to run Prithvi on a molecule
+
+    Parameters
+    ----------
+    molecule : str
+        Molecule SMILES
+    job_id : _type_
+        Job ID
+    llm : str, optional
+        LLM to be used, by default "claude-3-opus-20240229"
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
     solved, result_dict = run_az(molecule)
     result_dict = result_dict[0]
     logger = context_logger.get()
     if not solved:
         logger.info(f"AZ failed for {molecule}, running LLM")
-        out_pathways, out_explained, out_confidence = llm_pipeline(molecule)
+        out_pathways, out_explained, out_confidence = llm_pipeline(
+            molecule, llm)
         result_dict = {
             'type':
             'mol',
@@ -37,7 +56,7 @@ def rec_run_prithvi(molecule, job_id):
             if isinstance(pathway, list):
                 temp_stat = []
                 for mol in pathway:
-                    res, stat = rec_run_prithvi(mol, job_id)
+                    res, stat = rec_run_prithvi(mol, job_id, llm)
                     if stat:
                         temp_stat.append(True)
                         result_dict['children'][0]['children'].append(res)
@@ -45,7 +64,7 @@ def rec_run_prithvi(molecule, job_id):
                 if all(temp_stat):
                     solved = True
             else:
-                res, solved = rec_run_prithvi(pathway, job_id)
+                res, solved = rec_run_prithvi(pathway, job_id, llm)
                 result_dict['children'][0]['children'].append(res)
             if solved:
                 logger.info('breaking')
