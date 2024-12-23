@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retrosynthesis Analysis</title>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="https://unpkg.com/openchemlib/dist/openchemlib-full.js"></script>
-    <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -17,7 +15,7 @@
 
         body {
             font-family: system-ui, -apple-system, sans-serif;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 40px auto;
             padding: 0 20px;
             line-height: 1.6;
@@ -128,14 +126,10 @@
         }
 
         /* Graph styles */
-        .links line {
-            stroke: #999;
-            stroke-opacity: 0.6;
-        }
-
-        .nodes circle {
-            stroke: #69b3a2;
-            stroke-width: 2px;
+        .link {
+            fill: none;
+            stroke: #555;
+            stroke-width: 2;
         }
 
         .node-molecule {
@@ -170,11 +164,10 @@
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <h1>Retrosynthesis Analysis</h1>
-
+        
         <div class="toggle-view">
             <button onclick="toggleView('api')">API Test View</button>
             <button onclick="toggleView('file')">File Upload View</button>
@@ -182,7 +175,8 @@
 
         <div id="apiView">
             <div class="input-group">
-                <input type="text" id="smiles" placeholder="Enter SMILES string" aria-label="SMILES input">
+                <input type="text" id="smiles" placeholder="Enter SMILES string" 
+                       aria-label="SMILES input">
                 <button onclick="analyze()" id="analyzeBtn">Analyze</button>
             </div>
 
@@ -205,7 +199,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
+        const API_URL = 'http://127.0.0.1:5000/api/retrosynthesis';
         const API_KEY = 'your-secure-api-key';
 
         function toggleView(view) {
@@ -223,7 +217,7 @@
             const button = document.getElementById('analyzeBtn');
             const status = document.getElementById('status');
             const result = document.getElementById('result');
-
+            
             const smiles = smilesInput.value.trim();
             if (!smiles) return;
 
@@ -251,29 +245,26 @@
                 const formattedJson = JSON.stringify(data, null, 2);
                 result.textContent = formattedJson;
                 result.style.display = 'block';
-
+                
                 // Show success message
                 status.className = 'status success';
                 status.textContent = 'Analysis completed successfully';
                 status.style.display = 'block';
 
-                // Clear the previous graph
-                document.getElementById('graph').innerHTML = '';
-
-                // The appv2.js will handle the visualization with the response data
-                const processedTree = processData(data);
-                const rootStep = processedTree['1']; // Start with step 1 as the root
-                renderGraph(rootStep);
+                // Create visualization with the response data
+                renderGraph(data);
 
             } catch (error) {
                 // Show error message
                 status.className = 'status error';
                 status.textContent = `Error: ${error.message}`;
                 status.style.display = 'block';
-
+                
                 // Clear previous result
                 result.style.display = 'none';
                 result.textContent = '';
+                // Clear the graph
+                document.getElementById('graph').innerHTML = '';
             } finally {
                 button.disabled = false;
                 button.textContent = 'Analyze';
@@ -281,10 +272,10 @@
         }
 
         // Allow Enter key to trigger analysis
-        document.getElementById('smiles').addEventListener('keypress', function (e) {
+        document.getElementById('smiles').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') analyze();
         });
     </script>
-    <script src="app_v4.js"></script>
+    <script src="appv2.js"></script>
 </body>
 </html>
