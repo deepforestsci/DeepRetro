@@ -17,7 +17,7 @@ root_dir = rootutils.setup_root(__file__,
 date_dir = f'{root_dir}/logs/{time.strftime("%Y-%m-%d")}'
 
 
-def run_prithvi(molecule):
+def run_prithvi(molecule, llm="claude-3-opus-20240229"):
     # Generate a unique job ID using timestamp and a random suffix
     job_id = f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}"
 
@@ -31,7 +31,7 @@ def run_prithvi(molecule):
     log.info(f"Starting new synthesis job {job_id} for molecule {molecule}")
 
     try:
-        result_dict, solved = rec_run_prithvi(molecule, job_id)
+        result_dict, solved = rec_run_prithvi(molecule, job_id, llm)
         output_data = format_output(result_dict)
         output_data = add_metadata(output_data)
         return output_data
