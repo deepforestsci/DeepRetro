@@ -236,10 +236,11 @@ function renderGraph(rootStep) {
             <em>Closest Literature:</em> ${d.target.data.reactionmetrics[0].closestliterature}<br/>
             <em>Reaction Conditions:</em> <br/>
             <ul> 
-                <li><em>Temperature:</em> ${d.target.data.conditions.temperature} °C</li>
-                <li><em>Pressure:</em> ${d.target.data.conditions.pressure} atm</li>
+                <li><em>Temperature:</em> ${d.target.data.conditions.temperature} </li>
+                <li><em>Pressure:</em> ${d.target.data.conditions.pressure} </li>
                 <li><em>Solvent:</em> ${d.target.data.conditions.solvent}</li>
-                <li><em>Time:</em> ${d.target.data.conditions.time} h</li>
+                <li><em>Time:</em> ${d.target.data.conditions.time} </li>
+            </ul> <br/>
         `)
             .style('left', (event.pageX + 15) + 'px')
             .style('top', (event.pageY - 28) + 'px');
