@@ -187,8 +187,11 @@ If the molecule is too simple for meaningful retrosynthesis, state this in a sin
 
 LITERATURE_USER_PROMPT = """Find the closest literature reaction for the following retrosynthesis:
 Reactants: {reactants}
+
 Product: {product}
+
 Reagents: {reagents}
+
 Conditions: {conditions}
 
 Present your analysis in the following JSON format:

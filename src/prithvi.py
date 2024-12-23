@@ -56,15 +56,18 @@ def add_metadata(output_data: dict) -> dict:
         json output with metadata
     """
     for idx, step in enumerate(output_data['steps']):
-        reagents = reagent_agent(step['reactants'], step['product'])
-        output_data['steps'][idx]['reagents'].append(reagents)
+        status, reagents = reagent_agent(step['reactants'], step['products'])
+        output_data['steps'][idx]['reagents'].extend(reagents)
 
-        conditions = conditions_agent(step['reactants'], step['product'],
-                                      step['reagents'])
+        status, conditions = conditions_agent(step['reactants'],
+                                              step['products'],
+                                              step['reagents'])
         output_data['steps'][idx]['conditions'] = conditions
 
-        literature = literature_agent(step['reactants'], step['product'],
-                                      step['reagents'], conditions)
+        status, literature = literature_agent(step['reactants'],
+                                              step['products'],
+                                              step['reagents'],
+                                              step['conditions'])
         output_data['steps'][idx]['reactionmetrics'][0][
             'closestliterature'] = literature
 
