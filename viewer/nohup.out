@@ -1,0 +1,192 @@
+152.59.130.16 - - [29/Nov/2024 19:49:46] code 400, message Bad request version ('´Î\\x1b`')
+152.59.130.16 - - [29/Nov/2024 19:49:46] "\x16\x03\x01\x023\x01\x00\x02/\x03\x03$¾Òhä\x02ë¾æl¼\x14üP¿\x9cIµ\x84\x9ezÈÅ¾`@-E\x86_\x9aó _Áþ%Ì¨n\x9e\x0e\\°\x1c´Î\x1b`" 400 -
+152.59.130.16 - - [29/Nov/2024 19:49:46] code 400, message Bad request version ('zz\\x13\\x01\\x13\\x02\\x13\\x03À+À/À,À0Ì©Ì¨À\\x13À\\x14\\x00\\x9c\\x00\\x9d\\x00/\\x005\\x01\\x00\\x01æúú\\x00\\x00\\x00')
+152.59.130.16 - - [29/Nov/2024 19:49:46] "\x16\x03\x01\x02S\x01\x00\x02O\x03\x03Å\x06Ö@£\x8c¼\x03OY¤â\x18É0)0\x18÷­b-OB¾øàG)eÆ½ Ä\x1b.\x8bû½2N¬\x05vI\x94}½\x85\x96f=üör~\x17Áipë.öâÐ\x00 zz\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x01æúú\x00\x00\x00" 400 -
+152.59.130.16 - - [29/Nov/2024 19:49:46] code 400, message Bad HTTP/0.9 request type ('\\x16\\x03\\x01\\x02s\\x01\\x00\\x02o\\x03\\x03;.eú!U{\\x86hØ9J\\x95\\x8b°\\x83\\x12\\x9b#\\x8a\\x89Ào\\\\\\x9e0+Âh*z¿')
+152.59.130.16 - - [29/Nov/2024 19:49:46] "\x16\x03\x01\x02s\x01\x00\x02o\x03\x03;.eú!U{\x86hØ9J\x95\x8b°\x83\x12\x9b#\x8a\x89Ào\\\x9e0+Âh*z¿ \x8fæÛÈÉjÑÖ¤\x89z\x08àLãÂDÿsÈ÷g¶\x00ëí¨t\x93" 400 -
+152.59.130.16 - - [29/Nov/2024 19:49:47] "GET / HTTP/1.1" 200 -
+152.59.130.16 - - [29/Nov/2024 19:49:47] code 400, message Bad request version ('zz\\x13\\x01\\x13\\x02\\x13\\x03À+À/À,À0Ì©Ì¨À\\x13À\\x14\\x00\\x9c\\x00\\x9d\\x00/\\x005\\x01\\x00\\x02\\x06')
+152.59.130.16 - - [29/Nov/2024 19:49:47] "\x16\x03\x01\x02s\x01\x00\x02o\x03\x03\x92\x88^D\x87\x00\x02\x0e°4v\x1b×9Ríè\x09Ø/Y\x0ceS3\x85u\x9c\x18Q\x063 p´» PJÉÄî\x9aÔ%K­ßÿ,N983\x89C2e¤\x08Ø\x095¨Â\x00 zz\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x02\x06" 400 -
+152.59.130.16 - - [29/Nov/2024 19:49:47] "GET /appv2.js HTTP/1.1" 200 -
+152.59.130.16 - - [29/Nov/2024 19:49:50] code 404, message File not found
+152.59.130.16 - - [29/Nov/2024 19:49:50] "GET /favicon.ico HTTP/1.1" 404 -
+152.59.130.16 - - [29/Nov/2024 19:49:50] code 400, message Bad request version ('p+¢òU')
+152.59.130.16 - - [29/Nov/2024 19:49:50] "\x16\x03\x01\x02s\x01\x00\x02o\x03\x039t»;·ºYU\x94\x17Eå\x83%$y·\x98ûk\x1a¢¥J\x9bÐ\x9c\x85|\x1dì\x88 Ç\x80og\x90a\x86{9¤µrõ\x11+\x07Ä Ñ­\x1aÉR©~ì\x10\x8c\x17ÅK=\x00 jj\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x02\x06ÊÊ\x00\x00\x00#\x00\x00\x003\x00+\x00)\x8a\x8a\x00\x01\x00\x00\x1d\x00 \x07åj\x01à\x7fèGw*E\x86²ÑL\x8aÑ.F\x82K\x89Nù<¼T-\x84\x87<2\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1\x00\x00\x005\x003\x00\x000ec2-3-142-141-95.us-east-2.compute.amazonaws.comþ\x0d\x01\x1a\x00\x00\x01\x00\x01\x18\x00 ;\x8c`óz\\Énÿí\x06\x11í\x00u¦¸ÉÔWÏ\x08®Ò¾\x7f\x92ÑÙ\x8d/3\x00ðútã²Îp\x8bñ\x84£©#&ZaMà«\x09\x01Ò)þâ¦ÐT\x80ÛÄË$dç\x11\x9fJÃ®Ý®\x09p+¢òU" 400 -
+152.59.130.16 - - [29/Nov/2024 19:49:50] code 400, message Bad request version ('5\\x8e\\x08ÄÌvPÊ\\x96»à\\x8d¡Ø1?]}oÄ\\x13\\x9eQ¨\\x84')
+152.59.130.16 - - [29/Nov/2024 19:49:50] "\x16\x03\x01\x02S\x01\x00\x02O\x03\x03À\x85à0æßÕàÙ­\x85ÿõÊ\x02\x00õÉõÅ¯\x1f\x84S·\x8f´\x01T9\x86¬ af_\x15\x00£\x99Ê¤\x03IÝ\x18¹DSôU\x0d¡\x82ò\x9a\x8af9 \x878T E\x00 \x1a\x1a\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x01æjj\x00\x00\x00\x17\x00\x00\x00\x12\x00\x00\x00\x00\x005\x003\x00\x000ec2-3-142-141-95.us-east-2.compute.amazonaws.comÿ\x01\x00\x01\x00\x00\x1b\x00\x03\x02\x00\x02\x00\x0b\x00\x02\x01\x00\x00\x0d\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01Di\x00\x05\x00\x03\x02h2\x003\x00+\x00)ÊÊ\x00\x01\x00\x00\x1d\x00 ¾?¾Ç[Õ­Û³òKè\x10\x88\x08Æ\\³ü\x0d[\x9d\x8bGj\x84åtÆ}#s\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1\x00\x05\x00\x05\x01\x00\x00\x00\x00\x00#\x00\x00þ\x0d\x00ú\x00\x00\x01\x00\x01Y\x00 rÛ+w»^iÀÑ\x8d\x81!¾\x91\x01¦³Û\x92¬n\x8eaHË6\x06Ú\x95çJz\x00ÐlU\x097Q!Ð:YRNÿäYþ\x04\x03Ä÷\x9fT£\x92©..~\x83ý\x96×¸°\x1f¾\x18<.£¯ÞªÔèÃ'ß1o~4}0\x01\x9dP7.=\x84Öò\x8d\x1d5\x8e\x08ÄÌvPÊ\x96»à\x8d¡Ø1?]}oÄ\x13\x9eQ¨\x84" 400 -
+49.44.85.200 - - [29/Nov/2024 19:49:54] code 400, message Bad request version ('êê\\x13\\x01\\x13\\x02\\x13\\x03À+À/À,À0Ì©Ì¨À\\x13À\\x14\\x00\\x9c\\x00\\x9d\\x00/\\x005\\x01\\x00\\x01æ\\x8a\\x8a\\x00\\x00\\x00#\\x00\\x00\\x00')
+49.44.85.200 - - [29/Nov/2024 19:49:54] "\x16\x03\x01\x02S\x01\x00\x02O\x03\x03\x1fxè¿ä\x99îî´>Ö)¨Uó\x19y\x03o°n8\x17\x90\x00\x15¢Àµè\x85Â \x93l\x1f\x17Ë\x0f`Z^SÏ\x99\x9båÜ ÓÇ(:kr8/4g\x1f­o¿Gä\x00 êê\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x01æ\x8a\x8a\x00\x00\x00#\x00\x00\x00" 400 -
+49.44.85.200 - - [29/Nov/2024 19:49:55] code 400, message Bad request version ("0yÊçI<«Í²;ºÈÍ\\x16\\x90?¥.«\\x9a\\\\S{r\\x16±\\\\ÐW\\x10g<]mÚ[úØÉ»\\xad\\x9c^\\xadtztõø|'ýJ®\\x87PQÈ/ÂÂ\\x00#\\x00\\x00\\x00")
+49.44.85.200 - - [29/Nov/2024 19:49:55] "\x16\x03\x01\x023\x01\x00\x02/\x03\x03å\x04Mñz\x9fýó\x1b\x94þt/@±\x05Ú\x9a\\m:°Kð\x91\x1c*â\x15»hý .éd\x0e5õÑ\x81\x8fçú\x03ïÌDØí\x16ûT¯C·è´"\x93\x11\x99*9\x08\x00 ºº\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x01ÆZZ\x00\x00ÿ\x01\x00\x01\x00\x00\x05\x00\x05\x01\x00\x00\x00\x00þ\x0d\x00Ú\x00\x00\x01\x00\x01\x83\x00 6|FP¶¯3u\x81SF\x12Þîl¬\x10}Q»\x93½sO\x02#h¦\x01\x08MC\x00°ÞÈÒ%$\x09ÃÏ\x8côÜê\x1cé¶Â\x87\x14æÁ\x9b»J\x99Y>q\x0b\x84òº\x81%'=Û\x16íz'íâÕ2WEþ?hÛ½{´æ\x93Á\x9fu³\x05¤wÌ(8zÏ\x10\x96\x17\x9e\x08\x16k"e\x0cß\x11\x08HÇ,;\x9e¼ýÜ\x8aN°:û`ªÀ\x9f\x180'\x1f0ÒàS\x1fSª\x80ÔRvû\x02\x090yÊçI<«Í²;ºÈÍ\x16\x90?¥.«\x9a\\S{r\x16±\\ÐW\x10g<]mÚ[úØÉ»­\x9c^­tztõø|'ýJ®\x87PQÈ/ÂÂ\x00#\x00\x00\x00" 400 -
+122.171.20.109 - - [29/Nov/2024 20:56:22] "GET / HTTP/1.1" 304 -
+122.171.20.109 - - [29/Nov/2024 20:56:23] "GET /appv2.js HTTP/1.1" 304 -
+172.225.137.192 - - [29/Nov/2024 21:51:16] "GET / HTTP/1.1" 200 -
+172.225.137.192 - - [29/Nov/2024 21:51:16] "GET /appv2.js HTTP/1.1" 304 -
+172.225.218.36 - - [29/Nov/2024 21:56:04] code 404, message File not found
+172.225.218.36 - - [29/Nov/2024 21:56:04] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+172.225.218.36 - - [29/Nov/2024 21:56:04] code 404, message File not found
+172.225.218.36 - - [29/Nov/2024 21:56:04] "GET /favicon.ico HTTP/1.1" 404 -
+172.225.218.36 - - [29/Nov/2024 21:56:04] code 404, message File not found
+172.225.218.36 - - [29/Nov/2024 21:56:04] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+35.196.132.85 - - [29/Nov/2024 21:56:06] "GET / HTTP/1.1" 200 -
+122.171.20.109 - - [29/Nov/2024 21:57:35] "GET / HTTP/1.1" 304 -
+122.171.20.109 - - [29/Nov/2024 21:57:35] "GET /appv2.js HTTP/1.1" 304 -
+172.225.186.52 - - [29/Nov/2024 21:59:22] code 404, message File not found
+172.225.186.52 - - [29/Nov/2024 21:59:22] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+172.225.186.52 - - [29/Nov/2024 21:59:22] code 404, message File not found
+172.225.186.52 - - [29/Nov/2024 21:59:22] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+172.225.186.52 - - [29/Nov/2024 21:59:22] "GET / HTTP/1.1" 200 -
+172.225.186.52 - - [29/Nov/2024 21:59:23] code 404, message File not found
+172.225.186.52 - - [29/Nov/2024 21:59:23] "GET /favicon.ico HTTP/1.1" 404 -
+172.225.218.36 - - [29/Nov/2024 21:59:26] code 404, message File not found
+172.225.218.36 - - [29/Nov/2024 21:59:26] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+172.225.218.36 - - [29/Nov/2024 21:59:27] code 404, message File not found
+172.225.218.36 - - [29/Nov/2024 21:59:27] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+172.225.218.36 - - [29/Nov/2024 21:59:27] code 404, message File not found
+172.225.218.36 - - [29/Nov/2024 21:59:27] "GET /favicon.ico HTTP/1.1" 404 -
+172.225.186.52 - - [29/Nov/2024 21:59:31] "GET / HTTP/1.1" 200 -
+172.225.186.52 - - [29/Nov/2024 21:59:31] "GET /appv2.js HTTP/1.1" 200 -
+172.225.186.52 - - [29/Nov/2024 21:59:34] code 404, message File not found
+172.225.186.52 - - [29/Nov/2024 21:59:34] "GET /favicon.ico HTTP/1.1" 404 -
+172.225.137.232 - - [29/Nov/2024 21:59:47] "GET / HTTP/1.1" 200 -
+57.151.49.188 - - [29/Nov/2024 22:57:26] code 400, message Bad request version ('À\\x14À')
+57.151.49.188 - - [29/Nov/2024 22:57:26] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03Y×lÛUªw\x9cïã\x8a­\x8a2×åýS9S\x18ý\x99Â\x9dÒw' HÊÁ\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+18.175.151.92 - - [30/Nov/2024 00:21:41] code 400, message Bad request version ('À\\x14À')
+18.175.151.92 - - [30/Nov/2024 00:21:41] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03_Æ\x9c"+\x0dÁ\x16_\x13\x13ÉÅi»\x0eÑ\x13\x06\x11Ð$â²Æý\x9d\x0d2ÑT\x85\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+18.175.151.92 - - [30/Nov/2024 00:23:47] code 400, message Bad request version ('À\\x14À')
+18.175.151.92 - - [30/Nov/2024 00:23:47] "\x16\x03\x01\x00±\x01\x00\x00­\x03\x03\x94V\x0b×$;P\x14]\x04¢Zæ\x9eï\x9f}ddT¯ÁC\x90¦|-ZõÃS£\x00\x00PÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+18.175.151.92 - - [30/Nov/2024 00:25:15] code 404, message File not found
+18.175.151.92 - - [30/Nov/2024 00:25:15] "GET /favicon.ico HTTP/1.1" 404 -
+18.175.151.92 - - [30/Nov/2024 00:26:57] code 400, message Bad request version ('À\\x14À')
+18.175.151.92 - - [30/Nov/2024 00:26:57] "\x16\x03\x01\x00±\x01\x00\x00­\x03\x03ÝX÷vtA\x05l°\x88w\x8cp\x07\x06íó©\x8f²u³§\x15\x9eÂÝ(¯|\x09O\x00\x00PÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+18.175.151.92 - - [30/Nov/2024 00:28:31] code 404, message File not found
+18.175.151.92 - - [30/Nov/2024 00:28:31] "GET /manage/account/login HTTP/1.1" 404 -
+18.175.151.92 - - [30/Nov/2024 00:30:56] code 400, message Bad request version ('À\\x14À')
+18.175.151.92 - - [30/Nov/2024 00:30:56] "\x16\x03\x01\x00±\x01\x00\x00­\x03\x03.\x1b\x93B\x09¼\x85Ã]\x97à§\x87!ôÛsqå,ÚBîi\x08õwû`êF\x89\x00\x00PÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+18.175.151.92 - - [30/Nov/2024 00:32:36] code 404, message File not found
+18.175.151.92 - - [30/Nov/2024 00:32:36] "GET /admin/index.html HTTP/1.1" 404 -
+18.175.151.92 - - [30/Nov/2024 00:35:17] code 400, message Bad request version ('À\\x14À')
+18.175.151.92 - - [30/Nov/2024 00:35:17] "\x16\x03\x01\x00±\x01\x00\x00­\x03\x03ö±t\\Z\x1cî\x7f¯\x15\x0bxè\x099\x89\x04þ\x0eÕvEÈrRIuz>\x8bo\\\x00\x00PÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+18.175.151.92 - - [30/Nov/2024 00:37:03] "GET /index.html HTTP/1.1" 200 -
+18.175.151.92 - - [30/Nov/2024 00:39:48] code 400, message Bad request version ('À\\x14À')
+18.175.151.92 - - [30/Nov/2024 00:39:48] "\x16\x03\x01\x00±\x01\x00\x00­\x03\x03ö zÊ)ªÓ1\x8b2Ø¦6çýï\x19¥ÙX\x069ªdeÍÂ\x8câ$Í?\x00\x00PÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+18.175.151.92 - - [30/Nov/2024 00:41:30] code 404, message File not found
+18.175.151.92 - - [30/Nov/2024 00:41:30] "GET /+CSCOE+/logon.html HTTP/1.1" 404 -
+18.175.151.92 - - [30/Nov/2024 00:44:12] code 400, message Bad request version ('À\\x14À')
+18.175.151.92 - - [30/Nov/2024 00:44:12] "\x16\x03\x01\x00±\x01\x00\x00­\x03\x03\x17\x02Jÿ\x0dC\x8cI\x81ã\x11»\x13nò³\x10aþ\x9f\x91&\x87ºÍCûwE8×\x12\x00\x00PÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+18.175.151.92 - - [30/Nov/2024 00:45:59] code 404, message File not found
+18.175.151.92 - - [30/Nov/2024 00:45:59] "GET /cgi-bin/login.cgi HTTP/1.1" 404 -
+18.175.151.92 - - [30/Nov/2024 00:48:41] code 400, message Bad request version ('À\\x14À')
+18.175.151.92 - - [30/Nov/2024 00:48:41] "\x16\x03\x01\x00±\x01\x00\x00­\x03\x03hþå?p&;\x97x\x8f¾¹3>î\\¡\x8e\x1eÂ\x9cáfå\x9e1í$\x0bn7\x16\x00\x00PÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+18.175.151.92 - - [30/Nov/2024 00:50:22] code 404, message File not found
+18.175.151.92 - - [30/Nov/2024 00:50:22] "GET /logon.htm HTTP/1.1" 404 -
+18.175.151.92 - - [30/Nov/2024 00:53:08] code 400, message Bad HTTP/0.9 request type ("\\x16\\x03\\x01\\x00±\\x01\\x00\\x00\\xad\\x03\\x03è~\\x17tïåö75ôOâX¬ÔÄº\\xaduNÀ\\x19'<@\\x8c®\\x838¨\\x8fD\\x00\\x00PÀ/À+À\\x11À\\x07À\\x13À")
+18.175.151.92 - - [30/Nov/2024 00:53:08] "\x16\x03\x01\x00±\x01\x00\x00­\x03\x03è~\x17tïåö75ôOâX¬ÔÄº­uNÀ\x19'<@\x8c®\x838¨\x8fD\x00\x00PÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+18.175.151.92 - - [30/Nov/2024 00:54:51] code 404, message File not found
+18.175.151.92 - - [30/Nov/2024 00:54:51] "GET /login.jsp HTTP/1.1" 404 -
+18.175.151.92 - - [30/Nov/2024 00:57:35] code 400, message Bad request version ('À\\x14À')
+18.175.151.92 - - [30/Nov/2024 00:57:35] "\x16\x03\x01\x00±\x01\x00\x00­\x03\x031÷xá\x99*\x94Eg°\x1f\x88\x87\x9d\x16âó5Ö\x1b\x0fdï\x01\x1eJÔÐgd6g\x00\x00PÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+18.175.151.92 - - [30/Nov/2024 00:59:17] code 404, message File not found
+18.175.151.92 - - [30/Nov/2024 00:59:17] "GET /doc/index.html HTTP/1.1" 404 -
+18.175.151.92 - - [30/Nov/2024 01:02:15] code 400, message Bad request version ('À\\x14À')
+18.175.151.92 - - [30/Nov/2024 01:02:15] "\x16\x03\x01\x00±\x01\x00\x00­\x03\x03az\x1b­ÖHÈ}\x8eÃå@ée7\x1d\x90C4\x95/\x12FÙ\x1dëï[cØÍ\x16\x00\x00PÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+18.175.151.92 - - [30/Nov/2024 01:04:04] "GET / HTTP/1.1" 200 -
+198.235.24.156 - - [30/Nov/2024 01:21:25] "GET / HTTP/1.1" 200 -
+40.78.94.168 - - [30/Nov/2024 02:46:41] code 400, message Bad request syntax ('MGLNDD_3.142.141.95_8000')
+40.78.94.168 - - [30/Nov/2024 02:46:41] "MGLNDD_3.142.141.95_8000" 400 -
+----------------------------------------
+Exception occurred during processing of request from ('104.152.52.224', 56311)
+Traceback (most recent call last):
+  File "/home/ubuntu/miniforge3/lib/python3.12/socketserver.py", line 692, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/ubuntu/miniforge3/lib/python3.12/http/server.py", line 1311, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "/home/ubuntu/miniforge3/lib/python3.12/http/server.py", line 672, in __init__
+    super().__init__(*args, **kwargs)
+  File "/home/ubuntu/miniforge3/lib/python3.12/socketserver.py", line 761, in __init__
+    self.handle()
+  File "/home/ubuntu/miniforge3/lib/python3.12/http/server.py", line 436, in handle
+    self.handle_one_request()
+  File "/home/ubuntu/miniforge3/lib/python3.12/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/miniforge3/lib/python3.12/socket.py", line 720, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+147.185.132.186 - - [30/Nov/2024 05:45:49] "GET / HTTP/1.1" 200 -
+64.227.41.39 - - [30/Nov/2024 09:22:33] code 404, message File not found
+64.227.41.39 - - [30/Nov/2024 09:22:33] "GET /aaa9 HTTP/1.1" 404 -
+64.227.41.39 - - [30/Nov/2024 09:22:36] code 404, message File not found
+64.227.41.39 - - [30/Nov/2024 09:22:36] "GET /aab8 HTTP/1.1" 404 -
+64.227.41.39 - - [30/Nov/2024 09:22:37] "GET / HTTP/1.1" 200 -
+47.74.35.124 - - [30/Nov/2024 13:54:10] "GET / HTTP/1.1" 200 -
+111.7.96.158 - - [30/Nov/2024 13:54:48] "GET / HTTP/1.1" 200 -
+111.7.96.158 - - [30/Nov/2024 13:54:49] "GET / HTTP/1.1" 200 -
+111.7.96.158 - - [30/Nov/2024 13:54:49] "GET /appv2.js HTTP/1.1" 200 -
+111.7.96.158 - - [30/Nov/2024 13:55:01] code 404, message File not found
+111.7.96.158 - - [30/Nov/2024 13:55:01] "GET /favicon.ico HTTP/1.1" 404 -
+39.106.26.0 - - [30/Nov/2024 19:02:36] code 404, message File not found
+39.106.26.0 - - [30/Nov/2024 19:02:36] "GET /.env HTTP/1.1" 404 -
+185.242.226.48 - - [30/Nov/2024 19:45:24] "GET / HTTP/1.1" 200 -
+198.235.24.107 - - [30/Nov/2024 21:31:01] "GET / HTTP/1.1" 200 -
+209.38.197.20 - - [30/Nov/2024 22:15:38] code 400, message Bad HTTP/0.9 request type ('\\x16\\x03\\x01\\x00{\\x01\\x00\\x00w\\x03\\x03ì\\x8cÍ[Î\\x99\\x83\\x86¯)^¡å\\x88\\x80Æ')
+209.38.197.20 - - [30/Nov/2024 22:15:38] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03ì\x8cÍ[Î\x99\x83\x86¯)^¡å\x88\x80Æ \x09\x90" 400 -
+209.38.197.20 - - [30/Nov/2024 22:15:38] code 400, message Bad request version ('À\\x14À')
+209.38.197.20 - - [30/Nov/2024 22:15:38] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03\x97\x12\x0e\x98\x99h)\x19ÓÍ?÷2æ\x7f,m\x06®ý\x8ej\x9b8\x0bß\x88ÄHSzx\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+209.38.197.20 - - [30/Nov/2024 22:15:38] "GET / HTTP/1.1" 200 -
+209.38.197.20 - - [30/Nov/2024 22:15:38] code 404, message File not found
+209.38.197.20 - - [30/Nov/2024 22:15:38] "GET /login HTTP/1.1" 404 -
+47.121.223.222 - - [30/Nov/2024 23:45:54] code 404, message File not found
+47.121.223.222 - - [30/Nov/2024 23:45:54] "GET /.env HTTP/1.1" 404 -
+57.151.68.21 - - [01/Dec/2024 06:12:01] code 400, message Bad request version ('À\\x14À')
+57.151.68.21 - - [01/Dec/2024 06:12:01] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03ÌØú\x9déÕ\x04*þ|\x9a\x88úÞ7\x1c%~\x89Y\x00"eç\x87\x09{¹='8f\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+87.236.176.181 - - [01/Dec/2024 10:41:20] "GET / HTTP/1.1" 200 -
+172.169.205.16 - - [01/Dec/2024 10:50:20] "GET / HTTP/1.1" 200 -
+172.105.128.11 - - [01/Dec/2024 10:50:58] code 400, message Bad request version ('À\\x13À')
+172.105.128.11 - - [01/Dec/2024 10:50:58] "\x16\x03\x01\x00î\x01\x00\x00ê\x03\x03\x02÷3Ý<»¼Ó«\x1b¶=\x9fý\x1c\x9b\x12\x17\x88%á0+X\x9b*Ó\x13Ü¢ð\x81 \x83\x80{°\\j¯\x90(\x86zÉ\x09\x13Â]ñ&ó¦e\x1c @³¦\x87óÊÛ\x8f}\x00&À+À/À,À0Ì©Ì¨À\x09À\x13À" 400 -
+----------------------------------------
+Exception occurred during processing of request from ('172.104.210.105', 43715)
+Traceback (most recent call last):
+  File "/home/ubuntu/miniforge3/lib/python3.12/socketserver.py", line 692, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/ubuntu/miniforge3/lib/python3.12/http/server.py", line 1311, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "/home/ubuntu/miniforge3/lib/python3.12/http/server.py", line 672, in __init__
+    super().__init__(*args, **kwargs)
+  File "/home/ubuntu/miniforge3/lib/python3.12/socketserver.py", line 761, in __init__
+    self.handle()
+  File "/home/ubuntu/miniforge3/lib/python3.12/http/server.py", line 436, in handle
+    self.handle_one_request()
+  File "/home/ubuntu/miniforge3/lib/python3.12/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/miniforge3/lib/python3.12/socket.py", line 720, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+172.104.210.105 - - [01/Dec/2024 11:02:25] "GET / HTTP/1.1" 200 -
+45.79.181.251 - - [01/Dec/2024 11:02:29] "GET / HTTP/1.1" 200 -
+180.149.126.14 - - [01/Dec/2024 12:36:40] "GET / HTTP/1.1" 200 -
+106.1.111.49 - - [01/Dec/2024 13:15:48] "GET / HTTP/1.0" 200 -
+106.1.111.49 - - [01/Dec/2024 13:15:51] "GET / HTTP/1.0" 200 -
+106.1.111.49 - - [01/Dec/2024 13:15:55] "GET / HTTP/1.0" 200 -
+106.1.111.49 - - [01/Dec/2024 13:16:09] "GET / HTTP/1.0" 200 -
+172.169.110.112 - - [01/Dec/2024 13:16:56] code 400, message Bad request syntax ('MGLNDD_3.142.141.95_8000')
+172.169.110.112 - - [01/Dec/2024 13:16:56] "MGLNDD_3.142.141.95_8000" 400 -
+152.32.130.155 - - [01/Dec/2024 18:32:18] code 400, message Bad request version ('\\x00\\x9eÌ¨Ìª\\x003\\x00=\\x00\\x16À')
+152.32.130.155 - - [01/Dec/2024 18:32:18] "\x16\x03\x01\x01\x17\x01\x00\x01\x13\x03\x03Þ\x95C¾s\x05\\Ðâ=ó}¿î½ V¼\x92ÿ»æ/¡£ü\x0cõ'Ïww \x1eÆ\x932ûÝéìu\x8eÆ\x0c`\x9dmÍU6\x05ÌT¼ÿÏî\x87\x9f\x84å§Ú}\x004Ì¨Ì©À/À0À+À,À\x09\x00\x9eÌ¨Ìª\x003\x00=\x00\x16À" 400 -
+152.32.130.155 - - [01/Dec/2024 18:32:29] "GET / HTTP/1.1" 200 -
+152.32.130.155 - - [01/Dec/2024 18:32:29] code 404, message File not found
+152.32.130.155 - - [01/Dec/2024 18:32:29] "GET /favicon.ico HTTP/1.1" 404 -
+152.32.130.155 - - [01/Dec/2024 18:32:29] code 404, message File not found
+152.32.130.155 - - [01/Dec/2024 18:32:29] "GET /robots.txt HTTP/1.1" 404 -
+152.32.130.155 - - [01/Dec/2024 18:32:30] code 404, message File not found
+152.32.130.155 - - [01/Dec/2024 18:32:30] "GET /sitemap.xml HTTP/1.1" 404 -
+152.32.130.155 - - [01/Dec/2024 18:32:30] "GET /appv2.js HTTP/1.1" 200 -
+152.32.130.155 - - [01/Dec/2024 18:32:31] code 404, message File not found
+152.32.130.155 - - [01/Dec/2024 18:32:31] "GET /config.json HTTP/1.1" 404 -
+180.149.125.165 - - [01/Dec/2024 19:50:20] code 404, message File not found
+180.149.125.165 - - [01/Dec/2024 19:50:20] "GET /c/ HTTP/1.1" 404 -

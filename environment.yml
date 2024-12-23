@@ -10,7 +10,7 @@ dependencies:
     - pandas
     - scikit-learn
     - rdkit
-    - aizynthfinder[all]
+    - aizynthfinder
     - anthropic
     - openai
     - litellm
@@ -18,4 +18,9 @@ dependencies:
     - matplotlib
     - python-dotenv
     - rootutils
+    - flask
+    - flask_cors
+    - structlog
+    - diskcache
+    - langfuse
 

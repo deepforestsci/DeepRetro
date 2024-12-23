@@ -1,0 +1,30 @@
+ * Serving Flask app 'api'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.31.21.188:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 125-682-385
+74.82.47.4 - - [30/Nov/2024 14:42:57] "[33mGET / HTTP/1.1[0m" 404 -
+74.82.47.4 - - [30/Nov/2024 14:43:08] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+147.185.133.70 - - [30/Nov/2024 17:25:12] code 400, message Bad request version ('À\x13À')
+147.185.133.70 - - [30/Nov/2024 17:25:12] "[35m[1m\x16\x03\x01\x00î\x01\x00\x00ê\x03\x03Ê<\x8a¤0¦7L`Ì\x99ÌvìÑ\x9e10\x19Q[ê­¿ xê\x93ö\x8bÜÿ \x0d¢þÔ\\Òµ\x90ÞÊ\x8cd\x8cvG­\x17 <*/%\x0eûÛÈï2"\x08@Ì\x00&À+À/À,À0Ì©Ì¨À\x09À\x13À[0m" HTTPStatus.BAD_REQUEST -
+147.185.133.70 - - [30/Nov/2024 17:25:12] code 400, message Bad request version ('À(À$À\x14À')
+147.185.133.70 - - [30/Nov/2024 17:25:12] "[35m[1m\x16\x03\x01\x00Ê\x01\x00\x00Æ\x03\x03¡K4ÐGÐlWN\x95ñS\x9b\x7f\x82Äd-¥Ú(Ãüt\x1fg\x92\x97YVj\x94\x00\x00hÌ\x14Ì\x13À/À+À0À,À\x11À\x07À'À#À\x13À\x09À(À$À\x14À[0m" HTTPStatus.BAD_REQUEST -
+13.58.97.162 - - [30/Nov/2024 23:14:18] "[33mGET / HTTP/1.1[0m" 404 -
+205.210.31.140 - - [01/Dec/2024 03:17:48] "[33mGET / HTTP/1.0[0m" 404 -
+47.251.48.41 - - [01/Dec/2024 03:29:25] code 400, message Bad request version ('À\x13À')
+47.251.48.41 - - [01/Dec/2024 03:29:25] "[35m[1m\x16\x03\x01\x00î\x01\x00\x00ê\x03\x03I\x06²ù¼\x99iÀYûøºe-\x83Ud]\x0e\x8d·b8´gÆÝ9dZ8f gÁ\x81i³öòË°©\x19NÖ½\x95g|püé<Z¡\x90T·é¥8'O;\x00&À+À/À,À0Ì©Ì¨À\x09À\x13À[0m" HTTPStatus.BAD_REQUEST -
+47.251.48.41 - - [01/Dec/2024 03:29:35] "[33mGET / HTTP/1.1[0m" 404 -
+45.92.19.136 - - [01/Dec/2024 03:30:08] "[33mGET / HTTP/1.1[0m" 404 -
+217.182.186.47 - - [01/Dec/2024 04:27:31] "[33mGET / HTTP/1.1[0m" 404 -
+37.59.165.83 - - [01/Dec/2024 04:34:06] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+205.210.31.17 - - [01/Dec/2024 05:11:04] "[33mGET / HTTP/1.1[0m" 404 -
+64.62.197.149 - - [01/Dec/2024 07:27:32] "[33mGET / HTTP/1.1[0m" 404 -
+64.62.197.144 - - [01/Dec/2024 07:27:45] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+172.169.1.184 - - [01/Dec/2024 15:46:08] "[33mGET /v2/ HTTP/1.1[0m" 404 -
+182.138.158.239 - - [01/Dec/2024 16:59:15] "[33mGET / HTTP/1.1[0m" 404 -
+59.173.135.237 - - [01/Dec/2024 16:59:34] "[33mGET / HTTP/1.1[0m" 404 -

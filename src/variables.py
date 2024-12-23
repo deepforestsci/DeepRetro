@@ -130,6 +130,80 @@ In the "confidence_scores" array, provide a confidence score for each suggestion
 Ensure that the number of entries in "data", "explanation", and "confidence_scores" are the same.
 Do not return anything other than the JSON object. """
 
+REAGENT_SYS_PROMPT = """You are an expert organic chemist specializing in retrosynthesis.
+When given a target molecule and reactants, you will predict the reagents used in the reaction.
+Present your analysis in a specific JSON format.
+For each suggestion, provide the reagents in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed.
+Use standard organic chemistry notation and terminology in your explanations.
+If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation."""
+
+REAGENT_USER_PROMPT = """Predict the reagents used in the following reaction:
+Reactants: {reactants}
+Product: {product}
+
+Present your analysis in the following JSON format:
+
+{
+  "data": [reagent1_SMILES, reagent2_SMILES, ...],
+  "explanation": ["explanation 1", "explanation 2", ...]
+}
+
+For each suggestion in the "data" array, provide the reagents in SMILES notation. Make sure to provide only valid SMILES strings.
+In the corresponding "explanation" array, briefly explain the reaction type and any key conditions or reagents needed.
+Ensure that the number of entries in "data" and "explanation" are the same.
+Do not return anything other than the JSON object."""
+
+CONDITIONS_SYS_PROMPT = """You are an expert organic chemist specializing in retrosynthesis.
+When given a target molecule, reactants and reagents, you will predict the conditions used in the reaction.
+Present your analysis in a specific JSON format.
+For each suggestion, provide the conditions used in the reaction, including temperature, pressure, solvent, and time.
+Use standard organic chemistry notation and terminology in your explanations.
+If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation."""
+
+CONDITIONS_USER_PROMPT = """Predict the conditions used in the following reaction:
+Reactants: {reactants}
+Product: {product}
+Reagents: {reagents}
+
+Present your analysis in the following JSON format:
+
+{
+  "temperature": temperature,
+  "pressure": pressure,
+  "solvent": solvent,
+  "time": time
+}
+
+Provide the temperature, pressure, solvent, and time used in the reaction.
+If any of these conditions are not applicable, provide an appropriate explanation.
+Do not return anything other than the JSON object."""
+
+LITERATURE_SYS_PROMPT = """You are an expert organic chemist specializing in retrosynthesis.
+When given a target molecule, reactants, reagents, and conditions, you will find the closest literature reaction.
+Present your analysis in a specific JSON format.
+For each suggestion, provide the closest literature reaction and a brief explanation of the reaction type and any key conditions or reagents needed.
+Use standard organic chemistry notation and terminology in your explanations.
+If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation."""
+
+LITERATURE_USER_PROMPT = """Find the closest literature reaction for the following retrosynthesis:
+Reactants: {reactants}
+
+Product: {product}
+
+Reagents: {reagents}
+
+Conditions: {conditions}
+
+Present your analysis in the following JSON format:
+
+{
+  "literature_reaction": "literature_reaction",
+  "explanation": "explanation"
+}
+
+Provide the closest literature reaction and a brief explanation of the reaction type and any key conditions or reagents needed.
+Do not return anything other than the JSON object."""
+
 TOOLS = [{
     "name": "is_valid_smiles",
     "description": "Check if the SMILES string is valid",
