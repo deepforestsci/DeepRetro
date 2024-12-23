@@ -94,7 +94,7 @@ def reagent_agent(reactants: list[dict],
         for _, reagent in enumerate(reagents):
             res_final.append({
                 "smiles": reagent,
-                "product_metadata": {
+                "reagent_metadata": {
                     "name": "",
                     "chemical_formula": calc_chemical_formula(reagent),
                     "mass": calc_mol_wt(reagent),
