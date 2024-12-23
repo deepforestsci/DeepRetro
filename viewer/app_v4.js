@@ -9,7 +9,7 @@ function handleFileSelect(event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             try {
                 const data = JSON.parse(e.target.result);
                 const processedTree = processData(data);
@@ -128,15 +128,15 @@ function renderGraph(rootStep) {
         .attr('transform', `translate(${circlePadding},${circlePadding})`);
 
     const defs = svg.append('defs');
-    
+
     defs.append('linearGradient')
         .attr('id', 'productGradient')
         .attr('x1', '0%').attr('y1', '0%')
         .attr('x2', '100%').attr('y2', '100%')
         .selectAll('stop')
         .data([
-            {offset: '0%', color: '#e8f5e9'},
-            {offset: '100%', color: '#c8e6c9'}
+            { offset: '0%', color: '#e8f5e9' },
+            { offset: '100%', color: '#c8e6c9' }
         ])
         .enter().append('stop')
         .attr('offset', d => d.offset)
@@ -148,8 +148,8 @@ function renderGraph(rootStep) {
         .attr('x2', '100%').attr('y2', '100%')
         .selectAll('stop')
         .data([
-            {offset: '0%', color: '#e3f2fd'},
-            {offset: '100%', color: '#bbdefb'}
+            { offset: '0%', color: '#e3f2fd' },
+            { offset: '100%', color: '#bbdefb' }
         ])
         .enter().append('stop')
         .attr('offset', d => d.offset)
@@ -232,7 +232,15 @@ function renderGraph(rootStep) {
         tooltip.html(`
             <strong>Step ${d.target.data.step} Metrics</strong><br/>
             <em>Scalability Index:</em> ${d.target.data.reactionmetrics[0].scalabilityindex}<br/>
-            <em>Confidence Estimate:</em> ${d.target.data.reactionmetrics[0].confidenceestimate}
+            <em>Confidence Estimate:</em> ${d.target.data.reactionmetrics[0].confidenceestimate}<br/>
+            <em>Closest Literature:</em> ${d.target.data.reactionmetrics[0].closestliterature}<br/>
+            <em>Reaction Conditions:</em> <br/>
+            <ul> 
+                <li><em>Temperature:</em> ${d.target.data.conditions.temperature} </li>
+                <li><em>Pressure:</em> ${d.target.data.conditions.pressure} </li>
+                <li><em>Solvent:</em> ${d.target.data.conditions.solvent}</li>
+                <li><em>Time:</em> ${d.target.data.conditions.time} </li>
+            </ul> <br/>
         `)
             .style('left', (event.pageX + 15) + 'px')
             .style('top', (event.pageY - 28) + 'px');
@@ -249,7 +257,7 @@ function renderGraph(rootStep) {
         .attr('class', 'node')
         .attr('transform', d => `translate(${d.y},${d.x})`);
 
-    node.each(function(d) {
+    node.each(function (d) {
         const group = d3.select(this);
         try {
             const molecules = [];
@@ -295,7 +303,7 @@ function renderGraph(rootStep) {
                     const infoGroup = molGroup.append('g')
                         .attr('class', 'mol-info');
 
-                    const metadata = molecule.type === 'product' ? 
+                    const metadata = molecule.type === 'product' ?
                         molecule.product_metadata : molecule.reactant_metadata;
 
                     infoGroup.append('text')
