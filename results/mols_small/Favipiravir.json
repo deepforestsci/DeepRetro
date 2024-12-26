@@ -1,33 +1,45 @@
 {
     "dependencies": {
         "1": [
-            "2"
+            "2",
+            "4"
         ],
         "2": [
             "3"
         ],
-        "3": [
-            "4"
+        "3": [],
+        "4": [
+            "5",
+            "6"
         ],
-        "4": []
+        "5": [],
+        "6": []
     },
     "steps": [
         {
             "step": "1",
             "reactants": [
                 {
-                    "smiles": "NC(=O)c1cncc(F)n1",
+                    "smiles": "O=C(O)c1cncc(F)n1",
                     "reactant_metadata": {
                         "name": "",
-                        "chemical_formula": "C5H4FN3O",
-                        "mass": 141.033839968
+                        "chemical_formula": "C5H3FN2O2",
+                        "mass": 142.017855556
+                    }
+                },
+                {
+                    "smiles": "N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "H3N",
+                        "mass": 17.026549096
                     }
                 }
             ],
             "reagents": [
                 {
-                    "smiles": "O",
-                    "reagent_metadata": {
+                    "smiles": "[H][O][H]",
+                    "product_metadata": {
                         "name": "",
                         "chemical_formula": "H2O",
                         "mass": 18.010564684
@@ -44,12 +56,17 @@
                     }
                 }
             ],
-            "conditions": [],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Water",
+                "time": "The reaction is likely fast, completing within minutes to a few hours"
+            },
             "reactionmetrics": [
                 {
-                    "scalabilityindex": "10",
-                    "confidenceestimate": 0.9,
-                    "closestliterature": ""
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Hydrolysis of a nitrile to an amide"
                 }
             ]
         },
@@ -57,14 +74,6 @@
             "step": "2",
             "reactants": [
                 {
-                    "smiles": "O=C(O)O",
-                    "reactant_metadata": {
-                        "name": "",
-                        "chemical_formula": "CH2O3",
-                        "mass": 62.000393923999994
-                    }
-                },
-                {
                     "smiles": "N#Cc1cncc(F)n1",
                     "reactant_metadata": {
                         "name": "",
@@ -73,23 +82,53 @@
                     }
                 }
             ],
-            "reagents": [],
-            "products": [
+            "reagents": [
                 {
-                    "smiles": "NC(=O)c1cncc(F)n1",
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "O",
                     "product_metadata": {
                         "name": "",
-                        "chemical_formula": "C5H4FN3O",
-                        "mass": 141.033839968
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
                     }
                 }
             ],
-            "conditions": [],
+            "products": [
+                {
+                    "smiles": "O=C(O)c1cncc(F)n1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H3FN2O2",
+                        "mass": 142.017855556
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Acetic acid (CH3COOH)",
+                "time": "Several hours to overnight, depending on the scale of the reaction"
+            },
             "reactionmetrics": [
                 {
-                    "scalabilityindex": "10",
+                    "scalabilityindex": "9",
                     "confidenceestimate": 0.99,
-                    "closestliterature": ""
+                    "closestliterature": "Oxidation of a cyano group to a carboxylic acid using peracetic acid (formed in situ from acetic acid and hydrogen peroxide)"
                 }
             ]
         },
@@ -97,23 +136,32 @@
             "step": "3",
             "reactants": [
                 {
-                    "smiles": "C[Si](C)(C)C#N",
+                    "smiles": "NC(=O)c1cncc(F)n1",
                     "reactant_metadata": {
                         "name": "",
-                        "chemical_formula": "C4H9NSi",
-                        "mass": 99.050425818
-                    }
-                },
-                {
-                    "smiles": "[O-][n+]1ccncc1F",
-                    "reactant_metadata": {
-                        "name": "",
-                        "chemical_formula": "C4H3FN2O",
-                        "mass": 114.022940936
+                        "chemical_formula": "C5H4FN3O",
+                        "mass": 141.033839968
                     }
                 }
             ],
-            "reagents": [],
+            "reagents": [
+                {
+                    "smiles": "O=S(Cl)Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2OS",
+                        "mass": 117.90469098
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
             "products": [
                 {
                     "smiles": "N#Cc1cncc(F)n1",
@@ -124,12 +172,17 @@
                     }
                 }
             ],
-            "conditions": [],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure (no special pressure conditions required)",
+                "solvent": "Dichloromethane (CH2Cl2) or similar aprotic solvent",
+                "time": "1-2 hours"
+            },
             "reactionmetrics": [
                 {
-                    "scalabilityindex": "8",
-                    "confidenceestimate": 0.98,
-                    "closestliterature": ""
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.76,
+                    "closestliterature": "Reduction of an amide to a nitrile using thionyl chloride and hydrogen gas"
                 }
             ]
         },
@@ -137,39 +190,155 @@
             "step": "4",
             "reactants": [
                 {
-                    "smiles": "Fc1cnccn1",
+                    "smiles": "CCOC(=O)CC(C)=O",
                     "reactant_metadata": {
                         "name": "",
-                        "chemical_formula": "C4H3FN2",
-                        "mass": 98.028026316
+                        "chemical_formula": "C6H10O3",
+                        "mass": 130.06299418
                     }
                 },
                 {
-                    "smiles": "O=C(OO)c1cccc(Cl)c1",
+                    "smiles": "O=C1CCCCC1",
                     "reactant_metadata": {
                         "name": "",
-                        "chemical_formula": "C7H5ClO3",
-                        "mass": 171.99272169999998
+                        "chemical_formula": "C6H10O",
+                        "mass": 98.07316494
                     }
                 }
             ],
             "reagents": [],
             "products": [
                 {
-                    "smiles": "[O-][n+]1ccncc1F",
+                    "smiles": "N",
                     "product_metadata": {
                         "name": "",
-                        "chemical_formula": "C4H3FN2O",
-                        "mass": 114.022940936
+                        "chemical_formula": "H3N",
+                        "mass": 17.026549096
                     }
                 }
             ],
-            "conditions": [],
+            "conditions": "",
             "reactionmetrics": [
                 {
-                    "scalabilityindex": "10",
-                    "confidenceestimate": 0.74,
-                    "closestliterature": ""
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "N/A"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "CC(C)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6O",
+                        "mass": 58.041864812
+                    }
+                },
+                {
+                    "smiles": "CCOC(=O)OCC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H10O3",
+                        "mass": 118.06299418
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                },
+                {
+                    "smiles": "CC(=O)OC(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6O3",
+                        "mass": 102.031694052
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CCOC(=O)CC(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H10O3",
+                        "mass": 130.06299418
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure (no special pressure conditions required)",
+                "solvent": "Polar aprotic solvent such as acetone or ethyl acetate",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Claisen condensation"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "OC1CCCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H12O",
+                        "mass": 100.088815004
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[O-][Cr+3](=O)(=O)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CrO4+2",
+                        "mass": 115.91906882018002
+                    }
+                },
+                {
+                    "smiles": "CC(=O)C(=O)O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H4O3",
+                        "mass": 88.016043988
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CCCCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H10O",
+                        "mass": 98.07316494
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-5 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Dichloromethane (CH2Cl2)",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.84,
+                    "closestliterature": "Oxidation of cyclohexanol to cyclohexanone using chromium trioxide-acetic anhydride"
                 }
             ]
         }
