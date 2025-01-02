@@ -1,0 +1,261 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "5"
+        ],
+        "2": [
+            "3",
+            "4"
+        ],
+        "3": [],
+        "4": [],
+        "5": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "NC(=O)c1ncc(F)c(O)n1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H4FN3O2",
+                        "mass": 157.028754588
+                    }
+                },
+                {
+                    "smiles": "O=C(O)c1ncc(F)c(O)n1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H3FN2O3",
+                        "mass": 158.012770176
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "NC(=O)C1=NC(F)=CN=C1O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H4FN3O2",
+                        "mass": 157.028754588
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Ambient pressure",
+                "solvent": "Likely water or an aqueous buffer solution",
+                "time": "Reaction time would depend on the scale, but likely on the order of minutes to a few hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Cyclization of 2-fluoro-6-carbamoylpyridine-3-carboxylic acid to form 2-fluoro-6-carbamoyl-3-hydroxypyridin-4-one"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "NC(=O)c1ncc(O)cn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H5N3O2",
+                        "mass": 139.0381764
+                    }
+                },
+                {
+                    "smiles": "CCOC(=O)C(F)(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H5F3O2",
+                        "mass": 142.02416406
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "NC(=O)c1ncc(F)c(O)n1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H4FN3O2",
+                        "mass": 157.028754588
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Likely a polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "Reaction likely complete within 1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Nucleophilic aromatic substitution (SNAr) of a fluorinated pyridine with a hydroxide nucleophile"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "COc1cnc(C(N)=O)nc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H7N3O2",
+                        "mass": 153.053826464
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "NC(=O)c1ncc(O)cn1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H5N3O2",
+                        "mass": 139.0381764
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-150 \u00b0C",
+                "pressure": "Ambient pressure",
+                "solvent": "Aqueous HBr or HI solution",
+                "time": "Several hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.94,
+                    "closestliterature": "Demethylation of aryl methyl ethers using aqueous hydrohalic acids (HX)"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)C(F)(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2HF3O2",
+                        "mass": 113.992863932
+                    }
+                },
+                {
+                    "smiles": "CCOS(=O)(=O)OCC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H10O4S",
+                        "mass": 154.0299798
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CCOC(=O)C(F)(F)F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H5F3O2",
+                        "mass": 142.02416406
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Polar aprotic solvent (e.g., DMF, DMSO, acetonitrile)",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Nucleophilic acyl substitution of an acid chloride with an alcohol"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "COc1nc(C(=O)O)ncc1F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H5FN2O3",
+                        "mass": 172.02842024
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(O)c1ncc(F)c(O)n1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H3FN2O3",
+                        "mass": 158.012770176
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Ambient pressure",
+                "solvent": "Aqueous base (NaOH or KOH solution)",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Demethylation of an aromatic methyl ether using aqueous base (NaOH or KOH) under reflux conditions"
+                }
+            ]
+        }
+    ]
+}

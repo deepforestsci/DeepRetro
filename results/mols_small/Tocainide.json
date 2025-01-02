@@ -29,7 +29,24 @@
                     }
                 }
             ],
-            "reagents": [],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
             "products": [
                 {
                     "smiles": "Cc1cccc(C)c1NC(=O)C(C)N",
@@ -40,12 +57,17 @@
                     }
                 }
             ],
-            "conditions": [],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "Ambient pressure",
+                "solvent": "Dichloromethane (DCM) or tetrahydrofuran (THF)",
+                "time": "1-4 hours"
+            },
             "reactionmetrics": [
                 {
                     "scalabilityindex": "9",
                     "confidenceestimate": 0.99,
-                    "closestliterature": ""
+                    "closestliterature": "Schotten-Baumann reaction"
                 }
             ]
         },
@@ -61,7 +83,16 @@
                     }
                 }
             ],
-            "reagents": [],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
             "products": [
                 {
                     "smiles": "CC(N)C(=O)Cl",
@@ -72,12 +103,17 @@
                     }
                 }
             ],
-            "conditions": [],
+            "conditions": {
+                "temperature": "0 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "The reaction likely proceeds without solvent, as both reactants are liquids at room temperature.",
+                "time": "The reaction is likely rapid, completing within minutes upon mixing the reactants at 0 \u00b0C."
+            },
             "reactionmetrics": [
                 {
                     "scalabilityindex": "9",
                     "confidenceestimate": 0.99,
-                    "closestliterature": ""
+                    "closestliterature": "Oxidation of oximes to nitro compounds using molecular oxygen"
                 }
             ]
         },
@@ -112,12 +148,17 @@
                     }
                 }
             ],
-            "conditions": [],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "No solvent needed",
+                "time": "Rapid reaction, likely complete within minutes"
+            },
             "reactionmetrics": [
                 {
                     "scalabilityindex": "9",
                     "confidenceestimate": 0.87,
-                    "closestliterature": ""
+                    "closestliterature": "Acid chloride formation from carboxylic acid using nitrosyl chloride (Cl-N=O)"
                 }
             ]
         }
