@@ -67,7 +67,7 @@
                 {
                     "scalabilityindex": "9",
                     "confidenceestimate": 0.99,
-                    "closestliterature": "Schotten-Baumann reaction: Acylation of an amine with an acyl chloride"
+                    "closestliterature": "Schotten-Baumann reaction"
                 }
             ]
         },
@@ -104,16 +104,16 @@
                 }
             ],
             "conditions": {
-                "temperature": "0 \u00b0C",
+                "temperature": "0\u00b0C",
                 "pressure": "1 atm",
-                "solvent": "The reaction likely proceeds without solvent, as both reactants are liquids at room temperature.",
-                "time": "The reaction is likely rapid, completing within minutes upon mixing the reactants at 0 \u00b0C."
+                "solvent": "Water (H2O)",
+                "time": "30 minutes"
             },
             "reactionmetrics": [
                 {
                     "scalabilityindex": "9",
                     "confidenceestimate": 0.99,
-                    "closestliterature": "Oxidation of oximes to nitro compounds using molecular oxygen (O2)"
+                    "closestliterature": "Reduction of oximes to primary amines using sodium borohydride (NaBH4)"
                 }
             ]
         },
@@ -158,7 +158,7 @@
                 {
                     "scalabilityindex": "9",
                     "confidenceestimate": 0.87,
-                    "closestliterature": "Reaction of an acyl chloride with a hydroxamic acid to form an acyl nitroso compound, as described in Org. Lett. 2017, 19, 5, 1266\u20131269."
+                    "closestliterature": "Acid chloride reacts with an oxime to form an acyl nitroso compound, as described in J. Chem. Soc., Perkin Trans. 1, 1999, 1695-1701."
                 }
             ]
         }
