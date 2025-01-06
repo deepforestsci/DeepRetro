@@ -23,4 +23,5 @@ dependencies:
     - structlog
     - diskcache
     - langfuse
+    - joblib
 

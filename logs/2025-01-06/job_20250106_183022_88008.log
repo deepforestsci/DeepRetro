@@ -1,0 +1,29 @@
+2025-01-06 13:00:22 [info     ] Starting new synthesis job 20250106_183022_88008 for molecule CC(N)C(=O)NC1=C(C)C=CC=C1C filename=prithvi.py job_id=20250106_183022_88008 lineno=31
+2025-01-06 13:00:22 [info     ] AZ solved CC(N)C(=O)NC1=C(C)C=CC=C1C filename=rec_prithvi.py job_id=20250106_183022_88008 lineno=73
+2025-01-06 13:00:39 [info     ] Received response from LLM: {
+  "data": ["Cl", "[OH-]"],
+  "explanation": [
+    "This is an acylation reaction between an acyl chloride and an aromatic amine. The acyl chloride (CC(N)C(=O)Cl) reacts with the aromatic amine (Cc1cccc(C)c1N) to form an amide bond.",
+    "The reaction is typically performed in the presence of a base such as hydroxide ([OH-]) or triethylamine to neutralize the HCl byproduct and drive the reaction to completion."
+  ]
+} filename=metadata.py job_id=20250106_183022_88008 lineno=166
+2025-01-06 13:00:44 [info     ] Received response from LLM: {
+  "temperature": "0-25 °C",
+  "pressure": "1 atm (not a key factor)",
+  "solvent": "Dichloromethane (DCM) or tetrahydrofuran (THF)",
+  "time": "1-3 hours"
+} filename=metadata.py job_id=20250106_183022_88008 lineno=284
+2025-01-06 13:00:52 [info     ] Received response from LLM: {
+  "literature_reaction": "Schotten-Baumann reaction",
+  "explanation": "The reaction between an acyl chloride (CC(N)C(=O)Cl) and an amine (Cc1cccc(C)c1N) to form an amide (Cc1cccc(C)c1NC(=O)C(C)N) is a Schotten-Baumann reaction. The reaction is typically performed at 0-25 °C in dichloromethane (DCM) or tetrahydrofuran (THF) as the solvent, with a base such as hydroxide ([OH-]) to neutralize the HCl byproduct. The reaction is usually complete within 1-3 hours."
+} filename=metadata.py job_id=20250106_183022_88008 lineno=358
+2025-01-06 13:00:57 [info     ] Received response from LLM: {
+  "data": ["O"],
+  "explanation": ["The reaction converts an oxime (R-CH=NOH) to a primary amine (R-CH2-NH2) using water as the reagent. This is a reduction reaction, likely under acidic conditions. The C=N double bond is reduced to a C-N single bond, with the oxygen being displaced as water."]
+} filename=metadata.py job_id=20250106_183022_88008 lineno=166
+2025-01-06 13:01:00 [info     ] Received response from LLM: {
+  "temperature": "0°C",
+  "pressure": "1 atm",
+  "solvent": "Water (H2O)",
+  "time": "30 minutes"
+} filename=metadata.py job_id=20250106_183022_88008 lineno=284
