@@ -43,7 +43,10 @@ def retrosynthesis_api():
     """
     data = request.get_json()
     if not data or 'smiles' not in data:
-        return jsonify({"error": "SMILES string is required"}), 400
+        return jsonify({
+            "error":
+            "SMILES string is required. Please include a 'smiles' field"
+        }), 400
 
     smiles = data['smiles']
     # Check if the SMILES string is valid
@@ -80,6 +83,34 @@ def clear_molecule_cache():
     molecule = data['molecule']
     clear_cache_for_molecule(molecule)
     return jsonify({"status": "success"}), 200
+
+
+@app.route('/api/rerun_retrosynthesis', methods=['POST'])
+@require_api_key
+def rerun_retrosynthesis():
+    """
+    Endpoint to rerun retrosynthesis for a specific molecule.
+    """
+    data = request.get_json()
+    if not data or 'smiles' not in data:
+        return jsonify({
+            "error":
+            "Molecule string is required, Please include a 'smiles' field"
+        }), 400
+
+    molecule = data['molecule']
+
+    # Clear the cache for the molecule
+    clear_cache_for_molecule(molecule)
+
+    # Rerun retrosynthesis
+    result = main(molecule)
+    # try:
+    #     result = run_prithvi(smiles)
+    # except Exception as e:
+    #     print(e)
+    #     return jsonify({"error": "Error in retrosynthesis"}), 500
+    return jsonify(result), 200
 
 
 if __name__ == '__main__':
