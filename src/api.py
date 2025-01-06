@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from functools import wraps
 from dotenv import load_dotenv
-from rdkit import Chem  # For SMILES validation (optional)
+from rdkit import Chem
 
 import rootutils
 
@@ -12,6 +12,7 @@ root_dir = rootutils.setup_root(__file__,
 
 load_dotenv()
 from src.main import main
+from src.cache import clear_cache_for_molecule
 
 app = Flask(__name__)
 CORS(app)
@@ -57,7 +58,29 @@ def retrosynthesis_api():
     return jsonify(result), 200
 
 
+@app.route('/api/health', methods=['GET'])
+@require_api_key
+def health():
+    """
+    Endpoint to check the health of the API.
+    """
+    return jsonify({"status": "healthy"}), 200
+
+
+@app.route('/api/clear_molecule_cache', methods=['POST'])
+@require_api_key
+def clear_molecule_cache():
+    """
+    Endpoint to clear the cache for a specific molecule.
+    """
+    data = request.get_json()
+    if not data or 'molecule' not in data:
+        return jsonify({"error": "Molecule string is required"}), 400
+
+    molecule = data['molecule']
+    clear_cache_for_molecule(molecule)
+    return jsonify({"status": "success"}), 200
+
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0",
-            port=5000,
-            debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
