@@ -262,7 +262,7 @@
 
                 // The appv2.js will handle the visualization with the response data
                 const processedTree = processData(data);
-                const rootStep = processedTree['1']; // Start with step 1 as the root
+                const rootStep = processedTree['0']; // Start with step 0 as the root
                 renderGraph(rootStep);
 
             } catch (error) {

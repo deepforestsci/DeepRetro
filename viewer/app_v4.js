@@ -101,6 +101,33 @@ function renderGraph(rootStep) {
     d3.select('#graph').selectAll('*').remove();
     d3.select('body').selectAll('.tooltip').remove();
 
+    const containerStyles = document.createElement('style');
+    containerStyles.textContent = `
+        #graph {
+            width: 100%;
+            height: 800px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        
+        #graph button {
+            width: 30px;
+            height: 30px;
+            margin: 2px;
+            color: black;
+            font-weight: bold;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+        }
+        #graph button:hover {
+            background: #f5f5f5;
+        }
+    `;
+    document.head.appendChild(containerStyles);
+
     const buildTree = (step) => {
         const node = {
             ...step.step,
@@ -149,22 +176,34 @@ function renderGraph(rootStep) {
     `;
     document.head.appendChild(styles);
 
-    const width = 1800;
-    const height = 1200;
-    const circlePadding = 200;
-    const nodeSpacing = 300;
-    const moleculeSpacing = 120;
+    // Create hierarchy and calculate spacing
+    let hierarchyRoot = d3.hierarchy(root);
+
+    function calculateSpacingParams(hierarchyRoot) {
+        let maxReactants = 0;
+        hierarchyRoot.each(d => {
+            const reactantCount = d.data.reactants ? d.data.reactants.length : 0;
+            maxReactants = Math.max(maxReactants, reactantCount);
+        });
+        
+        const totalSteps = hierarchyRoot.descendants().length;
+        
+        return {
+            circlePadding: 100 * (1 + (maxReactants * 0.2)),
+            nodeSpacing: 200 * (1 + (totalSteps * 0.05)),
+            moleculeSpacing: Math.max(80, 80 * (1 + (maxReactants * 0.1)))
+        };
+    }
+
+    const spacing = calculateSpacingParams(hierarchyRoot);
 
     const svg = d3.select('#graph')
         .append('svg')
-        .attr('width', width)
-        .attr('height', height)
         .style('display', 'block')
         .style('margin', 'auto')
         .style('background', '#ffffff');
 
-    const g = svg.append('g')
-        .attr('transform', `translate(${circlePadding},${height/2})`);
+    const g = svg.append('g');
 
     const defs = svg.append('defs');
 
@@ -194,21 +233,92 @@ function renderGraph(rootStep) {
         .attr('offset', d => d.offset)
         .attr('stop-color', d => d.color);
 
+    // Create tree layout with dynamic spacing
     const treeLayout = d3.tree()
-        .size([height/3, width - (3 * circlePadding)])
-        .nodeSize([moleculeSpacing * 2, nodeSpacing])
+        .nodeSize([spacing.moleculeSpacing * 2, spacing.nodeSpacing])
         .separation((a, b) => {
-            return (a.parent === b.parent ? 1.5 : 2);
+            const aReactants = a.data.reactants ? a.data.reactants.length : 0;
+            const bReactants = b.data.reactants ? b.data.reactants.length : 0;
+            const maxReactants = Math.max(aReactants, bReactants);
+            return (a.parent === b.parent ? 1.5 : 2) * (1 + (maxReactants * 0.1));
         });
 
-    const treeData = treeLayout(d3.hierarchy(root));
+    // Apply layout to hierarchy
+    hierarchyRoot = treeLayout(hierarchyRoot);
+
+    function calculateBounds(hierarchyRoot) {
+        let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
+        
+        hierarchyRoot.each(d => {
+            minX = Math.min(minX, d.x);
+            maxX = Math.max(maxX, d.x);
+            minY = Math.min(minY, d.y);
+            maxY = Math.max(maxY, d.y);
+        });
+        
+        const padding = 100;
+        return {
+            width: maxY - minY + padding * 2,
+            height: maxX - minX + padding * 2,
+            minX: minX - padding,
+            minY: minY - padding
+        };
+    }
+
+    const bounds = calculateBounds(hierarchyRoot);
+    svg.attr('viewBox', `${bounds.minY} ${bounds.minX} ${bounds.width} ${bounds.height}`);
+
+    // Add zoom behavior
+    const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on('zoom', (event) => {
+            g.attr('transform', event.transform);
+        });
+
+    svg.call(zoom);
+
+    // Add zoom controls
+    const zoomControls = d3.select('#graph')
+        .append('div')
+        .style('position', 'absolute')
+        .style('top', '10px')
+        .style('right', '10px')
+        .style('background', 'white')
+        .style('border', '1px solid #ddd')
+        .style('border-radius', '4px')
+        .style('padding', '5px');
+
+    zoomControls.append('button')
+        .text('+')
+        .on('click', () => {
+            svg.transition()
+                .duration(300)
+                .call(zoom.scaleBy, 1.5);
+        });
+
+    zoomControls.append('button')
+        .text('-')
+        .on('click', () => {
+            svg.transition()
+                .duration(300)
+                .call(zoom.scaleBy, 0.75);
+        });
+
+    zoomControls.append('button')
+        .text('⟲')
+        .on('click', () => {
+            svg.transition()
+                .duration(300)
+                .call(zoom.transform, d3.zoomIdentity);
+        });
 
     const tooltip = d3.select('body').append('div')
         .attr('class', 'tooltip')
         .style('opacity', 0);
 
     const link = g.selectAll('.link')
-        .data(treeData.links())
+        .data(hierarchyRoot.links())
         .enter().append('g')
         .attr('class', 'link');
 
@@ -278,12 +388,12 @@ function renderGraph(rootStep) {
         .attr('fill', '#999');
 
     const node = g.selectAll('.node')
-        .data(treeData.descendants())
+        .data(hierarchyRoot.descendants())
         .enter().append('g')
         .attr('class', 'node')
         .attr('transform', d => {
             const yOffset = d.data.step === '0' ? 0 : 
-                          (d.data.reactants ? (d.data.reactants.length - 1) * moleculeSpacing / 2 : 0);
+                          (d.data.reactants ? (d.data.reactants.length - 1) * spacing.moleculeSpacing / 2 : 0);
             return `translate(${d.y},${d.x - yOffset})`;
         });
 
@@ -311,7 +421,7 @@ function renderGraph(rootStep) {
 
                 const molGroup = group.append('g')
                     .attr('class', 'molecule-node')
-                    .attr('transform', `translate(0, ${i * moleculeSpacing})`);
+                    .attr('transform', `translate(0, ${i * spacing.moleculeSpacing})`);
 
                 molGroup.append('circle')
                     .attr('r', 35)
