@@ -1,0 +1,216 @@
+2025-01-13 21:35:36 [info     ] Starting new synthesis job 20250113_213536_283095 for molecule O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O filename=prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] AZ failed for O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O and run: 0.1 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O and run: 0.2 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O and run: 0.30000000000000004 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O and run: 0.4 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(O)C(O)=CC5C4C3[C@@H]1O', 'CC(=O)Cl']],
+                            Output Explanations: ['Esterification of free alcohol with acetyl chloride'],
+                                Output Confidence: [0.9] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(O)C(O)=CC5C4C3[C@@H]1O', 'CC(=O)Cl']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['Esterification of free alcohol with acetyl chloride'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ failed for O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(O)C(O)=CC5C4C3[C@@H]1O, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(O)C(O)=CC5C4C3[C@@H]1O and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['OC1=CC=C2C3C1CC4N(CC3)C[C@H](O)[C@@]4(O)CCC2', 'OC1=CC=C(CCN)C=C1'], ['COC1=CC(CCN)=CC=C1O', 'O=C1C=C2C3N(CC2)CC4=CC5=C(OC)C(OC)=CC5C4C13'], ['OC1=CC=C(CCN2CC3=C(C=CC4=C3C(O)=CC=C4)C2)C=C1', 'BrC1CCC2=C(C=CC3=C2C(O)=CC=C3)C1']],
+                            Output Explanations: ['Dehydration of a tertiary alcohol, cleavage of the amine bridge back to a primary amine, aromatic ring from a tyramine precursor', 'Intramolecular electrophilic aromatic substitution of a tetrahydroisoquinoline intermediate to form the aryl-alkyl C-C bond', 'Intramolecular SN2 reaction to form the amine bridge from an alkyl halide and secondary amine, unfunctionalized cyclohexane precursor from a Diels-Alder reaction'],
+                                Output Confidence: [0.6, 0.7, 0.5] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['OC1=CC=C2C3C1CC4N(CC3)C[C@H](O)[C@@]4(O)CCC2', 'OC1=CC=C(CCN)C=C1'], ['COC1=CC(CCN)=CC=C1O', 'O=C1C=C2C3N(CC2)CC4=CC5=C(OC)C(OC)=CC5C4C13'], ['OC1=CC=C(CCN2CC3=C(C=CC4=C3C(O)=CC=C4)C2)C=C1', 'BrC1CCC2=C(C=CC3=C2C(O)=CC=C3)C1']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['Dehydration of a tertiary alcohol, cleavage of the amine bridge back to a primary amine, aromatic ring from a tyramine precursor', 'Intramolecular electrophilic aromatic substitution of a tetrahydroisoquinoline intermediate to form the aryl-alkyl C-C bond', 'Intramolecular SN2 reaction to form the amine bridge from an alkyl halide and secondary amine, unfunctionalized cyclohexane precursor from a Diels-Alder reaction'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ failed for OC1=CC=C2C3C1CC4N(CC3)C[C@H](O)[C@@]4(O)CCC2, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: OC1=CC=C2C3C1CC4N(CC3)C[C@H](O)[C@@]4(O)CCC2 and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['OC1=CC=C2C3C1CC(N)C3CCC2', 'OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN'], ['OC1=CC=C(C=O)C=C1', 'OC(CCN1CCC2(O)C[C@H](O)CN2CC1)=O']],
+                            Output Explanations: ['Amide coupling of amine OC1=CC=C2C3C1CC(N)C3CCC2 and acid OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN, followed by reduction', 'Aldol condensation of ketone OC1=CC=C(C=O)C=C1 and enolate OC(CCN1CCC2(O)C[C@H](O)CN2CC1)=O, then dehydration'],
+                                Output Confidence: [0.6, 0.5] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['OC1=CC=C2C3C1CC(N)C3CCC2', 'OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN'], ['OC1=CC=C(C=O)C=C1', 'OC(CCN1CCC2(O)C[C@H](O)CN2CC1)=O']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['Amide coupling of amine OC1=CC=C2C3C1CC(N)C3CCC2 and acid OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN, followed by reduction', 'Aldol condensation of ketone OC1=CC=C(C=O)C=C1 and enolate OC(CCN1CCC2(O)C[C@H](O)CN2CC1)=O, then dehydration'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ failed for OC1=CC=C2C3C1CC(N)C3CCC2, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: OC1=CC=C2C3C1CC(N)C3CCC2 and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['OC1=CC=C2C=CC=C12', 'C1CC(N)C2CCC1C2']],
+                            Output Explanations: ['Diels-Alder reaction between the corresponding diene and dienophile precursors, using heat'],
+                                Output Confidence: [0.7] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['OC1=CC=C2C=CC=C12', 'C1CC(N)C2CCC1C2']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['Diels-Alder reaction between the corresponding diene and dienophile precursors, using heat'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ failed for OC1=CC=C2C=CC=C12, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: OC1=CC=C2C=CC=C12 and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: OC1=CC=C2C=CC=C12 and run: 0.1 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['OCc1ccccc1', 'Oc1ccccc1'], ['Oc1ccccc1Br', 'OC(c1ccccc1)B(O)O']],
+                            Output Explanations: ['Friedel-Crafts alkylation of phenol with 2-phenylethanol, then oxidation of the alkyl chain', 'Suzuki coupling of 2-bromophenol and 2-formylphenylboronic acid, then base-promoted etherification'],
+                                Output Confidence: [0.5, 0.8] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['OCc1ccccc1', 'Oc1ccccc1'], ['Oc1ccccc1Br', 'OC(c1ccccc1)B(O)O']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['Friedel-Crafts alkylation of phenol with 2-phenylethanol, then oxidation of the alkyl chain', 'Suzuki coupling of 2-bromophenol and 2-formylphenylboronic acid, then base-promoted etherification'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ solved OCc1ccccc1           filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=73
+2025-01-13 21:35:36 [info     ] AZ solved Oc1ccccc1            filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=73
+2025-01-13 21:35:36 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70
+2025-01-13 21:35:36 [info     ] AZ failed for C1CC(N)C2CCC1C2, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: C1CC(N)C2CCC1C2 and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: C1CC(N)C2CCC1C2 and run: 0.1 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['C1CC=CC=C1', 'C#CC#C']],
+                            Output Explanations: ['[2+2+2] cycloaddition of cyclopentadiene and butadiyne, catalyzed by transition metal complex like Co or Rh'],
+                                Output Confidence: [0.3] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['C1CC=CC=C1', 'C#CC#C']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['[2+2+2] cycloaddition of cyclopentadiene and butadiyne, catalyzed by transition metal complex like Co or Rh'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ solved C1CC=CC=C1           filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=73
+2025-01-13 21:35:36 [info     ] AZ solved C#CC#C               filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=73
+2025-01-13 21:35:36 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70
+2025-01-13 21:35:36 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70
+2025-01-13 21:35:36 [info     ] AZ failed for OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)C', 'N#CC[C@](O)(CCCc1ccccc1O)[C@H](O)CC(=O)O'], ['Oc1ccccc1', 'OC(=O)C[C@@H](O)[C@@H](O)CN'], ['c1ccc(O)cc1', 'CC(=O)CC[C@@](O)(CN)[C@@H](O)CC(=O)O']],
+                            Output Explanations: ['Disconnection at C-N bond. Reductive amination of carboxylic acid and nitrile precursors.', 'Disconnection at benzylic C-C bond. Alkylation of phenol and multiple steps to form amino alcohol.', 'Disconnection at benzylic C-O bond. Grignard addition of phenyl group to ketone precursor.'],
+                                Output Confidence: [0.8, 0.7, 0.6] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)C', 'N#CC[C@](O)(CCCc1ccccc1O)[C@H](O)CC(=O)O'], ['Oc1ccccc1', 'OC(=O)C[C@@H](O)[C@@H](O)CN'], ['c1ccc(O)cc1', 'CC(=O)CC[C@@](O)(CN)[C@@H](O)CC(=O)O']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['Disconnection at C-N bond. Reductive amination of carboxylic acid and nitrile precursors.', 'Disconnection at benzylic C-C bond. Alkylation of phenol and multiple steps to form amino alcohol.', 'Disconnection at benzylic C-O bond. Grignard addition of phenyl group to ketone precursor.'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ failed for OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)C, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)C and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['OC(=O)C[C@@H](O)C(=O)O', 'OC[C@H]1O[C@@H]1CCCc1ccccc1O'], ['OC(=O)C[C@@H](O)C(=O)O', 'OC[C@@H](CCCc1ccccc1O)C'], ['OC1CCCC(O)C1C(=O)O', 'OCCCc1ccccc1O']],
+                            Output Explanations: ['Ester disconnection. Diol could be formed by chiral epoxide opening.', 'Alcohol disconnection. Secondary alcohol could come from ketone reduction. Alpha-hydroxy acid by oxidation.', 'Alkyl-aryl disconnection. Gamma-hydroxy acid could come from lactone hydrolysis or alcohol oxidation.'],
+                                Output Confidence: [0.8, 0.7, 0.6] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['OC(=O)C[C@@H](O)C(=O)O', 'OC[C@H]1O[C@@H]1CCCc1ccccc1O'], ['OC(=O)C[C@@H](O)C(=O)O', 'OC[C@@H](CCCc1ccccc1O)C'], ['OC1CCCC(O)C1C(=O)O', 'OCCCc1ccccc1O']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['Ester disconnection. Diol could be formed by chiral epoxide opening.', 'Alcohol disconnection. Secondary alcohol could come from ketone reduction. Alpha-hydroxy acid by oxidation.', 'Alkyl-aryl disconnection. Gamma-hydroxy acid could come from lactone hydrolysis or alcohol oxidation.'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ solved OC(=O)C[C@@H](O)C(=O)O filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=73
+2025-01-13 21:35:36 [info     ] AZ solved OC[C@H]1O[C@@H]1CCCc1ccccc1O filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=73
+2025-01-13 21:35:36 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70
+2025-01-13 21:35:36 [info     ] AZ failed for N#CC[C@](O)(CCCc1ccccc1O)[C@H](O)CC(=O)O, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: N#CC[C@](O)(CCCc1ccccc1O)[C@H](O)CC(=O)O and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['N#CC[C@@H](O)C(=O)N', 'OCC[C@@](O)(CCCc1ccccc1O)CO'], ['N#CC1CO1', 'O=Cc1ccccc1O', 'O=C(O)[C@@H](O)CC(=O)O'], ['N#CC[C@@H](O)C=O', 'Oc1ccccc1CCC[C@@H](O)CC(=O)O']],
+                            Output Explanations: ['Disconnection of cyano and carboxyl groups: cyano from dehydration of amide (from aminolysis of ester), carboxyl from oxidation of 1° alcohol', 'Disconnection of central C-C bond: left half from opening of chiral epoxide with CN-, right half from aldol reaction + oxidation', 'Disconnection of Ar-alkyl C-C bond: alkyl chain from nucleophilic addition of organometallic to aldehyde + oxidation, Ar portion from protected phenol'],
+                                Output Confidence: [0.8, 0.7, 0.6] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['N#CC[C@@H](O)C(=O)N', 'OCC[C@@](O)(CCCc1ccccc1O)CO'], ['N#CC1CO1', 'O=Cc1ccccc1O', 'O=C(O)[C@@H](O)CC(=O)O'], ['N#CC[C@@H](O)C=O', 'Oc1ccccc1CCC[C@@H](O)CC(=O)O']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['Disconnection of cyano and carboxyl groups: cyano from dehydration of amide (from aminolysis of ester), carboxyl from oxidation of 1° alcohol', 'Disconnection of central C-C bond: left half from opening of chiral epoxide with CN-, right half from aldol reaction + oxidation', 'Disconnection of Ar-alkyl C-C bond: alkyl chain from nucleophilic addition of organometallic to aldehyde + oxidation, Ar portion from protected phenol'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ failed for N#CC[C@@H](O)C(=O)N, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: N#CC[C@@H](O)C(=O)N and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['N#CC1OC1C#N', 'N#CC=CC#N']],
+                            Output Explanations: ['Cyanide opening of a chiral epoxide, formed by asymmetric epoxidation of dinitrilo-alkene'],
+                                Output Confidence: [0.6] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['N#CC1OC1C#N', 'N#CC=CC#N']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['Cyanide opening of a chiral epoxide, formed by asymmetric epoxidation of dinitrilo-alkene'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ solved N#CC1OC1C#N          filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=73
+2025-01-13 21:35:36 [info     ] AZ solved N#CC=CC#N            filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=73
+2025-01-13 21:35:36 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70
+2025-01-13 21:35:36 [info     ] AZ failed for OCC[C@@](O)(CCCc1ccccc1O)CO, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: OCC[C@@](O)(CCCc1ccccc1O)CO and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: OCC[C@@](O)(CCCc1ccccc1O)CO and run: 0.1 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['OCC[C@@](O)(CCCCI)CO', 'Oc1ccccc1'], ['OCC[C@@](O)(Br)CO', 'OCCCc1ccccc1']],
+                            Output Explanations: ['Williamson ether synthesis of phenol with alkyl halide using K2CO3 in acetone', 'Alkylation of alkyl halide with phenol derivative using strong base like NaH or LDA'],
+                                Output Confidence: [0.7, 0.6] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['OCC[C@@](O)(CCCCI)CO', 'Oc1ccccc1'], ['OCC[C@@](O)(Br)CO', 'OCCCc1ccccc1']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['Williamson ether synthesis of phenol with alkyl halide using K2CO3 in acetone', 'Alkylation of alkyl halide with phenol derivative using strong base like NaH or LDA'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ failed for OCC[C@@](O)(CCCCI)CO, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: OCC[C@@](O)(CCCCI)CO and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: OCC[C@@](O)(CCCCI)CO and run: 0.1 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['OCC(=O)CCCCI', 'C[Mg]Br']],
+                            Output Explanations: ['Grignard addition of methylmagnesium bromide to the ketone OCC(=O)CCCCI'],
+                                Output Confidence: [0.8] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['OCC(=O)CCCCI', 'C[Mg]Br']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['Grignard addition of methylmagnesium bromide to the ketone OCC(=O)CCCCI'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ solved OCC(=O)CCCCI         filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=73
+2025-01-13 21:35:36 [info     ] AZ failed for C[Mg]Br, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: C[Mg]Br and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [['CBr', '[Mg]']],
+                            Output Explanations: ['The Grignard reagent C[Mg]Br can be formed by the direct reaction of methyl bromide (CH3Br) with magnesium metal under anhydrous conditions in dry ether solvent. The magnesium surface should be activated.'],
+                                Output Confidence: [1.0] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned [['CBr', '[Mg]']] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained ['The Grignard reagent C[Mg]Br can be formed by the direct reaction of methyl bromide (CH3Br) with magnesium metal under anhydrous conditions in dry ether solvent. The magnesium surface should be activated.'] filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ failed for CBr, running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: CBr and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: CBr and run: 0.1 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: CBr and run: 0.2 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: CBr and run: 0.30000000000000004 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: CBr and run: 0.4 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: CBr and run: 0.5 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned []                filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained []               filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] AZ failed for [Mg], running LLM filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=31
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: [Mg] and run: 0.0 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: [Mg] and run: 0.1 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: [Mg] and run: 0.2 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: [Mg] and run: 0.30000000000000004 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: [Mg] and run: 0.4 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] Calling LLM with molecule: [Mg] and run: 0.5 filename=llm.py job_id=20250113_213536_283095 lineno=154
+2025-01-13 21:35:36 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250113_213536_283095 lineno=169
+2025-01-13 21:35:36 [info     ] LLM returned []                filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=53
+2025-01-13 21:35:36 [info     ] LLM explained []               filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=54
+2025-01-13 21:35:36 [info     ] temp_stat: []                  filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70
+2025-01-13 21:35:36 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70
+2025-01-13 21:35:36 [info     ] AZ solved Oc1ccccc1            filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=73
+2025-01-13 21:35:36 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70
+2025-01-13 21:35:36 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70
+2025-01-13 21:35:36 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70
+2025-01-13 21:35:36 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70
+2025-01-13 21:35:36 [info     ] AZ solved OC1=CC=C(CCN)C=C1    filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=73
+2025-01-13 21:35:36 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70
+2025-01-13 21:35:36 [info     ] AZ solved CC(=O)Cl             filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=73
+2025-01-13 21:35:36 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=63
+2025-01-13 21:35:36 [info     ] breaking                       filename=rec_prithvi.py job_id=20250113_213536_283095 lineno=70

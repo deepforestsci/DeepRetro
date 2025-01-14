@@ -1,0 +1,48 @@
+2025-01-13 13:52:46 [info     ] Starting new synthesis job 20250113_135246_283095 for molecule CC(N)C(=O)NC1=C(C)C=CC=C1C filename=prithvi.py job_id=20250113_135246_283095 lineno=31
+2025-01-13 13:52:46 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250113_135246_283095 lineno=35
+2025-01-13 13:53:56 [info     ] AZ solved CC(N)C(=O)NC1=C(C)C=CC=C1C filename=rec_prithvi.py job_id=20250113_135246_283095 lineno=73
+2025-01-13 13:54:04 [info     ] Received response from LLM: {
+  "data": ["Cl", "[OH-]"],
+  "explanation": [
+    "This is an acylation reaction between an acyl chloride and an aromatic amine. The acyl chloride (CC(N)C(=O)Cl) reacts with the aromatic amine (Cc1cccc(C)c1N) to form an amide bond.",
+    "The reaction is typically performed in the presence of a base such as hydroxide ([OH-]) or triethylamine to neutralize the HCl byproduct and drive the reaction to completion."
+  ]
+} filename=metadata.py job_id=20250113_135246_283095 lineno=166
+2025-01-13 13:54:09 [info     ] Received response from LLM: {
+  "temperature": "0-25 °C",
+  "pressure": "Ambient pressure",
+  "solvent": "Dichloromethane (DCM) or tetrahydrofuran (THF)",
+  "time": "1-4 hours"
+} filename=metadata.py job_id=20250113_135246_283095 lineno=284
+2025-01-13 13:54:17 [info     ] Received response from LLM: {
+  "literature_reaction": "Schotten-Baumann reaction",
+  "explanation": "The reaction between an acyl chloride (CC(N)C(=O)Cl) and an amine (Cc1cccc(C)c1N) to form an amide (Cc1cccc(C)c1NC(=O)C(C)N) under basic conditions ([OH-]) is a Schotten-Baumann reaction. The reaction is typically carried out at 0-25 °C in solvents like DCM or THF for 1-4 hours. The base (hydroxide ion) is required to neutralize the HCl byproduct and drive the reaction to completion."
+} filename=metadata.py job_id=20250113_135246_283095 lineno=358
+2025-01-13 13:54:22 [info     ] Received response from LLM: {
+  "data": ["O"],
+  "explanation": ["The reaction converts an oxime (R-CH=NOH) to a primary amine (R-CH2-NH2) using water as the reagent. This is a reduction reaction, likely under acidic conditions. The C=N double bond is reduced to a C-N single bond, with the oxygen being displaced as water."]
+} filename=metadata.py job_id=20250113_135246_283095 lineno=166
+2025-01-13 13:54:25 [info     ] Received response from LLM: {
+  "temperature": "0 °C",
+  "pressure": "1 atm",
+  "solvent": "The reaction likely proceeds without solvent, as both reactants are liquids at room temperature.",
+  "time": "The reaction is likely rapid, completing within minutes upon mixing the reactants at 0 °C."
+} filename=metadata.py job_id=20250113_135246_283095 lineno=284
+2025-01-13 13:54:33 [info     ] Received response from LLM: {
+  "literature_reaction": "Oxidation of oximes to nitro compounds using molecular oxygen (O2)",
+  "explanation": "This reaction involves the oxidation of an oxime (CC(=NO)C(=O)Cl) to the corresponding nitro compound (CC(N)C(=O)Cl) using molecular oxygen (O2) as the oxidant. The reaction likely proceeds via a radical mechanism. Key conditions include low temperature (0 °C) to control the exothermic reaction. No additional solvent is needed as the reactants are liquids. The transformation is rapid, completing within minutes."
+} filename=metadata.py job_id=20250113_135246_283095 lineno=358
+2025-01-13 13:54:37 [info     ] Received response from LLM: {
+  "data": [],
+  "explanation": ["This reaction does not require any additional reagents. It is a simple acyl chloride formation from the carboxylic acid CCC(=O)Cl, with the nitrosamine CC(C)CCON=O acting as a leaving group. The reaction likely proceeds under mild conditions without the need for catalysts or other reagents."]
+} filename=metadata.py job_id=20250113_135246_283095 lineno=166
+2025-01-13 13:54:42 [info     ] Received response from LLM: {
+  "temperature": "0-25 °C",
+  "pressure": "1 atm",
+  "solvent": "The reaction likely proceeds without solvent, as both reactants are liquids and should be miscible.",
+  "time": "1-2 hours"
+} filename=metadata.py job_id=20250113_135246_283095 lineno=284
+2025-01-13 13:54:50 [info     ] Received response from LLM: {
+  "literature_reaction": "Acid chloride reacts with an oxime to form an acyl nitroso compound, as described in J. Chem. Soc., Perkin Trans. 1, 1999, 1695-1701.",
+  "explanation": "This is an acylation reaction between an acid chloride (propionyl chloride) and an oxime (isobutyraldehyde oxime). The acid chloride acts as an electrophile, reacting with the nucleophilic oxime nitrogen to form an N-acyl oxime intermediate. Subsequent rearrangement leads to the acyl nitroso product. The reaction likely proceeds readily at 0-25 °C without additional reagents or solvents."
+} filename=metadata.py job_id=20250113_135246_283095 lineno=358

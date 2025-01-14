@@ -1,0 +1,17 @@
+2025-01-13 13:19:00 [info     ] Starting new synthesis job 20250113_131900_283095 for molecule CC(=O)Nc1ccc(cc1)O filename=prithvi.py job_id=20250113_131900_283095 lineno=31
+2025-01-13 13:19:00 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250113_131900_283095 lineno=35
+2025-01-13 13:19:23 [info     ] AZ solved CC(=O)Nc1ccc(cc1)O   filename=rec_prithvi.py job_id=20250113_131900_283095 lineno=73
+2025-01-13 13:19:31 [info     ] Received response from LLM: {
+  "data": ["O"],
+  "explanation": ["This is a simple amide formation reaction between an amine (aniline derivative) and an anhydride. The key reagent needed is heat, which is represented by the SMILES [O] for molecular oxygen, indicating thermal conditions."]
+} filename=metadata.py job_id=20250113_131900_283095 lineno=166
+2025-01-13 13:19:38 [info     ] Received response from LLM: {
+  "temperature": "Reflux (80-100°C)",
+  "pressure": "Atmospheric pressure",
+  "solvent": "No additional solvent needed",
+  "time": "1-2 hours"
+} filename=metadata.py job_id=20250113_131900_283095 lineno=284
+2025-01-13 13:19:45 [info     ] Received response from LLM: {
+  "literature_reaction": "Acetylation of an aromatic amine (aniline derivative) using acetic anhydride",
+  "explanation": "This is a classic acetylation reaction of an aromatic amine (4-aminophenol) using acetic anhydride as the acetylating agent. The reaction occurs readily under reflux conditions (80-100°C) without the need for additional solvent or reagents. The electron-donating hydroxyl group on the aniline ring increases the nucleophilicity of the amine, facilitating the reaction with acetic anhydride to form the amide product (4-acetamidophenol or paracetamol)."
+} filename=metadata.py job_id=20250113_131900_283095 lineno=358

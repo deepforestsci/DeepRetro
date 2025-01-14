@@ -1,0 +1,3 @@
+2024-12-20 04:36:56 [info     ] Starting new synthesis job 20241220_043656_16045 for molecule CC1=C(C=C(C=C1)O)C(=O)O filename=prithvi.py job_id=20241220_043656_16045 lineno=30
+2024-12-20 04:36:56 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20241220_043656_16045 lineno=35
+2024-12-20 04:37:21 [info     ] AZ solved CC1=C(C=C(C=C1)O)C(=O)O filename=rec_prithvi.py job_id=20241220_043656_16045 lineno=54

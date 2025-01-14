@@ -1,0 +1,17 @@
+2025-01-13 13:21:46 [info     ] Starting new synthesis job 20250113_132146_283095 for molecule O=C(C)Oc1ccccc1C(=O)O filename=prithvi.py job_id=20250113_132146_283095 lineno=31
+2025-01-13 13:21:46 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250113_132146_283095 lineno=35
+2025-01-13 13:22:12 [info     ] AZ solved O=C(C)Oc1ccccc1C(=O)O filename=rec_prithvi.py job_id=20250113_132146_283095 lineno=73
+2025-01-13 13:22:17 [info     ] Received response from LLM: {
+  "data": ["[OH-]"],
+  "explanation": ["This is a base-catalyzed transesterification reaction. The phenolic ester is formed from the phenol and anhydride reactants using hydroxide ([OH-]) as a base catalyst to activate the phenol for nucleophilic addition-elimination on the anhydride."]
+} filename=metadata.py job_id=20250113_132146_283095 lineno=166
+2025-01-13 13:22:21 [info     ] Received response from LLM: {
+  "temperature": "Room temperature (20-25°C)",
+  "pressure": "Atmospheric pressure",
+  "solvent": "Aqueous solution",
+  "time": "30 minutes to 2 hours"
+} filename=metadata.py job_id=20250113_132146_283095 lineno=284
+2025-01-13 13:22:28 [info     ] Received response from LLM: {
+  "literature_reaction": "Base-catalyzed ester hydrolysis of acetylsalicylic acid (aspirin)",
+  "explanation": "The reaction is a base-catalyzed ester hydrolysis, where the acetyl group of acetylsalicylic acid (aspirin) is cleaved by hydroxide ions to form salicylic acid and acetic acid. The reaction is typically carried out in an aqueous solution at room temperature and atmospheric pressure, with reaction times ranging from 30 minutes to 2 hours. The key reagent is the hydroxide ion (OH-), which acts as a nucleophile and a base to facilitate the hydrolysis of the ester bond."
+} filename=metadata.py job_id=20250113_132146_283095 lineno=358

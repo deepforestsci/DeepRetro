@@ -1,0 +1,3 @@
+2024-12-02 13:50:30 [info     ] Starting new synthesis job 20241202_135030_16045 for molecule CCCCON filename=prithvi.py job_id=20241202_135030_16045 lineno=30
+2024-12-02 13:50:30 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20241202_135030_16045 lineno=35
+2024-12-02 13:50:45 [info     ] AZ solved CCCCON               filename=rec_prithvi.py job_id=20241202_135030_16045 lineno=54

@@ -260,7 +260,7 @@ function renderGraph(rootStep) {
         const padding = 100;
         return {
             width: maxY - minY + padding * 2,
-            height: maxX - minX + padding * 2,
+            height: 2*(maxX - minX + padding * 2),
             minX: minX - padding,
             minY: minY - padding
         };
