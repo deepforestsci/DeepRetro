@@ -233,7 +233,7 @@
                 status.style.display = 'none';
                 result.style.display = 'none';
 
-                const endpoint = isRerun ? `${API_URL}/rerun_retrosynthesis` : API_URL;
+                const endpoint = isRerun ? `http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:5000/api/rerun_retrosynthesis` : API_URL;
                 const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
