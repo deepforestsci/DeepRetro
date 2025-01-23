@@ -45,6 +45,7 @@ def call_LLM(molecule: str,
                 "content":
                 USER_PROMPT_OPENAI.replace('{target_smiles}', molecule)
             }]
+        max_completion_tokens = 8192
     else:
         if messages is None:
             messages = [{
@@ -56,11 +57,11 @@ def call_LLM(molecule: str,
                 "content":
                 USER_PROMPT.replace('{target_smiles}', molecule)
             }]
-
+        max_completion_tokens = 4096
     try:
         response = completion(model=LLM,
                               messages=messages,
-                              max_completion_tokens=8192,
+                              max_completion_tokens=max_completion_tokens,
                               temperature=temperature,
                               seed=42,
                               top_p=0.9,
