@@ -60,7 +60,7 @@ def call_LLM(molecule: str,
     try:
         response = completion(model=LLM,
                               messages=messages,
-                              max_completion_tokens=4096,
+                              max_completion_tokens=8192,
                               temperature=temperature,
                               seed=42,
                               top_p=0.9,
@@ -72,7 +72,7 @@ def call_LLM(molecule: str,
         try:
             response = completion(model=LLM,
                                   messages=messages,
-                                  max_completion_tokens=4096,
+                                  max_completion_tokens=8192,
                                   temperature=temperature,
                                   seed=42,
                                   top_p=0.9)
