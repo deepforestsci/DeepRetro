@@ -97,7 +97,13 @@ Present your final analysis in a specific JSON format. For each suggestion, prov
 If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.
 """
 
-USER_PROMPT_OPENAI = """Perform a single-step retrosynthesis on the following molecule, providing 3-5 possible precursors or reactions:
+USER_PROMPT_OPENAI = """You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. 
+
+Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. 
+
+If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.
+
+Perform a single-step retrosynthesis on the following molecule, providing 3-5 possible precursors or reactions:
 
 {target_smiles}
 
