@@ -90,6 +90,74 @@ The final output should be in this format:
 </json>
 """
 
+SYS_PROMPT_OPENAI = """You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. 
+
+Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. 
+
+If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.
+"""
+
+USER_PROMPT_OPENAI = """You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. 
+
+Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. 
+
+If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.
+
+Perform a single-step retrosynthesis on the following molecule, providing 3-5 possible precursors or reactions:
+
+{target_smiles}
+
+Present your final analysis in the following JSON format:
+
+{
+  "data": [
+    [precursor1_SMILES, precursor2_SMILES, ...],
+    [precursor1_SMILES, precursor2_SMILES, ...],
+    ...
+  ],
+  "explanation": [
+    "explanation 1",
+    "explanation 2",
+    ...
+  ],
+  "confidence_scores": [
+    confidence_score1,
+    confidence_score2,
+    ...
+  ]
+}
+
+For each suggestion in the "data" array, provide the precursor molecules in SMILES notation. Ensure to provide only valid SMILES strings.
+
+In the corresponding "explanation" array, briefly explain the reaction type and any key conditions or reagents needed.
+
+In the "confidence_scores" array, provide a confidence score for each suggestion between 0 and 1, indicating your confidence in the proposed retrosynthesis pathway.
+
+Ensure that the number of entries in "data", "explanation", and "confidence_scores" are the same.
+
+The final output should be in this format:
+
+<json>
+{
+  "data": [
+    [precursor1_SMILES, precursor2_SMILES, ...],
+    [precursor1_SMILES, precursor2_SMILES, ...],
+    ...
+  ],
+  "explanation": [
+    "explanation 1",
+    "explanation 2",
+    ...
+  ],
+  "confidence_scores": [
+    confidence_score1,
+    confidence_score2,
+    ...
+  ]
+}
+</json>
+"""
+
 SYS_PROMPT_OLD = """You are an expert organic chemist specializing in retrosynthesis. 
 When given a target molecule, you will perform a single step retrosynthesis, 
 providing 3-5 possible precursor molecules or reactions that could lead to the formation of the 
@@ -557,3 +625,12 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
+
+OPENAI_MODELS = [
+    "gpt-4o", "chatgpt-4o-latest", "gpt-4o-mini", "gpt-4o-mini-2024-07-18",
+    "o1", "o1-2024-12-17", "o1-mini", "o1-mini-2024-09-12", "o1-preview",
+    "o1-preview-2024-09-12", "gpt-4o-realtime-preview",
+    "gpt-4o-realtime-preview-2024-12-17", "gpt-4o-mini-realtime-preview",
+    "gpt-4o-mini-realtime-preview-2024-12-17", "gpt-4o-2024-08-06"
+]
