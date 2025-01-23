@@ -4,6 +4,7 @@ from typing import Optional
 from dotenv import load_dotenv
 from litellm import completion
 from src.variables import USER_PROMPT, SYS_PROMPT
+from src.variables import USER_PROMPT_OPENAI, SYS_PROMPT_OPENAI, OPENAI_MODELS
 from src.cache import cache_results
 from src.utils.utils_molecule import calc_mol_wt, validity_check
 from src.utils.job_context import logger as context_logger
@@ -32,14 +33,29 @@ def call_LLM(molecule: str,
     """Calls the LLM model to predict the next step"""
     logger = context_logger.get()
     # logger.info(f"Calling {LLM} with molecule: {molecule}")
-    if messages is None:
-        messages = [{
-            "role": "system",
-            "content": SYS_PROMPT
-        }, {
-            "role": "user",
-            "content": USER_PROMPT.replace('{target_smiles}', molecule)
-        }]
+
+    if LLM in OPENAI_MODELS:
+        if messages is None:
+            messages = [{
+                "role": "system",
+                "content": SYS_PROMPT_OPENAI
+            }, {
+                "role":
+                "user",
+                "content":
+                USER_PROMPT_OPENAI.replace('{target_smiles}', molecule)
+            }]
+    else:
+        if messages is None:
+            messages = [{
+                "role": "system",
+                "content": SYS_PROMPT
+            }, {
+                "role":
+                "user",
+                "content":
+                USER_PROMPT.replace('{target_smiles}', molecule)
+            }]
 
     try:
         response = completion(model=LLM,
@@ -100,6 +116,30 @@ def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
     return 200, thinking_steps, json_content
 
 
+def split_json_openAI(res_text: str) -> tuple[int, list[str]]:
+    """Split the response text from OpenAI models to extract the molecules
+    Note: OpenAI O-series models do not provide Chain of Thoughts (COT) in the response
+
+    Parameters
+    ----------
+    res_text : str
+        The response text from the OpenAI model
+
+    Returns
+    -------
+    tuple[int, str]
+        the status code and json content
+    """
+    logger = context_logger.get()
+    try:
+        json_content = res_text[res_text.find("<json>\n") +
+                                7:res_text.find("</json>")]
+    except Exception as e:
+        logger.info(f"Error in parsing LLM response: {e}")
+        return 500, [], ""
+    return 200, json_content
+
+
 def validate_split_json(
         json_content: str) -> tuple[int, list[str], list[str], list[int]]:
     """Validate the split json content from LLM response
@@ -157,8 +197,11 @@ def llm_pipeline(
                                          messages=messages,
                                          temperature=run)
         if status_code == 200:
-            status_code, thinking_steps, json_content = split_cot_json(
-                res_text)
+            if LLM in OPENAI_MODELS:
+                status_code, json_content = split_json_openAI(res_text)
+            else:
+                status_code, thinking_steps, json_content = split_cot_json(
+                    res_text)
             if status_code == 200:
                 status_code, res_molecules, res_explanations, res_confidence = validate_split_json(
                     json_content)
