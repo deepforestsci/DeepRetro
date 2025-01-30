@@ -105,7 +105,7 @@ def rerun_retrosynthesis():
             "Molecule string is required, Please include a 'smiles' field"
         }), 400
 
-    molecule = data['molecule']
+    molecule = data['smiles']
 
     # Clear the cache for the molecule
     clear_cache_for_molecule(molecule)
