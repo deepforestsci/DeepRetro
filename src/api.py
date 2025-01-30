@@ -15,13 +15,7 @@ from src.main import main
 from src.cache import clear_cache_for_molecule
 
 app = Flask(__name__)
-CORS(app,
-     resources={
-         r"/api/*": {
-             "origins":
-             "http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:8000"
-         }
-     })
+CORS(app)
 
 # Predefined API key for authentication
 API_KEY = "your-secure-api-key"
