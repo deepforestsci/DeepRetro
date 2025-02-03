@@ -255,13 +255,13 @@
                 result.style.display = 'none';
 
                 // Define the endpoints for both instances
-                const endpoint1 = isRerun ? 
-                    'http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:5000/api/rerun_retrosynthesis' : 
+                const endpoint1 = isRerun ?
+                    'http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:5000/api/rerun_retrosynthesis' :
                     'http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
 
-                const endpoint2 = isRerun ? 
-                    'https://ec2-3-17-147-80.us-east-2.compute.amazonaws.com:5000/api/rerun_retrosynthesis' : 
-                    'https://ec2-3-17-147-80.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
+                const endpoint2 = isRerun ?
+                    'http://ec2-18-220-53-227.us-east-2.compute.amazonaws.com:5000/api/rerun_retrosynthesis' :
+                    'http://ec2-18-220-53-227.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
 
                 // Make parallel API calls
                 const [response1, response2] = await Promise.all([
@@ -357,4 +357,5 @@
     </script>
     <script src="app_v4.js"></script>
 </body>
+
 </html>
