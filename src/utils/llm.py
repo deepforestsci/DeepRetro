@@ -36,28 +36,30 @@ def call_LLM(molecule: str,
 
     if LLM in OPENAI_MODELS:
         if messages is None:
+            messages = [
+                #     {
+                #     "role": "system",
+                #     "content": SYS_PROMPT_OPENAI
+                # },
+                {
+                    "role":
+                    "user",
+                    "content":
+                    USER_PROMPT_OPENAI.replace('{target_smiles}', molecule)
+                }
+            ]
+        max_completion_tokens = 8192
+    else:
+        if messages is None:
             messages = [{
                 "role": "system",
-                "content": SYS_PROMPT_OPENAI
+                "content": SYS_PROMPT
             }, {
                 "role":
                 "user",
                 "content":
-                USER_PROMPT_OPENAI.replace('{target_smiles}', molecule)
+                USER_PROMPT.replace('{target_smiles}', molecule)
             }]
-        max_completion_tokens = 8192
-    else:
-        if messages is None:
-            messages = [
-                #     {
-                #     "role": "system",
-                #     "content": SYS_PROMPT
-                # },
-                {
-                    "role": "user",
-                    "content": USER_PROMPT.replace('{target_smiles}', molecule)
-                }
-            ]
         max_completion_tokens = 4096
     try:
         response = completion(model=LLM,
