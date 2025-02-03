@@ -315,6 +315,14 @@
                 window.showResult = (instance) => {
                     const formattedJson = JSON.stringify(results[instance], null, 2);
                     result.textContent = formattedJson;
+                    
+                    // Clear existing graph
+                    document.getElementById('graph').innerHTML = '';
+                    
+                    // Process and render new pathway
+                    const processedTree = processData(results[instance]);
+                    const rootStep = processedTree['0'];
+                    renderGraph(rootStep);
                 };
 
                 status.className = 'status success';
