@@ -275,6 +275,11 @@
 
                 result.style.display = 'none';
                 result.textContent = '';
+
+                // Enable the button and set it to "Rerun Analysis" on fetch error
+                button.disabled = false;
+                button.textContent = 'Rerun Analysis';
+                button.onclick = () => analyze(true);
             }
         }
 
