@@ -2,7 +2,7 @@ import diskcache as dc
 import hashlib
 import json
 
-cache = dc.Cache('cache_api')
+cache = dc.Cache('cache_api_new')
 
 
 def _generate_cache_key(func_name, *args, **kwargs):

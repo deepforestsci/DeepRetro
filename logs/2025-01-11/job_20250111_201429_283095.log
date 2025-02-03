@@ -1,0 +1,31 @@
+2025-01-11 20:14:29 [info     ] Starting new synthesis job 20250111_201429_283095 for molecule COC1=CC(C(O)C(C)N)=C(OC)C=C1 filename=prithvi.py job_id=20250111_201429_283095 lineno=31
+2025-01-11 20:14:29 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250111_201429_283095 lineno=35
+2025-01-11 20:15:31 [info     ] AZ solved COC1=CC(C(O)C(C)N)=C(OC)C=C1 filename=rec_prithvi.py job_id=20250111_201429_283095 lineno=73
+2025-01-11 20:15:37 [info     ] Received response from LLM: {
+  "data": ["[H][H]"],
+  "explanation": ["This is a nitro reduction reaction, converting the nitro group (R-NO2) to an amine (R-NH2). The reaction requires a reducing agent such as hydrogen gas (H2) with a metal catalyst like Pd/C or Raney Ni. The reaction is typically performed under elevated hydrogen pressure."]
+} filename=metadata.py job_id=20250111_201429_283095 lineno=166
+2025-01-11 20:15:41 [info     ] Received response from LLM: {
+  "temperature": "Room temperature (20-25 °C)",
+  "pressure": "Atmospheric pressure",
+  "solvent": "Ethanol or methanol",
+  "time": "1-2 hours"
+} filename=metadata.py job_id=20250111_201429_283095 lineno=284
+2025-01-11 20:15:49 [info     ] Received response from LLM: {
+  "literature_reaction": "Reduction of a nitro group to an amine using hydrogen gas and a metal catalyst",
+  "explanation": "This reaction involves the reduction of a nitro group (R-NO2) to a primary amine (R-NH2) using molecular hydrogen (H2) as the reducing agent. The reaction typically requires a metal catalyst such as palladium on carbon (Pd/C) or Raney nickel. The solvent is usually an alcohol like ethanol or methanol, and the reaction is carried out at room temperature and atmospheric pressure. The reaction time is generally 1-2 hours for complete conversion."
+} filename=metadata.py job_id=20250111_201429_283095 lineno=358
+2025-01-11 20:15:55 [info     ] Received response from LLM: {
+  "data": ["[OH-]"],
+  "explanation": ["This is a base-catalyzed aldol addition reaction. The nitroethane anion, formed by deprotonation with hydroxide, acts as the nucleophile and adds to the aldehyde. The resulting alkoxide is then protonated to give the β-hydroxy nitroalkane product."]
+} filename=metadata.py job_id=20250111_201429_283095 lineno=166
+2025-01-11 20:15:59 [info     ] Received response from LLM: {
+  "temperature": "0-5 °C",
+  "pressure": "Atmospheric pressure",
+  "solvent": "Ethanol",
+  "time": "30 minutes - 2 hours"
+} filename=metadata.py job_id=20250111_201429_283095 lineno=284
+2025-01-11 20:16:07 [info     ] Received response from LLM: {
+  "literature_reaction": "Aldol addition of a nitroalkane to an aromatic aldehyde",
+  "explanation": "This is an aldol addition reaction between a nitroalkane (nitroethane) and an aromatic aldehyde (3,4-dimethoxybenzaldehyde) under basic conditions using hydroxide as the base. The reaction likely proceeds via deprotonation of the nitroalkane to form a resonance-stabilized nitronate anion, which then undergoes nucleophilic addition to the aldehyde carbonyl group. The reaction is performed at low temperature (0-5 °C) in ethanol solvent to control the selectivity and avoid side reactions. The key reagent is the hydroxide base, which generates the reactive nitronate nucleophile."
+} filename=metadata.py job_id=20250111_201429_283095 lineno=358

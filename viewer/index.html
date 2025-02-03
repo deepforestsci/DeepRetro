@@ -155,6 +155,27 @@
             max-width: 200px;
         }
 
+        .toggle-results {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-results button {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .toggle-results button:hover {
+            opacity: 0.9;
+        }
+
         #graph {
             width: 100%;
             min-height: 600px;
@@ -218,7 +239,7 @@
             document.getElementById('result').style.display = 'none';
         }
 
-        async function analyze() {
+        async function analyze(isRerun = false) {
             const smilesInput = document.getElementById('smiles');
             const button = document.getElementById('analyzeBtn');
             const status = document.getElementById('status');
@@ -228,55 +249,104 @@
             if (!smiles) return;
 
             try {
-                // Update UI for loading state
                 button.disabled = true;
-                button.innerHTML = '<span class="loading"></span>Analyzing...';
+                button.innerHTML = `<span class="loading"></span>${isRerun ? 'Rerunning...' : 'Analyzing...'}`;
                 status.style.display = 'none';
                 result.style.display = 'none';
 
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-API-KEY': API_KEY
-                    },
-                    body: JSON.stringify({ smiles })
-                });
+                // Define the endpoints for both instances
+                const endpoint1 = isRerun ? 
+                    'http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:5000/api/rerun_retrosynthesis' : 
+                    'http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
 
-                const data = await response.json();
+                const endpoint2 = isRerun ? 
+                    'https://ec2-3-17-147-80.us-east-2.compute.amazonaws.com:5000/api/rerun_retrosynthesis' : 
+                    'https://ec2-3-17-147-80.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
 
-                if (!response.ok) throw new Error(data.error || 'Analysis failed');
+                // Make parallel API calls
+                const [response1, response2] = await Promise.all([
+                    fetch(endpoint1, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-API-KEY': API_KEY
+                        },
+                        body: JSON.stringify({ smiles })
+                    }),
+                    fetch(endpoint2, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-API-KEY': API_KEY
+                        },
+                        body: JSON.stringify({ smiles })
+                    })
+                ]);
 
-                // Format and display result
-                const formattedJson = JSON.stringify(data, null, 2);
+                // Parse responses
+                const data1 = await response1.json();
+                const data2 = await response2.json();
+
+                if (!response1.ok || !response2.ok) {
+                    throw new Error(data1.error || data2.error || 'Analysis failed');
+                }
+
+                // Store results for both instances
+                const results = {
+                    instance1: data1,
+                    instance2: data2
+                };
+
+                // Display the first result by default
+                const formattedJson = JSON.stringify(results.instance1, null, 2);
                 result.textContent = formattedJson;
                 result.style.display = 'block';
 
-                // Show success message
+                // Add toggle buttons to switch between results
+                const toggleButtons = `
+                    <div class="toggle-results">
+                        <button onclick="showResult('instance1')">Show Pathway 1</button>
+                        <button onclick="showResult('instance2')">Show Pathway 2</button>
+                    </div>
+                `;
+                result.insertAdjacentHTML('beforebegin', toggleButtons);
+
+                // Function to toggle between results
+                window.showResult = (instance) => {
+                    const formattedJson = JSON.stringify(results[instance], null, 2);
+                    result.textContent = formattedJson;
+                };
+
                 status.className = 'status success';
                 status.textContent = 'Analysis completed successfully';
                 status.style.display = 'block';
 
-                // Clear the previous graph
                 document.getElementById('graph').innerHTML = '';
 
-                // The appv2.js will handle the visualization with the response data
-                const processedTree = processData(data);
-                const rootStep = processedTree['1']; // Start with step 1 as the root
+                // Render graph for the first result by default
+                const processedTree = processData(results.instance1);
+                const rootStep = processedTree['0'];
                 renderGraph(rootStep);
 
+                button.disabled = false;
+                button.textContent = isRerun ? 'Rerun Analysis' : 'Analyze';
+                if (!isRerun) {
+                    button.textContent = 'Rerun Analysis';
+                    button.onclick = () => analyze(true);
+                }
+
             } catch (error) {
-                // Show error message
                 status.className = 'status error';
                 status.textContent = `Error: ${error.message}`;
                 status.style.display = 'block';
 
-                // Clear previous result
                 result.style.display = 'none';
                 result.textContent = '';
-            } finally {
+
+                // Enable the button and set it to "Rerun Analysis" on fetch error
                 button.disabled = false;
-                button.textContent = 'Analyze';
+                button.textContent = 'Rerun Analysis';
+                button.onclick = () => analyze(true);
             }
         }
 

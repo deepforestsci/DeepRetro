@@ -1,0 +1,8 @@
+2024-12-06 14:48:02 [info     ] Starting new synthesis job 20241206_144802_16045 for molecule CC(N)C(=O)NC1=C(C)C=CC=C1C filename=prithvi.py job_id=20241206_144802_16045 lineno=30
+2024-12-06 14:48:03 [info     ] AZ solved CC(N)C(=O)NC1=C(C)C=CC=C1C filename=rec_prithvi.py job_id=20241206_144802_16045 lineno=54
+2024-12-06 14:48:12 [info     ] AZ solved Oc1ncc(F)cn1         filename=rec_prithvi.py job_id=20241206_144307_16045 lineno=54
+2024-12-06 14:48:12 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20241206_144307_16045 lineno=44
+2024-12-06 14:48:12 [info     ] breaking                       filename=rec_prithvi.py job_id=20241206_144307_16045 lineno=51
+2024-12-06 14:48:12 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20241206_144307_16045 lineno=35
+2024-12-06 14:49:01 [info     ] AZ failed for O=C(C(=O)Cl)CC(F)=CN=O, running LLM filename=rec_prithvi.py job_id=20241206_144607_16045 lineno=13
+2024-12-06 14:49:01 [info     ] Calling LLM with molecule: O=C(C(=O)Cl)CC(F)=CN=O and run: 0.0 filename=llm.py job_id=20241206_144607_16045 lineno=154

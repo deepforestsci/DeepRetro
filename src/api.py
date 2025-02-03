@@ -16,6 +16,13 @@ from src.cache import clear_cache_for_molecule
 
 app = Flask(__name__)
 CORS(app)
+# CORS(app,
+#      resources={
+#          r"/api/*": {
+#              "origins":
+#              "http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:8000"
+#          }
+#      })
 
 # Predefined API key for authentication
 API_KEY = "your-secure-api-key"
@@ -98,7 +105,7 @@ def rerun_retrosynthesis():
             "Molecule string is required, Please include a 'smiles' field"
         }), 400
 
-    molecule = data['molecule']
+    molecule = data['smiles']
 
     # Clear the cache for the molecule
     clear_cache_for_molecule(molecule)
