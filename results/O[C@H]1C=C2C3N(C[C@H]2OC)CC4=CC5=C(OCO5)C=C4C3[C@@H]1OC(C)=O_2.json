@@ -1,0 +1,569 @@
+{
+	"dependencies": {
+		"1": [
+			"2"
+		],
+		"2": [
+			"3",
+			"6"
+		],
+		"3": [
+			"4"
+		],
+		"4": [
+			"5"
+		],
+		"5": [],
+		"6": [
+			"7"
+		],
+		"7": [
+			"8"
+		],
+		"8": [
+			"9"
+		],
+		"9": []
+	},
+	"steps": [
+		{
+			"conditions": {
+				"pressure": "Atmospheric pressure",
+				"solvent": "Dichloromethane (CH2Cl2) or other non-polar aprotic solvent",
+				"temperature": "Room temperature (20-25°C)",
+				"time": "1-4 hours"
+			},
+			"products": [
+				{
+					"product_metadata": {
+						"chemical_formula": "C19H21NO6",
+						"mass": 359.13688739199995,
+						"name": ""
+					},
+					"smiles": "O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O"
+				}
+			],
+			"reactants": [
+				{
+					"reactant_metadata": {
+						"chemical_formula": "C17H19NO6",
+						"mass": 333.121237328,
+						"name": ""
+					},
+					"smiles": "O[C@H]1C(O)=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1O"
+				}
+			],
+			"reactionmetrics": [
+				{
+					"closestliterature": "Acetylation of a secondary alcohol using acetyl chloride (CH3COCl) and a tertiary amine base like pyridine or triethylamine.",
+					"confidenceestimate": 0.8,
+					"scalabilityindex": "3"
+				}
+			],
+			"reagents": [
+				{
+					"reagent_metadata": {
+						"chemical_formula": "C2H3ClO",
+						"mass": 77.987242396,
+						"name": ""
+					},
+					"smiles": "CC(=O)Cl"
+				},
+				{
+					"reagent_metadata": {
+						"chemical_formula": "C2H3ClO",
+						"mass": 77.987242396,
+						"name": ""
+					},
+					"smiles": "CC(=O)Cl"
+				},
+				{
+					"reagent_metadata": {
+						"chemical_formula": "C5H11N",
+						"mass": 85.08914935199999,
+						"name": ""
+					},
+					"smiles": "C1CCNCC1"
+				}
+			],
+			"step": "1"
+		},
+		{
+			"conditions": {
+				"pressure": "Atmospheric pressure",
+				"solvent": "Likely an organic solvent such as dichloromethane, chloroform, or ethyl acetate",
+				"temperature": "Room temperature (20-25°C)",
+				"time": "Several hours, depending on the specific reaction conditions and scale"
+			},
+			"products": [
+				{
+					"product_metadata": {
+						"chemical_formula": "C17H19NO6",
+						"mass": 333.121237328,
+						"name": ""
+					},
+					"smiles": "O[C@H]1C(O)=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1O"
+				}
+			],
+			"reactants": [
+				{
+					"reactant_metadata": {
+						"chemical_formula": "C7H10N2O2",
+						"mass": 154.07422756,
+						"name": ""
+					},
+					"smiles": "NNc1ccc(OCO)cc1"
+				},
+				{
+					"reactant_metadata": {
+						"chemical_formula": "C10H10O4",
+						"mass": 194.0579088,
+						"name": ""
+					},
+					"smiles": "CC(=O)c1c(O)cc2c(c1O)CCO2"
+				}
+			],
+			"reactionmetrics": [
+				{
+					"closestliterature": "Pictet-Spengler reaction",
+					"confidenceestimate": 0.7,
+					"scalabilityindex": "3"
+				}
+			],
+			"reagents": [
+				{
+					"reagent_metadata": {
+						"chemical_formula": "H2O",
+						"mass": 18.010564684,
+						"name": ""
+					},
+					"smiles": "O"
+				},
+				{
+					"reagent_metadata": {
+						"chemical_formula": "H+",
+						"mass": 1.00727645209,
+						"name": ""
+					},
+					"smiles": "[H+]"
+				}
+			],
+			"step": "2",
+			"child_id": [
+				"3",
+				"6"
+			],
+			"parent_id": 1
+		},
+		{
+			"conditions": {
+				"pressure": "Atmospheric pressure",
+				"solvent": "Acetic acid",
+				"temperature": "Room temperature (20-25 °C)",
+				"time": "1-2 hours"
+			},
+			"products": [
+				{
+					"product_metadata": {
+						"chemical_formula": "C7H10N2O2",
+						"mass": 154.07422756,
+						"name": ""
+					},
+					"smiles": "NNc1ccc(OCO)cc1"
+				}
+			],
+			"reactants": [
+				{
+					"reactant_metadata": {
+						"chemical_formula": "C14H16N2O2",
+						"mass": 244.121177752,
+						"name": ""
+					},
+					"smiles": "NNc1ccc(OCOCc2ccccc2)cc1"
+				}
+			],
+			"reactionmetrics": [
+				{
+					"closestliterature": "Deprotection of a benzyl ether using oxalic acid",
+					"confidenceestimate": 0.99,
+					"scalabilityindex": "8"
+				}
+			],
+			"reagents": [
+				{
+					"reagent_metadata": {
+						"chemical_formula": "C2H2O4",
+						"mass": 89.995308544,
+						"name": ""
+					},
+					"smiles": "O=C(O)C(=O)O"
+				},
+				{
+					"reagent_metadata": {
+						"chemical_formula": "H2",
+						"mass": 2.015650064,
+						"name": ""
+					},
+					"smiles": "[H][H]"
+				}
+			],
+			"step": "3",
+			"child_id": [
+				"4"
+			],
+			"parent_id": 2
+		},
+		{
+			"conditions": {
+				"pressure": "Atmospheric pressure",
+				"solvent": "1,4-Dioxane",
+				"temperature": "Room temperature (20-25 °C)",
+				"time": "2-4 hours"
+			},
+			"products": [
+				{
+					"product_metadata": {
+						"chemical_formula": "C14H16N2O2",
+						"mass": 244.121177752,
+						"name": ""
+					},
+					"smiles": "NNc1ccc(OCOCc2ccccc2)cc1"
+				}
+			],
+			"reactants": [
+				{
+					"reactant_metadata": {
+						"chemical_formula": "C6H8N2O",
+						"mass": 124.063662876,
+						"name": ""
+					},
+					"smiles": "NNc1ccc(O)cc1"
+				},
+				{
+					"reactant_metadata": {
+						"chemical_formula": "C8H9ClO",
+						"mass": 156.034192588,
+						"name": ""
+					},
+					"smiles": "ClCOCc1ccccc1"
+				}
+			],
+			"reactionmetrics": [
+				{
+					"closestliterature": "Williamson ether synthesis",
+					"confidenceestimate": 0.98,
+					"scalabilityindex": "8"
+				}
+			],
+			"reagents": [
+				{
+					"reagent_metadata": {
+						"chemical_formula": "HNaO",
+						"mass": 39.99250893200001,
+						"name": ""
+					},
+					"smiles": "[Na+].[OH-]"
+				},
+				{
+					"reagent_metadata": {
+						"chemical_formula": "C4H8O",
+						"mass": 72.057514876,
+						"name": ""
+					},
+					"smiles": "C1CCOC1"
+				}
+			],
+			"step": "4",
+			"child_id": [
+				"5"
+			],
+			"parent_id": 3
+		},
+		{
+			"conditions": {
+				"pressure": "Atmospheric pressure",
+				"solvent": "Dichloromethane (CH2Cl2) or 1,2-dichloroethane (DCE)",
+				"temperature": "Room temperature (20-25 °C)",
+				"time": "1-3 hours"
+			},
+			"products": [
+				{
+					"product_metadata": {
+						"chemical_formula": "C6H8N2O",
+						"mass": 124.063662876,
+						"name": ""
+					},
+					"smiles": "NNc1ccc(O)cc1"
+				}
+			],
+			"reactants": [
+				{
+					"reactant_metadata": {
+						"chemical_formula": "C13H14N2O",
+						"mass": 214.110613068,
+						"name": ""
+					},
+					"smiles": "NNc1ccc(OCc2ccccc2)cc1"
+				}
+			],
+			"reactionmetrics": [
+				{
+					"closestliterature": "Benzyl ether cleavage via acetyl chloride",
+					"confidenceestimate": 0.99,
+					"scalabilityindex": "8"
+				}
+			],
+			"reagents": [
+				{
+					"reagent_metadata": {
+						"chemical_formula": "CHClO",
+						"mass": 63.971592332,
+						"name": ""
+					},
+					"smiles": "C(=O)Cl"
+				}
+			],
+			"step": "5",
+			"child_id": [],
+			"parent_id": 4
+		},
+		{
+			"conditions": {
+				"pressure": "Ambient pressure (1 atm)",
+				"solvent": "Dichloromethane (CH2Cl2) or other non-polar aprotic solvent",
+				"temperature": "0°C to room temperature",
+				"time": "1-4 hours"
+			},
+			"products": [
+				{
+					"product_metadata": {
+						"chemical_formula": "C10H10O4",
+						"mass": 194.0579088,
+						"name": ""
+					},
+					"smiles": "CC(=O)c1c(O)cc2c(c1O)CCO2"
+				}
+			],
+			"reactants": [
+				{
+					"reactant_metadata": {
+						"chemical_formula": "C9H10O3",
+						"mass": 166.06299418,
+						"name": ""
+					},
+					"smiles": "COc1cc(O)cc2c1CCO2"
+				}
+			],
+			"reactionmetrics": [
+				{
+					"closestliterature": "Friedel-Crafts acylation of phenols",
+					"confidenceestimate": 0.99,
+					"scalabilityindex": "9"
+				}
+			],
+			"reagents": [
+				{
+					"reagent_metadata": {
+						"chemical_formula": "C2H3ClO",
+						"mass": 77.987242396,
+						"name": ""
+					},
+					"smiles": "CC(=O)Cl"
+				},
+				{
+					"reagent_metadata": {
+						"chemical_formula": "C2H3ClO",
+						"mass": 77.987242396,
+						"name": ""
+					},
+					"smiles": "CC(=O)Cl"
+				},
+				{
+					"reagent_metadata": {
+						"chemical_formula": "H+",
+						"mass": 1.00727645209,
+						"name": ""
+					},
+					"smiles": "[H+]"
+				}
+			],
+			"step": "6",
+			"child_id": [
+				"7"
+			],
+			"parent_id": 2
+		},
+		{
+			"conditions": {
+				"pressure": "Atmospheric pressure (no special pressure conditions required)",
+				"solvent": "THF (tetrahydrofuran) or another aprotic solvent",
+				"temperature": "0 °C to room temperature",
+				"time": "1-3 hours"
+			},
+			"products": [
+				{
+					"product_metadata": {
+						"chemical_formula": "C9H10O3",
+						"mass": 166.06299418,
+						"name": ""
+					},
+					"smiles": "COc1cc(O)cc2c1CCO2"
+				}
+			],
+			"reactants": [
+				{
+					"reactant_metadata": {
+						"chemical_formula": "C10H10O3",
+						"mass": 178.06299418,
+						"name": ""
+					},
+					"smiles": "COc1cc(C=O)cc2c1CCO2"
+				}
+			],
+			"reactionmetrics": [
+				{
+					"closestliterature": "Reduction of an aldehyde to a primary alcohol using sodium borohydride or lithium borohydride",
+					"confidenceestimate": 0.98,
+					"scalabilityindex": "8"
+				}
+			],
+			"reagents": [
+				{
+					"reagent_metadata": {
+						"chemical_formula": "C6H13BO3",
+						"mass": 144.095774676,
+						"name": ""
+					},
+					"smiles": "[H][O][B]1OC(C)(C)C(C)(C)O1"
+				},
+				{
+					"reagent_metadata": {
+						"chemical_formula": "C6H13BO3",
+						"mass": 144.095774676,
+						"name": ""
+					},
+					"smiles": "[H]O[B]1OC(C)(C)C(C)(C)O1"
+				}
+			],
+			"step": "7",
+			"child_id": [
+				"8"
+			],
+			"parent_id": 6
+		},
+		{
+			"conditions": {
+				"pressure": "Atmospheric pressure",
+				"solvent": "Dichloromethane (CH2Cl2)",
+				"temperature": "0-5 °C",
+				"time": "1-2 hours"
+			},
+			"products": [
+				{
+					"product_metadata": {
+						"chemical_formula": "C10H10O3",
+						"mass": 178.06299418,
+						"name": ""
+					},
+					"smiles": "COc1cc(C=O)cc2c1CCO2"
+				}
+			],
+			"reactants": [
+				{
+					"reactant_metadata": {
+						"chemical_formula": "C10H12O3",
+						"mass": 180.078644244,
+						"name": ""
+					},
+					"smiles": "COc1cc(CO)cc2c1CCO2"
+				}
+			],
+			"reactionmetrics": [
+				{
+					"closestliterature": "Oxidation of a benzylic alcohol to an aldehyde using pyridinium chlorochromate (PCC)",
+					"confidenceestimate": 0.82,
+					"scalabilityindex": "9"
+				}
+			],
+			"reagents": [
+				{
+					"reagent_metadata": {
+						"chemical_formula": "MnO4-",
+						"mass": 118.91825215991,
+						"name": ""
+					},
+					"smiles": "[O-][Mn+]([O-])(=O)=O"
+				},
+				{
+					"reagent_metadata": {
+						"chemical_formula": "C2H3ClO",
+						"mass": 77.987242396,
+						"name": ""
+					},
+					"smiles": "CC(=O)Cl"
+				}
+			],
+			"step": "8",
+			"child_id": [
+				"9"
+			],
+			"parent_id": 7
+		},
+		{
+			"conditions": {
+				"pressure": "Atmospheric pressure (no special pressure conditions required)",
+				"solvent": "Anhydrous ether or THF",
+				"temperature": "0°C to room temperature",
+				"time": "1-2 hours"
+			},
+			"products": [
+				{
+					"product_metadata": {
+						"chemical_formula": "C10H12O3",
+						"mass": 180.078644244,
+						"name": ""
+					},
+					"smiles": "COc1cc(CO)cc2c1CCO2"
+				}
+			],
+			"reactants": [
+				{
+					"reactant_metadata": {
+						"chemical_formula": "C11H12O4",
+						"mass": 208.073558864,
+						"name": ""
+					},
+					"smiles": "COC(=O)c1cc(OC)c2c(c1)OCC2"
+				}
+			],
+			"reactionmetrics": [
+				{
+					"closestliterature": "Reduction of an ester to a primary alcohol using lithium aluminum hydride (LiAlH4)",
+					"confidenceestimate": 0.8,
+					"scalabilityindex": "3"
+				}
+			],
+			"reagents": [
+				{
+					"reagent_metadata": {
+						"chemical_formula": "HLi",
+						"mass": 8.023829582,
+						"name": ""
+					},
+					"smiles": "[H][Li]"
+				},
+				{
+					"reagent_metadata": {
+						"chemical_formula": "C4H6O3",
+						"mass": 102.031694052,
+						"name": ""
+					},
+					"smiles": "CC(=O)OC(C)=O"
+				}
+			],
+			"step": "9",
+			"child_id": [],
+			"parent_id": 8
+		}
+	]
+}
