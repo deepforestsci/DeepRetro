@@ -56,15 +56,27 @@ def retrosynthesis_api():
         }), 400
 
     smiles = data['smiles']
+
+    try:
+        advanced_model = data['advanced_model']
+    except Exception as e:
+        print(e)
+        advanced_model = False
+
     # Check if the SMILES string is valid
     if not Chem.MolFromSmiles(smiles):
         return jsonify({"error": "Invalid SMILES string"}), 400
-    result = main(smiles)
-    # try:
-    #     result = run_prithvi(smiles)
-    # except Exception as e:
-    #     print(e)
-    #     return jsonify({"error": "Error in retrosynthesis"}), 500
+
+    if advanced_model:
+        llm = "deepinfra/deepseek-ai/DeepSeek-R1"
+    else:
+        llm = "claude-3-opus-20240229"
+
+    try:
+        result = main(smiles, llm)
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "Error in retrosynthesis, Please rerun"}), 500
     return jsonify(result), 200
 
 
@@ -110,13 +122,26 @@ def rerun_retrosynthesis():
     # Clear the cache for the molecule
     clear_cache_for_molecule(molecule)
 
+    try:
+        advanced_model = data['advanced_model']
+    except Exception as e:
+        print(e)
+        advanced_model = False
+
+    if not Chem.MolFromSmiles(molecule):
+        return jsonify({"error": "Invalid SMILES string"}), 400
+
+    if advanced_model:
+        llm = "deepinfra/deepseek-ai/DeepSeek-R1"
+    else:
+        llm = "claude-3-opus-20240229"
+
     # Rerun retrosynthesis
-    result = main(molecule)
-    # try:
-    #     result = run_prithvi(smiles)
-    # except Exception as e:
-    #     print(e)
-    #     return jsonify({"error": "Error in retrosynthesis"}), 500
+    try:
+        result = main(smiles=molecule, llm=llm)
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "Error in retrosynthesis, Please rerun"}), 500
     return jsonify(result), 200
 
 
