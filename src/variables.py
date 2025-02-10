@@ -628,10 +628,21 @@ class bcolors:
 
 
 OPENAI_MODELS = [
-    "gpt-4o", "chatgpt-4o-latest", "gpt-4o-mini", "gpt-4o-mini-2024-07-18",
-    "o1", "o1-2024-12-17", "o1-mini", "o1-mini-2024-09-12", "o1-preview",
-    "o1-preview-2024-09-12", "gpt-4o-realtime-preview",
-    "gpt-4o-realtime-preview-2024-12-17", "gpt-4o-mini-realtime-preview",
-    "gpt-4o-mini-realtime-preview-2024-12-17", "gpt-4o-2024-08-06",
-    "azure_ai/DeepSeek-R1", "deepinfra/deepseek-ai/DeepSeek-R1"
+    "gpt-4o",
+    "chatgpt-4o-latest",
+    "gpt-4o-mini",
+    "gpt-4o-mini-2024-07-18",
+    "o1",
+    "o1-2024-12-17",
+    "o1-mini",
+    "o1-mini-2024-09-12",
+    "o1-preview",
+    "o1-preview-2024-09-12",
+    "gpt-4o-realtime-preview",
+    "gpt-4o-realtime-preview-2024-12-17",
+    "gpt-4o-mini-realtime-preview",
+    "gpt-4o-mini-realtime-preview-2024-12-17",
+    "gpt-4o-2024-08-06",
 ]
+
+DEEPSEEK_MODELS = ["azure_ai/DeepSeek-R1", "deepinfra/deepseek-ai/DeepSeek-R1"]
