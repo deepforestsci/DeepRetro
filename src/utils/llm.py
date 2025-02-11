@@ -1,3 +1,4 @@
+import os
 import ast
 import litellm
 from typing import Optional
@@ -23,6 +24,15 @@ metadata = {
     "trace_user_id": "sv",  # set langfuse Trace User ID
     "session_id": "prod",  # set langfuse Session ID
 }
+ENABLE_LOGGING = os.getenv("ENABLE_LOGGING", True)
+
+
+def log_message(message: str, logger=None):
+    """Log the message"""
+    if logger is not None:
+        logger.info(message)
+    else:
+        print(message)
 
 
 @cache_results
@@ -31,8 +41,8 @@ def call_LLM(molecule: str,
              temperature: float = 0.0,
              messages: Optional[list[dict]] = None):
     """Calls the LLM model to predict the next step"""
-    logger = context_logger.get()
-    # logger.info(f"Calling {LLM} with molecule: {molecule}")
+    logger = context_logger.get() if ENABLE_LOGGING else None
+    log_message(f"Calling {LLM} with molecule: {molecule}", logger)
 
     if LLM in OPENAI_MODELS or LLM in DEEPSEEK_MODELS:
         if messages is None:
@@ -71,8 +81,8 @@ def call_LLM(molecule: str,
                               metadata=metadata)
         res_text = response.choices[0].message.content
     except Exception as e:
-        logger.info(f"Error in calling {LLM}: {e}")
-        logger.info(f"Retrying call to {LLM}")
+        log_message(f"Error in calling {LLM}: {e}", logger)
+        log_message(f"Retrying call to {LLM}", logger)
         try:
             response = completion(model=LLM,
                                   messages=messages,
@@ -82,10 +92,10 @@ def call_LLM(molecule: str,
                                   top_p=0.9)
             res_text = response.choices[0].message.content
         except Exception as e:
-            logger.info(f"2nd Error in calling {LLM}: {e}")
-            logger.info(f"Exiting call to {LLM}")
+            log_message(f"2nd Error in calling {LLM}: {e}", logger)
+            log_message(f"Exiting call to {LLM}", logger)
             return 404, ""
-    logger.info(f"Received response from LLM: {res_text}")
+    log_message(f"Received response from LLM: {res_text}", logger)
     return 200, res_text
 
 
@@ -102,7 +112,7 @@ def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
     tuple[int, list[str], str]
         The status code, thinking steps and json content
     """
-    logger = context_logger.get()
+    logger = context_logger.get() if ENABLE_LOGGING else None
     try:
         # extract the content within <cot> </cot> tags as thinking content
         thinking_content = res_text[res_text.find("<cot>\n") +
@@ -115,7 +125,7 @@ def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
         json_content = res_text[res_text.find("<json>\n") +
                                 7:res_text.find("</json>")]
     except Exception as e:
-        logger.info(f"Error in parsing LLM response: {e}")
+        log_message(f"Error in parsing LLM response: {e}", logger)
         return 500, [], ""
     return 200, thinking_steps, json_content
 
@@ -134,12 +144,12 @@ def split_json_openAI(res_text: str) -> tuple[int, list[str]]:
     tuple[int, str]
         the status code and json content
     """
-    logger = context_logger.get()
+    logger = context_logger.get() if ENABLE_LOGGING else None
     try:
         json_content = res_text[res_text.find("<json>\n") +
                                 7:res_text.find("</json>")]
     except Exception as e:
-        logger.info(f"Error in parsing LLM response: {e}")
+        log_message(f"Error in parsing LLM response: {e}", logger)
         return 500, [], ""
     return 200, json_content
 
@@ -157,7 +167,8 @@ def split_json_deepseek(res_text: str) -> tuple[int, list[str], str]:
     tuple[int, list[str], str]
         The status code, thinking steps and json content
     """
-    logger = context_logger.get()
+    logger = context_logger.get() if ENABLE_LOGGING else None
+
     try:
         # extract the content within <cot> </cot> tags as thinking content
         thinking_content = res_text[res_text.find("<think>\n") +
@@ -166,7 +177,7 @@ def split_json_deepseek(res_text: str) -> tuple[int, list[str], str]:
         json_content = res_text[res_text.find("<json>\n") +
                                 7:res_text.find("</json>")]
     except Exception as e:
-        logger.info(f"Error in parsing LLM response: {e}")
+        log_message(f"Error in parsing LLM response: {e}", logger)
         return 500, [], ""
     return 200, thinking_content, json_content
 
@@ -185,14 +196,14 @@ def validate_split_json(
     tuple[int, list[str], list[str], list[int]]
         The status code, list of molecules, list of explanations and list of confidence scores
     """
-    logger = context_logger.get()
+    logger = context_logger.get() if ENABLE_LOGGING else None
     try:
         result_list = ast.literal_eval(json_content)
         res_molecules = result_list['data']
         res_explanations = result_list['explanation']
         res_confidence = result_list['confidence_scores']
     except Exception as e:
-        logger.info(f"Error in parsing response: {e}")
+        log_message(f"Error in parsing response: {e}", logger)
         return 500, [], [], []
     return 200, res_molecules, res_explanations, res_confidence
 
@@ -218,11 +229,12 @@ def llm_pipeline(
     tuple[list[str], list[str], list[float]]
         The output pathways, explanations and confidence scores
     """
-    logger = context_logger.get()
+    logger = context_logger.get() if ENABLE_LOGGING else None
     output_pathways = []
     run = 0.0
     while (output_pathways == [] and run < 0.6):
-        logger.info(f"Calling LLM with molecule: {molecule} and run: {run}")
+        log_message(f"Calling LLM with molecule: {molecule} and run: {run}",
+                    logger)
         status_code, res_text = call_LLM(molecule,
                                          LLM,
                                          messages=messages,
@@ -243,18 +255,22 @@ def llm_pipeline(
                     output_pathways, output_explanations, output_confidence = validity_check(
                         molecule, res_molecules, res_explanations,
                         res_confidence)
-                    logger.info(f"Output Pathways: {output_pathways},\n\
+                    log_message(
+                        f"Output Pathways: {output_pathways},\n\
                             Output Explanations: {output_explanations},\n\
-                                Output Confidence: {output_confidence}")
+                                Output Confidence: {output_confidence}",
+                        logger)
                     run += 0.1
                 else:
-                    logger.info(
-                        f"Error in validating split json content: {res_text}")
+                    log_message(
+                        f"Error in validating split json content: {res_text}",
+                        logger)
                     continue
             else:
-                logger.info(f"Error in splitting cot json: {res_text}")
+                log_message(f"Error in splitting cot json: {res_text}", logger)
+                print(f"Error in splitting cot json: {res_text}")
                 continue
         else:
-            logger.info(f"Error in calling LLM: {res_text}")
+            log_message(f"Error in calling LLM: {res_text}")
             continue
     return output_pathways, output_explanations, output_confidence
