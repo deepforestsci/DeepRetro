@@ -24,7 +24,8 @@ metadata = {
     "trace_user_id": "sv",  # set langfuse Trace User ID
     "session_id": "prod",  # set langfuse Session ID
 }
-ENABLE_LOGGING = os.getenv("ENABLE_LOGGING", True)
+ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
+                                    "true").lower() == "false" else True
 
 
 def log_message(message: str, logger=None):

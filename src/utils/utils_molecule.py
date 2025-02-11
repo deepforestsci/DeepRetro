@@ -15,7 +15,8 @@ root_dir = rootutils.setup_root(__file__,
                                 pythonpath=True)
 
 RXN_CLASSIFICATION_MODEL_PATH = f"{root_dir}/{os.getenv('RXN_CLASSIFICATION_MODEL_PATH')}"
-ENABLE_LOGGING = os.getenv("ENABLE_LOGGING", True)
+ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
+                                    "true").lower() == "false" else True
 
 
 def log_message(message: str, logger=None):
@@ -69,12 +70,13 @@ def substructure_matching(target_smiles: str, query_smiles: str) -> int:
     try:
         target_molecule = Chem.MolFromSmiles(target_smiles)
     except:
-        log_message(f"Error in parsing target molecule: {target_smiles}")
+        log_message(f"Error in parsing target molecule: {target_smiles}",
+                    logger)
 
     try:
         query_molecule = Chem.MolFromSmiles(query_smiles)
     except:
-        log_message(f"Error in parsing query molecule: {query_smiles}")
+        log_message(f"Error in parsing query molecule: {query_smiles}", logger)
 
     # Check if the query substructure is present in the target molecule
     try:
@@ -121,18 +123,18 @@ def validity_check(molecule, res_molecules, res_explanations, res_confidence):
                 if is_valid_smiles(smiles):
                     if are_molecules_same(molecule, smiles):
                         log_message(
-                            f"Molecule : {molecule} is same as target molecule"
-                        )
+                            f"Molecule : {molecule} is same as target molecule",
+                            logger)
                     elif substructure_matching(smiles, molecule):
                         log_message(
-                            f"Molecule : {molecule} is substructure of target molecule"
-                        )
+                            f"Molecule : {molecule} is substructure of target molecule",
+                            logger)
                     else:
                         valid.append(smiles)
                 else:
                     log_message(
-                        f"Molecule : {molecule} is invalid or cannot be parsed"
-                    )
+                        f"Molecule : {molecule} is invalid or cannot be parsed",
+                        logger)
             if len(valid) >= 2:
                 valid_pathways.append(valid)
                 valid_explanations.append(res_explanations[idx])
@@ -140,20 +142,20 @@ def validity_check(molecule, res_molecules, res_explanations, res_confidence):
         else:
             if is_valid_smiles(smile_list):
                 if are_molecules_same(molecule, smiles):
-                    log_message("Molecule is same as target molecule")
+                    log_message("Molecule is same as target molecule", logger)
                 elif substructure_matching(smiles, molecule):
                     log_message(
-                        f"Molecule : {molecule} is substructure of target molecule {smiles}"
-                    )
+                        f"Molecule : {molecule} is substructure of target molecule {smiles}",
+                        logger)
                 else:
                     valid_pathways.append([smile_list])
                     valid_explanations.append(res_explanations[idx])
                     valid_confidence.append(res_confidence[idx])
             else:
-                log_message("Molecule is invalid or cannot be parsed")
+                log_message("Molecule is invalid or cannot be parsed", logger)
     log_message(
-        f"Obtained {len(valid_pathways)} valid pathways after validity test: {valid_pathways}"
-    )
+        f"Obtained {len(valid_pathways)} valid pathways after validity test: {valid_pathways}",
+        logger)
     return valid_pathways, valid_explanations, valid_confidence
 
 
@@ -175,7 +177,7 @@ def calc_mol_wt(mol: str) -> float:
         mol_wt = ExactMolWt(Chem.MolFromSmiles(mol))
     except:
         mol_wt = 0.0
-        log_message(f"Error in calculating molecular weight: {mol}")
+        log_message(f"Error in calculating molecular weight: {mol}", logger)
     return mol_wt
 
 
@@ -197,7 +199,7 @@ def calc_chemical_formula(mol: str):
         formula = CalcMolFormula(Chem.MolFromSmiles(mol))
     except:
         formula = "N/A"
-        log_message(f"Error in calculating formula: {mol}")
+        log_message(f"Error in calculating formula: {mol}", logger)
     return formula
 
 
