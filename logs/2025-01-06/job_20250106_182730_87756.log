@@ -1,3 +1,0 @@
-2025-01-06 12:57:30 [info     ] Starting new synthesis job 20250106_182730_87756 for molecule COC1=CC(C(O)C(C)N)=C(OC)C=C1 filename=prithvi.py job_id=20250106_182730_87756 lineno=31
-2025-01-06 12:57:30 [info     ] AZ_MODEL_CONFIG_PATH found: /Users/shreyasv/Desktop/research/deepchem/retrosynthesis/prod/../aizynthfinder/models/config.yml filename=az.py job_id=20250106_182730_87756 lineno=35
-2025-01-06 12:58:36 [info     ] AZ solved COC1=CC(C(O)C(C)N)=C(OC)C=C1 filename=rec_prithvi.py job_id=20250106_182730_87756 lineno=73

@@ -15,9 +15,14 @@ conda activate dfs_si_challenge
 mkdir aizynthfinder/models
 download_public_data aizynthfinder/models/
 ```
-5. Download the reaction classification model from the [link](https://drive.google.com/file/d/1sQVTGDkKdhf1KiTe4xqZuIMh5WR0ZKQZ/view?usp=sharing) and place it in the `reaction_prediction` folder.
-6. Make sure to setup the .env file with the correct paths to the data and models. A template is provided in the .env.template file.
-7. Run the jupyter notebook to generate the retrosynthesis predictions.
+5. Make sure to setup the .env file with the correct paths to the data and models. A template is provided in the .env.template file.
+6. Run the jupyter notebook to generate the retrosynthesis predictions.
 
 ## ToDos
-Refer to github issues for the same.
+- [x] Add Flask API for retrosynthesis predictions
+- [ ] Change logging style to jobID based logging
+- [ ] Add Dockerfile for easy deployment
+- [ ] Add tests for the retrosynthesis predictions
+- [ ] Add CI/CD pipeline for the project
+- [ ] Add documentation for the project
+- [ ] Add clean logging for the project

@@ -1,3 +1,0 @@
-2025-01-13 12:35:45 [info     ] Starting new synthesis job 20250113_123545_283095 for molecule CC(=O)O filename=prithvi.py job_id=20250113_123545_283095 lineno=31
-2025-01-13 12:35:45 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250113_123545_283095 lineno=35
-2025-01-13 12:35:45 [info     ] AZ solved CC(=O)O              filename=rec_prithvi.py job_id=20250113_123545_283095 lineno=73

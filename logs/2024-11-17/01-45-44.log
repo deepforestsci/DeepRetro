@@ -1,6 +1,0 @@
-2024-11-17 01:45:44,081 - INFO - Logging started
-2024-11-17 01:45:44,094 - INFO - Configuration file found in `../aizynthfinder/models/config.yml`
-2024-11-17 01:45:44,111 - WARNING -  * Debugger is active!
-2024-11-17 01:45:44,120 - INFO -  * Debugger PIN: 707-719-596
-2024-11-17 01:45:46,585 - INFO - AZ solved CC(N)C(=O)NC1=C(C)C=CC=C1C
-2024-11-17 01:45:48,224 - INFO - 127.0.0.1 - - [17/Nov/2024 01:45:48] "POST /api/retrosynthesis HTTP/1.1" 200 -
