@@ -4,8 +4,10 @@ import litellm
 from typing import Optional
 from dotenv import load_dotenv
 from litellm import completion
+from src.variables import OPENAI_MODELS, DEEPSEEK_MODELS
 from src.variables import USER_PROMPT, SYS_PROMPT
-from src.variables import USER_PROMPT_OPENAI, SYS_PROMPT_OPENAI, OPENAI_MODELS, DEEPSEEK_MODELS
+from src.variables import USER_PROMPT_OPENAI, SYS_PROMPT_OPENAI
+from src.variables import USER_PROMPT_DEEPSEEK, SYS_PROMPT_DEEPSEEK
 from src.cache import cache_results
 from src.utils.utils_molecule import calc_mol_wt, validity_check
 from src.utils.job_context import logger as context_logger
@@ -45,20 +47,26 @@ def call_LLM(molecule: str,
     logger = context_logger.get() if ENABLE_LOGGING else None
     log_message(f"Calling {LLM} with molecule: {molecule}", logger)
 
-    if LLM in OPENAI_MODELS or LLM in DEEPSEEK_MODELS:
+    if LLM in DEEPSEEK_MODELS:
         if messages is None:
-            messages = [
-                #     {
-                #     "role": "system",
-                #     "content": SYS_PROMPT_OPENAI
-                # },
-                {
-                    "role":
-                    "user",
-                    "content":
-                    USER_PROMPT_OPENAI.replace('{target_smiles}', molecule)
-                }
-            ]
+            messages = [{
+                "role": "system",
+                "content": SYS_PROMPT_DEEPSEEK
+            }, {
+                "role":
+                "user",
+                "content":
+                USER_PROMPT_DEEPSEEK.replace('{target_smiles}', molecule)
+            }]
+        max_completion_tokens = 8192
+    elif LLM in OPENAI_MODELS:
+        if messages is None:
+            messages = [{
+                "role":
+                "user",
+                "content":
+                USER_PROMPT_OPENAI.replace('{target_smiles}', molecule)
+            }]
         max_completion_tokens = 8192
     else:
         if messages is None:

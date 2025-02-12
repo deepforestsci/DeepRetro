@@ -138,6 +138,44 @@ In the "confidence_scores" array, provide a confidence score for each suggestion
 Ensure that the number of entries in "data", "explanation", and "confidence_scores" are the same.
 """
 
+SYS_PROMPT_DEEPSEEK = """You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. 
+
+Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. 
+
+Present your final analysis in the following JSON format:
+<json>
+{
+  "data": [
+    [precursor1_SMILES, precursor2_SMILES, ...],
+    [precursor1_SMILES, precursor2_SMILES, ...],
+    ...
+  ],
+  "explanation": [
+    "explanation 1",
+    "explanation 2",
+    ...
+  ],
+  "confidence_scores": [
+    confidence_score1,
+    confidence_score2,
+    ...
+  ]
+}
+</json>
+
+For each suggestion in the "data" array, provide the precursor molecules in SMILES notation. Ensure to provide only valid SMILES strings.
+
+In the corresponding "explanation" array, briefly explain the reaction type and any key conditions or reagents needed.
+
+In the "confidence_scores" array, provide a confidence score for each suggestion between 0 and 1, indicating your confidence in the proposed retrosynthesis pathway.
+
+Ensure that the number of entries in "data", "explanation", and "confidence_scores" are the same.
+
+If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.
+"""
+
+USER_PROMPT_DEEPSEEK = """Perform a single-step retrosynthesis on the following molecule, providing 3-5 possible precursors or reactions: {target_smiles}"""
+
 SYS_PROMPT_OLD = """You are an expert organic chemist specializing in retrosynthesis. 
 When given a target molecule, you will perform a single step retrosynthesis, 
 providing 3-5 possible precursor molecules or reactions that could lead to the formation of the 
