@@ -58,7 +58,9 @@ def retrosynthesis_api():
     smiles = data['smiles']
 
     try:
-        advanced_model = data['advanced_model']
+        advanced_model: str = data['advanced_model']
+        if advanced_model.lower() == "true":
+            deepseek_r1 = True
     except Exception as e:
         print(e)
         advanced_model = False
@@ -67,7 +69,7 @@ def retrosynthesis_api():
     if not Chem.MolFromSmiles(smiles):
         return jsonify({"error": "Invalid SMILES string"}), 400
 
-    if advanced_model:
+    if deepseek_r1:
         llm = "deepinfra/deepseek-ai/DeepSeek-R1"
     else:
         llm = "claude-3-opus-20240229"
@@ -123,7 +125,9 @@ def rerun_retrosynthesis():
     clear_cache_for_molecule(molecule)
 
     try:
-        advanced_model = data['advanced_model']
+        advanced_model: str = data['advanced_model']
+        if advanced_model.lower() == "true":
+            deepseek_r1 = True
     except Exception as e:
         print(e)
         advanced_model = False
@@ -131,7 +135,7 @@ def rerun_retrosynthesis():
     if not Chem.MolFromSmiles(molecule):
         return jsonify({"error": "Invalid SMILES string"}), 400
 
-    if advanced_model:
+    if deepseek_r1:
         llm = "deepinfra/deepseek-ai/DeepSeek-R1"
     else:
         llm = "claude-3-opus-20240229"
