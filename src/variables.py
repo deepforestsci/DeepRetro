@@ -90,6 +90,13 @@ The final output should be in this format:
 </json>
 """
 
+ADDON_PROMPT_7_MEMBER = """
+Examples of some 7-membered rings retrosynthesis:
+1. ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43 when broken down gives N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(OC)=C(Cl)C=C3
+2. O=C1NC2=CC=CC=3C(=O)CCCN1C23 when broken down gives O=C(O)CCCN1C(=O)NC=2C=CC=CC21
+3. FC(F)(F)c1nc3cccc2CCCCn1c23 when broken down gives C=CCCn2c(C(F)(F)F)nc1ccccc12
+"""
+
 SYS_PROMPT_OPENAI = """You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. 
 
 Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. 

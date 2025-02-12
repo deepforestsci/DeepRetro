@@ -8,8 +8,9 @@ from src.variables import OPENAI_MODELS, DEEPSEEK_MODELS
 from src.variables import USER_PROMPT, SYS_PROMPT
 from src.variables import USER_PROMPT_OPENAI, SYS_PROMPT_OPENAI
 from src.variables import USER_PROMPT_DEEPSEEK, SYS_PROMPT_DEEPSEEK
+from src.variables import ADDON_PROMPT_7_MEMBER
 from src.cache import cache_results
-from src.utils.utils_molecule import calc_mol_wt, validity_check
+from src.utils.utils_molecule import validity_check, detect_seven_member_rings
 from src.utils.job_context import logger as context_logger
 
 load_dotenv()
@@ -47,11 +48,18 @@ def call_LLM(molecule: str,
     logger = context_logger.get() if ENABLE_LOGGING else None
     log_message(f"Calling {LLM} with molecule: {molecule}", logger)
 
+    if detect_seven_member_rings(molecule):
+        log_message(f"Detected seven member ring in molecule: {molecule}",
+                    logger)
+        add_on = ADDON_PROMPT_7_MEMBER
+    else:
+        add_on = ""
+
     if LLM in DEEPSEEK_MODELS:
         if messages is None:
             messages = [{
                 "role": "system",
-                "content": SYS_PROMPT_DEEPSEEK
+                "content": SYS_PROMPT_DEEPSEEK + add_on
             }, {
                 "role":
                 "user",
@@ -72,7 +80,7 @@ def call_LLM(molecule: str,
         if messages is None:
             messages = [{
                 "role": "system",
-                "content": SYS_PROMPT
+                "content": SYS_PROMPT + add_on
             }, {
                 "role":
                 "user",
