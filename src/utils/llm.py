@@ -236,10 +236,21 @@ def llm_pipeline(
     while (output_pathways == [] and run < 0.6):
         log_message(f"Calling LLM with molecule: {molecule} and run: {run}",
                     logger)
-        status_code, res_text = call_LLM(molecule,
-                                         LLM,
-                                         messages=messages,
-                                         temperature=run)
+        if LLM in DEEPSEEK_MODELS and run == 0.0:
+            status_code, res_text = call_LLM(molecule,
+                                             LLM,
+                                             messages=messages,
+                                             temperature=0.5)
+        elif LLM in DEEPSEEK_MODELS:
+            status_code, res_text = call_LLM(molecule,
+                                             "claude-3-opus-20240229",
+                                             messages=messages,
+                                             temperature=run)
+        else:
+            status_code, res_text = call_LLM(molecule,
+                                             LLM,
+                                             messages=messages,
+                                             temperature=run)
         if status_code == 200:
             if LLM in OPENAI_MODELS:
                 status_code, json_content = split_json_openAI(res_text)
