@@ -109,34 +109,6 @@ Perform a single-step retrosynthesis on the following molecule, providing 3-5 po
 
 Present your final analysis in the following JSON format:
 
-{
-  "data": [
-    [precursor1_SMILES, precursor2_SMILES, ...],
-    [precursor1_SMILES, precursor2_SMILES, ...],
-    ...
-  ],
-  "explanation": [
-    "explanation 1",
-    "explanation 2",
-    ...
-  ],
-  "confidence_scores": [
-    confidence_score1,
-    confidence_score2,
-    ...
-  ]
-}
-
-For each suggestion in the "data" array, provide the precursor molecules in SMILES notation. Ensure to provide only valid SMILES strings.
-
-In the corresponding "explanation" array, briefly explain the reaction type and any key conditions or reagents needed.
-
-In the "confidence_scores" array, provide a confidence score for each suggestion between 0 and 1, indicating your confidence in the proposed retrosynthesis pathway.
-
-Ensure that the number of entries in "data", "explanation", and "confidence_scores" are the same.
-
-The final output should be in this format:
-
 <json>
 {
   "data": [
@@ -156,6 +128,14 @@ The final output should be in this format:
   ]
 }
 </json>
+
+For each suggestion in the "data" array, provide the precursor molecules in SMILES notation. Ensure to provide only valid SMILES strings.
+
+In the corresponding "explanation" array, briefly explain the reaction type and any key conditions or reagents needed.
+
+In the "confidence_scores" array, provide a confidence score for each suggestion between 0 and 1, indicating your confidence in the proposed retrosynthesis pathway.
+
+Ensure that the number of entries in "data", "explanation", and "confidence_scores" are the same.
 """
 
 SYS_PROMPT_OLD = """You are an expert organic chemist specializing in retrosynthesis. 
