@@ -301,3 +301,63 @@ def calc_scalability_index(mol1, mol2):
 def calc_yield(mol1, mol2):
     """Calculate the yield of a reaction"""
     return "#"
+
+
+def detect_seven_member_rings(smiles) -> bool:
+    """
+    Detects 7-member rings in a molecule given its SMILES string.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES string of the molecule.
+
+    Returns
+    -------
+    bool
+        True if 7-member rings are present, False otherwise.
+    """
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is None:
+        raise ValueError("Invalid SMILES string provided.")
+
+    # Retrieve ring information as tuples of atom indices.
+    ring_info = mol.GetRingInfo()
+    atom_rings = ring_info.AtomRings()
+
+    # Filter rings by the number of atoms.
+    rings_7 = [ring for ring in atom_rings if len(ring) == 7]
+
+    if len(rings_7) > 0:
+        return True
+    return False
+
+
+def detect_eight_member_rings(smiles) -> bool:
+    """
+    Detects 8-member rings in a molecule given its SMILES string.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES string of the molecule.
+
+    Returns
+    -------
+    bool
+        True if 8-member rings are present, False otherwise.
+    """
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is None:
+        raise ValueError("Invalid SMILES string provided.")
+
+    # Retrieve ring information as tuples of atom indices.
+    ring_info = mol.GetRingInfo()
+    atom_rings = ring_info.AtomRings()
+
+    # Filter rings by the number of atoms.
+    rings_8 = [ring for ring in atom_rings if len(ring) == 8]
+
+    if len(rings_8) > 0:
+        return True
+    return False
