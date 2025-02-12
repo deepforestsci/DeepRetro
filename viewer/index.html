@@ -176,6 +176,63 @@
             opacity: 0.9;
         }
 
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 12px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            color: #64748b;
+        }
+
         #graph {
             width: 100%;
             min-height: 600px;
@@ -204,16 +261,15 @@
         <div id="apiView">
             <div class="input-group">
                 <input type="text" id="smiles" placeholder="Enter SMILES string" aria-label="SMILES input">
+                <div class="toggle-switch">
+                    <label class="switch">
+                        <input type="checkbox" id="advancedToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label">Advanced Model</span>
+                </div>
                 <button onclick="analyze()" id="analyzeBtn">Analyze</button>
             </div>
-
-            <div id="status" class="status"></div>
-            <pre id="result" class="result"></pre>
-
-            <div class="examples">
-                Example SMILES: CCO (Ethanol), CC(=O)O (Acetic acid), c1ccccc1 (Benzene)
-            </div>
-        </div>
 
         <div id="fileView" style="display: none;">
             <div class="test-controls">
@@ -241,6 +297,7 @@
 
         async function analyze(isRerun = false) {
             const smilesInput = document.getElementById('smiles');
+            const advancedToggle = document.getElementById('advancedToggle');
             const button = document.getElementById('analyzeBtn');
             const status = document.getElementById('status');
             const result = document.getElementById('result');
@@ -263,6 +320,11 @@
                     'http://ec2-18-118-82-88.us-east-2.compute.amazonaws.com:5000/api/rerun_retrosynthesis' :
                     'http://ec2-18-118-82-88.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
 
+                const requestBody = {
+                    smiles,
+                    advanced_model: advancedToggle.checked
+                };
+
                 // Make parallel API calls
                 const [response1, response2] = await Promise.all([
                     fetch(endpoint1, {
@@ -271,7 +333,7 @@
                             'Content-Type': 'application/json',
                             'X-API-KEY': API_KEY
                         },
-                        body: JSON.stringify({ smiles })
+                        body: JSON.stringify(requestBody)
                     }),
                     fetch(endpoint2, {
                         method: 'POST',
@@ -279,7 +341,7 @@
                             'Content-Type': 'application/json',
                             'X-API-KEY': API_KEY
                         },
-                        body: JSON.stringify({ smiles })
+                        body: JSON.stringify(requestBody)
                     })
                 ]);
 
