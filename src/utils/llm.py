@@ -5,7 +5,7 @@ from typing import Optional
 from dotenv import load_dotenv
 from litellm import completion
 from src.variables import OPENAI_MODELS, DEEPSEEK_MODELS
-from src.variables import USER_PROMPT, SYS_PROMPT
+from src.variables import USER_PROMPT_V3 as USER_PROMPT, SYS_PROMPT_V3 as SYS_PROMPT
 from src.variables import USER_PROMPT_OPENAI, SYS_PROMPT_OPENAI
 from src.variables import USER_PROMPT_DEEPSEEK, SYS_PROMPT_DEEPSEEK
 from src.variables import ADDON_PROMPT_7_MEMBER
@@ -54,6 +54,7 @@ def call_LLM(molecule: str,
         add_on = ADDON_PROMPT_7_MEMBER
     else:
         add_on = ""
+    add_on = ""
 
     if LLM in DEEPSEEK_MODELS:
         if messages is None:
