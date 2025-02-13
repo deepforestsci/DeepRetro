@@ -123,7 +123,7 @@ def rerun_retrosynthesis():
 
     # Clear the cache for the molecule
     clear_cache_for_molecule(molecule)
-
+    deepseek_r1 = False
     try:
         advanced_model: str = data['advanced_model']
         if advanced_model.lower() == "true":
