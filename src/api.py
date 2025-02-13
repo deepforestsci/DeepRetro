@@ -56,7 +56,7 @@ def retrosynthesis_api():
         }), 400
 
     smiles = data['smiles']
-
+    deepseek_r1 = False
     try:
         advanced_model: str = data['advanced_model']
         if advanced_model.lower() == "true":
