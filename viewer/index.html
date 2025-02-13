@@ -233,6 +233,16 @@
             color: #64748b;
         }
 
+        .download-btn {
+            background: var(--success);
+            display: none;
+            margin-top: 12px;
+        }
+
+        .download-btn:hover {
+            opacity: 0.9;
+        }
+
         #graph {
             width: 100%;
             min-height: 600px;
@@ -270,7 +280,10 @@
                 </div>
                 <button onclick="analyze()" id="analyzeBtn">Analyze</button>
             </div>
-
+            <div id="status" class="status"></div>
+            <div id="result" class="result"></div>
+        </div>
+        
         <div id="fileView" style="display: none;">
             <div class="test-controls">
                 <h3>Test with JSON File</h3>
@@ -293,6 +306,19 @@
             // Reset status and result
             document.getElementById('status').style.display = 'none';
             document.getElementById('result').style.display = 'none';
+        }
+
+        function downloadResults(results) {
+            const data = JSON.stringify(results, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'retrosynthesis-results.json';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
         }
 
         async function analyze(isRerun = false) {
@@ -322,7 +348,7 @@
 
                 const requestBody = {
                     smiles,
-                    advanced_model: advancedToggle.checked
+                    advanced_model: advancedToggle.checked.toString()
                 };
 
                 // Make parallel API calls
@@ -373,6 +399,14 @@
                 `;
                 result.insertAdjacentHTML('beforebegin', toggleButtons);
 
+                // Add download button
+                const downloadButton = document.createElement('button');
+                downloadButton.className = 'download-btn';
+                downloadButton.textContent = 'Download Results';
+                downloadButton.onclick = () => downloadResults(results);
+                result.insertAdjacentElement('beforebegin', downloadButton);
+                downloadButton.style.display = 'block';
+
                 // Function to toggle between results
                 window.showResult = (instance) => {
                     const formattedJson = JSON.stringify(results[instance], null, 2);
@@ -412,6 +446,10 @@
 
                 result.style.display = 'none';
                 result.textContent = '';
+
+                // Hide download button if it exists
+                const downloadBtn = document.querySelector('.download-btn');
+                if (downloadBtn) downloadBtn.style.display = 'none';
 
                 // Enable the button and set it to "Rerun Analysis" on fetch error
                 button.disabled = false;
