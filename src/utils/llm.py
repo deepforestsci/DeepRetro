@@ -5,10 +5,11 @@ from typing import Optional
 from dotenv import load_dotenv
 from litellm import completion
 from src.variables import OPENAI_MODELS, DEEPSEEK_MODELS
-from src.variables import USER_PROMPT_V4 as USER_PROMPT, SYS_PROMPT_V4 as SYS_PROMPT
+from src.variables import USER_PROMPT, SYS_PROMPT
+from src.variables import USER_PROMPT_V4, SYS_PROMPT_V4
 from src.variables import USER_PROMPT_OPENAI, SYS_PROMPT_OPENAI
 from src.variables import USER_PROMPT_DEEPSEEK, SYS_PROMPT_DEEPSEEK
-from src.variables import ADDON_PROMPT_7_MEMBER
+from src.variables import ADDON_PROMPT_7_MEMBER, USER_PROMPT_DEEPSEEK_V4
 from src.cache import cache_results
 from src.utils.utils_molecule import validity_check, detect_seven_member_rings
 from src.utils.job_context import logger as context_logger
@@ -39,6 +40,42 @@ def log_message(message: str, logger=None):
         print(message)
 
 
+def obtain_prompt(LLM: str):
+    """Obtain the prompt based on the LLM model"""
+    advanced_prompt = False
+    detector = LLM.split(":")
+    if len(detector) > 1 and detector[1] == "adv":
+        advanced_prompt = True
+    print(f"Advanced Prompt: {advanced_prompt}")
+    if advanced_prompt:
+        if LLM in DEEPSEEK_MODELS:
+            sys_prompt_final = SYS_PROMPT_V4
+            user_prompt_final = USER_PROMPT_DEEPSEEK_V4
+            max_completion_tokens = 8192 * 2
+        elif LLM in OPENAI_MODELS:
+            sys_prompt_final = SYS_PROMPT_OPENAI
+            user_prompt_final = USER_PROMPT_OPENAI
+            max_completion_tokens = 8192
+        else:
+            sys_prompt_final = SYS_PROMPT_V4
+            user_prompt_final = USER_PROMPT_V4
+            max_completion_tokens = 4096
+    else:
+        if LLM in DEEPSEEK_MODELS:
+            sys_prompt_final = SYS_PROMPT_DEEPSEEK
+            user_prompt_final = USER_PROMPT_DEEPSEEK
+            max_completion_tokens = 8192
+        elif LLM in OPENAI_MODELS:
+            sys_prompt_final = SYS_PROMPT_OPENAI
+            user_prompt_final = USER_PROMPT_OPENAI
+            max_completion_tokens = 8192
+        else:
+            sys_prompt_final = SYS_PROMPT
+            user_prompt_final = USER_PROMPT
+            max_completion_tokens = 4096
+    return sys_prompt_final, user_prompt_final, max_completion_tokens
+
+
 @cache_results
 def call_LLM(molecule: str,
              LLM: str = "claude-3-opus-20240229",
@@ -55,39 +92,22 @@ def call_LLM(molecule: str,
     else:
         add_on = ""
 
+    sys_prompt_final, user_prompt_final, max_completion_tokens = obtain_prompt(
+        LLM)
+    LLM = LLM.split(":")[0]
     if LLM in DEEPSEEK_MODELS:
-        if messages is None:
-            messages = [{
-                "role": "system",
-                "content": SYS_PROMPT_DEEPSEEK + add_on
-            }, {
-                "role":
-                "user",
-                "content":
-                USER_PROMPT_DEEPSEEK.replace('{target_smiles}', molecule)
-            }]
-        max_completion_tokens = 8192
-    elif LLM in OPENAI_MODELS:
-        if messages is None:
-            messages = [{
-                "role":
-                "user",
-                "content":
-                USER_PROMPT_OPENAI.replace('{target_smiles}', molecule)
-            }]
-        max_completion_tokens = 8192
-    else:
-        if messages is None:
-            messages = [{
-                "role": "system",
-                "content": SYS_PROMPT + add_on
-            }, {
-                "role":
-                "user",
-                "content":
-                USER_PROMPT.replace('{target_smiles}', molecule)
-            }]
-        max_completion_tokens = 4096
+        user_prompt_final += add_on
+    if messages is None:
+        messages = [{
+            "role": "system",
+            "content": sys_prompt_final + add_on
+        }, {
+            "role":
+            "user",
+            "content":
+            user_prompt_final.replace('{target_smiles}', molecule)
+        }]
+
     try:
         response = completion(model=LLM,
                               messages=messages,
@@ -106,7 +126,8 @@ def call_LLM(molecule: str,
                                   max_completion_tokens=4096,
                                   temperature=temperature,
                                   seed=42,
-                                  top_p=0.9)
+                                  top_p=0.9,
+                                  metadata=metadata)
             res_text = response.choices[0].message.content
         except Exception as e:
             log_message(f"2nd Error in calling {LLM}: {e}", logger)
@@ -199,6 +220,19 @@ def split_json_deepseek(res_text: str) -> tuple[int, list[str], str]:
     return 200, thinking_content, json_content
 
 
+def split_json_master(res_text, model):
+    if model in DEEPSEEK_MODELS:
+        status_code, thinking_steps, json_content = split_json_deepseek(
+            res_text)
+    elif model in OPENAI_MODELS:
+        status_code, json_content = split_json_openAI(res_text)
+        thinking_steps = []
+    else:
+        status_code, thinking_steps, json_content = split_cot_json(res_text)
+
+    return status_code, thinking_steps, json_content
+
+
 def validate_split_json(
         json_content: str) -> tuple[int, list[str], list[str], list[int]]:
     """Validate the split json content from LLM response
@@ -248,57 +282,56 @@ def llm_pipeline(
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
     output_pathways = []
+    output_explanations = []
+    output_confidence = []
     run = 0.0
     while (output_pathways == [] and run < 0.6):
         log_message(f"Calling LLM with molecule: {molecule} and run: {run}",
                     logger)
-        if LLM in DEEPSEEK_MODELS and run == 0.0:
-            status_code, res_text = call_LLM(molecule,
-                                             LLM,
-                                             messages=messages,
-                                             temperature=0.5)
-        elif LLM in DEEPSEEK_MODELS:
-            status_code, res_text = call_LLM(molecule,
-                                             "claude-3-opus-20240229",
-                                             messages=messages,
-                                             temperature=run)
-        else:
-            status_code, res_text = call_LLM(molecule,
-                                             LLM,
-                                             messages=messages,
-                                             temperature=run)
-        if status_code == 200:
-            if LLM in OPENAI_MODELS:
-                status_code, json_content = split_json_openAI(res_text)
-            elif LLM in DEEPSEEK_MODELS:
-                status_code, thinking_steps, json_content = split_json_deepseek(
-                    res_text)
-            else:
-                status_code, thinking_steps, json_content = split_cot_json(
-                    res_text)
-            if status_code == 200:
-                status_code, res_molecules, res_explanations, res_confidence = validate_split_json(
-                    json_content)
-                if status_code == 200:
-                    output_pathways, output_explanations, output_confidence = validity_check(
-                        molecule, res_molecules, res_explanations,
-                        res_confidence)
-                    log_message(
-                        f"Output Pathways: {output_pathways},\n\
-                            Output Explanations: {output_explanations},\n\
-                                Output Confidence: {output_confidence}",
-                        logger)
-                    run += 0.1
-                else:
-                    log_message(
-                        f"Error in validating split json content: {res_text}",
-                        logger)
-                    continue
-            else:
-                log_message(f"Error in splitting cot json: {res_text}", logger)
-                print(f"Error in splitting cot json: {res_text}")
-                continue
-        else:
-            log_message(f"Error in calling LLM: {res_text}")
+
+        # Selecting the model based on the run number
+        current_model = LLM
+        if LLM in DEEPSEEK_MODELS and run > 0.0:
+            current_model = "claude-3-opus-20240229"
+
+        # --------------------
+        # Call LLM
+        status_code, res_text = call_LLM(molecule,
+                                         current_model,
+                                         messages=messages,
+                                         temperature=run)
+        if status_code != 200:
+            log_message(f"Error in calling LLM: {res_text}", logger)
+            run += 0.1
             continue
+
+        # --------------------
+        # Split the response text
+        status_code, thinking_steps, json_content = split_json_master(
+            res_text, current_model)
+        if status_code != 200:
+            log_message(f"Error in splitting cot json: {res_text}", logger)
+            run += 0.1
+            continue
+
+        # --------------------
+        # Validate the split json content
+        status_code, res_molecules, res_explanations, res_confidence = validate_split_json(
+            json_content)
+        if status_code != 200:
+            log_message(f"Error in validating split json content: {res_text}",
+                        logger)
+            run += 0.1
+            continue
+
+        # --------------------
+        # Check the validity of the molecules obtained from LLM
+        output_pathways, output_explanations, output_confidence = validity_check(
+            molecule, res_molecules, res_explanations, res_confidence)
+        log_message(
+            f"Output Pathways: {output_pathways},\n\
+                Output Explanations: {output_explanations},\n\
+                    Output Confidence: {output_confidence}", logger)
+        run += 0.1
+
     return output_pathways, output_explanations, output_confidence
