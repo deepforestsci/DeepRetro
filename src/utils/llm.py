@@ -160,6 +160,10 @@ def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
         thinking_steps = [
             step[:step.find("</thinking>")] for step in thinking_steps
         ]
+    except Exception as e:
+        log_message(f"Error in parsing obtaining COT: {e}", logger)
+
+    try:
         json_content = res_text[res_text.find("<json>\n") +
                                 7:res_text.find("</json>")]
     except Exception as e:
