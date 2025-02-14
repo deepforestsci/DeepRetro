@@ -189,7 +189,7 @@ def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
     return 200, thinking_steps, json_content
 
 
-def split_json_openAI(res_text: str) -> tuple[int, list[str]]:
+def split_json_openAI(res_text: str) -> tuple[int, str]:
     """Split the response text from OpenAI models to extract the molecules
     Note: OpenAI O-series models do not provide Chain of Thoughts (COT) in the response
 
@@ -209,7 +209,7 @@ def split_json_openAI(res_text: str) -> tuple[int, list[str]]:
                                 7:res_text.find("</json>")]
     except Exception as e:
         log_message(f"Error in parsing LLM response: {e}", logger)
-        return 500, [], ""
+        return 500, ""
     return 200, json_content
 
 
@@ -238,7 +238,7 @@ def split_json_deepseek(res_text: str) -> tuple[int, list[str], str]:
     except Exception as e:
         log_message(f"Error in parsing LLM response: {e}", logger)
         return 500, [], ""
-    return 200, thinking_content, json_content
+    return 200, [thinking_content], json_content
 
 
 def split_json_master(res_text, model):
@@ -284,7 +284,7 @@ def llm_pipeline(
     molecule: str,
     LLM: str = "claude-3-opus-20240229",
     messages: Optional[list[dict]] = None
-) -> tuple[list[str], list[str], list[float]]:
+) -> tuple[list[list[str]], list[str], list[float]]:
     """Pipeline to call LLM and validate the results
 
     Parameters
@@ -298,13 +298,13 @@ def llm_pipeline(
 
     Returns
     -------
-    tuple[list[str], list[str], list[float]]
+    tuple[list[list[str]], list[str], list[float]]
         The output pathways, explanations and confidence scores
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
-    output_pathways = []
-    output_explanations = []
-    output_confidence = []
+    output_pathways: list[list[str]] = []
+    output_explanations: list[str] = []
+    output_confidence: list[float] = []
     run = 0.0
     while (output_pathways == [] and run < 0.6):
         log_message(f"Calling LLM with molecule: {molecule} and run: {run}",
