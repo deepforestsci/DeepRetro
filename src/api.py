@@ -56,6 +56,13 @@ def retrosynthesis_api():
         }), 400
 
     smiles = data['smiles']
+
+    # Check if the SMILES string is valid
+    if not Chem.MolFromSmiles(smiles):
+        return jsonify({"error": "Invalid SMILES string"}), 400
+
+    # -----------------
+    # Advanced model - DeepSeek-R1
     deepseek_r1 = False
     try:
         advanced_model: str = data['advanced_model']
@@ -65,14 +72,24 @@ def retrosynthesis_api():
         print(e)
         advanced_model = False
 
-    # Check if the SMILES string is valid
-    if not Chem.MolFromSmiles(smiles):
-        return jsonify({"error": "Invalid SMILES string"}), 400
-
     if deepseek_r1:
         llm = "deepinfra/deepseek-ai/DeepSeek-R1"
     else:
         llm = "claude-3-opus-20240229"
+
+    # -----------------
+    # Advanced Prompt - To use the more guardrails prompt
+    advanced_prompt = False
+    try:
+        advanced_prompt: str = data['advanced_prompt']
+        if advanced_prompt.lower() == "true":
+            advanced_prompt = True
+    except Exception as e:
+        print(e)
+        advanced_prompt = False
+
+    if advanced_prompt:
+        llm = llm + ":adv"
 
     try:
         result = main(smiles, llm)
