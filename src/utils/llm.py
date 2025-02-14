@@ -156,7 +156,7 @@ def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
         thinking_content = res_text[res_text.find("<cot>\n") +
                                     6:res_text.find("</cot>")]
         # split the thinking content into individual steps based on the <thinking> </thinking> tags
-        thinking_steps = thinking_content.split("<thinking type=")[1:]
+        thinking_steps = thinking_content.split("<thinking")[1:]
         thinking_steps = [
             step[:step.find("</thinking>")] for step in thinking_steps
         ]
