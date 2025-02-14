@@ -33,7 +33,19 @@ ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
 
 
 def log_message(message: str, logger=None):
-    """Log the message"""
+    """Log the message
+
+    Parameters
+    ----------
+    message : str
+        The message to be logged
+    logger : _type_, optional
+        The logger object, by default None
+
+    Returns
+    -------
+    None
+    """
     if logger is not None:
         logger.info(message)
     else:
@@ -41,7 +53,18 @@ def log_message(message: str, logger=None):
 
 
 def obtain_prompt(LLM: str):
-    """Obtain the prompt based on the LLM model"""
+    """Obtain the prompt based on the LLM model
+
+    Parameters
+    ----------
+    LLM : str
+        The LLM model to be used
+
+    Returns
+    -------
+    str, str, int
+        The system prompt, user prompt and max completion tokens
+    """
     advanced_prompt = False
     detector = LLM.split(":")
     if len(detector) > 1 and detector[1] == "adv":
@@ -241,7 +264,21 @@ def split_json_deepseek(res_text: str) -> tuple[int, list[str], str]:
     return 200, [thinking_content], json_content
 
 
-def split_json_master(res_text, model):
+def split_json_master(res_text: str, model: str) -> tuple[int, list[str], str]:
+    """Split the response text based on the model
+
+    Parameters
+    ----------
+    res_text : str
+        The response text from the LLM model
+    model : str
+        The LLM model used
+
+    Returns
+    -------
+    tuple[int, list[str], str]
+        The status code, thinking steps and json content
+    """
     if model in DEEPSEEK_MODELS:
         status_code, thinking_steps, json_content = split_json_deepseek(
             res_text)
