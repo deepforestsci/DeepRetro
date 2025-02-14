@@ -80,8 +80,25 @@ def obtain_prompt(LLM: str):
 def call_LLM(molecule: str,
              LLM: str = "claude-3-opus-20240229",
              temperature: float = 0.0,
-             messages: Optional[list[dict]] = None):
-    """Calls the LLM model to predict the next step"""
+             messages: Optional[list[dict]] = None) -> tuple[int, str]:
+    """Calls the LLM model to predict the next step
+
+    Parameters
+    ----------
+    molecule : str
+        The target molecule for retrosynthesis
+    LLM : str, optional
+        The LLM model to be used, by default "claude-3-opus-20240229"
+    temperature : float, optional
+        The temperature for sampling, by default 0.0
+    messages : Optional[list[dict]], optional
+        The conversation history, by default None
+
+    Returns
+    -------
+    tuple[int, str]
+        The status code and the response text
+    """
     logger = context_logger.get() if ENABLE_LOGGING else None
     log_message(f"Calling {LLM} with molecule: {molecule}", logger)
 
