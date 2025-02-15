@@ -173,7 +173,7 @@ def call_LLM(molecule: str,
         except Exception as e:
             log_message(f"2nd Error in calling {LLM}: {e}", logger)
             log_message(f"Exiting call to {LLM}", logger)
-            return 404, ""
+            return 400, ""
     log_message(f"Received response from LLM: {res_text}", logger)
     return 200, res_text
 
@@ -196,17 +196,25 @@ def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
         # extract the content within <cot> </cot> tags as thinking content
         thinking_content = res_text[res_text.find("<cot>\n") +
                                     6:res_text.find("</cot>")]
+        if not thinking_content:
+            return 501, [], ""
+        
         # split the thinking content into individual steps based on the <thinking> </thinking> tags
         thinking_steps = thinking_content.split("<thinking")[1:]
         thinking_steps = [
             step[:step.find("</thinking>")] for step in thinking_steps
         ]
+        if not thinking_steps:
+            return 501, [], ""
     except Exception as e:
         log_message(f"Error in parsing obtaining COT: {e}", logger)
+        return 501, [], ""
 
     try:
         json_content = res_text[res_text.find("<json>\n") +
                                 7:res_text.find("</json>")]
+        if not json_content:
+            return 501, [], ""
     except Exception as e:
         log_message(f"Error in parsing LLM response: {e}", logger)
         return 501, [], ""
@@ -231,6 +239,9 @@ def split_json_openAI(res_text: str) -> tuple[int, str]:
     try:
         json_content = res_text[res_text.find("<json>\n") +
                                 7:res_text.find("</json>")]
+        if not json_content:
+            return 502, ""
+        
     except Exception as e:
         log_message(f"Error in parsing LLM response: {e}", logger)
         return 502, ""
@@ -256,9 +267,14 @@ def split_json_deepseek(res_text: str) -> tuple[int, list[str], str]:
         # extract the content within <cot> </cot> tags as thinking content
         thinking_content = res_text[res_text.find("<think>\n") +
                                     6:res_text.find("</think>")]
-
+        if not thinking_content:
+            return 503, [], ""
+        
         json_content = res_text[res_text.find("<json>\n") +
                                 7:res_text.find("</json>")]
+        if not json_content:
+            return 503, [], ""
+        
     except Exception as e:
         log_message(f"Error in parsing LLM response: {e}", logger)
         return 503, [], ""
@@ -280,14 +296,17 @@ def split_json_master(res_text: str, model: str) -> tuple[int, list[str], str]:
     tuple[int, list[str], str]
         The status code, thinking steps and json content
     """
-    if model in DEEPSEEK_MODELS:
-        status_code, thinking_steps, json_content = split_json_deepseek(
-            res_text)
-    elif model in OPENAI_MODELS:
-        status_code, json_content = split_json_openAI(res_text)
-        thinking_steps = []
-    else:
-        status_code, thinking_steps, json_content = split_cot_json(res_text)
+    try:
+        if model in DEEPSEEK_MODELS:
+            status_code, thinking_steps, json_content = split_json_deepseek(
+                res_text)
+        elif model in OPENAI_MODELS:
+            status_code, json_content = split_json_openAI(res_text)
+            thinking_steps = []
+        else:
+            status_code, thinking_steps, json_content = split_cot_json(res_text)
+    except Exception as e:
+        return 505, [], ""
 
     return status_code, thinking_steps, json_content
 
@@ -351,7 +370,7 @@ def llm_pipeline(
         # Selecting the model based on the run number
         current_model = LLM
         if LLM in DEEPSEEK_MODELS and run > 0.0:
-            current_model = "claude-3-opus-20240229"
+            current_model = "claude-3-opus-20240229"  # NOTE: if we are going use deepseek model why set it to claude-3-opus-20240229
 
         # --------------------
         # Call LLM
@@ -362,6 +381,7 @@ def llm_pipeline(
         if status_code != 200:
             log_message(f"Error in calling LLM: {res_text}", logger)
             run += 0.1
+            get_error_log(status_code)
             continue
 
         # --------------------
@@ -371,6 +391,7 @@ def llm_pipeline(
         if status_code != 200:
             log_message(f"Error in splitting cot json: {res_text}", logger)
             run += 0.1
+            get_error_log(status_code)
             continue
 
         # --------------------
@@ -381,6 +402,7 @@ def llm_pipeline(
             log_message(f"Error in validating split json content: {res_text}",
                         logger)
             run += 0.1
+            get_error_log(status_code)
             continue
 
         # --------------------
@@ -410,6 +432,6 @@ def get_error_log(status_code: int) -> str:
     """
     if status_code in ERROR_MAP:
         description = ERROR_MAP[status_code]
-        return f"Error Code: {status_code},\n Description: {description}"
+        print(f"Error Code: {status_code},\n Description: {description}")
     else:
-        return f"Error Code: {status_code} is not recognized."
+        print(f"Error Code: {status_code} is not recognized.")
