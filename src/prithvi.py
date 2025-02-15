@@ -18,7 +18,7 @@ date_dir = f'{root_dir}/logs/{time.strftime("%Y-%m-%d")}'
 
 
 def run_prithvi(molecule:str,
-                llm="claude-3-opus-20240229"):
+                llm="claude-3-opus-20240229") -> dict:
     """Run prithvi services to generate retrosynthesis on a molecule.
 
     Parameters
@@ -29,15 +29,15 @@ def run_prithvi(molecule:str,
         LLM Model, by default "claude-3-opus-20240229"
 
     Returns
-    ------- #TODO: Complete docstring properly.
-    _type_
-        _description_
+    -------
+    dict
+        Result after running prithvi.
     """
 
     # Generate a unique job ID using timestamp and a random suffix
     job_id = f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}"
 
-    job_log_file = f"{date_dir}/job_{job_id}.log"
+    # job_log_file = f"{date_dir}/job_{job_id}.log"  # job_log_file is not used here, should it be replaced with _
     log = structlog.get_logger().bind(job_id=job_id)
     # Set the logger in the context variable
     token = context_logger.set(log)
@@ -47,7 +47,7 @@ def run_prithvi(molecule:str,
     log.info(f"Starting new synthesis job {job_id} for molecule {molecule}")
 
     try:
-        result_dict, solved = rec_run_prithvi(molecule, job_id, llm)
+        result_dict, _ = rec_run_prithvi(molecule, job_id, llm) # solved(bool) is not used here, so it is replaced with _
         output_data = format_output(result_dict)
         output_data = add_metadata(output_data)
         return output_data
