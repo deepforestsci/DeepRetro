@@ -10,6 +10,7 @@ from src.variables import USER_PROMPT_V4, SYS_PROMPT_V4
 from src.variables import USER_PROMPT_OPENAI, SYS_PROMPT_OPENAI
 from src.variables import USER_PROMPT_DEEPSEEK, SYS_PROMPT_DEEPSEEK
 from src.variables import ADDON_PROMPT_7_MEMBER, USER_PROMPT_DEEPSEEK_V4
+from src.variables import ERROR_MAP
 from src.cache import cache_results
 from src.utils.utils_molecule import validity_check, detect_seven_member_rings
 from src.utils.job_context import logger as context_logger
@@ -208,7 +209,7 @@ def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
                                 7:res_text.find("</json>")]
     except Exception as e:
         log_message(f"Error in parsing LLM response: {e}", logger)
-        return 500, [], ""
+        return 501, [], ""
     return 200, thinking_steps, json_content
 
 
@@ -232,7 +233,7 @@ def split_json_openAI(res_text: str) -> tuple[int, str]:
                                 7:res_text.find("</json>")]
     except Exception as e:
         log_message(f"Error in parsing LLM response: {e}", logger)
-        return 500, ""
+        return 502, ""
     return 200, json_content
 
 
@@ -260,7 +261,7 @@ def split_json_deepseek(res_text: str) -> tuple[int, list[str], str]:
                                 7:res_text.find("</json>")]
     except Exception as e:
         log_message(f"Error in parsing LLM response: {e}", logger)
-        return 500, [], ""
+        return 503, [], ""
     return 200, [thinking_content], json_content
 
 
@@ -312,8 +313,8 @@ def validate_split_json(
         res_explanations = result_list['explanation']
         res_confidence = result_list['confidence_scores']
     except Exception as e:
-        log_message(f"Error in parsing response: {e}", logger)
-        return 500, [], [], []
+        logger.info(f"Error in parsing response: {e}")
+        return 504, [], [], []
     return 200, res_molecules, res_explanations, res_confidence
 
 
@@ -393,3 +394,22 @@ def llm_pipeline(
         run += 0.1
 
     return output_pathways, output_explanations, output_confidence
+
+def get_error_log(status_code: int) -> str:
+    """Prints error message based on the status code.
+
+    Parameters
+    ----------
+    status_code : int
+        Status Code
+
+    Returns
+    -------
+    str
+        Error message associated with the status code.
+    """
+    if status_code in ERROR_MAP:
+        description = ERROR_MAP[status_code]
+        return f"Error Code: {status_code},\n Description: {description}"
+    else:
+        return f"Error Code: {status_code} is not recognized."
