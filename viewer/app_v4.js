@@ -93,6 +93,53 @@ function processData(data) {
     return buildTree(data_steps, null);
 }
 
+function calculateMoleculeSize(metadata) {
+    if (!metadata || !metadata.chemical_formula) {
+        return {
+            radius: 35,
+            svgSize: 60
+        };
+    }
+    
+    const formula = metadata.chemical_formula;
+    
+    // Count total atoms including repeats
+    const atomMatches = formula.match(/[A-Z][a-z]?\d*/g) || [];
+    let totalAtoms = 0;
+    atomMatches.forEach(match => {
+        const count = match.match(/\d+/);
+        totalAtoms += count ? parseInt(count[0]) : 1;
+    });
+    
+    // Count unique elements
+    const uniqueElements = new Set(formula.replace(/[0-9]/g, '').split('')).size;
+    
+    // New calculation that better accounts for molecular size
+    const baseRadius = 45;  // Increased base radius
+    const complexityFactor = Math.log(totalAtoms) * 20;  // Steeper scaling
+    const radius = Math.max(baseRadius, baseRadius + complexityFactor);
+    
+    // SVG size proportional to radius with larger multiplier for complex molecules
+    const svgSize = totalAtoms > 50 ? radius * 2 : radius * 1.8;
+    
+    return {
+        radius,
+        svgSize
+    };
+}
+
+function calculateStepSize(molecules) {
+    // Find largest molecule in step
+    let maxRadius = 0;
+    molecules.forEach(molecule => {
+        const metadata = molecule.type === 'step0' ? 
+            molecule.product_metadata : molecule.reactant_metadata;
+        const { radius } = calculateMoleculeSize(metadata);
+        maxRadius = Math.max(maxRadius, radius);
+    });
+    return maxRadius;
+}
+
 function formatFormula(formula) {
     return formula.replace(/(\d+)/g, '<tspan baseline-shift="sub">$1</tspan>');
 }
@@ -180,18 +227,21 @@ function renderGraph(rootStep) {
     let hierarchyRoot = d3.hierarchy(root);
 
     function calculateSpacingParams(hierarchyRoot) {
-        let maxReactants = 0;
+        let maxStepSize = 0;
         hierarchyRoot.each(d => {
-            const reactantCount = d.data.reactants ? d.data.reactants.length : 0;
-            maxReactants = Math.max(maxReactants, reactantCount);
+            const molecules = [];
+            if (d.data.step === '0' && d.data.products) {
+                molecules.push(...d.data.products.map(m => ({ ...m, type: 'step0' })));
+            } else if (d.data.reactants) {
+                molecules.push(...d.data.reactants.map(m => ({ ...m, type: 'reactant' })));
+            }
+            const stepSize = calculateStepSize(molecules);
+            maxStepSize = Math.max(maxStepSize, stepSize);
         });
         
-        const totalSteps = hierarchyRoot.descendants().length;
-        
         return {
-            circlePadding: 100 * (1 + (maxReactants * 0.2)),
-            nodeSpacing: 200 * (1 + (totalSteps * 0.05)),
-            moleculeSpacing: Math.max(80, 80 * (1 + (maxReactants * 0.1)))
+            nodeSpacing: maxStepSize * 3,
+            moleculeSpacing: maxStepSize * 2
         };
     }
 
@@ -240,7 +290,7 @@ function renderGraph(rootStep) {
             const aReactants = a.data.reactants ? a.data.reactants.length : 0;
             const bReactants = b.data.reactants ? b.data.reactants.length : 0;
             const maxReactants = Math.max(aReactants, bReactants);
-            return (a.parent === b.parent ? 1.5 : 2) * (1 + (maxReactants * 0.1));
+            return (a.parent === b.parent ? 2 : 2.5) * (1 + (maxReactants * 0.2));
         });
 
     // Apply layout to hierarchy
@@ -402,19 +452,22 @@ function renderGraph(rootStep) {
         try {
             const molecules = [];
 
-            group.append('text')
-                .attr('x', 0)
-                .attr('y', -70)
-                .attr('text-anchor', 'middle')
-                .style('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif')
-                .style('font-weight', '500')
-                .text(`Step ${d.data.step}`);
-
             if (d.data.step === '0' && d.data.products) {
                 molecules.push(...d.data.products.map(m => ({ ...m, type: 'step0' })));
             } else if (d.data.reactants) {
                 molecules.push(...d.data.reactants.map(m => ({ ...m, type: 'reactant' })));
             }
+
+            const stepSize = calculateStepSize(molecules);
+            
+            group.append('text')
+                .attr('x', 0)
+                .attr('y', -stepSize*1.5)
+                .attr('text-anchor', 'middle')
+                .style('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif')
+                .style('font-weight', '500')
+                .text(`Step ${d.data.step}`);
+
 
             molecules.forEach((molecule, i) => {
                 if (!molecule || !molecule.smiles) return;
@@ -423,8 +476,13 @@ function renderGraph(rootStep) {
                     .attr('class', 'molecule-node')
                     .attr('transform', `translate(0, ${i * spacing.moleculeSpacing})`);
 
+                const metadata = molecule.type === 'step0' ?
+                    molecule.product_metadata : molecule.reactant_metadata;
+
+                const { radius, svgSize } = calculateMoleculeSize(metadata);
+                
                 molGroup.append('circle')
-                    .attr('r', 35)
+                    .attr('r', radius)
                     .attr('fill', `url(#${molecule.type}Gradient)`)
                     .attr('stroke', molecule.type === 'step0' ? '#66bb6a' : '#42a5f5')
                     .attr('stroke-width', 2)
@@ -434,12 +492,6 @@ function renderGraph(rootStep) {
                     d3.select(this).select('circle')
                         .attr('stroke-width', 3)
                         .style('filter', 'brightness(0.98)');
-
-                    const metadata = molecule.type === 'step0' ? 
-                        molecule.product_metadata : molecule.reactant_metadata;
-
-                    // Get step metadata from parent node data
-                    const stepMetadata = d.data;
 
                     if (metadata) {
                         tooltip.style('opacity', 1)
@@ -452,15 +504,15 @@ function renderGraph(rootStep) {
                                     ${metadata.inchi ? `<em>InChI:</em> ${metadata.inchi}<br/>` : ''}
                                     <br/>
                                     <strong>Step ${d.data.step} Metrics</strong><br/>
-                                    <em>Scalability Index:</em> ${stepMetadata.reactionmetrics[0].scalabilityindex}<br/>
-                                    <em>Confidence Estimate:</em> ${stepMetadata.reactionmetrics[0].confidenceestimate}<br/>
-                                    <em>Closest Literature:</em> ${stepMetadata.reactionmetrics[0].closestliterature}<br/>
+                                    <em>Scalability Index:</em> ${d.data.reactionmetrics[0].scalabilityindex}<br/>
+                                    <em>Confidence Estimate:</em> ${d.data.reactionmetrics[0].confidenceestimate}<br/>
+                                    <em>Closest Literature:</em> ${d.data.reactionmetrics[0].closestliterature}<br/>
                                     <em>Reaction Conditions:</em><br/>
                                     <ul style="margin: 5px 0; padding-left: 20px;"> 
-                                        <li><em>Temperature:</em> ${stepMetadata.conditions.temperature}</li>
-                                        <li><em>Pressure:</em> ${stepMetadata.conditions.pressure}</li>
-                                        <li><em>Solvent:</em> ${stepMetadata.conditions.solvent}</li>
-                                        <li><em>Time:</em> ${stepMetadata.conditions.time}</li>
+                                        <li><em>Temperature:</em> ${d.data.conditions.temperature}</li>
+                                        <li><em>Pressure:</em> ${d.data.conditions.pressure}</li>
+                                        <li><em>Solvent:</em> ${d.data.conditions.solvent}</li>
+                                        <li><em>Time:</em> ${d.data.conditions.time}</li>
                                     </ul>
                                 </div>
                             `)
@@ -477,31 +529,28 @@ function renderGraph(rootStep) {
                 });
 
                 const mol = OCL.Molecule.fromSmiles(molecule.smiles);
-                let molSVG = mol.toSVG(60, 60, 'molecule', { suppressChiralText: true });
+                let molSVG = mol.toSVG(svgSize, svgSize, 'molecule', { suppressChiralText: true });
 
                 const parser = new DOMParser();
                 const svgDoc = parser.parseFromString(molSVG, 'image/svg+xml');
 
                 molGroup.append('g')
                     .html(svgDoc.documentElement.innerHTML)
-                    .attr('transform', 'translate(-30, -30)');
+                    .attr('transform', `translate(-${svgSize/2}, -${svgSize/2})`);
 
                 const infoGroup = molGroup.append('g')
                     .attr('class', 'mol-info');
 
-                const metadata = molecule.type === 'step0' ?
-                    molecule.product_metadata : molecule.reactant_metadata;
-
                 if (metadata) {
                     infoGroup.append('text')
                         .attr('x', 0)
-                        .attr('y', 45)
+                        .attr('y', radius + 10)
                         .attr('text-anchor', 'middle')
                         .text(`${metadata.mass.toFixed(1)} g/mol`);
 
                     infoGroup.append('text')
                         .attr('x', 0)
-                        .attr('y', 60)
+                        .attr('y', radius + 25)
                         .attr('text-anchor', 'middle')
                         .html(formatFormula(metadata.chemical_formula));
                 }
