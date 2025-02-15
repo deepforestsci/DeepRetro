@@ -278,6 +278,13 @@
                     </label>
                     <span class="toggle-label">Advanced Model</span>
                 </div>
+                <div class="toggle-switch">
+                    <label class="switch">
+                        <input type="checkbox" id="promptToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label">Advanced Prompt</span>
+                </div>
                 <button onclick="analyze()" id="analyzeBtn">Analyze</button>
             </div>
             <div id="status" class="status"></div>
@@ -324,6 +331,7 @@
         async function analyze(isRerun = false) {
             const smilesInput = document.getElementById('smiles');
             const advancedToggle = document.getElementById('advancedToggle');
+            const promptToggle = document.getElementById('promptToggle');
             const button = document.getElementById('analyzeBtn');
             const status = document.getElementById('status');
             const result = document.getElementById('result');
@@ -348,7 +356,8 @@
 
                 const requestBody = {
                     smiles,
-                    advanced_model: advancedToggle.checked.toString()
+                    advanced_model: advancedToggle.checked.toString(),
+                    advanced_prompt: promptToggle.checked.toString()
                 };
 
                 // Make parallel API calls
@@ -385,6 +394,18 @@
                     instance2: data2
                 };
 
+                // Clear existing controls
+                const existingControls = document.getElementById('pathway-controls');
+                if (existingControls) {
+                    existingControls.remove();
+                }
+                
+                // Remove existing download button
+                const existingDownloadBtn = document.querySelector('.download-btn');
+                if (existingDownloadBtn) {
+                    existingDownloadBtn.remove();
+                }
+
                 // Display the first result by default
                 const formattedJson = JSON.stringify(results.instance1, null, 2);
                 result.textContent = formattedJson;
@@ -392,7 +413,7 @@
 
                 // Add toggle buttons to switch between results
                 const toggleButtons = `
-                    <div class="toggle-results">
+                    <div id="pathway-controls" class="toggle-results">
                         <button onclick="showResult('instance1')">Show Pathway 1</button>
                         <button onclick="showResult('instance2')">Show Pathway 2</button>
                     </div>
