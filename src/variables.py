@@ -1344,12 +1344,15 @@ ERROR_MAP = {
         "description": "split_cot_json() failed.",
     },
     502: {
-        "description": "split_json_openAI()",
+        "description": "split_json_openAI() failed.",
     },
     503: {
-        "description": "split_json_deepseek",
+        "description": "split_json_deepseek() failed.",
     },
     504: {
-        "description": "validate_split_json",
-    }
+        "description": "validate_split_json() failed.",
+    },
+    505: {
+        "description": "split_json_master() failed.",
+    },
 }
