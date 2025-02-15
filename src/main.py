@@ -22,6 +22,20 @@ load_dotenv()
 
 
 def main(smiles: str, llm: str = "claude-3-opus-20240229") -> Any:
+    """Run the retrosynthesis on specific molecule.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES string of the molecule.
+    llm : str, optional
+        LLM model, by default "claude-3-opus-20240229"
+
+    Returns
+    -------
+    Any
+        Returns result of retrosynthesis.
+    """
     # Initialize generic logging
     setup_logging()
 
