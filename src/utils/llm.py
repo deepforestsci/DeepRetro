@@ -332,7 +332,7 @@ def validate_split_json(
         res_explanations = result_list['explanation']
         res_confidence = result_list['confidence_scores']
     except Exception as e:
-        logger.info(f"Error in parsing response: {e}")
+        log_message(f"Error in parsing response: {e}", logger)
         return 504, [], [], []
     return 200, res_molecules, res_explanations, res_confidence
 
@@ -370,7 +370,7 @@ def llm_pipeline(
         # Selecting the model based on the run number
         current_model = LLM
         if LLM in DEEPSEEK_MODELS and run > 0.0:
-            current_model = "claude-3-opus-20240229"  # NOTE: if we are going use deepseek model why set it to claude-3-opus-20240229
+            current_model = "claude-3-opus-20240229"
 
         # --------------------
         # Call LLM
@@ -417,21 +417,18 @@ def llm_pipeline(
 
     return output_pathways, output_explanations, output_confidence
 
-def get_error_log(status_code: int) -> str:
+def get_error_log(status_code: int):
     """Prints error message based on the status code.
 
     Parameters
     ----------
     status_code : int
-        Status Code
-
-    Returns
-    -------
-    str
-        Error message associated with the status code.
+        Status Code of the error.
     """
+    logger = context_logger.get() if ENABLE_LOGGING else None
+
     if status_code in ERROR_MAP:
         description = ERROR_MAP[status_code]
-        print(f"Error Code: {status_code},\n Description: {description}")
+        log_message(f"Error Code: {status_code},\n Description: {description}", logger)
     else:
-        print(f"Error Code: {status_code} is not recognized.")
+        log_message(f"Error Code: {status_code} is not recognized.", logger)
