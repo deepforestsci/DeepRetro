@@ -1332,3 +1332,27 @@ OPENAI_MODELS = [
 ]
 
 DEEPSEEK_MODELS = ["azure_ai/DeepSeek-R1", "deepinfra/deepseek-ai/DeepSeek-R1"]
+
+ERROR_MAP = {
+    200: {
+        "description": "SUCCESS",
+    },
+    400: {
+        "description": "call_LLM() Function failed.",
+    },
+    501: {
+        "description": "split_cot_json() failed.",
+    },
+    502: {
+        "description": "split_json_openAI() failed.",
+    },
+    503: {
+        "description": "split_json_deepseek() failed.",
+    },
+    504: {
+        "description": "validate_split_json() failed.",
+    },
+    505: {
+        "description": "split_json_master() failed.",
+    },
+}

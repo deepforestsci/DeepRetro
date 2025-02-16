@@ -6,23 +6,24 @@ from src.utils.job_context import logger as context_logger
 
 
 def rec_run_prithvi(molecule: str,
-                    job_id,
-                    llm: str = "claude-3-opus-20240229"):
+                    job_id: str,
+                    llm: str = "claude-3-opus-20240229") -> tuple[dict, bool]:
     """Recursive function to run Prithvi on a molecule
 
     Parameters
     ----------
     molecule : str
         Molecule SMILES
-    job_id : _type_
+    job_id : str
         Job ID
     llm : str, optional
         LLM to be used, by default "claude-3-opus-20240229"
 
     Returns
     -------
-    _type_
-        _description_
+    tuple(dict, bool)
+        result_dict: result of retrosynthesis.
+        solved: boolean value indicating if the molecule was solved.
     """
     solved, result_dict = run_az(molecule)
     result_dict = result_dict[0]
