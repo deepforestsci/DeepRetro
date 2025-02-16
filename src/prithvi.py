@@ -37,7 +37,7 @@ def run_prithvi(molecule:str,
     # Generate a unique job ID using timestamp and a random suffix
     job_id = f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}"
 
-    # job_log_file = f"{date_dir}/job_{job_id}.log"  # job_log_file is not used here, should it be replaced with _
+    job_log_file = f"{date_dir}/job_{job_id}.log"
     log = structlog.get_logger().bind(job_id=job_id)
     # Set the logger in the context variable
     token = context_logger.set(log)
@@ -47,7 +47,7 @@ def run_prithvi(molecule:str,
     log.info(f"Starting new synthesis job {job_id} for molecule {molecule}")
 
     try:
-        result_dict, _ = rec_run_prithvi(molecule, job_id, llm) # solved(bool) is not used here, so it is replaced with _
+        result_dict, _ = rec_run_prithvi(molecule, job_id, llm)
         output_data = format_output(result_dict)
         output_data = add_metadata(output_data)
         return output_data
