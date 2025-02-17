@@ -1,0 +1,809 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "15"
+        ],
+        "2": [
+            "3",
+            "6"
+        ],
+        "3": [
+            "4",
+            "14"
+        ],
+        "4": [],
+        "5": [],
+        "6": [
+            "7",
+            "14"
+        ],
+        "7": [
+            "8",
+            "9"
+        ],
+        "8": [],
+        "9": [
+            "10",
+            "11"
+        ],
+        "10": [
+            "12"
+        ],
+        "11": [
+            "12",
+            "13"
+        ],
+        "12": [],
+        "13": [],
+        "14": [],
+        "15": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1C[C@H]2C=C[C@]3(CC2)[C@@]1([H])CC[C@@H]3C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H18O",
+                        "mass": 190.135765196
+                    }
+                },
+                {
+                    "smiles": "CC(C)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6O",
+                        "mass": 58.041864812
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C[C@H]2C[C@]3(CC2)[C@@]1([H])CC[C@@H]3C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H18O",
+                        "mass": 178.135765196
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "1 atm (not specified, so assumed to be standard atmospheric pressure)",
+                "solvent": "Tetrahydrofuran (THF, C4H8O), based on the presence of C1CCOC1 in the reagents",
+                "time": "The reaction time is not provided and would depend on the specific conditions and scale of the reaction. Typical hydrogenation reactions can range from minutes to hours."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Catalytic hydrogenation of \u03b1,\u03b2-unsaturated ketone to saturated ketone"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1C[C@H]2C=CCC[C@@]12C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12O",
+                        "mass": 136.088815004
+                    }
+                },
+                {
+                    "smiles": "C=C1CC[C@@H](C)[C@@]12CC(=O)C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H14O",
+                        "mass": 150.104465068
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C1C[C@H]2C=C[C@]3(CC2)[C@@]1([H])CC[C@@H]3C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H18O",
+                        "mass": 190.135765196
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Heat",
+                "pressure": "Not applicable. This reaction does not require any special pressure conditions.",
+                "solvent": "Not specified. The reaction likely proceeds without solvent or in a non-polar organic solvent.",
+                "time": "Not specified. The reaction time would depend on the specific conditions used."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.76,
+                    "closestliterature": "Intramolecular Diels-Alder reaction of a triene"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "O=C1C=CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8O",
+                        "mass": 96.057514876
+                    }
+                },
+                {
+                    "smiles": "C=CC(C)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6O",
+                        "mass": 70.041864812
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C[C@H]2C=CCC[C@@]12C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12O",
+                        "mass": 136.088815004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Protic solvent (e.g., methanol, ethanol)",
+                "time": "1-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Intramolecular Diels-Alder reaction of a 2-substituted cyclohexenone with an acyclic diene"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H10O",
+                        "mass": 98.07316494
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Se]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Se",
+                        "mass": 79.9165213
+                    }
+                },
+                {
+                    "smiles": "[O]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O",
+                        "mass": 15.99491462
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C=CCCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8O",
+                        "mass": 96.057514876
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.72,
+                    "closestliterature": "Oxidation of cyclohexanone to cyclohex-2-enone using selenium dioxide"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "C#CC(C)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4O",
+                        "mass": 68.026214748
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H",
+                        "mass": 1.007825032
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=CC(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6O",
+                        "mass": 70.041864812
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "Ethyl acetate or ethanol",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "2",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Semihydrogenation of alkynes to alkenes using Lindlar catalyst (Pd/CaCO3 poisoned with lead acetate and quinoline)"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "C1=CC=C[C@H]1C(=O)C1C=CCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H12O",
+                        "mass": 160.088815004
+                    }
+                },
+                {
+                    "smiles": "C=CC(C)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6O",
+                        "mass": 70.041864812
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "C=C1CC[C@@H](C)[C@@]12CC(=O)C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H14O",
+                        "mass": 150.104465068
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required",
+                "time": "The reaction is likely very fast, on the order of seconds to minutes"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Diels-Alder cycloaddition"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "O=C1C=CC[C@@H]1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H5BrO",
+                        "mass": 159.95237688
+                    }
+                },
+                {
+                    "smiles": "C1=CC=C[C@H]1[Mg]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H5Mg",
+                        "mass": 89.02416686
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Br",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HBr",
+                        "mass": 79.926162132
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C1=CC=C[C@H]1C(=O)C1C=CCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H12O",
+                        "mass": 160.088815004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Anhydrous ethereal solvent such as diethyl ether or THF",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Grignard addition of phenylmagnesium bromide to 2-bromocyclohexenone, followed by palladium-catalyzed dehydrohalogenation"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC[C@@H]1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H7BrO",
+                        "mass": 161.968026944
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C=CC[C@@H]1Br",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H5BrO",
+                        "mass": 159.95237688
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent (e.g., DMSO, DMF, or acetonitrile)",
+                "time": "30 minutes to 2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.94,
+                    "closestliterature": "Base-promoted elimination of \u03b1-haloketones to form \u03b1,\u03b2-unsaturated ketones"
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [
+                {
+                    "smiles": "BrC1C=CCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H7Br",
+                        "mass": 145.973112324
+                    }
+                },
+                {
+                    "smiles": "[Li]C1C=CCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H7Li",
+                        "mass": 74.07077977399999
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Br",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HBr",
+                        "mass": 79.926162132
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C1=CC=C[C@H]1[Mg]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H5Mg",
+                        "mass": 89.02416686
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "-78\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Anhydrous diethyl ether or THF",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Halogen-metal exchange of a vinyl bromide with an organolithium reagent, followed by transmetallation with magnesium bromide to form a vinyl Grignard reagent"
+                }
+            ]
+        },
+        {
+            "step": "10",
+            "reactants": [
+                {
+                    "smiles": "BrC1CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9Br",
+                        "mass": 147.988762388
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "BrC1C=CCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H7Br",
+                        "mass": 145.973112324
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux (80-100\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol or other polar protic solvent",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Dehydrohalogenation of alkyl halides under basic conditions"
+                }
+            ]
+        },
+        {
+            "step": "11",
+            "reactants": [
+                {
+                    "smiles": "BrC1CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9Br",
+                        "mass": 147.988762388
+                    }
+                },
+                {
+                    "smiles": "ClC1CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9Cl",
+                        "mass": 104.039277968
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Li]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Li",
+                        "mass": 7.01600455
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "[Li]C1C=CCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H7Li",
+                        "mass": 74.07077977399999
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "-78\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "THF (tetrahydrofuran)",
+                "time": "30 min - 2 h"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Halogen-metal exchange of an alkyl halide with an organolithium reagent to form an organolithium compound"
+                }
+            ]
+        },
+        {
+            "step": "12",
+            "reactants": [
+                {
+                    "smiles": "BrC1CCCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H11Br",
+                        "mass": 162.004412452
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "BrC1CCCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9Br",
+                        "mass": 147.988762388
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-150 \u00b0C",
+                "pressure": "Not applicable. This reaction does not require any special pressure conditions and can be run at atmospheric pressure.",
+                "solvent": "Not applicable. This reaction can be run neat (without solvent) as both the reactant and product are liquids at the reaction temperature.",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Bromocyclohexane (BrC1CCCCC1) can be converted to bromocyclopentane (BrC1CCCC1) via a thermal ring contraction reaction at 100-150 \u00b0C for 1-2 hours without any additional reagents or solvents."
+                }
+            ]
+        },
+        {
+            "step": "13",
+            "reactants": [
+                {
+                    "smiles": "OC1CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H10O",
+                        "mass": 86.07316494
+                    }
+                },
+                {
+                    "smiles": "O=S(Cl)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2OS",
+                        "mass": 117.90469098
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "ClC1CCCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9Cl",
+                        "mass": 104.039277968
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "dichloromethane or 1,2-dichloroethane",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.89,
+                    "closestliterature": "Chlorination of cyclohexanol with thionyl chloride"
+                }
+            ]
+        },
+        {
+            "step": "14",
+            "reactants": [
+                {
+                    "smiles": "C#CC(C)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4O",
+                        "mass": 68.026214748
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H",
+                        "mass": 1.007825032
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=CC(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6O",
+                        "mass": 70.041864812
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "Ethyl acetate or ethanol",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "2",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Semihydrogenation of alkynes to alkenes using Lindlar catalyst (Pd/CaCO3 poisoned with lead acetate and quinoline)"
+                }
+            ]
+        },
+        {
+            "step": "15",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "CC(C)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H8O",
+                        "mass": 60.057514876
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6O",
+                        "mass": 58.041864812
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No additional solvent required, as the alcohol reactant acts as the solvent",
+                "time": "Minutes to a few hours, depending on the specific alcohol and acid catalyst used"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Oxidation of isopropanol to acetone using an acid catalyst"
+                }
+            ]
+        }
+    ]
+}

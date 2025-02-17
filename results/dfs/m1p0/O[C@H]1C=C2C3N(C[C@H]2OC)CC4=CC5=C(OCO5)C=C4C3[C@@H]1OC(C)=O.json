@@ -1,0 +1,596 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3",
+            "7"
+        ],
+        "3": [
+            "4",
+            "6"
+        ],
+        "4": [
+            "5"
+        ],
+        "5": [],
+        "6": [],
+        "7": [
+            "8"
+        ],
+        "8": [
+            "9"
+        ],
+        "9": [
+            "10"
+        ],
+        "10": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H19NO5",
+                        "mass": 317.126322708
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3ClO",
+                        "mass": 77.987242396
+                    }
+                },
+                {
+                    "smiles": "CC(=O)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3ClO",
+                        "mass": 77.987242396
+                    }
+                },
+                {
+                    "smiles": "C1CCNCC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H11N",
+                        "mass": 85.08914935199999
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H21NO6",
+                        "mass": 359.13688739199995
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "The reaction is typically carried out at atmospheric pressure, as no special pressure conditions are required.",
+                "solvent": "An organic solvent such as dichloromethane (DCM) or chloroform (CHCl3) is commonly used for this type of acetylation reaction.",
+                "time": "The reaction is usually complete within 1-4 hours, depending on the specific conditions and scale of the reaction."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Acetylation of a secondary alcohol using acetyl chloride (CH3COCl) and pyridine (C5H5N) as a base"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COC1CN(CC2=CC3=C(OCO3)C=C2)CCC1N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H20N2O3",
+                        "mass": 264.1473925
+                    }
+                },
+                {
+                    "smiles": "OC1C=CC(O)[C@H](Cl)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H9ClO2",
+                        "mass": 148.029107208
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H19NO5",
+                        "mass": 317.126322708
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Protic solvent (e.g., methanol, ethanol)",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "COC1CNCCC1N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H14N2O",
+                        "mass": 130.110613068
+                    }
+                },
+                {
+                    "smiles": "BrCc1ccc2c(c1)OCO2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7BrO2",
+                        "mass": 213.962941564
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[K+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HKO",
+                        "mass": 55.966446332000004
+                    }
+                },
+                {
+                    "smiles": "C1COCCN1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H9NO",
+                        "mass": 87.068413908
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COC1CN(CC2=CC3=C(OCO3)C=C2)CCC1N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H20N2O3",
+                        "mass": 264.1473925
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Likely room temperature (20-25\u00b0C)",
+                "pressure": "Likely atmospheric pressure (1 atm)",
+                "solvent": "The reagent C1COCCN1 (morpholine) could potentially act as the solvent",
+                "time": "Insufficient information to determine reaction time"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Nucleophilic substitution (SN2) reaction between an alkyl bromide and a secondary amine"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "N#CC1CCOCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H9NO",
+                        "mass": 111.068413908
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "CO",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O",
+                        "mass": 32.026214748
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COC1CNCCC1N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H14N2O",
+                        "mass": 130.110613068
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "1 atm (no special pressure conditions required)",
+                "solvent": "Ethanol or methanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Nitrile reduction followed by reductive amination"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "NC(=O)C1CCOCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H11NO2",
+                        "mass": 129.078978592
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[O-][P+](=O)(OCC)OCC",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H10O4P",
+                        "mass": 153.03167043
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N#CC1CCOCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H9NO",
+                        "mass": 111.068413908
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure (no special pressure conditions required)",
+                "solvent": "An ethereal solvent such as THF or diethyl ether",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.84,
+                    "closestliterature": "Corey-Fuchs reaction"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "Cc1ccc2c(c1)OCO2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H8O2",
+                        "mass": 136.052429496
+                    }
+                },
+                {
+                    "smiles": "O=C1CCC(=O)N1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4BrNO2",
+                        "mass": 176.942540468
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1P(c2ccccc2)c3ccccc3",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "BrCc1ccc2c(c1)OCO2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7BrO2",
+                        "mass": 213.962941564
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "Ambient pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Pd-catalyzed \u03b1-arylation of cyclic imides with aryl bromides"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "CC(=O)OC1C=CC(O)[C@H](Cl)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H11ClO3",
+                        "mass": 190.039671892
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OC1C=CC(O)[C@H](Cl)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H9ClO2",
+                        "mass": 148.029107208
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely proceeds without solvent, as both the reactant and product are solids. If a solvent is used, a non-polar organic solvent like dichloromethane or chloroform would be appropriate.",
+                "time": "The reaction is likely rapid, completing within minutes to an hour."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.89,
+                    "closestliterature": "Ester hydrolysis of acetylsalicylic acid (aspirin) to form salicylic acid"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "OC1C=CCC[C@H]1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H9ClO",
+                        "mass": 132.034192588
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(=O)OC1C=CC(O)[C@H](Cl)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H11ClO3",
+                        "mass": 190.039671892
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "atmospheric pressure",
+                "solvent": "acetic acid (CH3COOH)",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Acetylation of a cyclohexene alcohol with acetic acid and an acid catalyst"
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [
+                {
+                    "smiles": "CC(=O)OC1C=CCC[C@H]1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H11ClO2",
+                        "mass": 174.044757272
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OC1C=CCC[C@H]1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H9ClO",
+                        "mass": 132.034192588
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Methanol (MeOH) or Ethanol (EtOH)",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Ester hydrolysis under basic conditions"
+                }
+            ]
+        },
+        {
+            "step": "10",
+            "reactants": [
+                {
+                    "smiles": "Cl[C@H]1CC=CCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H9Cl",
+                        "mass": 116.039277968
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(=O)OC1C=CCC[C@H]1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H11ClO2",
+                        "mass": 174.044757272
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "atmospheric pressure",
+                "solvent": "acetic acid (CH3COOH)",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Acetylation of an allylic chloride"
+                }
+            ]
+        }
+    ]
+}

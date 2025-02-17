@@ -7,8 +7,8 @@ load_dotenv()
 
 # Configuration
 S3_BUCKET = 'pistachio-training-dump'
-FOLDER_PATH = '/Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/'
-# FOLDER_PATH = "/home/ubuntu/recursiveLLM/aizynthfinder/models/"
+# FOLDER_PATH = '/Users/shreyasv/Desktop/research/deepchem/retrosynthesis/aizynthfinder/models/'
+FOLDER_PATH = "/home/ubuntu/recursiveLLM/aizynthfinder/models/"
 
 download_list = [
     "50_percent/uspto_expansion.onnx",
@@ -106,6 +106,6 @@ def modify_config_files():
 
 
 if __name__ == "__main__":
-    # download_files_from_s3()
+    download_files_from_s3()
     copy_other_files()
     modify_config_files()

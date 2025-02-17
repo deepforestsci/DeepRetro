@@ -1,0 +1,222 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "4"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": [],
+        "4": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "FC1(F)CC[C@]2(NC(=O)C(Cl)=CC=N2)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9ClF2N2O",
+                        "mass": 234.037147028
+                    }
+                },
+                {
+                    "smiles": "Clc1c[nH]cn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H3ClN2",
+                        "mass": 101.99847577599999
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC1(F)C2=C(C=CN=C2Cl)[C@]3(CN(C=C(C(F)(F)F)C=C4OC(F)F)C4=N3)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H11ClF7N3O",
+                        "mass": 441.047887192
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "polar aprotic solvent such as DMF, DMSO, or NMP",
+                "time": "2-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Buchwald-Hartwig amination"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "FC1(F)CC=CCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8F2",
+                        "mass": 118.059406696
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C(Cl)C(Cl)=CC=N",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H3Cl2NO",
+                        "mass": 150.959169076
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC1(F)CC[C@]2(NC(=O)C(Cl)=CC=N2)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9ClF2N2O",
+                        "mass": 234.037147028
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "Dichloromethane (CH2Cl2) or 1,2-dichloroethane (ClCH2CH2Cl)",
+                "time": "2-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.6,
+                    "closestliterature": "Acylation of a fluorinated cycloalkene with an imidoyl chloride, followed by intramolecular cyclization to form a fused pyrimidine ring system."
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "FC1(F)CCCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H10F2",
+                        "mass": 120.07505676
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "C(=O)([O-])[O-].[K+].[K+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CK2O3",
+                        "mass": 137.91215721999998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC1(F)CC=CCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8F2",
+                        "mass": 118.059406696
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-150 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "DMF or DMSO",
+                "time": "2-6 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.97,
+                    "closestliterature": "Saegusa\u2013Ito oxidation"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "c1c[nH]cn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H4N2",
+                        "mass": 68.037448128
+                    }
+                },
+                {
+                    "smiles": "O=C1CCC(=O)N1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4ClNO2",
+                        "mass": 132.993056048
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Clc1c[nH]cn1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H3ClN2",
+                        "mass": 101.99847577599999
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely proceeds without solvent, as both reactants are solids and no solvent is specified.",
+                "time": "Insufficient information to determine reaction time without knowing the scale and exact procedure."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Chlorination of imidazole with N-chlorosuccinimide"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,457 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "8"
+        ],
+        "2": [
+            "3",
+            "8"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [
+            "5"
+        ],
+        "5": [
+            "6"
+        ],
+        "6": [],
+        "7": [],
+        "8": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H20ClNO",
+                        "mass": 313.12334194
+                    }
+                },
+                {
+                    "smiles": "CN",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH5N",
+                        "mass": 31.042199159999996
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely does not require a solvent as it appears to be a direct N-methylation using methyl amine (CH3NH2).",
+                "time": "The reaction time depends on the specific conditions and scale, but likely ranges from 30 minutes to a few hours."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "N-methylation of a secondary amine using methyl amine (CH3NH2)"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COc1cc2c(cc1Cl)CCC(C=O)=C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H11ClO2",
+                        "mass": 222.044757272
+                    }
+                },
+                {
+                    "smiles": "CN",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH5N",
+                        "mass": 31.042199159999996
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H20ClNO",
+                        "mass": 313.12334194
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "1,4-Dioxane (C1CCOC1)",
+                "time": "Several hours, depending on the specific reaction scale and conditions"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(=O)N1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4ClNO2",
+                        "mass": 132.993056048
+                    }
+                },
+                {
+                    "smiles": "COc1ccc2c(c1)C=C(C=O)CC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H12O2",
+                        "mass": 188.083729624
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "[Al]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Al",
+                        "mass": 26.98153863
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc2c(cc1Cl)CCC(C=O)=C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H11ClO2",
+                        "mass": 222.044757272
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure (no special pressure conditions required)",
+                "solvent": "Dichloromethane (CH2Cl2) or 1,2-dichloroethane",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "2",
+                    "confidenceestimate": 0.91,
+                    "closestliterature": "Friedel-Crafts acylation of an aromatic ring with an acid chloride, followed by reduction of the resulting ketone to a methylene group using a hydride reducing agent."
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "COC(=O)C1=Cc2cc(OC)ccc2CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H14O3",
+                        "mass": 218.094294308
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=S(=O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O4S",
+                        "mass": 97.96737954400001
+                    }
+                },
+                {
+                    "smiles": "[O-][Mn+5](=O)(=O)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "MnO4+4",
+                        "mass": 118.91550926036
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1ccc2c(c1)C=C(C=O)CC2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H12O2",
+                        "mass": 188.083729624
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure (no special pressure conditions required)",
+                "solvent": "Dichloromethane (DCM) or similar halogenated solvent",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Oxidation of a benzylic methylene to an aldehyde using sulfur trioxide pyridine complex (SO3\u2022py) and potassium peroxymonosulfate (Oxone)"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "COC(=O)C1CCc2ccc(OC)cc2C1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H14O4",
+                        "mass": 234.089208928
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COC(=O)C1=Cc2cc(OC)ccc2CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H14O3",
+                        "mass": 218.094294308
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol or methanol",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.78,
+                    "closestliterature": "Reduction of \u03b1,\u03b2-unsaturated ketone to the corresponding saturated ketone using hydrogen gas (H2) and a metal catalyst like palladium on carbon (Pd/C)"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "COC(=O)OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6O3",
+                        "mass": 90.031694052
+                    }
+                },
+                {
+                    "smiles": "COc1ccc2c(c1)C(=O)CCC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H12O2",
+                        "mass": 176.083729624
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COC(=O)C1CCc2ccc(OC)cc2C1=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H14O4",
+                        "mass": 234.089208928
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Methanol",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Base-promoted Dieckmann condensation"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "CN=C=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3NO",
+                        "mass": 57.021463716
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CN",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH5N",
+                        "mass": 31.042199159999996
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "200-300 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "No solvent needed, reaction occurs in the gas phase",
+                "time": "Instantaneous under the given conditions"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Cyanogen (CN)2 formation from cyanogen isocyanate"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "CN=C=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3NO",
+                        "mass": 57.021463716
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CN",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH5N",
+                        "mass": 31.042199159999996
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "200-300 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "No solvent needed, reaction occurs in the gas phase",
+                "time": "Instantaneous under the given conditions"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Cyanogen (CN)2 formation from cyanogen isocyanate"
+                }
+            ]
+        }
+    ]
+}

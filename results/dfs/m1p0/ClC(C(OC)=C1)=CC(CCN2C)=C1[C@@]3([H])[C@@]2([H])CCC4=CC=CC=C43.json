@@ -1,0 +1,570 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "7"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": [
+            "4",
+            "6"
+        ],
+        "4": [
+            "5"
+        ],
+        "5": [],
+        "6": [],
+        "7": [
+            "8",
+            "10"
+        ],
+        "8": [
+            "9"
+        ],
+        "9": [],
+        "10": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "ClC1=C(C(OC)=C2C=CC(=C2)Br)C=C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H8BrClO",
+                        "mass": 269.944704656
+                    }
+                },
+                {
+                    "smiles": "C1CCN2C1C2CCC3=CC=CC=C3",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H17N",
+                        "mass": 187.136099544
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC(CCN2C)=C1[C@@]3([H])[C@@]2([H])CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "2-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Buchwald-Hartwig amination"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "ClC1=C(C(O)=C2C=CC(=C2)Br)C=C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H6BrClO",
+                        "mass": 255.929054592
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C[O-].[Na+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3NaO",
+                        "mass": 54.00815899599999
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC1=C(C(OC)=C2C=CC(=C2)Br)C=C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H8BrClO",
+                        "mass": 269.944704656
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetone",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Williamson ether synthesis"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "O=C(C=CB(O)O)c1ccc(Cl)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8BClO3",
+                        "mass": 210.025502196
+                    }
+                },
+                {
+                    "smiles": "OB(O)CC=CBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6BBrO2",
+                        "mass": 163.964421932
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1P(c2ccccc2)c3ccccc3",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1P(c2ccccc2)c3ccccc3",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC1=C(C(O)=C2C=CC(=C2)Br)C=C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H6BrClO",
+                        "mass": 255.929054592
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "polar aprotic solvent such as DMF, DMAc, or DMSO",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.65,
+                    "closestliterature": "Suzuki coupling"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "OB(O)C=CC(O)c1ccc(Cl)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H10BClO3",
+                        "mass": 212.04115226
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(C=CB(O)O)c1ccc(Cl)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8BClO3",
+                        "mass": 210.025502196
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely proceeds without solvent, as the reagent is gaseous oxygen (O2).",
+                "time": "The reaction time depends on the scale and efficiency of mixing, but is likely on the order of minutes to a few hours."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Oxidation of a boronic acid to a phenyl ketone using molecular oxygen"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "O=CC=CB(O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H5BO3",
+                        "mass": 100.03317442000001
+                    }
+                },
+                {
+                    "smiles": "Clc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H5Cl",
+                        "mass": 112.00797784
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OB(O)C=CC(O)c1ccc(Cl)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H10BClO3",
+                        "mass": 212.04115226
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm (not a key factor)",
+                "solvent": "protic solvent (e.g., ethanol, methanol)",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "2",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Aldol condensation of an aromatic aldehyde with a boronic acid"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "C=CCB(O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7BO2",
+                        "mass": 86.053909864
+                    }
+                },
+                {
+                    "smiles": "O=C1CCC(=O)N1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4BrNO2",
+                        "mass": 176.942540468
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "OB(O)CC=CBr",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6BBrO2",
+                        "mass": 163.964421932
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "The reaction likely proceeds without the need for a solvent, as both reactants are small molecules that can interact directly.",
+                "time": "The reaction time depends on the specific conditions and catalyst used, but it is likely a relatively fast reaction, on the order of minutes to a few hours."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "2",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "The closest literature reaction is the Suzuki coupling, which involves the reaction of an organoboron compound (such as a boronic acid or ester) with an organic halide in the presence of a palladium catalyst and base to form a new carbon-carbon bond."
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "C1CCN2C1C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9N",
+                        "mass": 83.073499288
+                    }
+                },
+                {
+                    "smiles": "BrCCCc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H11Br",
+                        "mass": 198.004412452
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C1CCN2C1C2CCC3=CC=CC=C3",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H17N",
+                        "mass": 187.136099544
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "1,4-Dioxane (C1CCOC1)",
+                "time": "Several hours, depending on the scale of the reaction. Typically 2-12 hours."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "N-alkylation of azetidine with 3-phenylpropyl bromide under basic conditions"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "C=CCNC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H9N",
+                        "mass": 71.073499288
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C=C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4",
+                        "mass": 28.031300127999998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C1CCN2C1C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9N",
+                        "mass": 83.073499288
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely proceeds without solvent, as both reactants are small and the product forms via an intramolecular cyclization.",
+                "time": "The reaction is expected to be rapid, likely completing within minutes to an hour."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Intramolecular ene reaction of an allylamine to form a bicyclic aziridine."
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [
+                {
+                    "smiles": "C=CCNC=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H7NO",
+                        "mass": 85.052763844
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C[C@H]1CC[C@@H](C)CC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H16",
+                        "mass": 112.12520051199999
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=CCNC",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H9N",
+                        "mass": 71.073499288
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "No temperature specified",
+                "pressure": "No pressure specified",
+                "solvent": "The reaction likely does not require a solvent",
+                "time": "Insufficient information to determine reaction time"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "This appears to be a simple reduction of an amide (C=CCNC=O) to an amine (C=CCNC). A common method for this transformation is using LiAlH4 as the reducing agent."
+                }
+            ]
+        },
+        {
+            "step": "10",
+            "reactants": [
+                {
+                    "smiles": "OCCCc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12O",
+                        "mass": 136.088815004
+                    }
+                },
+                {
+                    "smiles": "O=C1CCC(=O)N1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4BrNO2",
+                        "mass": 176.942540468
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Br][Br]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Br2",
+                        "mass": 157.8366742
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "BrCCCc1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H11Br",
+                        "mass": 198.004412452
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure (no special pressure conditions required)",
+                "solvent": "Dichloromethane (DCM) or chloroform (CHCl3)",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.81,
+                    "closestliterature": "Appel reaction: Conversion of an alcohol to an alkyl bromide using carbon tetrabromide (CBr4) and triphenylphosphine (PPh3)"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,206 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "Cn1cc2c(B3OC(C)(C)C(C)(C)O3)cccc2n1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H19BN2O2",
+                        "mass": 258.15395824800004
+                    }
+                },
+                {
+                    "smiles": "O=C1c2cccnc2CN1Cc1c(F)cc(Br)cc1F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H9BrF2N2O",
+                        "mass": 337.986631448
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1P(c1ccccc1)c1ccccc1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                },
+                {
+                    "smiles": "CN(C)C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7NO",
+                        "mass": 73.052763844
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1B(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H9BO2",
+                        "mass": 136.06955992800002
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "Cn1cc2c(-c3cc(F)c(CN4Cc5ncccc5C4=O)c(F)c3)cccc2n1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C22H16F2N4O",
+                        "mass": 390.129217572
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "1,4-dioxane or another aprotic polar solvent like DMF or THF",
+                "time": "several hours, typically 2-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Suzuki-Miyaura cross-coupling"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(O)C(C)(C)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H14O2",
+                        "mass": 118.099379688
+                    }
+                },
+                {
+                    "smiles": "Cn1cc2c(B(O)O)cccc2n1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H9BN2O2",
+                        "mass": 176.07570792799999
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "Cn1cc2c(B3OC(C)(C)C(C)(C)O3)cccc2n1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H19BN2O2",
+                        "mass": 258.15395824800004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "Ambient pressure",
+                "solvent": "Toluene or other non-polar aprotic solvent",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "2",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Boronic acid esterification with a diol"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "NCc1c(F)cc(Br)cc1F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H6BrF2N",
+                        "mass": 220.965167732
+                    }
+                },
+                {
+                    "smiles": "COC(=O)c1cccnc1CBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H8BrNO2",
+                        "mass": 228.973840596
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1c2cccnc2CN1Cc1c(F)cc(Br)cc1F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H9BrF2N2O",
+                        "mass": 337.986631448
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "1,4-Dioxane (C1CCOC1)",
+                "time": "2-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.86,
+                    "closestliterature": "Intramolecular N-alkylation of 2-halomethylnicotinic acid ester with 2-fluoroaniline under basic conditions"
+                }
+            ]
+        }
+    ]
+}

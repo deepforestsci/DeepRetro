@@ -1,0 +1,374 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "5"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [],
+        "5": [
+            "6",
+            "7"
+        ],
+        "6": [],
+        "7": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COc1cc2c(cc1Cl)CCN(C)[C@@H]2c1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H18ClNO",
+                        "mass": 287.107691876
+                    }
+                },
+                {
+                    "smiles": "CN(C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H9N",
+                        "mass": 59.073499287999994
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Ambient pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(=O)N1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4ClNO2",
+                        "mass": 132.993056048
+                    }
+                },
+                {
+                    "smiles": "COc1ccc2c(c1)[C@@H](c1ccccc1)N(C)CC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H19NO",
+                        "mass": 253.146664228
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                },
+                {
+                    "smiles": "[Na+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Na+",
+                        "mass": 22.98922070009
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc2c(cc1Cl)CCN(C)[C@@H]2c1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H18ClNO",
+                        "mass": 287.107691876
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "1,4-dioxane",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.97,
+                    "closestliterature": "Reduction of an N-chlorosuccinimide activated imine using sodium borohydride"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "COc1ccc(CCN(C)C(=O)c2ccccc2)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H19NO2",
+                        "mass": 269.141578848
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1ccc2c(c1)[C@@H](c1ccccc1)N(C)CC2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H19NO",
+                        "mass": 253.146664228
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-150 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Acetic acid",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Bischler-Napieralski reaction"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "O=C(Cl)c1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H5ClO",
+                        "mass": 140.00289246
+                    }
+                },
+                {
+                    "smiles": "CNCCc1ccc(OC)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H15NO",
+                        "mass": 165.1153641
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1ccc(CCN(C)C(=O)c2ccccc2)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H19NO2",
+                        "mass": 269.141578848
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "Ambient pressure",
+                "solvent": "Polar aprotic solvent (e.g., DMF, DMSO, acetonitrile)",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.76,
+                    "closestliterature": "Schotten-Baumann reaction"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "CNC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H7N",
+                        "mass": 45.057849223999995
+                    }
+                },
+                {
+                    "smiles": "CI",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3I",
+                        "mass": 141.927948096
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CN(C)C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H9N",
+                        "mass": 59.073499287999994
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent needed",
+                "time": "Reaction is rapid and should be complete within minutes"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Methylamine (CH3NH2) + Methyl iodide (CH3I) \u2192 Dimethylamine ((CH3)2NH)"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "CNC=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H5NO",
+                        "mass": 59.03711378
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(C)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H8O",
+                        "mass": 60.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CNC",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H7N",
+                        "mass": 45.057849223999995
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux (boiling point of isopropanol, approximately 82 \u00b0C at standard pressure)",
+                "pressure": "Standard atmospheric pressure (1 atm)",
+                "solvent": "Isopropanol (CC(C)O)",
+                "time": "Reaction time depends on the scale; typically, 2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.87,
+                    "closestliterature": "Reduction of a formamide to a secondary amine using isopropanol as the reducing agent and solvent"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "CO",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O",
+                        "mass": 32.026214748
+                    }
+                },
+                {
+                    "smiles": "I",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HI",
+                        "mass": 127.912298032
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CI",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3I",
+                        "mass": 141.927948096
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-150 \u00b0C",
+                "pressure": "1-5 atm",
+                "solvent": "The reaction is typically carried out without solvent in the gas phase.",
+                "time": "The reaction time depends on the scale, but is usually on the order of hours."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Carbonylation of iodine to form iodine monochloride (ICl)"
+                }
+            ]
+        }
+    ]
+}

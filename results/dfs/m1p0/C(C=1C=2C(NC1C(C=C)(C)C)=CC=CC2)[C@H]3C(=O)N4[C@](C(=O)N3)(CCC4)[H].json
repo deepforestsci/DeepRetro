@@ -1,0 +1,360 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "6"
+        ],
+        "2": [
+            "3",
+            "4"
+        ],
+        "3": [],
+        "4": [
+            "5"
+        ],
+        "5": [],
+        "6": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(N1)[C@@H](C(=O)O)N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H10N2O3",
+                        "mass": 158.06914218
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)c1[nH]c2ccccc2c1-c1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H19N",
+                        "mass": 249.151749608
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C(O)C(Cl)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H2Cl2O2",
+                        "mass": 127.943184664
+                    }
+                },
+                {
+                    "smiles": "CN(C)C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7NO",
+                        "mass": 73.052763844
+                    }
+                },
+                {
+                    "smiles": "CC(=O)O.[Na+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4NaO2+",
+                        "mass": 83.01035006809
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C(C=1C=2C(NC1C(C=C)(C)C)=CC=CC2)[C@H]3C(=O)N4[C@](C(=O)N3)(CCC4)[H]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H25N3O2",
+                        "mass": 351.19467704
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or NMP",
+                "time": "2-24 hours, depending on the specific reaction conditions and scale"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Amide bond formation via acyl chloride intermediate"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCCN1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H7NO",
+                        "mass": 85.052763844
+                    }
+                },
+                {
+                    "smiles": "N[C@H](COC(=O)OCc1ccccc1)C(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H13NO5",
+                        "mass": 239.079372516
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CCC(N1)[C@@H](C(=O)O)N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H10N2O3",
+                        "mass": 158.06914218
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely proceeds without additional solvent, as the reactants can serve as solvents for each other.",
+                "time": "The reaction time depends on the scale and specific conditions, but it typically ranges from 30 minutes to a few hours for complete conversion."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Deprotection of N-Boc-protected amino acids using TFA or HCl"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "ON=C1CCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H7NO",
+                        "mass": 85.052763844
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CCCN1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H7NO",
+                        "mass": 85.052763844
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required",
+                "time": "The reaction is likely rapid, completing within minutes to an hour"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Oxidation of cyclobutanone oxime to N-hydroxycyclobutanimide"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N[C@H](COC(=O)OCc1ccccc1)C(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H21NO7",
+                        "mass": 339.131802012
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N[C@H](COC(=O)OCc1ccccc1)C(=O)O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H13NO5",
+                        "mass": 239.079372516
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely proceeds without solvent, as both the reactant and product are solids. If a solvent is used, a polar aprotic solvent like DMF or DMSO would be suitable.",
+                "time": "The Boc deprotection using TFA is typically fast, completing within 30 minutes to 2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.94,
+                    "closestliterature": "Boc deprotection of an N-Boc amino acid using trifluoroacetic acid (TFA)"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "O=C(Cl)OCc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7ClO2",
+                        "mass": 170.013457144
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)OC(=O)N[C@H](CO)C(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H15NO5",
+                        "mass": 205.09502258
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N[C@H](COC(=O)OCc1ccccc1)C(=O)O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H21NO7",
+                        "mass": 339.131802012
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "Ambient pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.84,
+                    "closestliterature": "Protection of the hydroxyl group of N-protected serine with benzyl chloroformate (CbzCl)"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "NNc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8N2",
+                        "mass": 108.06874825599999
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)C(=O)Cc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H16O",
+                        "mass": 176.120115132
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=S(=O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O4S",
+                        "mass": 97.96737954400001
+                    }
+                },
+                {
+                    "smiles": "[Cu]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cu",
+                        "mass": 62.9295975
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)c1[nH]c2ccccc2c1-c1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H19N",
+                        "mass": 249.151749608
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-150 \u00b0C",
+                "pressure": "Not applicable. This reaction is typically carried out at atmospheric pressure.",
+                "solvent": "DMSO (dimethyl sulfoxide)",
+                "time": "12-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Ullmann coupling reaction"
+                }
+            ]
+        }
+    ]
+}

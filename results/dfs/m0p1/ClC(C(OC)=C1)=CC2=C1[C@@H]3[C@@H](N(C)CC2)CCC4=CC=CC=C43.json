@@ -1,0 +1,704 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "6"
+        ],
+        "2": [
+            "3",
+            "4"
+        ],
+        "3": [],
+        "4": [
+            "5"
+        ],
+        "5": [],
+        "6": [
+            "7",
+            "12"
+        ],
+        "7": [
+            "8",
+            "11"
+        ],
+        "8": [
+            "9",
+            "10"
+        ],
+        "9": [],
+        "10": [],
+        "11": [],
+        "12": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC[C@@H]2[C@@H]1Cc3c(OC)ccc(Cl)c23",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H15ClO2",
+                        "mass": 250.0760574
+                    }
+                },
+                {
+                    "smiles": "CN(C)CC1=CC=CC2=C1[C@@H]3[C@@H](CCC3)C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H21N",
+                        "mass": 215.167399672
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely proceeds without solvent, as both reactants are solids and no solvent is specified in the reagents.",
+                "time": "Insufficient information to determine reaction time without knowing the specific reaction conditions and catalyst used."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.65,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COc1ccc(N)cc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8ClNO",
+                        "mass": 157.029441556
+                    }
+                },
+                {
+                    "smiles": "O=C1CCC[C@H]2C[C@H]12",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H10O",
+                        "mass": 110.07316494
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1P(c2ccccc2)c3ccccc3",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1C(=O)[O-].[K+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7KO2",
+                        "mass": 174.008311144
+                    }
+                },
+                {
+                    "smiles": "CN(C)C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7NO",
+                        "mass": 73.052763844
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CCC[C@@H]2[C@@H]1Cc3c(OC)ccc(Cl)c23",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H15ClO2",
+                        "mass": 250.0760574
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "toluene or other non-polar aprotic solvent",
+                "time": "several hours to overnight"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Buchwald-Hartwig amination"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "COc1ccc([N+](=O)[O-])cc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H6ClNO3",
+                        "mass": 187.003620732
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "C(=O)(O)O.[Na+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH2NaO3+",
+                        "mass": 84.98961462409
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1ccc(N)cc1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8ClNO",
+                        "mass": 157.029441556
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Methanol (MeOH) or Ethanol (EtOH)",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.79,
+                    "closestliterature": "Reduction of aromatic nitro compounds to anilines using hydrogen gas and palladium catalyst"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "O=C1C=CC[C@H]2C[C@H]12",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8O",
+                        "mass": 108.057514876
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C1CCC[C@H]2C[C@H]12",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H10O",
+                        "mass": 110.07316494
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Heat",
+                "pressure": "Not applicable. This reaction does not require any special pressure conditions.",
+                "solvent": "Not applicable. This reaction can likely proceed without solvent under thermal conditions.",
+                "time": "Reaction time will depend on the exact temperature used, but likely on the order of minutes to hours at elevated temperature."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.92,
+                    "closestliterature": "Cope rearrangement of 1,5-cyclooctadiene"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "C[S+](C)(C)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H9OS+",
+                        "mass": 93.03686232809
+                    }
+                },
+                {
+                    "smiles": "O=C1C=CCC=C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6O",
+                        "mass": 94.041864812
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C1C=CC[C@H]2C[C@H]12",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8O",
+                        "mass": 108.057514876
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required",
+                "time": "The reaction is likely very fast, on the order of seconds to minutes"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Corey-Chaykovsky epoxidation"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "O=C1C=CC=C2C1=CCC1C2CCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H14O",
+                        "mass": 186.104465068
+                    }
+                },
+                {
+                    "smiles": "C=CC=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H4O",
+                        "mass": 56.026214748
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CN",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH5N",
+                        "mass": 31.042199159999996
+                    }
+                },
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CN(C)CC1=CC=CC2=C1[C@@H]3[C@@H](CCC3)C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H21N",
+                        "mass": 215.167399672
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Likely room temperature (20-25\u00b0C)",
+                "pressure": "Likely atmospheric pressure (1 atm)",
+                "solvent": "A polar aprotic solvent like DMF, DMSO, or acetonitrile would be suitable",
+                "time": "Reaction time would depend on the specific conditions, but likely several hours to overnight"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Reductive amination of the ketone with methylamine, followed by intramolecular Diels-Alder cycloaddition of the diene and dienophile"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "O=C1C=CC=C2C=CCC12",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8O",
+                        "mass": 132.057514876
+                    }
+                },
+                {
+                    "smiles": "C1=CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H8",
+                        "mass": 68.062600256
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Al]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Al",
+                        "mass": 26.98153863
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C=CC=C2C1=CCC1C2CCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H14O",
+                        "mass": 186.104465068
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "150-200 \u00b0C",
+                "pressure": "50-100 atm H2",
+                "solvent": "Benzene or toluene",
+                "time": "2-6 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Hydrogenation of phenanthrene using Raney nickel catalyst"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "Oc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6O",
+                        "mass": 94.041864812
+                    }
+                },
+                {
+                    "smiles": "O=C1C=CCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H6O",
+                        "mass": 82.041864812
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C=CC=C2C=CCC12",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8O",
+                        "mass": 132.057514876
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Acidic solvent (e.g., acetic acid, sulfuric acid, or hydrochloric acid)",
+                "time": "Several hours to overnight, depending on the specific reaction conditions and scale"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Acid-catalyzed Pechmann condensation of phenols with \u03b2-ketoesters or \u03b2-ketoaldehydes to form coumarin derivatives"
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [
+                {
+                    "smiles": "Oc1ccccc1O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6O2",
+                        "mass": 110.036779432
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "Oc1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6O",
+                        "mass": 94.041864812
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "200-300 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "no solvent required",
+                "time": "0.5-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.97,
+                    "closestliterature": "Pyrocatechol (1,2-dihydroxybenzene) undergoes dehydrogenation to form catechol (1,2-benzoquinone) when heated in the presence of oxygen at 200-300 \u00b0C for 0.5-2 hours at atmospheric pressure without solvent."
+                }
+            ]
+        },
+        {
+            "step": "10",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H8O",
+                        "mass": 84.057514876
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Se]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Se",
+                        "mass": 79.9165213
+                    }
+                },
+                {
+                    "smiles": "[O]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O",
+                        "mass": 15.99491462
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C=CCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H6O",
+                        "mass": 82.041864812
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Dioxane",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Oxidation of cyclohexanone to cyclohex-2-enone using selenium dioxide"
+                }
+            ]
+        },
+        {
+            "step": "11",
+            "reactants": [
+                {
+                    "smiles": "C1CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H10",
+                        "mass": 70.07825032
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pt]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pt",
+                        "mass": 194.9647911
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "S",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2S",
+                        "mass": 33.987721064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C1=CCCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H8",
+                        "mass": 68.062600256
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "200-300 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "The reaction is typically carried out in the gas phase without solvent.",
+                "time": "The reaction time depends on the specific catalyst and conditions used, but is generally on the order of minutes to hours."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.91,
+                    "closestliterature": "Cyclopentane can be dehydrogenated to cyclopentene using platinum or palladium catalysts on a support such as carbon or alumina, often promoted with sulfur. The reaction is typically carried out in the gas phase at 200-300 \u00b0C and atmospheric pressure."
+                }
+            ]
+        },
+        {
+            "step": "12",
+            "reactants": [
+                {
+                    "smiles": "C=CCO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6O",
+                        "mass": 58.041864812
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[O]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O",
+                        "mass": 15.99491462
+                    }
+                },
+                {
+                    "smiles": "[Cr]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cr",
+                        "mass": 51.9405075
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=CC=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H4O",
+                        "mass": 56.026214748
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "acetone or dichloromethane",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.91,
+                    "closestliterature": "Oxidation of allyl alcohol to acrolein using chromium trioxide"
+                }
+            ]
+        }
+    ]
+}
