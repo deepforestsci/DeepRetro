@@ -243,6 +243,20 @@
             opacity: 0.9;
         }
 
+        .model-select {
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: white;
+        }
+
+        .model-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
         #graph {
             width: 100%;
             min-height: 600px;
@@ -271,6 +285,13 @@
         <div id="apiView">
             <div class="input-group">
                 <input type="text" id="smiles" placeholder="Enter SMILES string" aria-label="SMILES input">
+                <select id="modelVersion" class="model-select">
+                    <option value="1">USPTO</option>
+                    <option value="2">Pistachio (25)</option>
+                    <option value="3">Pistachio (50)</option>
+                    <option value="4">Pistachio (100)</option>
+                    <option value="5">Pistachio (100+)</option>
+                </select>
                 <div class="toggle-switch">
                     <label class="switch">
                         <input type="checkbox" id="advancedToggle">
@@ -330,6 +351,7 @@
 
         async function analyze(isRerun = false) {
             const smilesInput = document.getElementById('smiles');
+            const modelSelect = document.getElementById('modelVersion');
             const advancedToggle = document.getElementById('advancedToggle');
             const promptToggle = document.getElementById('promptToggle');
             const button = document.getElementById('analyzeBtn');
@@ -357,7 +379,8 @@
                 const requestBody = {
                     smiles,
                     advanced_model: advancedToggle.checked.toString(),
-                    advanced_prompt: promptToggle.checked.toString()
+                    advanced_prompt: promptToggle.checked.toString(),
+                    model_version: modelSelect.value
                 };
 
                 // Make parallel API calls
