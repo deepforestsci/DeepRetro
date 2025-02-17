@@ -13,6 +13,7 @@ root_dir = rootutils.setup_root(__file__,
 load_dotenv()
 from src.main import main
 from src.cache import clear_cache_for_molecule
+from src.variables import AZ_MODEL_LIST
 
 app = Flask(__name__)
 CORS(app)
@@ -91,8 +92,20 @@ def retrosynthesis_api():
     if advanced_prompt:
         llm = llm + ":adv"
 
+    # -----------------
+    # Choose AiZynthFinder model
+    az_model = "USPTO"
     try:
-        result = main(smiles, llm)
+        az_model: str = data['model_version']
+        assert az_model in AZ_MODEL_LIST
+    except Exception as e:
+        print(e)
+        az_model = "USPTO"
+
+    # -----------------
+    # Run retrosynthesis
+    try:
+        result = main(smiles=smiles, llm=llm, az_model=az_model)
     except Exception as e:
         print(e)
         return jsonify({"error": "Error in retrosynthesis, Please rerun"}), 500

@@ -1356,3 +1356,7 @@ ERROR_MAP = {
         "description": "split_json_master() failed.",
     },
 }
+
+AZ_MODEL_LIST = [
+    "USPTO", "Pistachio_25", "Pistachio_50", "Pistachio_100", "Pistachio_100+"
+]
