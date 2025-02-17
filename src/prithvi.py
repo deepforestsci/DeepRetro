@@ -17,8 +17,9 @@ root_dir = rootutils.setup_root(__file__,
 date_dir = f'{root_dir}/logs/{time.strftime("%Y-%m-%d")}'
 
 
-def run_prithvi(molecule:str,
-                llm="claude-3-opus-20240229") -> dict:
+def run_prithvi(molecule: str,
+                llm="claude-3-opus-20240229",
+                az_model: str = "USPTO") -> dict:
     """Run prithvi services to generate retrosynthesis on a molecule.
 
     Parameters
@@ -47,7 +48,10 @@ def run_prithvi(molecule:str,
     log.info(f"Starting new synthesis job {job_id} for molecule {molecule}")
 
     try:
-        result_dict, _ = rec_run_prithvi(molecule, job_id, llm)
+        result_dict, _ = rec_run_prithvi(molecule=molecule,
+                                         job_id=job_id,
+                                         llm=llm,
+                                         az_model=az_model)
         output_data = format_output(result_dict)
         output_data = add_metadata(output_data)
         return output_data

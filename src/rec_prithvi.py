@@ -7,7 +7,8 @@ from src.utils.job_context import logger as context_logger
 
 def rec_run_prithvi(molecule: str,
                     job_id: str,
-                    llm: str = "claude-3-opus-20240229") -> tuple[dict, bool]:
+                    llm: str = "claude-3-opus-20240229",
+                    az_model: str = "USPTO") -> tuple[dict, bool]:
     """Recursive function to run Prithvi on a molecule
 
     Parameters
@@ -25,7 +26,7 @@ def rec_run_prithvi(molecule: str,
         result_dict: result of retrosynthesis.
         solved: boolean value indicating if the molecule was solved.
     """
-    solved, result_dict = run_az(molecule)
+    solved, result_dict = run_az(smiles=molecule, az_model=az_model)
     result_dict = result_dict[0]
     logger = context_logger.get()
     if not solved:

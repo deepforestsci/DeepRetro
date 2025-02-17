@@ -21,7 +21,9 @@ from src.utils.custom_logging import setup_logging
 load_dotenv()
 
 
-def main(smiles: str, llm: str = "claude-3-opus-20240229") -> Any:
+def main(smiles: str,
+         llm: str = "claude-3-opus-20240229",
+         az_model: str = "USPTO") -> Any:
     """Run the retrosynthesis on specific molecule.
 
     Parameters
@@ -43,6 +45,6 @@ def main(smiles: str, llm: str = "claude-3-opus-20240229") -> Any:
     log.info("-" * 50)
     log.info("Application initialization complete")
 
-    res = run_prithvi(smiles, llm)
+    res = run_prithvi(molecule=smiles, llm=llm, az_model=az_model)
     logging.info(f"Retrosynthesis result: {res}")
     return res

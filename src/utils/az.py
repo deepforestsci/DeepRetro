@@ -12,10 +12,12 @@ root_dir = rootutils.setup_root(__file__,
                                 pythonpath=True)
 
 AZ_MODEL_CONFIG_PATH = f"{root_dir}/{os.getenv('AZ_MODEL_CONFIG_PATH')}"
+AZ_MODELS_PATH = f"{root_dir}/{os.getenv('AZ_MODELS_PATH')}"
 
 
 @cache_results
-def run_az(smiles: str) -> tuple[Any, Sequence[Dict[str, Any]]]:
+def run_az(smiles: str,
+           az_model: str = "USPTO") -> tuple[Any, Sequence[Dict[str, Any]]]:
     """Run the retrosynthesis using AiZynthFinder
 
     Parameters
@@ -30,15 +32,24 @@ def run_az(smiles: str) -> tuple[Any, Sequence[Dict[str, Any]]]:
         the results dictionary
     """
     try:
-        with open(AZ_MODEL_CONFIG_PATH, "r") as file:
+        config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
+        with open(config_path, "r") as file:
             logger = context_logger.get()
-            logger.info(f"AZ_MODEL_CONFIG_PATH found: {AZ_MODEL_CONFIG_PATH}")
-            config_filename = AZ_MODEL_CONFIG_PATH
+            logger.info(f"AZ_MODEL_CONFIG_PATH found: {config_path}")
+            config_filename = config_path
     except FileNotFoundError:
-        logger.error(
-            f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}")
-        raise FileNotFoundError(
-            f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}")
+        logger.error(f"AZ_MODEL_CONFIG_PATH not found at {config_path}")
+        try:
+            with open(AZ_MODEL_CONFIG_PATH, "r") as file:
+                logger = context_logger.get()
+                logger.info(
+                    f"AZ_MODEL_CONFIG_PATH found: {AZ_MODEL_CONFIG_PATH}")
+                config_filename = AZ_MODEL_CONFIG_PATH
+        except FileNotFoundError:
+            logger.error(
+                f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}")
+            raise FileNotFoundError(
+                f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}")
     # if simple molecule, skip the retrosynthesis
     if smiles in BASIC_MOLECULES:
         return True, [{
@@ -48,7 +59,7 @@ def run_az(smiles: str) -> tuple[Any, Sequence[Dict[str, Any]]]:
             'is_chemical': True,
             'in_stock': True,
         }]
-    finder = AiZynthFinder(configfile=AZ_MODEL_CONFIG_PATH)
+    finder = AiZynthFinder(configfile=config_filename)
     finder.stock.select("zinc")
     finder.expansion_policy.select("uspto")
     finder.filter_policy.select("uspto")
