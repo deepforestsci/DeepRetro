@@ -1035,7 +1035,31 @@ BASIC_MOLECULES = [
     "C1=CC=C(C=C1)I",  # Iodobenzene
     "P(=O)(O)O",  # Phosphoric acid
     "P(Cl)(Cl)Cl",  # Phosphorus trichloride
-    "P"
+    "P",
+    "[K+].[OH-]", # Potassium hydroxide
+    "[Na+].[OH-]", # Sodium hydroxide
+    "[Li+].[OH-]", # Lithium hydroxide
+    "[K+].[Cl-]", # Potassium chloride
+    "[Na+].[Cl-]", # Sodium chloride
+    "[Li+].[Cl-]", # Lithium chloride
+    "NaCN", # Sodium cyanide
+    "NaOH", # Sodium hydroxide
+    "H2SO4", # Sulfuric acid
+    "HCl", # Hydrochloric acid
+    "HBr", # Hydrobromic acid
+    "HI", # Hydroiodic acid
+    "H2O2", # Hydrogen peroxide
+    "H2O", # Water
+    "NH3", # Ammonia
+    "H2", # Hydrogen gas
+    "O2", # Oxygen gas
+    "N2", # Nitrogen gas
+    "CO2", # Carbon dioxide
+    "CO", # Carbon monoxide
+    "NaBr", # Sodium bromide
+    "[K+].[C-]#N", # Potassium cyanide
+    "[Na+].[C-]#N", # Sodium cyanide
+    
 ]
 
 REACTION_CLASSES_OLD = {
