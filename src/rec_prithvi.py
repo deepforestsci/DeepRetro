@@ -58,7 +58,7 @@ def rec_run_prithvi(molecule: str,
             if isinstance(pathway, list):
                 temp_stat = []
                 for mol in pathway:
-                    res, stat = rec_run_prithvi(mol, job_id, llm)
+                    res, stat = rec_run_prithvi(mol, job_id, llm, az_model=az_model)
                     if stat:
                         temp_stat.append(True)
                         result_dict['children'][0]['children'].append(res)
@@ -66,7 +66,7 @@ def rec_run_prithvi(molecule: str,
                 if all(temp_stat):
                     solved = True
             else:
-                res, solved = rec_run_prithvi(pathway, job_id, llm)
+                res, solved = rec_run_prithvi(pathway, job_id, llm, az_model=az_model)
                 result_dict['children'][0]['children'].append(res)
             if solved:
                 logger.info('breaking')
