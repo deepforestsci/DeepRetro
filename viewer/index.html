@@ -8,6 +8,7 @@
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="https://unpkg.com/openchemlib/dist/openchemlib-full.js"></script>
     <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+    <script src="config.js"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -367,14 +368,11 @@
                 status.style.display = 'none';
                 result.style.display = 'none';
 
-                // Define the endpoints for both instances
-                const endpoint1 = isRerun ?
-                    'http://ec2-18-220-15-234.us-east-2.compute.amazonaws.com:5000/api/rerun_retrosynthesis' :
-                    'http://ec2-18-220-15-234.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
-
-                const endpoint2 = isRerun ?
-                    'http://ec2-18-118-82-88.us-east-2.compute.amazonaws.com:5000/api/rerun_retrosynthesis' :
-                    'http://ec2-18-118-82-88.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
+                // Create endpoints from config
+                const endpoints = config.instances.map(baseUrl => {
+                    const endpointPath = isRerun ? config.endpoints.rerun : config.endpoints.retrosynthesis;
+                    return `${baseUrl}${endpointPath}`;
+                });
 
                 const requestBody = {
                     smiles,
@@ -383,17 +381,9 @@
                     model_version: modelSelect.value
                 };
 
-                // Make parallel API calls
-                const [response1, response2] = await Promise.all([
-                    fetch(endpoint1, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-API-KEY': API_KEY
-                        },
-                        body: JSON.stringify(requestBody)
-                    }),
-                    fetch(endpoint2, {
+                // Create fetch promises for all instances
+                const fetchPromises = endpoints.map(endpoint => 
+                    fetch(endpoint, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -401,21 +391,27 @@
                         },
                         body: JSON.stringify(requestBody)
                     })
-                ]);
+                );
 
-                // Parse responses
-                const data1 = await response1.json();
-                const data2 = await response2.json();
+                // Make parallel API calls
+                const responses = await Promise.all(fetchPromises);
 
-                if (!response1.ok || !response2.ok) {
-                    throw new Error(data1.error || data2.error || 'Analysis failed');
+                // Parse all responses
+                const resultsArray = await Promise.all(responses.map(response => response.json()));
+
+                if (responses.some(response => !response.ok)) {
+                    const errors = resultsArray
+                        .filter((data, index) => !responses[index].ok)
+                        .map(data => data.error)
+                        .join(', ');
+                    throw new Error(errors || 'Analysis failed');
                 }
 
-                // Store results for both instances
-                const results = {
-                    instance1: data1,
-                    instance2: data2
-                };
+                // Store results for all instances
+                const results = resultsArray.reduce((acc, data, index) => {
+                    acc[`instance${index + 1}`] = data;
+                    return acc;
+                }, {});
 
                 // Clear existing controls
                 const existingControls = document.getElementById('pathway-controls');
@@ -434,14 +430,21 @@
                 result.textContent = formattedJson;
                 result.style.display = 'block';
 
-                // Add toggle buttons to switch between results
-                const toggleButtons = `
-                    <div id="pathway-controls" class="toggle-results">
-                        <button onclick="showResult('instance1')">Show Pathway 1</button>
-                        <button onclick="showResult('instance2')">Show Pathway 2</button>
-                    </div>
-                `;
-                result.insertAdjacentHTML('beforebegin', toggleButtons);
+                // Update the toggle buttons creation to be dynamic based on number of instances
+                const toggleButtons = document.createElement('div');
+                toggleButtons.id = 'pathway-controls';
+                toggleButtons.className = 'toggle-results';
+
+                // Create buttons based on number of instances from config
+                config.instances.forEach((_, index) => {
+                    const button = document.createElement('button');
+                    button.textContent = `Show Pathway ${index + 1}`;
+                    button.onclick = () => showResult(`instance${index + 1}`);
+                    toggleButtons.appendChild(button);
+                });
+
+                // Replace the static buttons HTML with dynamic buttons
+                result.insertAdjacentElement('beforebegin', toggleButtons);
 
                 // Add download button
                 const downloadButton = document.createElement('button');
