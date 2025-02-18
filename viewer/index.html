@@ -430,14 +430,21 @@
                 result.textContent = formattedJson;
                 result.style.display = 'block';
 
-                // Add toggle buttons to switch between results
-                const toggleButtons = `
-                    <div id="pathway-controls" class="toggle-results">
-                        <button onclick="showResult('instance1')">Show Pathway 1</button>
-                        <button onclick="showResult('instance2')">Show Pathway 2</button>
-                    </div>
-                `;
-                result.insertAdjacentHTML('beforebegin', toggleButtons);
+                // Update the toggle buttons creation to be dynamic based on number of instances
+                const toggleButtons = document.createElement('div');
+                toggleButtons.id = 'pathway-controls';
+                toggleButtons.className = 'toggle-results';
+
+                // Create buttons based on number of instances from config
+                config.instances.forEach((_, index) => {
+                    const button = document.createElement('button');
+                    button.textContent = `Show Pathway ${index + 1}`;
+                    button.onclick = () => showResult(`instance${index + 1}`);
+                    toggleButtons.appendChild(button);
+                });
+
+                // Replace the static buttons HTML with dynamic buttons
+                result.insertAdjacentElement('beforebegin', toggleButtons);
 
                 // Add download button
                 const downloadButton = document.createElement('button');
