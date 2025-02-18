@@ -1355,7 +1355,7 @@ OPENAI_MODELS = [
     "gpt-4o-2024-08-06",
 ]
 
-DEEPSEEK_MODELS = ["azure_ai/DeepSeek-R1", "deepinfra/deepseek-ai/DeepSeek-R1"]
+DEEPSEEK_MODELS = ["azure_ai/DeepSeek-R1", "deepinfra/deepseek-ai/DeepSeek-R1", "fireworks_ai/accounts/fireworks/models/deepseek-r1", "together_ai/deepseek-ai/DeepSeek-R1"]
 
 ERROR_MAP = {
     200: {
