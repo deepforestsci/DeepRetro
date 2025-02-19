@@ -43,6 +43,5 @@ def test_deepseek_adv_success():
     assert status_code == 200
 
 
-
 if __name__ == '__main__':
     pytest.main()
