@@ -67,15 +67,17 @@ def test_split_json_openai_success():
     
     from tests.variables_test import VALID_SMILE_STRING
 
-    status_code, res_OpenAI = call_LLM(molecule=VALID_SMILE_STRING, LLM="gpt-4o")
+    status_code, _ = call_LLM(molecule=VALID_SMILE_STRING, LLM="gpt-4o")
 
     assert status_code == 200
 
 def test_split_json_openai_fail_502():
-    status_code, res_OpenAI = split_json_openAI("")
+    status_code, _ = split_json_openAI("")
     assert status_code == 502
 
 def test_split_json_deepseek_success():
+
+    from tests.variables_test import VALID_CLAUDE_RESPONSE
     status_code, thinking_steps, json_content = split_json_deepseek(VALID_CLAUDE_RESPONSE)
     assert status_code == 200
 
