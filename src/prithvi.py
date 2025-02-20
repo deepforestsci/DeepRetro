@@ -47,7 +47,7 @@ def run_prithvi(molecule:str,
     log.info(f"Starting new synthesis job {job_id} for molecule {molecule}")
 
     try:
-        result_dict, _ = rec_run_prithvi(molecule, job_id, llm) # solved(bool) is not used here, so it is replaced with _
+        result_dict, _ = rec_run_prithvi(molecule, job_id, llm)
         output_data = format_output(result_dict)
         output_data = add_metadata(output_data)
         return output_data
