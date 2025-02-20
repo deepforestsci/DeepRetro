@@ -258,6 +258,88 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
+        .pathway-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .steps-select {
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: white;
+        }
+
+        .steps-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .rerun-btn {
+            display: none;
+            background: var(--success);
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .rerun-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .rerun-btn .loading {
+            width: 16px;
+            height: 16px;
+            border-width: 2px;
+        }
+
+        .controls-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 20px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 16px;
+        }
+
+        .pathway-section {
+            display: flex;
+            gap: 12px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .rerun-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .rerun-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rerun-label {
+            font-size: 14px;
+            color: #4b5563;
+            min-width: 80px;
+        }
+
         #graph {
             width: 100%;
             min-height: 600px;
@@ -418,6 +500,15 @@
                 if (existingControls) {
                     existingControls.remove();
                 }
+                // Add these additional checks
+                const existingControlsContainer = document.querySelector('.controls-container');
+                if (existingControlsContainer) {
+                    existingControlsContainer.remove();
+                }
+                const existingToggleResults = document.querySelector('.toggle-results');
+                if (existingToggleResults) {
+                    existingToggleResults.remove();
+                }
                 
                 // Remove existing download button
                 const existingDownloadBtn = document.querySelector('.download-btn');
@@ -436,12 +527,122 @@
                 toggleButtons.className = 'toggle-results';
 
                 // Create buttons based on number of instances from config
+                // Create two separate sections for pathways and reruns
+                const controlsContainer = document.createElement('div');
+                controlsContainer.className = 'controls-container';
+
+                // Create pathway viewing section
+                const pathwaySection = document.createElement('div');
+                pathwaySection.className = 'pathway-section';
+                pathwaySection.innerHTML = '<h3 class="section-title">View Pathways</h3>';
+
                 config.instances.forEach((_, index) => {
                     const button = document.createElement('button');
                     button.textContent = `Show Pathway ${index + 1}`;
                     button.onclick = () => showResult(`instance${index + 1}`);
-                    toggleButtons.appendChild(button);
+                    pathwaySection.appendChild(button);
                 });
+
+                // Create rerun section
+                const rerunSection = document.createElement('div');
+                rerunSection.className = 'rerun-section';
+                rerunSection.innerHTML = '<h3 class="section-title">Partial Rerun Analysis</h3>';
+
+                config.instances.forEach((_, index) => {
+                    const rerunControl = document.createElement('div');
+                    rerunControl.className = 'rerun-control';
+                    
+                    const label = document.createElement('span');
+                    label.className = 'rerun-label';
+                    label.textContent = `Pathway ${index + 1}:`;
+                    
+                    const select = document.createElement('select');
+                    select.className = 'steps-select';
+                    
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Select number of steps';
+                    defaultOption.selected = true;
+                    defaultOption.disabled = true;
+                    select.appendChild(defaultOption);
+                    
+                    const stepsCount = Object.keys(results[`instance${index + 1}`].steps).length;
+                    for(let i = 2; i <= stepsCount; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = `From Step ${i}`;
+                        select.appendChild(option);
+                    }
+                    
+                    const rerunButton = document.createElement('button');
+                    rerunButton.textContent = 'Start Rerun';
+                    rerunButton.className = 'rerun-btn';
+                    rerunButton.style.display = 'none';
+                    
+                    select.onchange = () => {
+                        rerunButton.style.display = 'inline-flex';
+                    };
+                    
+                    rerunButton.onclick = () => {
+                        const pathwayNumber = index + 1;
+                        rerunButton.disabled = true;
+                        select.disabled = true;
+                        rerunButton.innerHTML = `<span class="loading"></span>Rerunning...`;
+                        
+                        const endpoint = `${config.instances[index]}${config.endpoints.partial_rerun}`;
+                        console.log('Attempting partial rerun with:', {
+                            endpoint,
+                            requestBody: {
+                                smiles: smilesInput.value,
+                                steps: parseInt(select.value),
+                                pathway_id: pathwayNumber,
+                                advanced_model: advancedToggle.checked.toString(),
+                                advanced_prompt: promptToggle.checked.toString(),
+                                model_version: modelSelect.value
+                            }
+                        });
+                        fetch(endpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-API-KEY': API_KEY
+                            },
+                            body: JSON.stringify({
+                                smiles: smilesInput.value,
+                                steps: parseInt(select.value),
+                                pathway_id: pathwayNumber,
+                                advanced_model: advancedToggle.checked.toString(),
+                                advanced_prompt: promptToggle.checked.toString(),
+                                model_version: modelSelect.value
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            results[`instance${pathwayNumber}`] = data;
+                            showResult(`instance${pathwayNumber}`);
+                            rerunButton.disabled = false;
+                            select.disabled = false;
+                            rerunButton.innerHTML = 'Start Rerun';
+                        })
+                        .catch(error => {
+                            status.className = 'status error';
+                            status.textContent = `Error: ${error.message}`;
+                            status.style.display = 'block';
+                            rerunButton.disabled = false;
+                            select.disabled = false;
+                            rerunButton.innerHTML = 'Start Rerun';
+                        });
+                    };
+                    
+                    rerunControl.appendChild(label);
+                    rerunControl.appendChild(select);
+                    rerunControl.appendChild(rerunButton);
+                    rerunSection.appendChild(rerunControl);
+                });
+
+                controlsContainer.appendChild(pathwaySection);
+                controlsContainer.appendChild(rerunSection);
+                result.insertAdjacentElement('beforebegin', controlsContainer);
 
                 // Replace the static buttons HTML with dynamic buttons
                 result.insertAdjacentElement('beforebegin', toggleButtons);
