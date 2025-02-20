@@ -25,7 +25,7 @@ def run_prithvi(molecule: str,
     Parameters
     ----------
     molecule : str
-        SMILE String of the molecule. 
+        SMILE String of the molecule.
     llm : str, optional
         LLM Model, by default "claude-3-opus-20240229"
 
