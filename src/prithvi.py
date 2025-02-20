@@ -37,7 +37,7 @@ def run_prithvi(molecule:str,
     # Generate a unique job ID using timestamp and a random suffix
     job_id = f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}"
 
-    job_log_file = f"{date_dir}/job_{job_id}.log"  # job_log_file is not used here, should it be replaced with _
+    job_log_file = f"{date_dir}/job_{job_id}.log"
     log = structlog.get_logger().bind(job_id=job_id)
     # Set the logger in the context variable
     token = context_logger.set(log)
