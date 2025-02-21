@@ -170,9 +170,31 @@ def rerun_retrosynthesis():
     else:
         llm = "claude-3-opus-20240229"
 
+    # Advanced prompt handling
+    advanced_prompt = False
+    try:
+        advanced_prompt: str = data['advanced_prompt']
+        if advanced_prompt.lower() == "true":
+            advanced_prompt = True
+    except Exception as e:
+        print(e)
+        advanced_prompt = False
+
+    if advanced_prompt:
+        llm = llm + ":adv"
+
+    # Choose AiZynthFinder model
+    az_model = "USPTO"
+    try:
+        az_model: str = data['model_version']
+        assert az_model in AZ_MODEL_LIST
+    except Exception as e:
+        print(e)
+        az_model = "USPTO"
+
     # Rerun retrosynthesis
     try:
-        result = main(smiles=molecule, llm=llm)
+        result = main(smiles=molecule, llm=llm, az_model=az_model)
     except Exception as e:
         print(e)
         return jsonify({"error": "Error in retrosynthesis, Please rerun"}), 500
