@@ -608,3 +608,16 @@ MOLS_SMALL = {
     "Sulfadiazine": "NC1=CC=C(C=C1)S(=O)(=O)NC1=NC=CC=N1",
     "Phenprocoumon": "CCC(C1=CC=CC=C1)C1=C(O)C2=C(OC1=O)C=CC=C2",
 }
+
+BASE_URL = "http://ec2-3-17-191-215.us-east-2.compute.amazonaws.com:5000"
+
+ENDPOINTS = {
+    "retrosynthesis": "/api/retrosynthesis",
+    "rerun_retro": "/api/rerun_retrosynthesis",
+    "health": "/api/health"
+}
+
+MOLECULE_1 = "COC1=CC(C(O)C(C)N)=C(OC)C=C1"
+
+X_API_KEY = "your-secure-api-key"
+
