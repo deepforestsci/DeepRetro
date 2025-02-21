@@ -74,7 +74,7 @@ def retrosynthesis_api():
         advanced_model = False
 
     if deepseek_r1:
-        llm = "deepinfra/deepseek-ai/DeepSeek-R1"
+        llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
     else:
         llm = "claude-3-opus-20240229"
 
@@ -166,7 +166,7 @@ def rerun_retrosynthesis():
         return jsonify({"error": "Invalid SMILES string"}), 400
 
     if deepseek_r1:
-        llm = "deepinfra/deepseek-ai/DeepSeek-R1"
+        llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
     else:
         llm = "claude-3-opus-20240229"
 
