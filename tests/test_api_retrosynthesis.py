@@ -477,7 +477,7 @@ def test_health_pistachio_m1p1_success():
         "smiles": MOLECULE_1,
         "advanced_model": "True",
         "advanced_prompt": "True",
-        "model_version": CLAUDE_MODEL})
+        "model_version": PISTACHIO_MODEL})
 
     headers = {
         'x-api-key': X_API_KEY,
@@ -496,7 +496,7 @@ def test_health_pistachio_m1p0_success():
         "smiles": MOLECULE_1,
         "advanced_model": "True",
         "advanced_prompt": "False",
-        "model_version": CLAUDE_MODEL})
+        "model_version": PISTACHIO_MODEL})
 
     headers = {
         'x-api-key': X_API_KEY,
@@ -515,7 +515,7 @@ def test_health_pistachio_m0p1_success():
         "smiles": MOLECULE_1,
         "advanced_model": "False",
         "advanced_prompt": "True",
-        "model_version": CLAUDE_MODEL})
+        "model_version": PISTACHIO_MODEL})
 
     headers = {
         'x-api-key': X_API_KEY,
@@ -534,7 +534,7 @@ def test_health_pistachio_m0p0_success():
         "smiles": MOLECULE_1,
         "advanced_model": "False",
         "advanced_prompt": "False",
-        "model_version": CLAUDE_MODEL})
+        "model_version": PISTACHIO_MODEL})
 
     headers = {
         'x-api-key': X_API_KEY,
@@ -554,7 +554,7 @@ def test_health_pistachio_m1p1_fail():
         "smiles": EMPTY_RESPONSE,
         "advanced_model": "True",
         "advanced_prompt": "True",
-        "model_version": CLAUDE_MODEL})
+        "model_version": PISTACHIO_MODEL})
 
     headers = {
         'x-api-key': X_API_KEY,
@@ -573,7 +573,7 @@ def test_health_pistachio_m1p0_fail():
         "smiles": EMPTY_RESPONSE,
         "advanced_model": "True",
         "advanced_prompt": "False",
-        "model_version": CLAUDE_MODEL})
+        "model_version": PISTACHIO_MODEL})
 
     headers = {
         'x-api-key': X_API_KEY,
@@ -592,7 +592,7 @@ def test_health_pistachio_m0p1_fail():
         "smiles": EMPTY_RESPONSE,
         "advanced_model": "False",
         "advanced_prompt": "True",
-        "model_version": CLAUDE_MODEL})
+        "model_version": PISTACHIO_MODEL})
 
     headers = {
         'x-api-key': X_API_KEY,
@@ -611,7 +611,7 @@ def test_health_pistachio_m0p0_fail():
         "smiles": EMPTY_RESPONSE,
         "advanced_model": "False",
         "advanced_prompt": "False",
-        "model_version": CLAUDE_MODEL})
+        "model_version": PISTACHIO_MODEL})
 
     headers = {
         'x-api-key': X_API_KEY,
