@@ -37,7 +37,7 @@ def test_claude_adv_success():
 
 def test_deepseek_adv_success():
 
-    status_code, res_text = call_LLM(molecule=VALID_SMILE_STRING,
+    status_code, res_text = call_LLM(molecule="CC1=NC=C(N1CCO)[N+]([O-])=O",
                                      LLM=DEEPSEEK_FIREWORKS_MODEL)
     if not res_text:
         print("res_text is empty")
