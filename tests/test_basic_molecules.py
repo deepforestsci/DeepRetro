@@ -14,7 +14,7 @@ from src.utils.llm import call_LLM
 def test_basic_molecules():
     from src.variables import BASIC_MOLECULES
 
-    print("BASIC_MOLECULES: ", BASIC_MOLECULES)
+    # print("BASIC_MOLECULES: ", BASIC_MOLECULES)
     successful_molecules = []
     failed_molecules = []
 
@@ -61,7 +61,7 @@ def test_basic_molecules_adv_prompt_deepseek():
     from src.variables import BASIC_MOLECULES
     from tests.variables_test import DEEPSEEK_FIREWORKS_MODEL
 
-    print("BASIC_MOLECULES: ", BASIC_MOLECULES)
+    # print("BASIC_MOLECULES: ", BASIC_MOLECULES)
     successful_molecules = []
     failed_molecules = []
 
@@ -71,8 +71,8 @@ def test_basic_molecules_adv_prompt_deepseek():
                                       LLM = DEEPSEEK_FIREWORKS_MODEL)
             assert status_code == 200
             successful_molecules.append(molecule)
-        except Exception as e:
-            print(f"Error: {e}\n Molecule: {molecule}")
+        except Exception:
+            # print(f"Error: {e}\n Molecule: {molecule}")
             failed_molecules.append(molecule)
     if failed_molecules:
         print(f"Failed molecules: {failed_molecules}")
