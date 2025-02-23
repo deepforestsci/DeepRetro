@@ -103,7 +103,6 @@ def test_validate_json_fail():
 
     assert status_code != 200
 
-
 def test_validity_check_success():
     from tests.variables_test import VALID_CLAUDE_RESPONSE, CLAUDE_MODEL, VALID_SMILE_STRING
     from src.utils.llm import validate_split_json, split_json_master, validity_check
@@ -118,7 +117,6 @@ def test_validity_check_success():
         VALID_SMILE_STRING, res_molecules, res_explanations, res_confidence)
 
     assert output_pathways
-
 
 def test_validity_check_fail():
     from tests.variables_test import CLAUDE_MODEL, EMPTY_RESPONSE
