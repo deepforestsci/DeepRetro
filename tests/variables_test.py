@@ -12,14 +12,12 @@ OPENAI_MODEL = "gpt-4o"
 OPENAI_ADV_MODEL = "gpt-4o:adv"
 
 # Deepseek model
-DEEPSEEK_MODEL = "deepseek-2021-09-06"
+DEEPSEEK_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1"
 
-DEEPSEEK_ADV_MODEL = "deepseek-2021-09-06:adv"
+DEEPSEEK_ADV_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1:adv"
 
 DEEPSEEK_FIREWORKS_MODEL = "fireworks_ai/accounts/fireworks/models/deepseek-r1:adv"
 
-# AZ MODEL
-AZ_MODEL = "Pistachio_25:adv"
 
 # Valid claude model response
 VALID_CLAUDE_RESPONSE = 'Here is the single-step retrosynthesis analysis for the molecule CC(=O)CC:\n\n<cot>\n<thinking>\nThe target molecule CC(=O)CC contains a ketone functional group. Possible retrosynthetic disconnections to consider are:\n1) Disconnection of the C-C bond adjacent to the ketone, which could arise from an aldol condensation reaction.\n2) Disconnection of the C-C bond on the other side of the ketone, which could come from a Grignard addition to a carboxylic acid derivative like an ester.\n3) Reduction of the ketone to an alcohol, which could then be derived from an oxidation of the corresponding secondary alcohol.\n</thinking>\n\n<thinking>\nFor the aldol disconnection, the precursors would be acetone (CC(=O)C) and acetaldehyde (CC=O). The reaction would proceed via enolate formation of the acetone, followed by nucleophilic addition to the acetaldehyde. A subsequent dehydration step would give the α,β-unsaturated ketone product.\n</thinking>\n\n<thinking>\nFor the Grignard addition, the precursors would be propanoyl chloride (CCC(=O)Cl) and methylmagnesium bromide (CMgBr). The Grignard reagent would add to the carbonyl, followed by an acidic workup to give the final ketone product.  \n</thinking>\n\n<thinking>\nFor the alcohol reduction, the precursor would be butan-2-ol (CC(O)CC). Oxidation, potentially using a chromium reagent like pyridinium chlorochromate (PCC) or a Swern oxidation, would convert the secondary alcohol to the ketone.\n</thinking>\n\n</cot>\n\n<json>\n{\n  "data": [\n    ["CC(=O)C", "CC=O"],\n    ["CCC(=O)Cl", "CMgBr"],\n    ["CC(O)CC"]\n  ],\n  "explanation": [\n    "Aldol condensation of acetone and acetaldehyde, proceeding via enolate formation, nucleophilic addition, and dehydration",\n    "Grignard addition of methylmagnesium bromide to propanoyl chloride, followed by acidic workup",\n    "Oxidation of butan-2-ol, e.g. using PCC or Swern conditions"\n  ],\n  "confidence_scores": [\n    0.9,\n    0.7,\n    0.8\n  ]\n}\n</json>'
