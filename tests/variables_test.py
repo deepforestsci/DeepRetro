@@ -441,7 +441,7 @@ CLAUDE_ADV_RESPONSE_COT_BODY_MISSING = '''<cot>
 </json>
 '''
 
-
+# OpenAI valid response generated with advance prompt.
 OPENAI_ADV_RESPONSE = '''<cot>
 <thinking type="initial_assessment">
 1. Core Framework
@@ -558,7 +558,7 @@ The selected strategies are both innovative and practical, with a strong emphasi
 </json>
 '''
 
-
+# Deepseek valid response generated with advance prompt.
 DEEPSEEK_ADV_VALID_RESPONSE = '''
 
 <cot>
@@ -649,7 +649,7 @@ Prioritized approaches balance reliability and practicality:
 </json>
 '''
 
-
+# List of some advance molecules.
 MOLS_SMALL = {
     "Favipiravir": "NC(=O)C1=NC(F)=CN=C1O",
     "Chlorzoxazone": "ClC1=CC2=C(OC(=O)N2)C=C1",

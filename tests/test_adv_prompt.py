@@ -13,7 +13,8 @@ from tests.variables_test import VALID_SMILE_STRING, DEEPSEEK_FIREWORKS_MODEL, C
 
 
 def test_claude_adv_success():
-
+    """Tests call_LLM function with advance claude model.
+    """
     status_code, res_text = call_LLM(molecule=VALID_SMILE_STRING,
                                      LLM=CLAUDE_ADV_MODEL)
     if not res_text:
@@ -33,6 +34,8 @@ def test_claude_adv_success():
 
 
 def test_deepseek_adv_success():
+    """Tests call_LLM function with advance deepseek model(hosted in fireworks).
+    """
 
     status_code, res_text = call_LLM(molecule="CC1=NC=C(N1CCO)[N+]([O-])=O",
                                      LLM=DEEPSEEK_FIREWORKS_MODEL)
