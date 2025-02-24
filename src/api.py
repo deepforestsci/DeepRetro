@@ -23,6 +23,8 @@ CORS(app)
 # Predefined API key for authentication
 API_KEY = "your-secure-api-key"
 
+# Global storage for the latest retrosynthesis results
+latest_results = {}
 
 # Authentication decorator
 def require_api_key(f):
@@ -45,6 +47,8 @@ def retrosynthesis_api():
     """
     Endpoint to perform retrosynthesis on a SMILES string.
     """
+    global latest_results
+    
     data = request.get_json()
     if not data or 'smiles' not in data:
         return jsonify({
@@ -102,6 +106,8 @@ def retrosynthesis_api():
     # Run retrosynthesis
     try:
         result = main(smiles=smiles, llm=llm, az_model=az_model)
+        # Store the result for potential partial reruns
+        latest_results[smiles] = result
     except Exception as e:
         print(e)
         return jsonify({"error": "Error in retrosynthesis, Please rerun"}), 500
@@ -138,6 +144,8 @@ def rerun_retrosynthesis():
     """
     Endpoint to rerun retrosynthesis for a specific molecule.
     """
+    global latest_results
+    
     data = request.get_json()
     if not data or 'smiles' not in data:
         return jsonify({
@@ -191,6 +199,8 @@ def rerun_retrosynthesis():
     # Rerun retrosynthesis
     try:
         result = main(smiles=molecule, llm=llm, az_model=az_model)
+        # Store the result for potential partial reruns
+        latest_results[molecule] = result
     except Exception as e:
         print(e)
         return jsonify({"error": "Error in retrosynthesis, Please rerun"}), 500
@@ -199,123 +209,158 @@ def rerun_retrosynthesis():
 @app.route('/api/partial_rerun', methods=['POST'])
 @require_api_key
 def partial_rerun():
-   print("\n=== Starting Partial Rerun Process ===")
-   
-   data = request.get_json()
-   print(f"Received request data: {json.dumps(data, indent=2)}")
-   
-   try:
-       smiles = data['smiles']
-       from_step = int(data['steps'])
-       pathway_id = data.get('pathway_id', 1)
-       
-       # Get original result via retrosynthesis endpoint
-       retro_request = {
-           'smiles': smiles,
-           'advanced_model': data.get('advanced_model', "false"),
-           'advanced_prompt': data.get('advanced_prompt', "false"),
-           'model_version': data.get('model_version', "USPTO")
-       }
-       
-       with app.test_client() as client:
-           original_response = client.post(
-               '/api/retrosynthesis',
-               json=retro_request,
-               headers={'X-API-KEY': API_KEY}
-           )
-           if original_response.status_code != 200:
-               return jsonify({"error": "Could not get original synthesis"}), 404
-           original_result = original_response.get_json()
-       
-       # Get starting molecule
-       target_step = next(
-           (step for step in original_result['steps'] 
-            if int(step['step']) == from_step),
-           None
-       )
-       if not target_step:
-           return jsonify({"error": f"Step {from_step} not found"}), 404
-           
-       start_molecule = target_step['reactants'][0]['smiles']
-       print(f"\nStarting new synthesis from molecule: {start_molecule}")
-       
-       # Run new synthesis
-       llm = ("deepinfra/deepseek-ai/DeepSeek-R1" 
-              if data.get('advanced_model', "false").lower() == "true" 
-              else "claude-3-opus-20240229")
-       if data.get('advanced_prompt', "false").lower() == "true":
-           llm += ":adv"
-
-       new_result = main(
-           smiles=start_molecule,
-           llm=llm,
-           az_model=data.get('model_version', "USPTO")
-       )
-       
-       if isinstance(new_result, tuple):
-           new_result = {'steps': new_result[0], 'dependencies': new_result[1]}
-       
-       # Keep steps before from_step
-       kept_steps = [
-           step.copy() 
-           for step in original_result['steps'] 
-           if int(step['step']) < from_step
-       ]
-       
-       # Keep only dependencies for steps we're keeping
-       kept_deps = {
-           step_num: []  # Initialize with empty list - we'll set correct dependencies later
-           for step_num in [str(i) for i in range(1, from_step)]
-       }
-       
-       # Find max step number from kept steps
-       max_step = max(int(step['step']) for step in kept_steps)
-       
-       # Adjust new steps
-       new_steps = []
-       step_mapping = {}
-       
-       for idx, step in enumerate(new_result['steps']):
-           new_step_num = max_step + 1 + idx
-           step_mapping[step['step']] = str(new_step_num)
-           
-           adjusted_step = step.copy()
-           adjusted_step['step'] = str(new_step_num)
-           new_steps.append(adjusted_step)
-       
-       # Adjust dependencies for new steps
-       new_deps = {}
-       for old_num, deps in new_result['dependencies'].items():
-           new_num = step_mapping[old_num]
-           new_deps[new_num] = [step_mapping[d] for d in deps]
-       
-       # Link first new step to parent
-       parent_step = str(from_step - 1)
-       if parent_step in kept_deps:
-           kept_deps[parent_step] = [new_steps[0]['step']]  # Set new step as only dependency
-           
-       # For all other kept steps, preserve original dependencies if they're within kept steps
-       for step_num in kept_deps:
-           if step_num != parent_step:  # Skip the parent step as we've already set its deps
-               original_deps = original_result['dependencies'].get(step_num, [])
-               kept_deps[step_num] = [d for d in original_deps if int(d) < from_step]
-       
-       # Merge results
-       merged_result = {
-           'steps': kept_steps + new_steps,
-           'dependencies': {**kept_deps, **new_deps}
-       }
-       
-       print("\n=== Partial Rerun Complete ===")
-       return jsonify(merged_result), 200
-       
-   except Exception as e:
-       print(f"\nERROR in partial rerun:")
-       print(f"Exception: {str(e)}")
-       print(f"Traceback: {traceback.format_exc()}")
-       return jsonify({
-           "error": f"Error in partial retrosynthesis: {str(e)}"
-       }), 500
+    """
+    Endpoint to partially rerun retrosynthesis from a specific step.
+    Uses the stored results from the most recent retrosynthesis run.
+    """
+    global latest_results
+    
+    print("\n=== Starting Partial Rerun Process ===")
+    
+    data = request.get_json()
+    print(f"Received request data: {json.dumps(data, indent=2)}")
+    
+    try:
+        smiles = data['smiles']
+        from_step = int(data['steps'])
+        
+        # Check if we have stored results for this molecule
+        if smiles not in latest_results:
+            return jsonify({"error": "No previous results found for this molecule. Run retrosynthesis first."}), 400
+            
+        # Get the original result from our stored data
+        original_result = latest_results[smiles]
+        print(f"Found stored result for SMILES: {smiles}")
+        
+        # Get the starting molecule from the specified step
+        target_step = next(
+            (step for step in original_result['steps'] 
+             if int(step['step']) == from_step),
+            None
+        )
+        
+        if not target_step:
+            return jsonify({"error": f"Step {from_step} not found in the synthesis pathway"}), 404
+            
+        start_molecule = target_step['reactants'][0]['smiles']
+        print(f"\nStarting new synthesis from molecule: {start_molecule}")
+        
+        # Run new synthesis on the starting molecule by calling the retrosynthesis endpoint
+        retro_request = {
+            'smiles': start_molecule,
+            'advanced_model': data.get('advanced_model', "false"),
+            'advanced_prompt': data.get('advanced_prompt', "false"),
+            'model_version': data.get('model_version', "USPTO")
+        }
+        
+        with app.test_client() as client:
+            new_result_response = client.post(
+                '/api/retrosynthesis',
+                json=retro_request,
+                headers={'X-API-KEY': API_KEY}
+            )
+            if new_result_response.status_code != 200:
+                return jsonify({"error": f"Error running retrosynthesis on molecule {start_molecule}"}), 500
+            new_result = new_result_response.get_json()
+        
+        # Analyze the original structure to determine which steps to keep
+        # First identify all steps that are downstream of the target step
+        downstream_steps = set()
+        
+        def find_downstream_steps(step_num, deps):
+            """Recursively identify all steps that depend on the given step"""
+            for s, dep_list in deps.items():
+                if str(step_num) in dep_list:
+                    downstream_steps.add(s)
+                    find_downstream_steps(s, deps)
+        
+        find_downstream_steps(from_step, original_result['dependencies'])
+        
+        # Identify all steps in the branch containing the target step
+        target_branch = {str(from_step)}
+        
+        def find_branch_steps(step_num, deps):
+            """Recursively identify all steps in the same branch"""
+            if step_num in deps:
+                for dep in deps[step_num]:
+                    target_branch.add(dep)
+                    find_branch_steps(dep, deps)
+        
+        find_branch_steps(str(from_step), original_result['dependencies'])
+        
+        # Steps to remove = steps in target branch + downstream steps
+        steps_to_remove = target_branch.union(downstream_steps)
+        
+        # Keep steps that are not in the steps_to_remove set
+        kept_steps = [
+            step.copy() 
+            for step in original_result['steps'] 
+            if str(step['step']) not in steps_to_remove
+        ]
+        
+        # Keep dependencies for steps we're keeping, removing any references to removed steps
+        kept_deps = {}
+        for step_num, deps in original_result['dependencies'].items():
+            if step_num not in steps_to_remove:
+                # Filter out dependencies that are in steps_to_remove
+                kept_deps[step_num] = [d for d in deps if d not in steps_to_remove]
+        
+        # Find max step number from kept steps
+        max_step = 0
+        if kept_steps:
+            max_step = max(int(step['step']) for step in kept_steps)
+        
+        # Find the parent step to which we need to attach the new branch
+        parent_step = None
+        for step_num, deps in original_result['dependencies'].items():
+            if str(from_step) in deps and step_num not in steps_to_remove:
+                parent_step = step_num
+                break
+        
+        # Adjust new steps (renumber them starting from max_step + 1)
+        new_steps = []
+        step_mapping = {}
+        
+        for idx, step in enumerate(new_result['steps']):
+            new_step_num = max_step + 1 + idx
+            step_mapping[step['step']] = str(new_step_num)
+            
+            adjusted_step = step.copy()
+            adjusted_step['step'] = str(new_step_num)
+            new_steps.append(adjusted_step)
+        
+        # Adjust dependencies for new steps
+        new_deps = {}
+        for old_num, deps in new_result['dependencies'].items():
+            new_num = step_mapping[old_num]
+            new_deps[new_num] = [step_mapping[d] for d in deps]
+        
+        # Link first new step to parent step if one exists
+        if parent_step:
+            if parent_step in kept_deps:
+                kept_deps[parent_step].append(new_steps[0]['step'])
+            else:
+                kept_deps[parent_step] = [new_steps[0]['step']]
+        
+        # Merge results
+        merged_result = {
+            'steps': kept_steps + new_steps,
+            'dependencies': {**kept_deps, **new_deps}
+        }
+        
+        # Store the merged result as the latest result for this molecule
+        latest_results[smiles] = merged_result
+        
+        print("\n=== Partial Rerun Complete ===")
+        return jsonify(merged_result), 200
+        
+    except Exception as e:
+        print(f"\nERROR in partial rerun:")
+        print(f"Exception: {str(e)}")
+        print(f"Traceback: {traceback.format_exc()}")
+        return jsonify({
+            "error": f"Error in partial retrosynthesis: {str(e)}"
+        }), 500
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
