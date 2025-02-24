@@ -55,22 +55,13 @@ def log_message(message: str, logger=None):
         print(message)
 
 
-@cache_results
-def stability_checker(smiles: str,
-                      LLM: str = "claude-3-opus-20240229",
-                      temperature: float = 0.0):
-    """Calls the LLM model to predict the reagents used in the reaction
+def stability_checker(smiles: str):
+    """Calls the LLM model to check the stability of a molecule
 
     Parameters
     ----------
-    reactants : list[dict]
-        List of reactants dict with SMILES and metadata
-    product : list[dict]
-        Product dict with SMILES and metadata
-    LLM : str, optional
-        LLM model to use, by default "claude-3-opus-20240229"
-    temperature : float, optional
-        Temperature for the LLM model, by default 0.0
+    smiles : str
+        SMILES string of the molecule
 
     Returns
     -------
@@ -79,47 +70,19 @@ def stability_checker(smiles: str,
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
 
-    status, res = stability_llm_call(smiles, LLM, temperature)
+    if not is_valid_smiles(smiles):
+        log_message("Invalid SMILES string", logger)
+        return 400, []
 
-    # Make sure the LLM call was successful
-    if status != 200:
-        return status, ""
+    stability_dict = check_molecule_stability(smiles)
+    log_message(f"Stability dict: {stability_dict}", logger)
 
-    # Parse the reagents and add metadata
-    try:
-        reagents = res['data']
-        reagent_expl = res['explanation']
-    except Exception as e:
-        log_message(f"Error in parsing reagents: {e}")
-        return 404, ""
-
-    # Filter out invalid reagents
-    try:
-        reagents = [r for r in reagents if is_valid_smiles(r)]
-    except Exception as e:
-        log_message(f"Error in filtering reagents: {e}")
-        return 404, ""
-
-    # Flag if no reagents are found
-    if len(reagents) == 0:
-        return 404, ""
-
-    # Add metadata to the reagents
-    res_final = []
-    try:
-        for _, reagent in enumerate(reagents):
-            res_final.append({
-                "smiles": reagent,
-                "reagent_metadata": {
-                    "name": "",
-                    "chemical_formula": calc_chemical_formula(reagent),
-                    "mass": calc_mol_wt(reagent),
-                }
-            })
-    except Exception as e:
-        log_message(f"Error in adding metadata to reagents: {e}")
-        return 404, ""
-    return 200, res_final
+    if stability_dict['assessment'] == "Likely stable":
+        return 200, True
+    elif stability_dict['assessment'] == "Moderately stable":
+        return 200, True
+    else:
+        return 200, False
 
 
 def check_molecule_stability(smiles):
