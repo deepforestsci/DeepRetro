@@ -126,11 +126,15 @@ def check_molecule_stability(smiles):
     """
     Performs heuristic checks on a molecule given its SMILES string to estimate stability.
     
-    Args:
-        smiles (str): SMILES representation of the molecule
+    Parameters
+    ----------
+    smiles : str
+        SMILES string of the molecule
         
-    Returns:
-        dict: Dictionary containing stability assessment and various metrics
+    Returns
+    -------
+    results : dict
+        Dictionary containing stability assessment and various metrics
     """
     # Initialize results dictionary
     results = {
