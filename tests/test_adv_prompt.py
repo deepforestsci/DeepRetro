@@ -9,11 +9,8 @@ root_dir = rootutils.setup_root(".",
 
 
 from src.utils.llm import call_LLM
-# from src.variables import OPENAI_MODELS
 from tests.variables_test import VALID_SMILE_STRING, DEEPSEEK_FIREWORKS_MODEL, CLAUDE_ADV_MODEL
 
-
-print("Used smile string: ", VALID_SMILE_STRING)
 
 def test_claude_adv_success():
 
