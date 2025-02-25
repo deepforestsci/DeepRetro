@@ -7,20 +7,24 @@ root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
 
-from tests.variables_test import MOLECULE_1, BASE_URL, ENDPOINTS, X_API_KEY, DEEPSEEK_MODEL, CLAUDE_MODEL
+from tests.variables_test import MOLECULE_1, BASE_URL, ENDPOINTS, X_API_KEY, DEEPSEEK_FIREWORKS_MODEL
 
-# Health
-
-# Deepseek Health
-def test_health_deepseek_m1p1_success():
+def test_health_deepseek_success():
+    """Test the health of the DeepSeek model with advanced_model=True and advanced_prompt=False.
+    
+    expected output:
+        status_code: 200
+        response: {'status': 'healthy'}
+    """
   
     url = f"{BASE_URL}{ENDPOINTS['health']}"
 
     payload = json.dumps({
       "smiles": MOLECULE_1,
       "advanced_model": "True",
-      "advanced_prompt": "True",
-      "model_version": DEEPSEEK_MODEL})
+      "advanced_prompt": "False",
+      "llm": DEEPSEEK_FIREWORKS_MODEL,
+      "model_version": "USPTO"})
 
     headers = {
       'x-api-key': X_API_KEY,
@@ -30,141 +34,7 @@ def test_health_deepseek_m1p1_success():
     response = requests.request("GET", url, headers=headers, data=payload)
 
     assert response.status_code == 200
-
-
-def test_health_deepseek_m0p1_success():
-    url = f"{BASE_URL}{ENDPOINTS['health']}"
-
-    payload = json.dumps({
-        "smiles": MOLECULE_1,
-        "advanced_model": "False",
-        "advanced_prompt": "True",
-        "model_version": DEEPSEEK_MODEL})
-
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-
-    assert response.status_code == 200
-
-
-def test_health_deepseek_m1p0_success():
-    url = f"{BASE_URL}{ENDPOINTS['health']}"
-
-    payload = json.dumps({
-        "smiles": MOLECULE_1,
-        "advanced_model": "True",
-        "advanced_prompt": "False",
-        "model_version": DEEPSEEK_MODEL})
-
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-
-    assert response.status_code == 200
-
-
-def test_health_deepseek_m0p0_success():
-    url = f"{BASE_URL}{ENDPOINTS['health']}"
-
-    payload = json.dumps({
-        "smiles": MOLECULE_1,
-        "advanced_model": "False",
-        "advanced_prompt": "False",
-        "model_version": DEEPSEEK_MODEL})
-
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-
-    assert response.status_code == 200
-
-
-# Claude Health
-def test_health_claude_m1p1_success():
-  
-    url = f"{BASE_URL}{ENDPOINTS['health']}"
-
-    payload = json.dumps({
-      "smiles": MOLECULE_1,
-      "advanced_model": "True",
-      "advanced_prompt": "True",
-      "model_version": CLAUDE_MODEL})
-
-    headers = {
-      'x-api-key': X_API_KEY,
-      'Content-Type': 'application/json'
-    }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-
-    assert response.status_code == 200
-
-
-def test_health_claude_m0p1_success():
-    url = f"{BASE_URL}{ENDPOINTS['health']}"
-
-    payload = json.dumps({
-        "smiles": MOLECULE_1,
-        "advanced_model": "False",
-        "advanced_prompt": "True",
-        "model_version": CLAUDE_MODEL})
-
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-
-    assert response.status_code == 200
-
-
-def test_health_claude_m1p0_success():
-    url = f"{BASE_URL}{ENDPOINTS['health']}"
-
-    payload = json.dumps({
-        "smiles": MOLECULE_1,
-        "advanced_model": "True",
-        "advanced_prompt": "False",
-        "model_version": CLAUDE_MODEL})
-
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-
-    assert response.status_code == 200
-
-
-def test_health_claude_m0p0_success():
-    url = f"{BASE_URL}{ENDPOINTS['health']}"
-
-    payload = json.dumps({
-        "smiles": MOLECULE_1,
-        "advanced_model": "False",
-        "advanced_prompt": "False",
-        "model_version": CLAUDE_MODEL})
-
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-
-    assert response.status_code == 200
+    assert response.json() == {'status': 'healthy'}
 
 
 if __name__ == '__main__':
