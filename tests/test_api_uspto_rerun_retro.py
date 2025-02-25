@@ -10,8 +10,8 @@ root_dir = rootutils.setup_root(".",
 from tests.variables_test import MOLECULE_1, BASE_URL, ENDPOINTS, X_API_KEY, DEEPSEEK_FIREWORKS_MODEL, USPTO_MODEL, CLAUDE_ADV_MODEL
 
 
-def test_retrosynthesis_uspto_deepseek_m1p1_success():
-    url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
+def test_rerun_retro_uspto_deepseek_m1p1_success():
+    url = f"{BASE_URL}{ENDPOINTS['rerun_retro']}"
 
     payload = json.dumps({
         "smiles": MOLECULE_1,
@@ -32,8 +32,8 @@ def test_retrosynthesis_uspto_deepseek_m1p1_success():
     assert ['dependencies', 'steps'] == list(response.json().keys())
 
 
-def test_retrosynthesis_uspto_deepseek_m1p0_success():
-    url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
+def test_rerun_retro_uspto_deepseek_m1p0_success():
+    url = f"{BASE_URL}{ENDPOINTS['rerun_retro']}"
 
     payload = json.dumps({
         "smiles": MOLECULE_1,
@@ -54,8 +54,8 @@ def test_retrosynthesis_uspto_deepseek_m1p0_success():
     assert ['dependencies', 'steps'] == list(response.json().keys())
 
 
-def test_retrosynthesis_uspto_claude_m0p1_success():
-    url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
+def test_rerun_retro_uspto_claude_m0p1_success():
+    url = f"{BASE_URL}{ENDPOINTS['rerun_retro']}"
 
     payload = json.dumps({
         "smiles": MOLECULE_1,
@@ -76,8 +76,8 @@ def test_retrosynthesis_uspto_claude_m0p1_success():
     assert ['dependencies', 'steps'] == list(response.json().keys())
 
 
-def test_retrosynthesis_uspto_claude_m0p0_success():
-    url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
+def test_rerun_retro_uspto_claude_m0p0_success():
+    url = f"{BASE_URL}{ENDPOINTS['rerun_retro']}"
 
     payload = json.dumps({
         "smiles": MOLECULE_1,

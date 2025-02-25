@@ -18,9 +18,10 @@ DEEPSEEK_ADV_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1:adv"
 
 DEEPSEEK_FIREWORKS_MODEL = "fireworks_ai/accounts/fireworks/models/deepseek-r1:adv"
 
-# Pistachio
-PISTACHIO_MODEL = "Pistachio_25"
+# AZ Model
+USPTO_MODEL = "USPTO"
 
+PISTACHIO_MODEL = "Pistachio_25"
 
 # Valid claude model response
 VALID_CLAUDE_RESPONSE = 'Here is the single-step retrosynthesis analysis for the molecule CC(=O)CC:\n\n<cot>\n<thinking>\nThe target molecule CC(=O)CC contains a ketone functional group. Possible retrosynthetic disconnections to consider are:\n1) Disconnection of the C-C bond adjacent to the ketone, which could arise from an aldol condensation reaction.\n2) Disconnection of the C-C bond on the other side of the ketone, which could come from a Grignard addition to a carboxylic acid derivative like an ester.\n3) Reduction of the ketone to an alcohol, which could then be derived from an oxidation of the corresponding secondary alcohol.\n</thinking>\n\n<thinking>\nFor the aldol disconnection, the precursors would be acetone (CC(=O)C) and acetaldehyde (CC=O). The reaction would proceed via enolate formation of the acetone, followed by nucleophilic addition to the acetaldehyde. A subsequent dehydration step would give the α,β-unsaturated ketone product.\n</thinking>\n\n<thinking>\nFor the Grignard addition, the precursors would be propanoyl chloride (CCC(=O)Cl) and methylmagnesium bromide (CMgBr). The Grignard reagent would add to the carbonyl, followed by an acidic workup to give the final ketone product.  \n</thinking>\n\n<thinking>\nFor the alcohol reduction, the precursor would be butan-2-ol (CC(O)CC). Oxidation, potentially using a chromium reagent like pyridinium chlorochromate (PCC) or a Swern oxidation, would convert the secondary alcohol to the ketone.\n</thinking>\n\n</cot>\n\n<json>\n{\n  "data": [\n    ["CC(=O)C", "CC=O"],\n    ["CCC(=O)Cl", "CMgBr"],\n    ["CC(O)CC"]\n  ],\n  "explanation": [\n    "Aldol condensation of acetone and acetaldehyde, proceeding via enolate formation, nucleophilic addition, and dehydration",\n    "Grignard addition of methylmagnesium bromide to propanoyl chloride, followed by acidic workup",\n    "Oxidation of butan-2-ol, e.g. using PCC or Swern conditions"\n  ],\n  "confidence_scores": [\n    0.9,\n    0.7,\n    0.8\n  ]\n}\n</json>'
@@ -43,9 +44,7 @@ EMPTY_JSON_BODY_RESPONSE = 'Here is the single-step retrosynthesis analysis for 
 
 
 # Advance prompt vars
-
-
-CLAUDE_ADV_RESPONSE = '''<cot>
+CLAUDE_ADV_VALID_RESPONSE = '''<cot>
 <thinking type="initial_assessment">
 The target molecule CC(=O)CC has the following structural features:
 - Linear 4-carbon chain 
@@ -164,7 +163,6 @@ The proposed routes balance strategic elegance with practical considerations. Th
 }
 </json>
 '''
-
 
 
 CLAUDE_ADV_RESPONSE_COT_TAG_MISSING = '''
@@ -288,7 +286,6 @@ The proposed routes balance strategic elegance with practical considerations. Th
 '''
 
 
-
 CLAUDE_ADV_RESPONSE_THINKING_TAG_MISSING = '''<cot>
 The target molecule CC(=O)CC has the following structural features:
 - Linear 4-carbon chain 
@@ -402,7 +399,6 @@ The proposed routes balance strategic elegance with practical considerations. Th
 '''
 
 
-
 CLAUDE_ADV_RESPONSE_COT_BODY_MISSING = '''<cot>
 </cot>
 
@@ -449,9 +445,7 @@ CLAUDE_ADV_RESPONSE_COT_BODY_MISSING = '''<cot>
 </json>
 '''
 
-
-
-
+# OpenAI valid response generated with advance prompt.
 OPENAI_ADV_RESPONSE = '''<cot>
 <thinking type="initial_assessment">
 1. Core Framework
@@ -568,26 +562,98 @@ The selected strategies are both innovative and practical, with a strong emphasi
 </json>
 '''
 
-DEEPSEEK_ADV_RESPONSE = '''<cot>
+# Deepseek valid response generated with advance prompt.
+DEEPSEEK_ADV_VALID_RESPONSE = '''
+
+<cot>
 <thinking type="initial_assessment">
-The target molecule (3-pentanone, CC(=O)CC) features:
-1. Linear 5-carbon chain with central ketone
-2. No stereochemical complexity
-3. Symmetrical C3 position
-4. Potential for multiple straightforward disconnections
+The target molecule (acetic acid, CC(=O)O) is a simple carboxylic acid with:
+- Linear 2-carbon chain
+- Carboxylic acid functional group (-COOH)
+- No stereochemical complexity
+- No rings or branching
 
-Reflection: Initial analysis confirms simple aliphatic ketone structure. Symmetry at'''
+Validation confirms this is a valid, unambiguous structure appropriate for retrosynthetic analysis despite its simplicity.
+</thinking>
 
+<thinking type="strategic_analysis">
+Key disconnection opportunities:
+1. Carboxylic acid group disconnection
+2. Carbonyl group manipulation
+3. C-C bond formation strategies
 
+Potential approaches:
+- Hydrolysis of acid derivatives (chloride, nitrile)
+- Oxidation of aldehydes/alcohols
+- Carbonylation reactions
+- Grignard carboxylation
+</thinking>
 
+<thinking type="practical_considerations">
+Critical factors:
+- Commercial precursor availability
+- Reaction condition severity
+- Purification requirements
+- Safety considerations (especially for acetyl chloride)
+- Scalability of methods
+</thinking>
 
+<thinking type="final_selection">
+Prioritized approaches balance reliability and practicality:
+1. Acetyl chloride hydrolysis - most direct
+2. Acetonitrile hydrolysis - robust but harsh
+3. Acetaldehyde oxidation - requires strong oxidizer
+4. Grignard carboxylation - demonstrates C-C formation
+</thinking>
+</cot>
 
+<json>
+{
+  "thinking_process": [
+    {
+      "stage": "initial_assessment",
+      "analysis": "Identified acetic acid as simple carboxylic acid with linear structure and no stereochemical complexity. Confirmed validity for retrosynthetic analysis despite simplicity.",
+      "reflection": "While basic, the analysis ensures no overlooked features in this fundamental structure."
+    },
+    {
+      "stage": "strategic_analysis",
+      "analysis": "Focused on carboxylic acid group transformations and C-C bond formation. Considered hydrolysis, oxidation, and carboxylation strategies.",
+      "reflection": "Verified all standard carboxylic acid formation methods were addressed, including both functional group interconversion and bond-forming approaches."
+    },
+    {
+      "stage": "practical_considerations",
+      "analysis": "Evaluated safety of acetyl chloride handling, energy requirements for nitrile hydrolysis, and practicality of Grignard reactions at scale.",
+      "reflection": "Recognized industrial relevance of carbonylation but prioritized lab-feasible methods for this analysis."
+    },
+    {
+      "stage": "final_selection",
+      "analysis": "Selected approaches demonstrating different strategic philosophies: functional group interconversion vs. C-C bond formation.",
+      "reflection": "Ensured diversity in methodological approaches while maintaining practical viability."
+    }
+  ],
+  "data": [
+    ["CC(=O)Cl"],
+    ["CC#N"],
+    ["CC=O"],
+    ["CBr", "O=C=O"]
+  ],
+  "explanation": [
+    "Hydrolysis of acetyl chloride: Water nucleophilic acyl substitution at carbonyl carbon, HCl elimination. Immediate precursor with 100% atom economy.",
+    "Nitrile hydrolysis: Acid- or base-catalyzed conversion (H2SO4/H2O or NaOH/H2O2) requiring elevated temperatures.",
+    "Acetaldehyde oxidation: Using strong oxidizing agents like KMnO4/H+ or CrO3 under acidic conditions.",
+    "Grignard carboxylation: Methyl magnesium bromide reacting with dry ice (CO2), followed by acidic work-up."
+  ],
+  "confidence_scores": [
+    1.00,
+    0.95,
+    0.90,
+    0.85
+  ]
+}
+</json>
+'''
 
-
-
-
-
-
+# List of some advance molecules.
 MOLS_SMALL = {
     "Favipiravir": "NC(=O)C1=NC(F)=CN=C1O",
     "Chlorzoxazone": "ClC1=CC2=C(OC(=O)N2)C=C1",
@@ -615,6 +681,7 @@ MOLS_SMALL = {
     "Phenprocoumon": "CCC(C1=CC=CC=C1)C1=C(O)C2=C(OC1=O)C=CC=C2",
 }
 
+
 BASE_URL = "http://ec2-3-17-191-215.us-east-2.compute.amazonaws.com:5000"
 
 ENDPOINTS = {
@@ -626,4 +693,3 @@ ENDPOINTS = {
 MOLECULE_1 = "COC1=CC(C(O)C(C)N)=C(OC)C=C1"
 
 X_API_KEY = "your-secure-api-key"
-
