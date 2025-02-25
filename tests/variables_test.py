@@ -12,11 +12,15 @@ OPENAI_MODEL = "gpt-4o"
 OPENAI_ADV_MODEL = "gpt-4o:adv"
 
 # Deepseek model
-DEEPSEEK_MODEL = "deepseek-2021-09-06"
+DEEPSEEK_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1"
 
-DEEPSEEK_ADV_MODEL = "deepseek-2021-09-06:adv"
+DEEPSEEK_ADV_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1:adv"
 
-# Pistachio
+DEEPSEEK_FIREWORKS_MODEL = "fireworks_ai/accounts/fireworks/models/deepseek-r1:adv"
+
+# AZ Model
+USPTO_MODEL = "USPTO"
+
 PISTACHIO_MODEL = "Pistachio_25"
 
 # Valid claude model response
@@ -40,9 +44,7 @@ EMPTY_JSON_BODY_RESPONSE = 'Here is the single-step retrosynthesis analysis for 
 
 
 # Advance prompt vars
-
-
-CLAUDE_ADV_RESPONSE = '''<cot>
+CLAUDE_ADV_VALID_RESPONSE = '''<cot>
 <thinking type="initial_assessment">
 The target molecule CC(=O)CC has the following structural features:
 - Linear 4-carbon chain 
@@ -161,7 +163,6 @@ The proposed routes balance strategic elegance with practical considerations. Th
 }
 </json>
 '''
-
 
 
 CLAUDE_ADV_RESPONSE_COT_TAG_MISSING = '''
@@ -285,7 +286,6 @@ The proposed routes balance strategic elegance with practical considerations. Th
 '''
 
 
-
 CLAUDE_ADV_RESPONSE_THINKING_TAG_MISSING = '''<cot>
 The target molecule CC(=O)CC has the following structural features:
 - Linear 4-carbon chain 
@@ -399,7 +399,6 @@ The proposed routes balance strategic elegance with practical considerations. Th
 '''
 
 
-
 CLAUDE_ADV_RESPONSE_COT_BODY_MISSING = '''<cot>
 </cot>
 
@@ -446,9 +445,7 @@ CLAUDE_ADV_RESPONSE_COT_BODY_MISSING = '''<cot>
 </json>
 '''
 
-
-
-
+# OpenAI valid response generated with advance prompt.
 OPENAI_ADV_RESPONSE = '''<cot>
 <thinking type="initial_assessment">
 1. Core Framework
@@ -565,26 +562,98 @@ The selected strategies are both innovative and practical, with a strong emphasi
 </json>
 '''
 
-DEEPSEEK_ADV_RESPONSE = '''<cot>
+# Deepseek valid response generated with advance prompt.
+DEEPSEEK_ADV_VALID_RESPONSE = '''
+
+<cot>
 <thinking type="initial_assessment">
-The target molecule (3-pentanone, CC(=O)CC) features:
-1. Linear 5-carbon chain with central ketone
-2. No stereochemical complexity
-3. Symmetrical C3 position
-4. Potential for multiple straightforward disconnections
+The target molecule (acetic acid, CC(=O)O) is a simple carboxylic acid with:
+- Linear 2-carbon chain
+- Carboxylic acid functional group (-COOH)
+- No stereochemical complexity
+- No rings or branching
 
-Reflection: Initial analysis confirms simple aliphatic ketone structure. Symmetry at'''
+Validation confirms this is a valid, unambiguous structure appropriate for retrosynthetic analysis despite its simplicity.
+</thinking>
 
+<thinking type="strategic_analysis">
+Key disconnection opportunities:
+1. Carboxylic acid group disconnection
+2. Carbonyl group manipulation
+3. C-C bond formation strategies
 
+Potential approaches:
+- Hydrolysis of acid derivatives (chloride, nitrile)
+- Oxidation of aldehydes/alcohols
+- Carbonylation reactions
+- Grignard carboxylation
+</thinking>
 
+<thinking type="practical_considerations">
+Critical factors:
+- Commercial precursor availability
+- Reaction condition severity
+- Purification requirements
+- Safety considerations (especially for acetyl chloride)
+- Scalability of methods
+</thinking>
 
+<thinking type="final_selection">
+Prioritized approaches balance reliability and practicality:
+1. Acetyl chloride hydrolysis - most direct
+2. Acetonitrile hydrolysis - robust but harsh
+3. Acetaldehyde oxidation - requires strong oxidizer
+4. Grignard carboxylation - demonstrates C-C formation
+</thinking>
+</cot>
 
+<json>
+{
+  "thinking_process": [
+    {
+      "stage": "initial_assessment",
+      "analysis": "Identified acetic acid as simple carboxylic acid with linear structure and no stereochemical complexity. Confirmed validity for retrosynthetic analysis despite simplicity.",
+      "reflection": "While basic, the analysis ensures no overlooked features in this fundamental structure."
+    },
+    {
+      "stage": "strategic_analysis",
+      "analysis": "Focused on carboxylic acid group transformations and C-C bond formation. Considered hydrolysis, oxidation, and carboxylation strategies.",
+      "reflection": "Verified all standard carboxylic acid formation methods were addressed, including both functional group interconversion and bond-forming approaches."
+    },
+    {
+      "stage": "practical_considerations",
+      "analysis": "Evaluated safety of acetyl chloride handling, energy requirements for nitrile hydrolysis, and practicality of Grignard reactions at scale.",
+      "reflection": "Recognized industrial relevance of carbonylation but prioritized lab-feasible methods for this analysis."
+    },
+    {
+      "stage": "final_selection",
+      "analysis": "Selected approaches demonstrating different strategic philosophies: functional group interconversion vs. C-C bond formation.",
+      "reflection": "Ensured diversity in methodological approaches while maintaining practical viability."
+    }
+  ],
+  "data": [
+    ["CC(=O)Cl"],
+    ["CC#N"],
+    ["CC=O"],
+    ["CBr", "O=C=O"]
+  ],
+  "explanation": [
+    "Hydrolysis of acetyl chloride: Water nucleophilic acyl substitution at carbonyl carbon, HCl elimination. Immediate precursor with 100% atom economy.",
+    "Nitrile hydrolysis: Acid- or base-catalyzed conversion (H2SO4/H2O or NaOH/H2O2) requiring elevated temperatures.",
+    "Acetaldehyde oxidation: Using strong oxidizing agents like KMnO4/H+ or CrO3 under acidic conditions.",
+    "Grignard carboxylation: Methyl magnesium bromide reacting with dry ice (CO2), followed by acidic work-up."
+  ],
+  "confidence_scores": [
+    1.00,
+    0.95,
+    0.90,
+    0.85
+  ]
+}
+</json>
+'''
 
-
-
-
-
-
+# List of some advance molecules.
 MOLS_SMALL = {
     "Favipiravir": "NC(=O)C1=NC(F)=CN=C1O",
     "Chlorzoxazone": "ClC1=CC2=C(OC(=O)N2)C=C1",
@@ -612,6 +681,7 @@ MOLS_SMALL = {
     "Phenprocoumon": "CCC(C1=CC=CC=C1)C1=C(O)C2=C(OC1=O)C=CC=C2",
 }
 
+
 BASE_URL = "http://ec2-3-17-191-215.us-east-2.compute.amazonaws.com:5000"
 
 ENDPOINTS = {
@@ -623,4 +693,3 @@ ENDPOINTS = {
 MOLECULE_1 = "COC1=CC(C(O)C(C)N)=C(OC)C=C1"
 
 X_API_KEY = "your-secure-api-key"
-
