@@ -10,6 +10,12 @@ root_dir = rootutils.setup_root(".",
 from tests.variables_test import BASE_URL, ENDPOINTS, X_API_KEY, DEEPSEEK_FIREWORKS_MODEL, USPTO_MODEL, CLAUDE_ADV_MODEL, PISTACHIO_MODEL
 
 def test_retrosynthesis_fail():
+    """Tests retrosynthesis endpoint with empty input("")
+
+    Expected output:
+        status_code: 500
+        error message: status code and error message
+    """
     url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
 
     payload = json.dumps({
@@ -31,6 +37,12 @@ def test_retrosynthesis_fail():
 
 
 def test_rerun_retro_fail():
+    """Tests rerun_retrosynthesis endpoint with empty input("")
+
+    Expected output:
+        status_code: 500
+        error message: status code and error message
+    """
     url = f"{BASE_URL}{ENDPOINTS['rerun_retro']}"
 
     payload = json.dumps({
