@@ -8,7 +8,9 @@ from src.utils.job_context import logger as context_logger
 def rec_run_prithvi(molecule: str,
                     job_id: str,
                     llm: str = "claude-3-opus-20240229",
-                    az_model: str = "USPTO") -> tuple[dict, bool]:
+                    az_model: str = "USPTO",
+                    stability_flag: str = "False",
+                    hallucination_check: str = "False") -> tuple[dict, bool]:
     """Recursive function to run Prithvi on a molecule
 
     Parameters
@@ -32,7 +34,10 @@ def rec_run_prithvi(molecule: str,
     if not solved:
         logger.info(f"AZ failed for {molecule}, running LLM")
         out_pathways, out_explained, out_confidence = llm_pipeline(
-            molecule, llm)
+            molecule=molecule,
+            LLM=llm,
+            stability_flag=stability_flag,
+            hallucination_check=hallucination_check)
         result_dict = {
             'type':
             'mol',
@@ -58,7 +63,13 @@ def rec_run_prithvi(molecule: str,
             if isinstance(pathway, list):
                 temp_stat = []
                 for mol in pathway:
-                    res, stat = rec_run_prithvi(mol, job_id, llm)
+                    res, stat = rec_run_prithvi(
+                        molecule=mol,
+                        job_id=job_id,
+                        llm=llm,
+                        az_model=az_model,
+                        stability_flag=stability_flag,
+                        hallucination_check=hallucination_check)
                     if stat:
                         temp_stat.append(True)
                         result_dict['children'][0]['children'].append(res)
@@ -66,7 +77,13 @@ def rec_run_prithvi(molecule: str,
                 if all(temp_stat):
                     solved = True
             else:
-                res, solved = rec_run_prithvi(pathway, job_id, llm)
+                res, solved = rec_run_prithvi(
+                    molecule=pathway,
+                    job_id=job_id,
+                    llm=llm,
+                    az_model=az_model,
+                    stability_flag=stability_flag,
+                    hallucination_check=hallucination_check)
                 result_dict['children'][0]['children'].append(res)
             if solved:
                 logger.info('breaking')

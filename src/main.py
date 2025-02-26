@@ -23,7 +23,9 @@ load_dotenv()
 
 def main(smiles: str,
          llm: str = "claude-3-opus-20240229",
-         az_model: str = "USPTO") -> Any:
+         az_model: str = "USPTO",
+         stability_flag: str = "False",
+         hallucination_check: str = "False") -> Any:
     """Run the retrosynthesis on specific molecule.
 
     Parameters
@@ -45,6 +47,10 @@ def main(smiles: str,
     log.info("-" * 50)
     log.info("Application initialization complete")
 
-    res = run_prithvi(molecule=smiles, llm=llm, az_model=az_model)
+    res = run_prithvi(molecule=smiles,
+                      llm=llm,
+                      az_model=az_model,
+                      stability_flag=stability_flag,
+                      hallucination_check=hallucination_check)
     logging.info(f"Retrosynthesis result: {res}")
     return res

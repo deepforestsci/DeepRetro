@@ -1,0 +1,87 @@
+smiles, common_name
+CC,
+O,
+C,
+CCO,
+CCOC,
+CCOCC,
+CCOCO,
+CCOCOC,
+ClC(=O)O,
+CC(=O)Cl,
+Cl,
+Br,
+F,
+I,
+O=C=O,
+CCCl,
+CCBr,
+CCF,
+CO,
+CCO,Ethanol
+CC(=O)O,Acetic acid
+CCBr,Bromoethane
+CCCl,Chloroethane
+CCN,Ethylamine
+O=C=O,Carbon dioxide
+C=O,Formaldehyde
+CC=O,Acetaldehyde
+CCCC,Butane
+C=C,Ethylene
+C#C,Acetylene
+ClCCl,Chloroform
+C1CCCCC1,Cyclohexane
+C1=CC=CC=C1,Benzene
+CCOCC,Diethyl ether
+O,Water
+C,Methane
+C1CCOC1,Tetrahydrofuran (THF)
+N#N,Nitrogen
+O=O,Oxygen
+O=S(=O)(O)O,Sulfuric acid
+CCOC(=O)C,Ethyl acetate
+NC=O,Formamide
+CC(=O)C,Acetone
+CC#N,Acetonitrile
+C1C=CC=CC=1C,Cyclopentadiene
+CSCC,Dimethyl sulfide
+NCCO,Ethanolamine
+CC(C)O,Isopropanol
+CC=CC,1-Butene
+CC(C)(C)O,Tert-butanol
+CC=O,Acetaldehyde
+CC(=O)N,Acetamide
+CC(C)C,Isobutane
+C=CC,Propene
+C1=CC=CC=C1O,Phenol
+C1=CC=C(C=C1)O,Hydroquinone
+C1=CC=C(C=C1)Cl,Chlorobenzene
+C1=CC=C(C=C1)Br,Bromobenzene
+C1=CC=C(C=C1)I,Iodobenzene
+P(=O)(O)O,Phosphoric acid
+P(Cl)(Cl)Cl,Phosphorus trichloride
+P,
+[K+].[OH-],Potassium hydroxide
+[Na+].[OH-],Sodium hydroxide
+[Li+].[OH-],Lithium hydroxide
+[K+].[Cl-],Potassium chloride
+[Na+].[Cl-],Sodium chloride
+[Li+].[Cl-],Lithium chloride
+NaCN,Sodium cyanide
+NaOH,Sodium hydroxide
+H2SO4,Sulfuric acid
+HCl,Hydrochloric acid
+HBr,Hydrobromic acid
+HI,Hydroiodic acid
+H2O2,Hydrogen peroxide
+H2O,Water
+NH3,Ammonia
+H2,Hydrogen gas
+O2,Oxygen gas
+N2,Nitrogen gas
+CO2,Carbon dioxide
+CO,Carbon monoxide
+NaBr,Sodium bromide
+[K+].[C-]#N,Potassium cyanide
+[Na+].[C-]#N,Sodium cyanide
+CC(C)[Mg]Br,Grignard reagent
