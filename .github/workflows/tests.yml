@@ -12,6 +12,8 @@ on:
 jobs:
     test:
         runs-on: ubuntu-latest
+        env:
+            ENABLE_LOGGING: False
         defaults:
             run:
                 working-directory: ./tests/
