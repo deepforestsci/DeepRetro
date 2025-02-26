@@ -11,9 +11,14 @@
     <script src="config.js"></script>
     <style>
         :root {
-            --primary: #2563eb;
-            --error: #dc2626;
-            --success: #16a34a;
+            --primary: #222222;
+            --secondary: #444444;
+            --error: #777777;
+            --success: #333333;
+            --background: #ffffff;
+            --text: #000000;
+            --border: #cccccc;
+            --hover: #f5f5f5;
         }
 
         body {
@@ -22,7 +27,8 @@
             margin: 40px auto;
             padding: 0 20px;
             line-height: 1.6;
-            color: #1a1a1a;
+            color: var(--text);
+            background-color: var(--background);
         }
 
         .container {
@@ -39,7 +45,7 @@
         input {
             flex: 1;
             padding: 12px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--border);
             border-radius: 6px;
             font-size: 16px;
         }
@@ -47,7 +53,7 @@
         input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(34, 34, 34, 0.1);
         }
 
         button {
@@ -63,10 +69,11 @@
 
         button:hover {
             opacity: 0.9;
+            background: var(--secondary);
         }
 
         button:disabled {
-            background: #94a3b8;
+            background: #999999;
             cursor: not-allowed;
         }
 
@@ -77,29 +84,31 @@
         }
 
         .status.error {
-            background: #fef2f2;
+            background: #f8f8f8;
             color: var(--error);
-            border: 1px solid #fee2e2;
+            border: 1px solid #eeeeee;
         }
 
         .status.success {
-            background: #f0fdf4;
+            background: #f8f8f8;
             color: var(--success);
-            border: 1px solid #dcfce7;
+            border: 1px solid #eeeeee;
         }
 
         .result {
-            background: #f8fafc;
-            border: 1px solid #e5e7eb;
+            background: #f8f8f8;
+            border: 1px solid var(--border);
             border-radius: 6px;
             padding: 16px;
             white-space: pre-wrap;
             display: none;
             overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         .examples {
-            color: #64748b;
+            color: #555555;
             font-size: 14px;
         }
 
@@ -121,14 +130,22 @@
         }
 
         .test-controls {
-            background: #f8fafc;
-            border: 1px solid #e5e7eb;
+            background: #f8f8f8;
+            border: 1px solid var(--border);
             border-radius: 6px;
             padding: 20px;
             margin-bottom: 20px;
         }
+        
+        .test-controls h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
 
-        /* Graph styles */
+        /* Graph styles - not touching as requested */
         .links line {
             stroke: #999;
             stroke-opacity: 0.6;
@@ -175,6 +192,7 @@
 
         .toggle-results button:hover {
             opacity: 0.9;
+            background: var(--secondary);
         }
 
         .toggle-switch {
@@ -231,39 +249,231 @@
 
         .toggle-label {
             font-size: 14px;
-            color: #64748b;
+            color: #555555;
         }
 
         .download-btn {
-            background: var(--success);
-            display: none;
-            margin-top: 12px;
+            background: var(--primary);
+            margin: 0 0 15px 0;
+            display: block;
         }
 
         .download-btn:hover {
             opacity: 0.9;
+            background: var(--secondary);
         }
 
         .model-select {
-            padding: 12px;
-            border: 1px solid #e5e7eb;
+            padding: 8px;
+            border: 1px solid var(--border);
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 14px;
             background-color: white;
+            width: 200px;
         }
 
         .model-select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(34, 34, 34, 0.1);
+        }
+
+        .pathway-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .steps-select {
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: white;
+        }
+
+        .steps-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(34, 34, 34, 0.1);
+        }
+
+        .rerun-btn {
+            display: none;
+            background: var(--primary);
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .rerun-btn:hover {
+            background: var(--secondary);
+        }
+
+        .rerun-btn:disabled {
+            background: #999999;
+            cursor: not-allowed;
+        }
+
+        .rerun-btn .loading {
+            width: 16px;
+            height: 16px;
+            border-width: 2px;
+        }
+
+        .controls-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 20px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fff;
+        }
+        
+        @media (max-width: 768px) {
+            .rerun-control {
+                width: 100%;
+            }
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .pathway-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .rerun-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: space-between;
+        }
+
+        .rerun-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: calc(50% - 8px);
+            min-width: 300px;
+            margin-bottom: 15px;
+        }
+
+        .rerun-label {
+            font-size: 14px;
+            color: #333;
+            min-width: 80px;
         }
 
         #graph {
             width: 100%;
             min-height: 600px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--border);
             border-radius: 6px;
             margin-top: 20px;
+        }
+
+        /* New styles for the polished UI */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .logo {
+            height: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            max-height: 40px;
+            max-width: 120px;
+            object-fit: contain;
+        }
+
+        .advanced-settings {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .settings-toggle {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-toggle:hover {
+            color: var(--secondary);
+        }
+
+        .settings-content {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .json-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .json-toggle:hover {
+            background-color: #f0f0f0;
+        }
+
+        .json-toggle-icon {
+            font-weight: bold;
+        }
+
+        .arrow-down::after {
+            content: "▼";
+            font-size: 12px;
+        }
+
+        .arrow-up::after {
+            content: "▲";
+            font-size: 12px;
         }
 
         @keyframes spin {
@@ -276,41 +486,68 @@
 
 <body>
     <div class="container">
-        <h1>Retrosynthesis Analysis</h1>
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <img id="logo-img" src="./dfs.png" alt="Retrosynthesis Logo">
+                </div>
+                <h1>Retrosynthesis Analysis</h1>
+            </div>
+            <div class="toggle-view">
+                <button onclick="toggleView('api')">API Test</button>
+                <button onclick="toggleView('file')">File Upload</button>
+            </div>
+        </div>
 
-        <div class="toggle-view">
-            <button onclick="toggleView('api')">API Test View</button>
-            <button onclick="toggleView('file')">File Upload View</button>
+        <div class="advanced-settings">
+            <div class="settings-toggle" onclick="toggleSettings()">
+                <span>Advanced Settings</span>
+                <span class="arrow-down" id="settings-arrow"></span>
+            </div>
+            <div class="settings-content" id="settings-content">
+            <div class="toggle-row">
+                    <label for="modelVersion" class="toggle-label" style="margin-right: 10px;">Model Version:</label>
+                    <select id="modelVersion" class="model-select">
+                        <option value="USPTO">USPTO</option>
+                        <option value="Pistachio_25">Pistachio (25)</option>
+                        <option value="Pistachio_50">Pistachio (50)</option>
+                        <option value="Pistachio_100">Pistachio (100)</option>
+                        <option value="Pistachio_100+">Pistachio (100+)</option>
+                    </select>
+                </div>
+                <div class="toggle-row">
+                    <div class="toggle-switch">
+                        <label class="switch">
+                            <input type="checkbox" id="advancedToggle">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label">Advanced Model</span>
+                    </div>
+                </div>
+                <div class="toggle-row">
+                    <div class="toggle-switch">
+                        <label class="switch">
+                            <input type="checkbox" id="promptToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label">Advanced Prompt</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="apiView">
             <div class="input-group">
                 <input type="text" id="smiles" placeholder="Enter SMILES string" aria-label="SMILES input">
-                <select id="modelVersion" class="model-select">
-                    <option value="USPTO">USPTO</option>
-                    <option value="Pistachio_25">Pistachio (25)</option>
-                    <option value="Pistachio_50">Pistachio (50)</option>
-                    <option value="Pistachio_100">Pistachio (100)</option>
-                    <option value="Pistachio_100+">Pistachio (100+)</option>
-                </select>
-                <div class="toggle-switch">
-                    <label class="switch">
-                        <input type="checkbox" id="advancedToggle">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="toggle-label">Advanced Model</span>
-                </div>
-                <div class="toggle-switch">
-                    <label class="switch">
-                        <input type="checkbox" id="promptToggle">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="toggle-label">Advanced Prompt</span>
-                </div>
                 <button onclick="analyze()" id="analyzeBtn">Analyze</button>
             </div>
             <div id="status" class="status"></div>
-            <div id="result" class="result"></div>
+            
+            <div class="json-toggle" onclick="toggleJson()" id="json-toggle" style="display: none;">
+                <span>JSON Result</span>
+                <span class="json-toggle-icon arrow-down" id="json-arrow"></span>
+            </div>
+            <div id="result" class="result" style="display: none;"></div>
         </div>
         
         <div id="fileView" style="display: none;">
@@ -318,6 +555,14 @@
                 <h3>Test with JSON File</h3>
                 <input type="file" id="fileInput" accept=".json">
             </div>
+            
+            <div id="fileStatus" class="status" style="display: none;"></div>
+            
+            <div class="json-toggle" id="file-json-toggle" style="display: none;">
+                <span>JSON Result</span>
+                <span class="json-toggle-icon arrow-down" id="file-json-arrow"></span>
+            </div>
+            <div id="file-result" class="result" style="display: none;"></div>
         </div>
 
         <div id="graph"></div>
@@ -327,14 +572,132 @@
         const API_URL = 'http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
         const API_KEY = 'your-secure-api-key';
 
+        // Setup file upload handler
+        function setupFileUploadHandler() {
+            const fileInput = document.getElementById('fileInput');
+            const fileStatus = document.getElementById('fileStatus');
+            const fileJsonToggle = document.getElementById('file-json-toggle');
+            const fileResult = document.getElementById('file-result');
+            
+            fileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        // Try to parse the JSON file
+                        const jsonData = JSON.parse(e.target.result);
+                        
+                        // Format and display JSON
+                        const formattedJson = JSON.stringify(jsonData, null, 2);
+                        fileResult.textContent = formattedJson;
+                        
+                        // Show JSON toggle and make it visible
+                        fileJsonToggle.style.display = 'flex';
+                        fileResult.style.display = 'block';
+                        document.getElementById('file-json-arrow').className = 'json-toggle-icon arrow-up';
+                        
+                        // Add click handler to toggle
+                        fileJsonToggle.onclick = function() {
+                            if (fileResult.style.display === 'block') {
+                                fileResult.style.display = 'none';
+                                document.getElementById('file-json-arrow').className = 'json-toggle-icon arrow-down';
+                            } else {
+                                fileResult.style.display = 'block';
+                                document.getElementById('file-json-arrow').className = 'json-toggle-icon arrow-up';
+                            }
+                        };
+                        
+                        // Render the graph if the data has the right structure
+                        if (jsonData.steps) {
+                            document.getElementById('graph').innerHTML = '';
+                            try {
+                                const processedTree = processData(jsonData);
+                                const rootStep = processedTree['0'];
+                                renderGraph(rootStep);
+                            } catch (graphError) {
+                                console.error('Error rendering graph:', graphError);
+                                // Show graph error but don't interrupt JSON display
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                        // Show error in the JSON result area
+                        fileResult.textContent = 'Error parsing JSON file: ' + error.message;
+                        fileResult.style.display = 'block';
+                        fileJsonToggle.style.display = 'flex';
+                        fileStatus.className = 'status error';
+                        fileStatus.textContent = 'Error: ' + error.message;
+                        fileStatus.style.display = 'block';
+                    }
+                };
+                
+                reader.readAsText(file);
+            });
+        }
+
+        // New functions for toggling settings and JSON display
+        function toggleSettings() {
+            const content = document.getElementById('settings-content');
+            const arrow = document.getElementById('settings-arrow');
+            
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+                arrow.className = 'arrow-down';
+            } else {
+                content.style.display = 'block';
+                arrow.className = 'arrow-up';
+            }
+        }
+
+        function toggleJson() {
+            const result = document.getElementById('result');
+            const arrow = document.getElementById('json-arrow');
+            
+            if (result.style.display === 'block') {
+                result.style.display = 'none';
+                arrow.className = 'json-toggle-icon arrow-down';
+            } else {
+                result.style.display = 'block';
+                arrow.className = 'json-toggle-icon arrow-up';
+            }
+        }
+
         function toggleView(view) {
             document.getElementById('apiView').style.display = view === 'api' ? 'block' : 'none';
             document.getElementById('fileView').style.display = view === 'file' ? 'block' : 'none';
+            
             // Clear the graph when switching views
             document.getElementById('graph').innerHTML = '';
-            // Reset status and result
+            
+            // Reset status
             document.getElementById('status').style.display = 'none';
-            document.getElementById('result').style.display = 'none';
+            
+            // Clear any existing elements from API view
+            const existingJsonToggle = document.getElementById('json-toggle');
+            if (existingJsonToggle) existingJsonToggle.remove();
+            
+            const existingResult = document.getElementById('result');
+            if (existingResult) existingResult.remove();
+            
+            const existingDownloadBtn = document.querySelector('.download-btn');
+            if (existingDownloadBtn) existingDownloadBtn.remove();
+            
+            const existingControlsContainer = document.querySelector('.controls-container');
+            if (existingControlsContainer) existingControlsContainer.remove();
+
+            // Display or hide advanced settings based on the view
+            const advancedSettings = document.querySelector('.advanced-settings');
+            if (advancedSettings) {
+                advancedSettings.style.display = view === 'api' ? 'block' : 'none';
+            }
+            
+            // If we're switching to file view, set up the file upload handler if it hasn't been already
+            if (view === 'file' && !window.fileHandlerInitialized) {
+                setupFileUploadHandler();
+                window.fileHandlerInitialized = true;
+            }
         }
 
         function downloadResults(results) {
@@ -357,7 +720,19 @@
             const promptToggle = document.getElementById('promptToggle');
             const button = document.getElementById('analyzeBtn');
             const status = document.getElementById('status');
-            const result = document.getElementById('result');
+            
+            // Remove any existing elements
+            const existingJsonToggle = document.getElementById('json-toggle');
+            if (existingJsonToggle) existingJsonToggle.remove();
+            
+            const existingResult = document.getElementById('result');
+            if (existingResult) existingResult.remove();
+            
+            const existingDownloadBtn = document.querySelector('.download-btn');
+            if (existingDownloadBtn) existingDownloadBtn.remove();
+            
+            const existingControlsContainer = document.querySelector('.controls-container');
+            if (existingControlsContainer) existingControlsContainer.remove();
 
             const smiles = smilesInput.value.trim();
             if (!smiles) return;
@@ -366,7 +741,6 @@
                 button.disabled = true;
                 button.innerHTML = `<span class="loading"></span>${isRerun ? 'Rerunning...' : 'Analyzing...'}`;
                 status.style.display = 'none';
-                result.style.display = 'none';
 
                 // Create endpoints from config
                 const endpoints = config.instances.map(baseUrl => {
@@ -413,51 +787,184 @@
                     return acc;
                 }, {});
 
-                // Clear existing controls
-                const existingControls = document.getElementById('pathway-controls');
-                if (existingControls) {
-                    existingControls.remove();
-                }
-                
-                // Remove existing download button
-                const existingDownloadBtn = document.querySelector('.download-btn');
-                if (existingDownloadBtn) {
-                    existingDownloadBtn.remove();
-                }
-
-                // Display the first result by default
+                // Create the necessary containers
                 const formattedJson = JSON.stringify(results.instance1, null, 2);
-                result.textContent = formattedJson;
-                result.style.display = 'block';
-
-                // Update the toggle buttons creation to be dynamic based on number of instances
-                const toggleButtons = document.createElement('div');
-                toggleButtons.id = 'pathway-controls';
-                toggleButtons.className = 'toggle-results';
-
-                // Create buttons based on number of instances from config
+                
+                // Create controls container
+                const controlsContainer = document.createElement('div');
+                controlsContainer.className = 'controls-container';
+                
+                // Create pathway viewing section
+                const pathwaySection = document.createElement('div');
+                pathwaySection.className = 'pathway-section';
+                
+                const sectionTitle = document.createElement('h3');
+                sectionTitle.className = 'section-title';
+                sectionTitle.textContent = 'View Pathways';
+                sectionTitle.style.width = '100%';
+                pathwaySection.appendChild(sectionTitle);
+                
                 config.instances.forEach((_, index) => {
                     const button = document.createElement('button');
                     button.textContent = `Show Pathway ${index + 1}`;
                     button.onclick = () => showResult(`instance${index + 1}`);
-                    toggleButtons.appendChild(button);
+                    pathwaySection.appendChild(button);
                 });
+                
+                // Create rerun section
+                const rerunSection = document.createElement('div');
+                rerunSection.className = 'rerun-section';
+                
+                const rerunTitle = document.createElement('h3');
+                rerunTitle.className = 'section-title';
+                rerunTitle.textContent = 'Partial Rerun Analysis';
+                rerunTitle.style.width = '100%';
+                rerunSection.appendChild(rerunTitle);
+                
+                config.instances.forEach((_, index) => {
+                    const rerunControl = document.createElement('div');
+                    rerunControl.className = 'rerun-control';
+                    
+                    // Ensure only 2 per row by forcing width
+                    rerunControl.style.width = 'calc(50% - 8px)';
+                    
+                    const label = document.createElement('span');
+                    label.className = 'rerun-label';
+                    label.textContent = `Pathway ${index + 1}:`;
+                    
+                    const select = document.createElement('select');
+                    select.className = 'steps-select';
+                    
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Select number of steps';
+                    defaultOption.selected = true;
+                    defaultOption.disabled = true;
+                    select.appendChild(defaultOption);
+                    
+                    const stepsCount = Object.keys(results[`instance${index + 1}`].steps).length;
+                    for(let i = 2; i <= stepsCount; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = `From Step ${i}`;
+                        select.appendChild(option);
+                    }
+                    
+                    const rerunButton = document.createElement('button');
+                    rerunButton.textContent = 'Start Partial Rerun';
+                    rerunButton.className = 'rerun-btn';
+                    rerunButton.style.display = 'none';
+                    
+                    select.onchange = () => {
+                        rerunButton.style.display = 'inline-flex';
+                    };
+                    
+                    rerunButton.onclick = () => {
+                        const pathwayNumber = index + 1;
+                        rerunButton.disabled = true;
+                        select.disabled = true;
+                        rerunButton.innerHTML = `<span class="loading"></span>Rerunning...`;
+                        
+                        const endpoint = `${config.instances[index]}${config.endpoints.partial_rerun}`;
+                        console.log('Attempting partial rerun with:', {
+                            endpoint,
+                            requestBody: {
+                                smiles: smilesInput.value,
+                                steps: parseInt(select.value),
+                                pathway_id: pathwayNumber,
+                                advanced_model: advancedToggle.checked.toString(),
+                                advanced_prompt: promptToggle.checked.toString(),
+                                model_version: modelSelect.value
+                            }
+                        });
+                        fetch(endpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-API-KEY': API_KEY
+                            },
+                            body: JSON.stringify({
+                                smiles: smilesInput.value,
+                                steps: parseInt(select.value),
+                                pathway_id: pathwayNumber,
+                                advanced_model: advancedToggle.checked.toString(),
+                                advanced_prompt: promptToggle.checked.toString(),
+                                model_version: modelSelect.value
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            results[`instance${pathwayNumber}`] = data;
+                            showResult(`instance${pathwayNumber}`);
+                            rerunButton.disabled = false;
+                            select.disabled = false;
+                            rerunButton.innerHTML = 'Start Rerun';
+                        })
+                        .catch(error => {
+                            status.className = 'status error';
+                            status.textContent = `Error: ${error.message}`;
+                            status.style.display = 'block';
+                            rerunButton.disabled = false;
+                            select.disabled = false;
+                            rerunButton.innerHTML = 'Start Rerun';
+                        });
+                    };
+                    
+                    rerunControl.appendChild(label);
+                    rerunControl.appendChild(select);
+                    rerunControl.appendChild(rerunButton);
+                    rerunSection.appendChild(rerunControl);
+                });
+                
+                controlsContainer.appendChild(pathwaySection);
+                controlsContainer.appendChild(rerunSection);
 
-                // Replace the static buttons HTML with dynamic buttons
-                result.insertAdjacentElement('beforebegin', toggleButtons);
-
+                // Add JSON toggle
+                const jsonToggle = document.createElement('div');
+                jsonToggle.id = 'json-toggle';
+                jsonToggle.className = 'json-toggle';
+                jsonToggle.innerHTML = '<span>JSON Result</span><span class="json-toggle-icon arrow-down" id="json-arrow"></span>';
+                jsonToggle.onclick = toggleJson;
+                jsonToggle.style.display = 'flex';
+                
+                // Add result div for JSON
+                const jsonResult = document.createElement('div');
+                jsonResult.id = 'result';
+                jsonResult.className = 'result';
+                jsonResult.style.display = 'none';
+                jsonResult.textContent = formattedJson;
+                
                 // Add download button
                 const downloadButton = document.createElement('button');
                 downloadButton.className = 'download-btn';
                 downloadButton.textContent = 'Download Results';
                 downloadButton.onclick = () => downloadResults(results);
-                result.insertAdjacentElement('beforebegin', downloadButton);
                 downloadButton.style.display = 'block';
+                
+                // Remove existing elements if they exist
+                const existingJsonToggle = document.getElementById('json-toggle');
+                if (existingJsonToggle) existingJsonToggle.remove();
+                
+                const existingResult = document.getElementById('result');
+                if (existingResult) existingResult.remove();
+                
+                const existingDownloadBtn = document.querySelector('.download-btn');
+                if (existingDownloadBtn) existingDownloadBtn.remove();
+                
+                // Insert elements in the correct order
+                const graphDiv = document.getElementById('graph');
+                graphDiv.parentNode.insertBefore(jsonToggle, graphDiv);
+                graphDiv.parentNode.insertBefore(jsonResult, graphDiv);
+                graphDiv.parentNode.insertBefore(downloadButton, graphDiv);
+                graphDiv.parentNode.insertBefore(controlsContainer, graphDiv);
 
                 // Function to toggle between results
                 window.showResult = (instance) => {
-                    const formattedJson = JSON.stringify(results[instance], null, 2);
-                    result.textContent = formattedJson;
+                    // Update JSON content
+                    const jsonResult = document.getElementById('result');
+                    if (jsonResult) {
+                        jsonResult.textContent = JSON.stringify(results[instance], null, 2);
+                    }
                     
                     // Clear existing graph
                     document.getElementById('graph').innerHTML = '';
@@ -491,13 +998,6 @@
                 status.textContent = `Error: ${error.message}`;
                 status.style.display = 'block';
 
-                result.style.display = 'none';
-                result.textContent = '';
-
-                // Hide download button if it exists
-                const downloadBtn = document.querySelector('.download-btn');
-                if (downloadBtn) downloadBtn.style.display = 'none';
-
                 // Enable the button and set it to "Rerun Analysis" on fetch error
                 button.disabled = false;
                 button.textContent = 'Rerun Analysis';
@@ -508,6 +1008,11 @@
         // Allow Enter key to trigger analysis
         document.getElementById('smiles').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') analyze();
+        });
+
+        // Initialize UI by hiding advanced settings by default
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('settings-content').style.display = 'none';
         });
     </script>
     <script src="app_v4.js"></script>
