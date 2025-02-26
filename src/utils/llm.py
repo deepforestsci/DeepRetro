@@ -138,8 +138,26 @@ def call_LLM(molecule: str,
     sys_prompt_final, user_prompt_final, max_completion_tokens = obtain_prompt(
         LLM)
     LLM = LLM.split(":")[0]
+
+    params = {
+        "model": LLM,
+        "max_completion_tokens": max_completion_tokens,
+        "temperature": temperature,
+        "seed": 42,
+        "top_p": 0.9,
+        "metadata": metadata,
+    }
+
     if LLM in DEEPSEEK_MODELS:
         user_prompt_final += add_on
+
+    if "3-7" in LLM:
+        params["max_tokens"] = 13192 + 5000
+        params["temperature"] = 1
+        params.pop("top_p", None)
+        params.pop("max_completion_tokens", None)
+        params['thinking'] = {"type": "enabled", "budget_tokens": 5000}
+
     if messages is None:
         messages = [{
             "role": "system",
@@ -150,27 +168,18 @@ def call_LLM(molecule: str,
             "content":
             user_prompt_final.replace('{target_smiles}', molecule)
         }]
+    params["messages"] = messages
 
     try:
-        response = completion(model=LLM,
-                              messages=messages,
-                              max_completion_tokens=max_completion_tokens,
-                              temperature=temperature,
-                              seed=42,
-                              top_p=0.9,
-                              metadata=metadata)
+        # Call the LLM model
+        response = completion(**params)
+
         res_text = response.choices[0].message.content
     except Exception as e:
         log_message(f"Error in calling {LLM}: {e}", logger)
         log_message(f"Retrying call to {LLM}", logger)
         try:
-            response = completion(model=LLM,
-                                  messages=messages,
-                                  max_completion_tokens=4096,
-                                  temperature=temperature,
-                                  seed=42,
-                                  top_p=0.9,
-                                  metadata=metadata)
+            response = completion(**params)
             res_text = response.choices[0].message.content
         except Exception as e:
             log_message(f"2nd Error in calling {LLM}: {e}", logger)
