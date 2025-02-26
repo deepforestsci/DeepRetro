@@ -53,7 +53,7 @@ def run_az(smiles: str,
             raise FileNotFoundError(
                 f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}")
     # if simple molecule, skip the retrosynthesis
-    if smiles in BASIC_MOLECULES:
+    if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
         return True, [{
             'type': 'mol',
             'hide': False,
