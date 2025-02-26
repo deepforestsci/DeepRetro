@@ -55,34 +55,49 @@ def log_message(message: str, logger=None):
         print(message)
 
 
-def stability_checker(smiles: str):
+def stability_checker(res_smiles: list):
     """Calls the LLM model to check the stability of a molecule
 
     Parameters
     ----------
-    smiles : str
-        SMILES string of the molecule
+    res_smiles : list
+        list of SMILES strings of the molecule
 
     Returns
     -------
     int, list[str]
-        Status code and list of reagents SMILES
+        Status code and list of stable SMILES
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
+    valid_pathways = []
+    for idx, smile_list in enumerate(res_smiles):
+        valid = []
+        if isinstance(smile_list, list):
+            for smiles in smile_list:
+                if not is_valid_smiles(smiles):
+                    log_message("Invalid SMILES string", logger)
 
-    if not is_valid_smiles(smiles):
-        log_message("Invalid SMILES string", logger)
-        return 400, []
+                stability_dict = check_molecule_stability(smiles)
+                log_message(f"Stability dict: {stability_dict}", logger)
 
-    stability_dict = check_molecule_stability(smiles)
-    log_message(f"Stability dict: {stability_dict}", logger)
+                if stability_dict['assessment'] in [
+                        "Likely stable", "Moderately stable"
+                ]:
+                    valid.append(smiles)
+            if len(valid) > 0:
+                valid_pathways.append(valid)
+        else:
+            if is_valid_smiles(smile_list):
+                stability_dict = check_molecule_stability(smile_list)
+                log_message(f"Stability dict: {stability_dict}", logger)
 
-    if stability_dict['assessment'] == "Likely stable":
-        return 200, True
-    elif stability_dict['assessment'] == "Moderately stable":
-        return 200, True
-    else:
-        return 200, False
+                if stability_dict['assessment'] in [
+                        "Likely stable", "Moderately stable"
+                ]:
+                    valid_pathways.append([smile_list])
+    log_message(f"Valid pathways: {valid_pathways} after stability check",
+                logger)
+    return 200, valid_pathways
 
 
 def check_molecule_stability(smiles):
@@ -106,7 +121,8 @@ def check_molecule_stability(smiles):
         "issues": [],
         "metrics": {},
         "ring_data": {},
-        "atom_data": {}
+        "atom_data": {},
+        "assessment": "",
     }
 
     # Parse SMILES and check if it's a valid structure
