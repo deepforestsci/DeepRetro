@@ -74,7 +74,7 @@ def retrosynthesis_api():
         advanced_model = False
 
     if deepseek_r1:
-        llm = "deepinfra/deepseek-ai/DeepSeek-R1"
+        llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
     else:
         llm = "claude-3-opus-20240229"
 
@@ -153,7 +153,36 @@ def partial_rerun():
     
     data = request.get_json()
     print(f"Received request data: {json.dumps(data, indent=2)}")
-    
+ 
+    if not data or 'smiles' not in data:
+        return jsonify({
+            "error":
+            "Molecule string is required, Please include a 'smiles' field"
+        }), 400
+
+    molecule = data['smiles']
+
+    # Clear the cache for the molecule
+    clear_cache_for_molecule(molecule)
+    deepseek_r1 = False
+    try:
+        advanced_model: str = data['advanced_model']
+        if advanced_model.lower() == "true":
+            deepseek_r1 = True
+    except Exception as e:
+        print(e)
+        advanced_model = False
+
+    if not Chem.MolFromSmiles(molecule):
+        return jsonify({"error": "Invalid SMILES string"}), 400
+
+    if deepseek_r1:
+        llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
+    else:
+        llm = "claude-3-opus-20240229"
+
+    # Advanced prompt handling
+    advanced_prompt = False
     try:
         smiles = data['smiles']
         from_step = int(data['steps'])
