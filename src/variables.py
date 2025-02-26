@@ -1036,30 +1036,30 @@ BASIC_MOLECULES = [
     "P(=O)(O)O",  # Phosphoric acid
     "P(Cl)(Cl)Cl",  # Phosphorus trichloride
     "P",
-    "[K+].[OH-]", # Potassium hydroxide
-    "[Na+].[OH-]", # Sodium hydroxide
-    "[Li+].[OH-]", # Lithium hydroxide
-    "[K+].[Cl-]", # Potassium chloride
-    "[Na+].[Cl-]", # Sodium chloride
-    "[Li+].[Cl-]", # Lithium chloride
-    "NaCN", # Sodium cyanide
-    "NaOH", # Sodium hydroxide
-    "H2SO4", # Sulfuric acid
-    "HCl", # Hydrochloric acid
-    "HBr", # Hydrobromic acid
-    "HI", # Hydroiodic acid
-    "H2O2", # Hydrogen peroxide
-    "H2O", # Water
-    "NH3", # Ammonia
-    "H2", # Hydrogen gas
-    "O2", # Oxygen gas
-    "N2", # Nitrogen gas
-    "CO2", # Carbon dioxide
-    "CO", # Carbon monoxide
-    "NaBr", # Sodium bromide
-    "[K+].[C-]#N", # Potassium cyanide
-    "[Na+].[C-]#N", # Sodium cyanide
-    
+    "[K+].[OH-]",  # Potassium hydroxide
+    "[Na+].[OH-]",  # Sodium hydroxide
+    "[Li+].[OH-]",  # Lithium hydroxide
+    "[K+].[Cl-]",  # Potassium chloride
+    "[Na+].[Cl-]",  # Sodium chloride
+    "[Li+].[Cl-]",  # Lithium chloride
+    "NaCN",  # Sodium cyanide
+    "NaOH",  # Sodium hydroxide
+    "H2SO4",  # Sulfuric acid
+    "HCl",  # Hydrochloric acid
+    "HBr",  # Hydrobromic acid
+    "HI",  # Hydroiodic acid
+    "H2O2",  # Hydrogen peroxide
+    "H2O",  # Water
+    "NH3",  # Ammonia
+    "H2",  # Hydrogen gas
+    "O2",  # Oxygen gas
+    "N2",  # Nitrogen gas
+    "CO2",  # Carbon dioxide
+    "CO",  # Carbon monoxide
+    "NaBr",  # Sodium bromide
+    "[K+].[C-]#N",  # Potassium cyanide
+    "[Na+].[C-]#N",  # Sodium cyanide
+    "CC(C)[Mg]Br",  # Grignard reagent
 ]
 
 REACTION_CLASSES_OLD = {
@@ -1355,7 +1355,11 @@ OPENAI_MODELS = [
     "gpt-4o-2024-08-06",
 ]
 
-DEEPSEEK_MODELS = ["azure_ai/DeepSeek-R1", "deepinfra/deepseek-ai/DeepSeek-R1"]
+DEEPSEEK_MODELS = [
+    "azure_ai/DeepSeek-R1", "deepinfra/deepseek-ai/DeepSeek-R1",
+    "fireworks_ai/accounts/fireworks/models/deepseek-r1",
+    "together_ai/deepseek-ai/DeepSeek-R1"
+]
 
 ERROR_MAP = {
     200: {

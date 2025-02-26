@@ -103,11 +103,37 @@ def retrosynthesis_api():
         az_model = "USPTO"
 
     # -----------------
+    # Stability check flag
+    stability_flag = "False"
+    try:
+        stability_flag: str = data['stability_flag']
+        assert stability_flag.lower() in ["false", "true"]
+    except Exception as e:
+        print(e)
+        stability_flag = "False"
+
+    # -----------------
+    # Hallucination check flag
+    hallucination_check = "False"
+    try:
+        hallucination_check: str = data['hallucination_check']
+        assert hallucination_check.lower() in ["false", "true"]
+    except Exception as e:
+        print(e)
+        hallucination_check = "False"
+
+    # -----------------
     # Run retrosynthesis
     try:
-        result = main(smiles=smiles, llm=llm, az_model=az_model)
+
         # Store the result for potential partial reruns
         latest_results[smiles] = result
+        result = main(smiles=smiles,
+                      llm=llm,
+                      az_model=az_model,
+                      stability_flag=stability_flag,
+                      hallucination_check=hallucination_check)
+
     except Exception as e:
         print(e)
         return jsonify({"error": "Error in retrosynthesis, Please rerun"}), 500
