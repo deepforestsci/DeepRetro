@@ -136,6 +136,14 @@
             padding: 20px;
             margin-bottom: 20px;
         }
+        
+        .test-controls h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
 
         /* Graph styles - not touching as requested */
         .links line {
@@ -547,6 +555,14 @@
                 <h3>Test with JSON File</h3>
                 <input type="file" id="fileInput" accept=".json">
             </div>
+            
+            <div id="fileStatus" class="status" style="display: none;"></div>
+            
+            <div class="json-toggle" id="file-json-toggle" style="display: none;">
+                <span>JSON Result</span>
+                <span class="json-toggle-icon arrow-down" id="file-json-arrow"></span>
+            </div>
+            <div id="file-result" class="result" style="display: none;"></div>
         </div>
 
         <div id="graph"></div>
@@ -555,6 +571,71 @@
     <script>
         const API_URL = 'http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
         const API_KEY = 'your-secure-api-key';
+
+        // Setup file upload handler
+        function setupFileUploadHandler() {
+            const fileInput = document.getElementById('fileInput');
+            const fileStatus = document.getElementById('fileStatus');
+            const fileJsonToggle = document.getElementById('file-json-toggle');
+            const fileResult = document.getElementById('file-result');
+            
+            fileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        // Try to parse the JSON file
+                        const jsonData = JSON.parse(e.target.result);
+                        
+                        // Format and display JSON
+                        const formattedJson = JSON.stringify(jsonData, null, 2);
+                        fileResult.textContent = formattedJson;
+                        
+                        // Show JSON toggle and make it visible
+                        fileJsonToggle.style.display = 'flex';
+                        fileResult.style.display = 'block';
+                        document.getElementById('file-json-arrow').className = 'json-toggle-icon arrow-up';
+                        
+                        // Add click handler to toggle
+                        fileJsonToggle.onclick = function() {
+                            if (fileResult.style.display === 'block') {
+                                fileResult.style.display = 'none';
+                                document.getElementById('file-json-arrow').className = 'json-toggle-icon arrow-down';
+                            } else {
+                                fileResult.style.display = 'block';
+                                document.getElementById('file-json-arrow').className = 'json-toggle-icon arrow-up';
+                            }
+                        };
+                        
+                        // Render the graph if the data has the right structure
+                        if (jsonData.steps) {
+                            document.getElementById('graph').innerHTML = '';
+                            try {
+                                const processedTree = processData(jsonData);
+                                const rootStep = processedTree['0'];
+                                renderGraph(rootStep);
+                            } catch (graphError) {
+                                console.error('Error rendering graph:', graphError);
+                                // Show graph error but don't interrupt JSON display
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                        // Show error in the JSON result area
+                        fileResult.textContent = 'Error parsing JSON file: ' + error.message;
+                        fileResult.style.display = 'block';
+                        fileJsonToggle.style.display = 'flex';
+                        fileStatus.className = 'status error';
+                        fileStatus.textContent = 'Error: ' + error.message;
+                        fileStatus.style.display = 'block';
+                    }
+                };
+                
+                reader.readAsText(file);
+            });
+        }
 
         // New functions for toggling settings and JSON display
         function toggleSettings() {
@@ -586,11 +667,37 @@
         function toggleView(view) {
             document.getElementById('apiView').style.display = view === 'api' ? 'block' : 'none';
             document.getElementById('fileView').style.display = view === 'file' ? 'block' : 'none';
+            
             // Clear the graph when switching views
             document.getElementById('graph').innerHTML = '';
-            // Reset status and result
+            
+            // Reset status
             document.getElementById('status').style.display = 'none';
-            document.getElementById('result').style.display = 'none';
+            
+            // Clear any existing elements from API view
+            const existingJsonToggle = document.getElementById('json-toggle');
+            if (existingJsonToggle) existingJsonToggle.remove();
+            
+            const existingResult = document.getElementById('result');
+            if (existingResult) existingResult.remove();
+            
+            const existingDownloadBtn = document.querySelector('.download-btn');
+            if (existingDownloadBtn) existingDownloadBtn.remove();
+            
+            const existingControlsContainer = document.querySelector('.controls-container');
+            if (existingControlsContainer) existingControlsContainer.remove();
+
+            // Display or hide advanced settings based on the view
+            const advancedSettings = document.querySelector('.advanced-settings');
+            if (advancedSettings) {
+                advancedSettings.style.display = view === 'api' ? 'block' : 'none';
+            }
+            
+            // If we're switching to file view, set up the file upload handler if it hasn't been already
+            if (view === 'file' && !window.fileHandlerInitialized) {
+                setupFileUploadHandler();
+                window.fileHandlerInitialized = true;
+            }
         }
 
         function downloadResults(results) {
