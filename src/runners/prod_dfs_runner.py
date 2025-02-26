@@ -1,37 +1,42 @@
 # load up USPTO-50k test dataset
 import rootutils
 import os
+import pandas as pd
+import json
+import time
 root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
 from src.main import main
 from src.cache import clear_cache_for_molecule
-import pandas as pd
-import json
 
 df = pd.read_csv(f"{root_dir}/results/dfs/dataset.csv")
 mols_dfs = df['smiles'].to_list()
 
+mapper = {
+    'm0p0': 'claude-3-opus-20240229', 'm0p1': 'claude-3-opus-20240229:adv',
+    'm1p0': 'fireworks_ai/accounts/fireworks/models/deepseek-r1', 'm1p1': 'fireworks_ai/accounts/fireworks/models/deepseek-r1:adv',
+}
+
 # # now run prithvi on the dataset
-folder = "m1p1"
-if not os.path.exists(f"{root_dir}/results/dfs/{folder}"):
-    os.makedirs(f"{root_dir}/results/dfs/{folder}")
-for mol in mols_dfs:
-    molecule = mol
-    print(f"Running {mol}")
-    # try:
-    #     res_dict = run_prithvi(molecule)
-    #     with open(f"{root_dir}/results/mols_hard/{mol}.json", "w") as f:
-    #         json.dump(res_dict, f, indent=4)
-    # except Exception as e:
-    #     print("Error in molecule:", mol)
-    #     print("Error:", e)
-    try:
-        clear_cache_for_molecule(molecule)
-        # "azure_ai/DeepSeek-R1", "deepinfra/deepseek-ai/DeepSeek-R1"
-        res_dict = main(molecule ,llm="deepinfra/deepseek-ai/DeepSeek-R1:adv")
-        with open(f"{root_dir}/results/dfs/{folder}/{mol}.json", "w") as f:
-            json.dump(res_dict, f, indent=4)
-    except Exception as e:
-        print("Error in molecule:", mol)
-        print("Error:", e)
+folder_list = [ "m1p0:Pistachio_100+", "m1p0:Pistachio_50", "m0p1:Pistachio_100+", "m0p1:Pistachio_50"]
+for folder in folder_list:
+    if not os.path.exists(f"{root_dir}/results/dfs/{folder}"):
+        os.makedirs(f"{root_dir}/results/dfs/{folder}")
+    for mol in mols_dfs:
+        molecule = mol
+        print(f"Running {mol}")
+        llm = mapper[folder.split(":")[0]]
+        az_model = folder.split(":")[1]
+        time1 = time.time()
+        try:
+            clear_cache_for_molecule(molecule)
+            print(f"Running {molecule} with {llm} and {az_model}")
+            res_dict = main(molecule ,llm=llm, az_model=az_model)
+            with open(f"{root_dir}/results/dfs/{folder}/{mol}.json", "w") as f:
+                json.dump(res_dict, f, indent=4)
+        except Exception as e:
+            print("Error in molecule:", mol)
+            print("Error:", e)
+        time2 = time.time()
+        print(f"Time taken for {mol} on {folder}: {time2-time1} seconds")

@@ -14,6 +14,8 @@ from src.variables import ERROR_MAP
 from src.cache import cache_results
 from src.utils.utils_molecule import validity_check, detect_seven_member_rings
 from src.utils.job_context import logger as context_logger
+from src.utils.stability_checks import stability_checker
+# from src.utils.hallucination_checks import hallucination_checker
 
 load_dotenv()
 
@@ -198,7 +200,7 @@ def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
                                     6:res_text.find("</cot>")]
         if not thinking_content:
             return 501, [], ""
-        
+
         # split the thinking content into individual steps based on the <thinking> </thinking> tags
         thinking_steps = thinking_content.split("<thinking")[1:]
         thinking_steps = [
@@ -241,7 +243,7 @@ def split_json_openAI(res_text: str) -> tuple[int, str]:
                                 7:res_text.find("</json>")]
         if not json_content:
             return 502, ""
-        
+
     except Exception as e:
         log_message(f"Error in parsing LLM response: {e}", logger)
         return 502, ""
@@ -269,12 +271,12 @@ def split_json_deepseek(res_text: str) -> tuple[int, list[str], str]:
                                     6:res_text.find("</think>")]
         if not thinking_content:
             return 503, [], ""
-        
+
         json_content = res_text[res_text.find("<json>\n") +
                                 7:res_text.find("</json>")]
         if not json_content:
             return 503, [], ""
-        
+
     except Exception as e:
         log_message(f"Error in parsing LLM response: {e}", logger)
         return 503, [], ""
@@ -304,7 +306,8 @@ def split_json_master(res_text: str, model: str) -> tuple[int, list[str], str]:
             status_code, json_content = split_json_openAI(res_text)
             thinking_steps = []
         else:
-            status_code, thinking_steps, json_content = split_cot_json(res_text)
+            status_code, thinking_steps, json_content = split_cot_json(
+                res_text)
     except Exception as e:
         return 505, [], ""
 
@@ -340,7 +343,9 @@ def validate_split_json(
 def llm_pipeline(
     molecule: str,
     LLM: str = "claude-3-opus-20240229",
-    messages: Optional[list[dict]] = None
+    messages: Optional[list[dict]] = None,
+    stability_flag: str = "False",
+    hallucination_check: str = "False"
 ) -> tuple[list[list[str]], list[str], list[float]]:
     """Pipeline to call LLM and validate the results
 
@@ -363,7 +368,12 @@ def llm_pipeline(
     output_explanations: list[str] = []
     output_confidence: list[float] = []
     run = 0.0
-    while (output_pathways == [] and run < 0.6):
+    if stability_flag.lower() == "true" or hallucination_check.lower(
+    ) == "true":
+        max_run = 0.9
+    else:
+        max_run = 0.6
+    while (output_pathways == [] and run < max_run):
         log_message(f"Calling LLM with molecule: {molecule} and run: {run}",
                     logger)
 
@@ -409,6 +419,42 @@ def llm_pipeline(
         # Check the validity of the molecules obtained from LLM
         output_pathways, output_explanations, output_confidence = validity_check(
             molecule, res_molecules, res_explanations, res_confidence)
+
+        # --------------------
+        # Stability check
+        if stability_flag.lower() == "true":
+            status_code, stable_pathways = stability_checker(output_pathways)
+            if status_code != 200:
+                log_message(f"Error in stability check: {stable_pathways}",
+                            logger)
+                run += 0.1
+                get_error_log(status_code)
+                continue
+            output_pathways = stable_pathways
+
+        # --------------------
+        # Hallucination check
+        # if hallucination_check.lower() == "true":
+        #     # Implement hallucination check
+        #     pass
+
+        # --------------------
+        # Update the messages for the next call
+        # if output_pathways == []:
+        #     messages = [{
+        #         "role": "system",
+        #         "content": SYS_PROMPT
+        #     }, {
+        #         "role": "user",
+        #         "content": USER_PROMPT
+        #     }, {
+        #         "role": "assistant",
+        #         "content": res_text
+        #     }, {
+        #         "role": "user",
+        #         "content": "<add something here>"
+        #     }]
+
         log_message(
             f"Output Pathways: {output_pathways},\n\
                 Output Explanations: {output_explanations},\n\
@@ -416,6 +462,7 @@ def llm_pipeline(
         run += 0.1
 
     return output_pathways, output_explanations, output_confidence
+
 
 def get_error_log(status_code: int):
     """Prints error message based on the status code.
@@ -429,6 +476,7 @@ def get_error_log(status_code: int):
 
     if status_code in ERROR_MAP:
         description = ERROR_MAP[status_code]
-        log_message(f"Error Code: {status_code},\n Description: {description}", logger)
+        log_message(f"Error Code: {status_code},\n Description: {description}",
+                    logger)
     else:
         log_message(f"Error Code: {status_code} is not recognized.", logger)
