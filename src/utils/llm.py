@@ -88,7 +88,7 @@ def obtain_prompt(LLM: str):
         if LLM in DEEPSEEK_MODELS:
             sys_prompt_final = SYS_PROMPT_DEEPSEEK
             user_prompt_final = USER_PROMPT_DEEPSEEK
-            max_completion_tokens = 8192
+            max_completion_tokens = 8192 * 2
         elif LLM in OPENAI_MODELS:
             sys_prompt_final = SYS_PROMPT_OPENAI
             user_prompt_final = USER_PROMPT_OPENAI
@@ -137,7 +137,10 @@ def call_LLM(molecule: str,
         LLM)
     LLM = LLM.split(":")[0]
     if LLM in DEEPSEEK_MODELS:
-        user_prompt_final += add_on
+        # user_prompt_final = user_prompt_final+"\n\n"+ add_on
+        temperature = 0.6
+    if "3-7" in LLM:
+        max_completion_tokens = 8192 + 5000
     if messages is None:
         messages = [{
             "role": "system",
@@ -146,7 +149,8 @@ def call_LLM(molecule: str,
             "role":
             "user",
             "content":
-            user_prompt_final.replace('{target_smiles}', molecule)
+            user_prompt_final.replace('{target_smiles}', molecule) + "\n\n" +
+            add_on
         }]
 
     try:
@@ -198,7 +202,7 @@ def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
                                     6:res_text.find("</cot>")]
         if not thinking_content:
             return 501, [], ""
-        
+
         # split the thinking content into individual steps based on the <thinking> </thinking> tags
         thinking_steps = thinking_content.split("<thinking")[1:]
         thinking_steps = [
@@ -241,7 +245,7 @@ def split_json_openAI(res_text: str) -> tuple[int, str]:
                                 7:res_text.find("</json>")]
         if not json_content:
             return 502, ""
-        
+
     except Exception as e:
         log_message(f"Error in parsing LLM response: {e}", logger)
         return 502, ""
@@ -269,12 +273,12 @@ def split_json_deepseek(res_text: str) -> tuple[int, list[str], str]:
                                     6:res_text.find("</think>")]
         if not thinking_content:
             return 503, [], ""
-        
+
         json_content = res_text[res_text.find("<json>\n") +
                                 7:res_text.find("</json>")]
         if not json_content:
             return 503, [], ""
-        
+
     except Exception as e:
         log_message(f"Error in parsing LLM response: {e}", logger)
         return 503, [], ""
@@ -304,7 +308,8 @@ def split_json_master(res_text: str, model: str) -> tuple[int, list[str], str]:
             status_code, json_content = split_json_openAI(res_text)
             thinking_steps = []
         else:
-            status_code, thinking_steps, json_content = split_cot_json(res_text)
+            status_code, thinking_steps, json_content = split_cot_json(
+                res_text)
     except Exception as e:
         return 505, [], ""
 
@@ -417,6 +422,7 @@ def llm_pipeline(
 
     return output_pathways, output_explanations, output_confidence
 
+
 def get_error_log(status_code: int):
     """Prints error message based on the status code.
 
@@ -429,6 +435,7 @@ def get_error_log(status_code: int):
 
     if status_code in ERROR_MAP:
         description = ERROR_MAP[status_code]
-        log_message(f"Error Code: {status_code},\n Description: {description}", logger)
+        log_message(f"Error Code: {status_code},\n Description: {description}",
+                    logger)
     else:
         log_message(f"Error Code: {status_code} is not recognized.", logger)
