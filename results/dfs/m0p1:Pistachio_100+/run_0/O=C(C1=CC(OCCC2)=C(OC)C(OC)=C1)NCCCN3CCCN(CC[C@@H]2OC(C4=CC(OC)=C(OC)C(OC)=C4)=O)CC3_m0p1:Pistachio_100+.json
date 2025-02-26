@@ -1,0 +1,852 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "8",
+            "9"
+        ],
+        "2": [
+            "3",
+            "4"
+        ],
+        "3": [],
+        "4": [
+            "5"
+        ],
+        "5": [
+            "6"
+        ],
+        "6": [
+            "7"
+        ],
+        "7": [],
+        "8": [],
+        "9": [
+            "10",
+            "13"
+        ],
+        "10": [
+            "11",
+            "12"
+        ],
+        "11": [],
+        "12": [],
+        "13": [
+            "14",
+            "15"
+        ],
+        "14": [],
+        "15": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(C(=O)NCCCN2CCCN(CC[C@@H](O)COc3cc(OC)c(OC)c(OC)c3)CC2)cc(O)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C30H45N3O9",
+                        "mass": 591.31558002
+                    }
+                },
+                {
+                    "smiles": "COc1cc(C(=O)Cl)cc(OC)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H11ClO4",
+                        "mass": 230.034586512
+                    }
+                },
+                {
+                    "smiles": "OCCC1CCCN(CCCNC(=O)C2=CC(OC)=C(OC)C(OC)=C2)CCN1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H35N3O5",
+                        "mass": 409.25767122
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(C1=CC(OCCC2)=C(OC)C(OC)=C1)NCCCN3CCCN(CC[C@@H]2OC(C4=CC(OC)=C(OC)C(OC)=C4)=O)CC3",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C33H47N3O9",
+                        "mass": 629.3312300839999
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "2-24 hours, depending on the specific reactants and conditions used"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Amide formation via acyl chloride and amine"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(OC[C@H](O)CCBr)cc(OC)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H19BrO5",
+                        "mass": 334.041585808
+                    }
+                },
+                {
+                    "smiles": "COc1cc(C(=O)NCCCN2CCCNCC2)cc(O)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H27N3O4",
+                        "mass": 337.200156344
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)O.[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6O2",
+                        "mass": 62.036779432
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(C(=O)NCCCN2CCCN(CC[C@@H](O)COc3cc(OC)c(OC)c(OC)c3)CC2)cc(O)c1OC",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C30H45N3O9",
+                        "mass": 591.31558002
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "2-24 hours, depending on the specific reactants and conditions used"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Williamson ether synthesis"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(O)cc(OC)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12O4",
+                        "mass": 184.073558864
+                    }
+                },
+                {
+                    "smiles": "O[C@@H](CBr)CCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8Br2O",
+                        "mass": 229.894189076
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(OC[C@H](O)CCBr)cc(OC)c1OC",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H19BrO5",
+                        "mass": 334.041585808
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "2-24 hours, depending on the specific substrates and scale of the reaction"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.88,
+                    "closestliterature": "Williamson ether synthesis"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(C(=O)NCCCN2CCCN(C(=O)OC(C)(C)C)CC2)cc(O)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C22H35N3O6",
+                        "mass": 437.25258584
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C(=O)([O-])[O-].[K+].[K+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CK2O3",
+                        "mass": 137.91215721999998
+                    }
+                },
+                {
+                    "smiles": "CCOC(=O)OCC",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H10O3",
+                        "mass": 118.06299418
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(C(=O)NCCCN2CCCNCC2)cc(O)c1OC",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H27N3O4",
+                        "mass": 337.200156344
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "2-24 hours, depending on the specific reaction conditions and substrates"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.83,
+                    "closestliterature": "Boc deprotection of a secondary amine using potassium carbonate (K2CO3) in a polar aprotic solvent such as DMF or acetonitrile at room temperature."
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(C(=O)O)cc(O)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H10O5",
+                        "mass": 198.05282342
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCCN(CCCN)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H27N3O2",
+                        "mass": 257.210327104
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C(Cl)C(Cl)(Cl)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2Cl4O",
+                        "mass": 179.87032534
+                    }
+                },
+                {
+                    "smiles": "CN1CCNCC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H12N2",
+                        "mass": 100.10004838399999
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(C(=O)NCCCN2CCCN(C(=O)OC(C)(C)C)CC2)cc(O)c1OC",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C22H35N3O6",
+                        "mass": 437.25258584
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "The reaction likely proceeds at atmospheric pressure, as no special pressure conditions are typically required for amide bond formation using an acid chloride.",
+                "solvent": "A polar aprotic solvent such as dichloromethane (DCM), tetrahydrofuran (THF) or dimethylformamide (DMF)",
+                "time": "1-24 hours, depending on the specific substrates and reaction scale"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.72,
+                    "closestliterature": "Amide bond formation via acid chloride activation"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCCN(CCC#N)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H23N3O2",
+                        "mass": 253.179026976
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H",
+                        "mass": 1.007825032
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCCN(CCCN)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H27N3O2",
+                        "mass": 257.210327104
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Methanol or ethanol",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.72,
+                    "closestliterature": "Reduction of a nitrile to a primary amine using hydrogen gas (H2) and a metal catalyst like Raney nickel or palladium on carbon."
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "C=CC#N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H3N",
+                        "mass": 53.026549096
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCCNCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H20N2O2",
+                        "mass": 200.15247788
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Cu]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cu",
+                        "mass": 62.9295975
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1CCCN(CCC#N)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H23N3O2",
+                        "mass": 253.179026976
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "room temperature (20-25 \u00b0C)",
+                "pressure": "atmospheric pressure",
+                "solvent": "THF (tetrahydrofuran)",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.83,
+                    "closestliterature": "Copper-catalyzed azide-alkyne cycloaddition (CuAAC) reaction between an alkyne (C=CC#N) and an azide (formed in situ from CC(C)(C)OC(=O)N1CCCNCC1)"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "O=S(Cl)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2OS",
+                        "mass": 117.90469098
+                    }
+                },
+                {
+                    "smiles": "COc1cc(C(=O)O)cc(OC)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12O5",
+                        "mass": 212.068473484
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Cl-].[K+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "ClK",
+                        "mass": 73.93255936
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(C(=O)Cl)cc(OC)c1OC",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H11ClO4",
+                        "mass": 230.034586512
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0 \u00b0C to room temperature",
+                "pressure": "Ambient pressure (1 atm)",
+                "solvent": "Dichloromethane (CH2Cl2) or other non-polar aprotic solvent",
+                "time": "30 minutes to 2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.87,
+                    "closestliterature": "Conversion of a carboxylic acid to an acid chloride using thionyl chloride (SOCl2)"
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [
+                {
+                    "smiles": "O=C(NCCCN1CCNCC1CCO)C2=CC(OC)=C(OC)C(OC)=C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H31N3O5",
+                        "mass": 381.22637109199997
+                    }
+                },
+                {
+                    "smiles": "OCCC1CCNCCN1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H16N2O",
+                        "mass": 144.126263132
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "OCCC1CCCN(CCCNC(=O)C2=CC(OC)=C(OC)C(OC)=C2)CCN1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H35N3O5",
+                        "mass": 409.25767122
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "2-24 hours, depending on the specific reactants and conditions used"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Amide bond formation via nucleophilic acyl substitution between an amine and an activated carboxylic acid derivative (e.g. acid chloride, anhydride, or activated ester)"
+                }
+            ]
+        },
+        {
+            "step": "10",
+            "reactants": [
+                {
+                    "smiles": "C1CNCCN1.COc1cc(OC)cc(C(=O)O)c1.NCCCO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H29N3O5",
+                        "mass": 343.210721028
+                    }
+                },
+                {
+                    "smiles": "COc1cc(OC)cc(C(=O)Cl)c1.NCCCN1CCNCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H26ClN3O3",
+                        "mass": 343.166269372
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(NCCCN1CCNCC1CCO)C2=CC(OC)=C(OC)C(OC)=C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H31N3O5",
+                        "mass": 381.22637109199997
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Dichloromethane (DCM) or other aprotic solvent",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Amide formation via acyl chloride and amine"
+                }
+            ]
+        },
+        {
+            "step": "11",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)NCCCO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H17NO3",
+                        "mass": 175.120843404
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C=NCCl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H2ClNO",
+                        "mass": 90.982491364
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C1CNCCN1.COc1cc(OC)cc(C(=O)O)c1.NCCCO",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H29N3O5",
+                        "mass": 343.210721028
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely proceeds without additional solvent, as the reactants are sufficiently polar/liquid to allow mixing.",
+                "time": "Reaction time is estimated to be relatively short, on the order of minutes to a few hours, due to the high reactivity of the isocyanate reagent."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.83,
+                    "closestliterature": "Reaction of an alcohol (NCCCO) with an isocyanate (O=C=NCCl) to form a carbamate (CC(C)(C)OC(=O)NCCCO). This is a common reaction for preparing carbamates and polyurethanes."
+                }
+            ]
+        },
+        {
+            "step": "12",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)NCCCN1CCNCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H25N3O2",
+                        "mass": 243.19467704
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "COc1cc(OC)cc(C(=O)O)c1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H10O4",
+                        "mass": 182.0579088
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(OC)cc(C(=O)Cl)c1.NCCCN1CCNCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H26ClN3O3",
+                        "mass": 343.166269372
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Dichloromethane (CH2Cl2) or other aprotic solvent",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.74,
+                    "closestliterature": "Amide formation via acyl chloride"
+                }
+            ]
+        },
+        {
+            "step": "13",
+            "reactants": [
+                {
+                    "smiles": "CCOC(=O)CC(=O)CCCl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H11ClO3",
+                        "mass": 178.039671892
+                    }
+                },
+                {
+                    "smiles": "NCCN",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H8N2",
+                        "mass": 60.06874825599999
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OCCC1CCNCCN1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H16N2O",
+                        "mass": 144.126263132
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Ambient pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Intramolecular cyclization of an \u03b1-chloroketone with a diamine to form a piperazine ring"
+                }
+            ]
+        },
+        {
+            "step": "14",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)CCCl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H5ClO2",
+                        "mass": 107.99780708
+                    }
+                },
+                {
+                    "smiles": "CCOC(=O)CC(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H8O4",
+                        "mass": 132.042258736
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CCOC(=O)CC(=O)CCCl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H11ClO3",
+                        "mass": 178.039671892
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No additional solvent required, as the reaction can proceed neat with the reactants acting as solvents",
+                "time": "1-2 hours, depending on the scale of the reaction and the efficiency of mixing"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Fischer esterification of 4-chlorobutanoic acid with ethyl acetoacetate under acidic conditions"
+                }
+            ]
+        },
+        {
+            "step": "15",
+            "reactants": [
+                {
+                    "smiles": "NCC(N)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6N2O",
+                        "mass": 74.048012812
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "NCCN",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H8N2",
+                        "mass": 60.06874825599999
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Ambient pressure",
+                "solvent": "1,4-dioxane",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Reduction of an amide to an amine using a hydride reducing agent"
+                }
+            ]
+        }
+    ]
+}

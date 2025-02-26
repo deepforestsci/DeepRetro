@@ -1,0 +1,447 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "5"
+        ],
+        "2": [
+            "3",
+            "4"
+        ],
+        "3": [],
+        "4": [],
+        "5": [
+            "6",
+            "7"
+        ],
+        "6": [],
+        "7": [],
+        "8": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1CC2=CC(=O)CC[C@]12C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H10O2",
+                        "mass": 150.06807956
+                    }
+                },
+                {
+                    "smiles": "O=C1C[C@H]2C=C(O)CC[C@]12C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12O2",
+                        "mass": 152.083729624
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C[C@H]2C[C@]3(CC2)[C@@]1([H])CC[C@@H]3C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H18O",
+                        "mass": 178.135765196
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Protic solvent (e.g., ethanol, methanol, or acetic acid)",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Acid-catalyzed intramolecular aldol condensation of a diketone to form a fused bicyclic system"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CC(=O)CC1(C)C(=O)CCC1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12O3",
+                        "mass": 168.078644244
+                    }
+                },
+                {
+                    "smiles": "CC1(C)CCCC1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H12O",
+                        "mass": 112.088815004
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CC2=CC(=O)CC[C@]12C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H10O2",
+                        "mass": 150.06807956
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Robinson annulation"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "C=C(C)CC1(C)C(=O)CCC1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H14O2",
+                        "mass": 166.099379688
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O2",
+                        "mass": 31.98982924
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(=O)CC1(C)C(=O)CCC1=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12O3",
+                        "mass": 168.078644244
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Dichloromethane (CH2Cl2) or chloroform (CHCl3)",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Allylic oxidation of \u03b1,\u03b2-unsaturated ketones using singlet oxygen"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "CC1(C)C(=O)CCC1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H10O2",
+                        "mass": 126.06807956
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H",
+                        "mass": 1.007825032
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC1(C)CCCC1=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H12O",
+                        "mass": 112.088815004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol, methanol, or other protic solvent",
+                "time": "1-4 hours, depending on the specific reducing agent used"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Reduction of a cyclic 1,3-diketone to the corresponding cyclic ketone using a reducing agent such as sodium borohydride (NaBH4) or lithium aluminum hydride (LiAlH4)"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "C=C(C)C=O.O=C1C=CC=C(O)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12O3",
+                        "mass": 180.078644244
+                    }
+                },
+                {
+                    "smiles": "C=C(C)C(=O)OC.O=C1C=CC=C(O)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H14O4",
+                        "mass": 210.089208928
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C[C@H]2C=C(O)CC[C@]12C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12O2",
+                        "mass": 152.083729624
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Protic solvent (e.g., ethanol, methanol, or water)",
+                "time": "Several hours to overnight, depending on the specific reactants and conditions"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Acid-catalyzed intramolecular aldol condensation"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "C=C(C)CO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[O-][Cr+5](=O)(=O)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CrO4+4",
+                        "mass": 115.91797166036001
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8",
+                        "mass": 92.062600256
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=C(C)C=O.O=C1C=CC=C(O)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12O3",
+                        "mass": 180.078644244
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "dichloromethane (CH2Cl2)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.78,
+                    "closestliterature": "Oxidation of allylic alcohols to \u03b1,\u03b2-unsaturated aldehydes using pyridinium chlorochromate (PCC)"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "C=C(C)C(=O)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H5ClO",
+                        "mass": 104.00289246
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CO",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O",
+                        "mass": 32.026214748
+                    }
+                },
+                {
+                    "smiles": "OC1=CC=CC=C1C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H6O2",
+                        "mass": 122.036779432
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=C(C)C(=O)OC.O=C1C=CC=C(O)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H14O4",
+                        "mass": 210.089208928
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0 \u00b0C to room temperature",
+                "pressure": "1 atm (no special pressure conditions required)",
+                "solvent": "Dichloromethane (CH2Cl2) or other aprotic solvent",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.81,
+                    "closestliterature": "Acid chloride (C=C(C)C(=O)Cl) reacts with phenol (OC1=CC=CC=C1C=O) in the presence of a base like pyridine to form an ester (C=C(C)C(=O)OC.O=C1C=CC=C(O)C1) via a nucleophilic acyl substitution reaction."
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "CO[Si](C)(C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H12OSi",
+                        "mass": 104.065741534
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CO",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O",
+                        "mass": 32.026214748
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Water",
+                "time": "The reaction is likely rapid, completing within minutes under the given conditions."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Hydrolysis of trimethylmethoxysilane to form methanol"
+                }
+            ]
+        }
+    ]
+}

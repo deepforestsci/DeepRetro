@@ -1,0 +1,454 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "8"
+        ],
+        "2": [
+            "3",
+            "5"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [],
+        "5": [
+            "6",
+            "7"
+        ],
+        "6": [],
+        "7": [],
+        "8": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=[N+]([O-])c1cc(C(Cl)=C2)c2cc1S(=O)(=O)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H3Cl2NO4S",
+                        "mass": 278.91598393600003
+                    }
+                },
+                {
+                    "smiles": "CO[C@@H]1CC[C@@H](CN)OC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H15NO2",
+                        "mass": 145.11027872
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C(O)C(F)(F)F",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2HF3O2",
+                        "mass": 113.992863932
+                    }
+                },
+                {
+                    "smiles": "CN(C)C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7NO",
+                        "mass": 73.052763844
+                    }
+                },
+                {
+                    "smiles": "[Cu]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cu",
+                        "mass": 62.9295975
+                    }
+                },
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "[H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H",
+                        "mass": 1.007825032
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C=C1)=CC=C1C2=C3CN([C@H](COCCCO[C@@H]3CC(C)(C)C2)C4)CCN4C5=CC(N6C(C=C(C=CN7)C7=N8)=C8OCCC6)=C(C(NS(C9=CC([N+]([O-])=O)=C(NC[C@H]%10OC[C@H](OC)CC%10)C=C9)(=O)=O)=O)C=C5",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C53H63ClN8O10S",
+                        "mass": 1038.4076388960002
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely requires an organic solvent such as dichloromethane (DCM), tetrahydrofuran (THF), or dimethylformamide (DMF) to dissolve the reactants",
+                "time": "The reaction time depends on the specific conditions and catalyst used, but likely requires several hours to overnight for complete conversion"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Copper-catalyzed N-arylation of heterocycles with aryl halides"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=[N+]([O-])c1cc2c(cc1S(=O)(=O)Cl)C=C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H4ClNO4S",
+                        "mass": 244.954956288
+                    }
+                },
+                {
+                    "smiles": "ClS(Cl)(=O)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2O2S",
+                        "mass": 133.8996056
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Cl-].[Fe+3]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "ClFe+2",
+                        "mass": 90.90269302018
+                    }
+                },
+                {
+                    "smiles": "[H+].[Cl-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=[N+]([O-])c1cc(C(Cl)=C2)c2cc1S(=O)(=O)Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H3Cl2NO4S",
+                        "mass": 278.91598393600003
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Ambient pressure (1 atm)",
+                "solvent": "Dichloromethane (CH2Cl2) or 1,2-dichloroethane (ClCH2CH2Cl)",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Electrophilic aromatic substitution (chlorination) of 5-nitrobenzo[b]thiophene 1,1-dioxide using sulfuryl chloride and iron(III) chloride catalyst"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "O=S(=O)(Cl)c1ccc2c(c1)C=C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H5ClO2S",
+                        "mass": 199.96987808
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=[N+]([O-])O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNO3",
+                        "mass": 62.995642892000006
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=[N+]([O-])c1cc2c(cc1S(=O)(=O)Cl)C=C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H4ClNO4S",
+                        "mass": 244.954956288
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Ambient pressure (1 atm)",
+                "solvent": "Concentrated sulfuric acid (H2SO4)",
+                "time": "30 minutes to 2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Electrophilic aromatic nitration of 2-chlorosulfonyl-1,2-dihydronaphthalene with nitric acid"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "C1=Cc2ccccc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H6",
+                        "mass": 102.046950192
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=S(=O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O4S",
+                        "mass": 97.96737954400001
+                    }
+                },
+                {
+                    "smiles": "[Cl+].[Cl-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2",
+                        "mass": 69.93770536
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=S(=O)(Cl)c1ccc2c(c1)C=C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H5ClO2S",
+                        "mass": 199.96987808
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Ambient pressure",
+                "solvent": "Dichloromethane (CH2Cl2) or 1,2-dichloroethane (ClCH2CH2Cl)",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.84,
+                    "closestliterature": "Chlorosulfonation of indene with chlorosulfonic acid and thionyl chloride"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "O=S=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "O2S",
+                        "mass": 63.961900240000006
+                    }
+                },
+                {
+                    "smiles": "ClCl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2",
+                        "mass": 69.93770536
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "ClS(Cl)(=O)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2O2S",
+                        "mass": 133.8996056
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Low temperature (e.g. 0\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required",
+                "time": "Rapid reaction, likely complete within minutes"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "SO2 + Cl2 \u2192 SO2Cl2 (sulfuryl chloride)"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=S=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "O2S",
+                        "mass": 63.961900240000006
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "This reaction likely occurs at high temperatures, around 400-500\u00b0C.",
+                "pressure": "The reaction is typically carried out at atmospheric pressure.",
+                "solvent": "No solvent is used, as this is a gas phase reaction between elemental sulfur and oxygen.",
+                "time": "The reaction time is very short, on the order of seconds to minutes, once the reactants are heated to the appropriate temperature."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "S8 + 8 O2 -> 8 SO2"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "O=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O2",
+                        "mass": 31.98982924
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClCl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2",
+                        "mass": 69.93770536
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Not applicable. This is a gas phase reaction.",
+                "time": "Rapid reaction, no specific time needed."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Cl2 + O2 -> 2 Cl2O (chlorine monoxide)"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "CC[C@H](CO)OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H12O2",
+                        "mass": 104.083729624
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "N#C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CHN",
+                        "mass": 27.010899031999998
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CO[C@@H]1CC[C@@H](CN)OC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H15NO2",
+                        "mass": 145.11027872
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF or DMSO",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Intramolecular cyclization of an amino alcohol with a nitrile to form a substituted morpholine"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,198 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(C(=O)Cl)cc(OC)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H11ClO4",
+                        "mass": 230.034586512
+                    }
+                },
+                {
+                    "smiles": "COc1ccc(C2CCO[C@H]2CCN2CCCN(CCCN)CC2)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H35N3O2",
+                        "mass": 361.27292736000004
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(C)N",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H9N",
+                        "mass": 59.073499287999994
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(C1=CC(OCCC2)=C(OC)C(OC)=C1)NCCCN3CCCN(CC[C@@H]2OC(C4=CC(OC)=C(OC)C(OC)=C4)=O)CC3",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C33H47N3O9",
+                        "mass": 629.3312300839999
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Dichloromethane (DCM) or other aprotic solvent",
+                "time": "2-24 hours, depending on the specific reaction conditions and scale"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Amide formation via acyl chloride and amine"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=S(Cl)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2OS",
+                        "mass": 117.90469098
+                    }
+                },
+                {
+                    "smiles": "COc1cc(C(=O)O)cc(OC)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12O5",
+                        "mass": 212.068473484
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Cl-].[K+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "ClK",
+                        "mass": 73.93255936
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(C(=O)Cl)cc(OC)c1OC",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H11ClO4",
+                        "mass": 230.034586512
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0 \u00b0C to room temperature",
+                "pressure": "Ambient pressure (1 atm)",
+                "solvent": "Dichloromethane (CH2Cl2) or other non-polar aprotic solvent",
+                "time": "30 minutes to 2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.87,
+                    "closestliterature": "Conversion of a carboxylic acid to an acid chloride using thionyl chloride (SOCl2)"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "NCCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H8BrN",
+                        "mass": 136.984011356
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "COc1ccc(C=O)cc1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H8O2",
+                        "mass": 136.052429496
+                    }
+                },
+                {
+                    "smiles": "N#CC",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3N",
+                        "mass": 41.026549096
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1ccc(C2CCO[C@H]2CCN2CCCN(CCCN)CC2)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H35N3O2",
+                        "mass": 361.27292736000004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "The reaction likely proceeds in a polar aprotic solvent such as DMF, DMSO, or THF to facilitate the SN2 reaction and reductive amination steps.",
+                "time": "The total reaction time may span several hours to a day, depending on the specific steps and conditions employed."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Reductive amination of 4-methoxybenzaldehyde with 4-bromobutanenitrile, followed by intramolecular cyclization with 2-oxiranylmethanol and further reductive amination with ethylenediamine."
+                }
+            ]
+        }
+    ]
+}

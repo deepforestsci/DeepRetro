@@ -1,0 +1,385 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": [
+            "4",
+            "6"
+        ],
+        "4": [
+            "5"
+        ],
+        "5": [],
+        "6": [
+            "7"
+        ],
+        "7": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "Nc1ccccc1CC=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H9NO",
+                        "mass": 135.068413908
+                    }
+                },
+                {
+                    "smiles": "O=C1CC[NH+]1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H5NO+",
+                        "mass": 71.03656520009
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C(C=1C=2C(NC1C(C=C)(C)C)=CC=CC2)[C@H]3C(=O)N4[C@](C(=O)N3)(CCC4)[H]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H25N3O2",
+                        "mass": 351.19467704
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol or methanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=CCc1ccccc1[N+](=O)[O-]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7NO3",
+                        "mass": 165.042593084
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "Nc1ccccc1CC=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H9NO",
+                        "mass": 135.068413908
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol, methanol or other protic solvent",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.87,
+                    "closestliterature": "Reduction of aromatic nitro compounds to anilines using hydrogen gas and a metal catalyst"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "N[C@@H](CO)C(=O)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6ClNO2",
+                        "mass": 123.008706112
+                    }
+                },
+                {
+                    "smiles": "N[C@H](CO)C(=O)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6ClNO2",
+                        "mass": 123.008706112
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CC[NH+]1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H5NO+",
+                        "mass": 71.03656520009
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Ambient pressure",
+                "solvent": "1,4-Dioxane (C1CCOC1)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.6,
+                    "closestliterature": "Intramolecular cyclization of N-chloroacetyl amino alcohols to form 2-oxazolidinones"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "N[C@@H](C(=O)O)C(=O)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H4ClNO3",
+                        "mass": 136.987970668
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[BH4-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H4B-",
+                        "mass": 15.04115410791
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N[C@@H](CO)C(=O)Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6ClNO2",
+                        "mass": 123.008706112
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "-10 to 0 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "methanol or ethanol",
+                "time": "30 minutes to 2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Reduction of a carboxylic acid to a primary alcohol using sodium borohydride (NaBH4)"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "NC(C(=O)O)C(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H5NO4",
+                        "mass": 119.02185764000001
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "[OH2]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N[C@@H](C(=O)O)C(=O)Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H4ClNO3",
+                        "mass": 136.987970668
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "water",
+                "time": "2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.97,
+                    "closestliterature": "Conversion of aspartic acid to aspartic acid \u03b2-chloride"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "N[C@H](C(=O)O)C(=O)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H4ClNO3",
+                        "mass": 136.987970668
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[BH4-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H4B-",
+                        "mass": 15.04115410791
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N[C@H](CO)C(=O)Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6ClNO2",
+                        "mass": 123.008706112
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "-20 to 0 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "methanol or ethanol",
+                "time": "30 min to 2 h"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Reduction of an \u03b1-amino acid to an \u03b1-amino aldehyde using sodium borohydride"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "NC(C(=O)O)C(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H5NO4",
+                        "mass": 119.02185764000001
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "[OH2]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N[C@H](C(=O)O)C(=O)Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H4ClNO3",
+                        "mass": 136.987970668
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "water",
+                "time": "2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.97,
+                    "closestliterature": "Conversion of aspartic acid to aspartic acid \u03b2-chloride"
+                }
+            ]
+        }
+    ]
+}

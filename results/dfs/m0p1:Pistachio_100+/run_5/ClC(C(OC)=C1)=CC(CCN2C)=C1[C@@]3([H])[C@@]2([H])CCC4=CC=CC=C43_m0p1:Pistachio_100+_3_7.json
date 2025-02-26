@@ -1,0 +1,473 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "8"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": [
+            "4",
+            "5"
+        ],
+        "4": [],
+        "5": [
+            "6"
+        ],
+        "6": [
+            "7"
+        ],
+        "7": [],
+        "8": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC(CC=O)=C1[C@H]2CCC3=CC=CC=C32",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H17ClO2",
+                        "mass": 300.091707464
+                    }
+                },
+                {
+                    "smiles": "CN([H])[H]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH5N",
+                        "mass": 31.042199159999996
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC(CCN2C)=C1[C@@]3([H])[C@@]2([H])CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent (e.g., DMF, DMSO, or acetonitrile)",
+                "time": "2-24 hours, depending on the specific reaction conditions and scale"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Reductive amination of an aldehyde with a secondary amine, using hydrogen gas as the reducing agent."
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "OCc1ccc(CC=O)c(C2CCc3ccccc32)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H18O2",
+                        "mass": 266.130679816
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "ClC(Cl)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CCl2O",
+                        "mass": 97.93261998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC(CC=O)=C1[C@H]2CCC3=CC=CC=C32",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H17ClO2",
+                        "mass": 300.091707464
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure (no special pressure conditions required)",
+                "solvent": "Dichloromethane (CH2Cl2) or chloroform (CHCl3)",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Chlorination of aromatic rings using phosgene (COCl2)"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "O=CCc1ccc(Br)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7BrO",
+                        "mass": 197.968026944
+                    }
+                },
+                {
+                    "smiles": "OCc1ccc(C2CCc3ccccc32)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H16O",
+                        "mass": 224.120115132
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1P(c1ccccc1)c1ccccc1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1C(=O)[O-].[K+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7KO2",
+                        "mass": 174.008311144
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OCc1ccc(CC=O)c(C2CCc3ccccc32)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H18O2",
+                        "mass": 266.130679816
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "polar aprotic solvent such as DMF, DMA, or NMP",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Palladium-catalyzed \u03b1-arylation of aldehydes with aryl bromides"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "OCCc1ccc(Br)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H9BrO",
+                        "mass": 199.983677008
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=[Cr](=O)(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCrO4",
+                        "mass": 116.927991012
+                    }
+                },
+                {
+                    "smiles": "[O-]I(=O)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "IO3-",
+                        "mass": 174.88976543991
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=CCc1ccc(Br)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7BrO",
+                        "mass": 197.968026944
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-5 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Acetone",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.83,
+                    "closestliterature": "Oxidation of a primary alcohol to an aldehyde using chromium trioxide (CrO3) and periodic acid (H5IO6) in acetone at 0-5 \u00b0C"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "OCc1ccc(C2=CCc3ccccc32)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H14O",
+                        "mass": 222.104465068
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H",
+                        "mass": 1.007825032
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "C(=O)(O)O.[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O3",
+                        "mass": 64.01604398799999
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OCc1ccc(C2CCc3ccccc32)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H16O",
+                        "mass": 224.120115132
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "1 atm (not applicable)",
+                "solvent": "Ethanol, Methanol, or Ethyl Acetate",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Catalytic hydrogenation of alkenes using palladium on carbon catalyst and hydrogen gas"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCc2ccccc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8O",
+                        "mass": 132.057514876
+                    }
+                },
+                {
+                    "smiles": "OCc1ccc([Mg]Br)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7BrMgO",
+                        "mass": 209.953068644
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl[Pd]Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2Pd",
+                        "mass": 175.84119135999998
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1P(c1ccccc1)c1ccccc1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OCc1ccc(C2=CCc3ccccc32)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H14O",
+                        "mass": 222.104465068
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "THF (tetrahydrofuran)",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.91,
+                    "closestliterature": "Kumada coupling"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "OCc1ccc(Br)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7BrO",
+                        "mass": 185.968026944
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(C)OC(C)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H10O2",
+                        "mass": 102.06807956
+                    }
+                },
+                {
+                    "smiles": "[Mg]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Mg",
+                        "mass": 23.9850417
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OCc1ccc([Mg]Br)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7BrMgO",
+                        "mass": 209.953068644
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Anhydrous diethyl ether or tetrahydrofuran (THF)",
+                "time": "30 minutes to 2 hours, depending on the scale of the reaction"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.89,
+                    "closestliterature": "Grignard reagent formation from an aryl bromide"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "C#C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H2",
+                        "mass": 26.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CN([H])[H]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH5N",
+                        "mass": 31.042199159999996
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required",
+                "time": "Reaction occurs rapidly upon mixing"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Acetylene (C2H2) reacts with ammonia (NH3) to form acetonitrile (CH3CN)"
+                }
+            ]
+        }
+    ]
+}

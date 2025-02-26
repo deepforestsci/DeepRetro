@@ -1,0 +1,463 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "8"
+        ],
+        "2": [
+            "3",
+            "6"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [
+            "5"
+        ],
+        "5": [],
+        "6": [],
+        "7": [],
+        "8": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC[C@@H]2[C@@H]1Cc1cc(Cl)c(OC)cc12",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H15ClO2",
+                        "mass": 250.0760574
+                    }
+                },
+                {
+                    "smiles": "COc1cc(CN)ccc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H10ClNO",
+                        "mass": 171.04509162
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC(CCN2C)=C1[C@@]3([H])[C@@]2([H])CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Protic solvent (e.g., methanol, ethanol)",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(Cl)c2c(c1)C1(O)CCCCC1C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H17ClO2",
+                        "mass": 252.091707464
+                    }
+                },
+                {
+                    "smiles": "COC1=CC=CC2C(=O)CCCC12Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H13ClO2",
+                        "mass": 212.060407336
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CCC[C@@H]2[C@@H]1Cc1cc(Cl)c(OC)cc12",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H15ClO2",
+                        "mass": 250.0760574
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Likely an aprotic polar solvent such as acetone, ethyl acetate, or dichloromethane",
+                "time": "Reaction time may vary, but likely on the order of several hours to overnight"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Intramolecular Friedel-Crafts alkylation"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "CCCCC(=O)c1cc(OC)cc(Cl)c1C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H17ClO2",
+                        "mass": 240.091707464
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(Cl)c2c(c1)C1(O)CCCCC1C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H17ClO2",
+                        "mass": 252.091707464
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0 \u00b0C to room temperature",
+                "pressure": "Ambient pressure (1 atm)",
+                "solvent": "Dichloromethane (CH2Cl2) or other non-polar solvent",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Baeyer-Villiger oxidation of a cyclic ketone to form a lactone"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "C/C=C\\CC(=O)c1cc(OC)cc(Cl)c1C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H15ClO2",
+                        "mass": 238.0760574
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H",
+                        "mass": 1.007825032
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CCCCC(=O)c1cc(OC)cc(Cl)c1C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H17ClO2",
+                        "mass": 240.091707464
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol, methanol or ethyl acetate",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Hydrogenation of alkenes: C/C=C\\CC(=O)c1cc(OC)cc(Cl)c1C + H2 -> CCCCC(=O)c1cc(OC)cc(Cl)c1C"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "C/C=C\\CC(=O)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H7ClO",
+                        "mass": 118.018542524
+                    }
+                },
+                {
+                    "smiles": "COc1ccc(C)c(Cl)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H9ClO",
+                        "mass": 156.034192588
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Al]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Al",
+                        "mass": 26.98153863
+                    }
+                },
+                {
+                    "smiles": "[Cl-].[Fe+3]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "ClFe+2",
+                        "mass": 90.90269302018
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C/C=C\\CC(=O)c1cc(OC)cc(Cl)c1C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H15ClO2",
+                        "mass": 238.0760574
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Ambient pressure (1 atm)",
+                "solvent": "Dichloromethane (CH2Cl2) or 1,2-dichloroethane",
+                "time": "2-6 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.92,
+                    "closestliterature": "Friedel-Crafts acylation"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "CO",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O",
+                        "mass": 32.026214748
+                    }
+                },
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COC1=CC=CC2C(=O)CCCC12Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H13ClO2",
+                        "mass": 212.060407336
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Dichloromethane (DCM) or chloroform (CHCl3)",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.97,
+                    "closestliterature": "Friedel-Crafts acylation of 1,2,3,4-tetrahydronaphthalene with oxalyl chloride, followed by methanolysis"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "CO[Si](C)(C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H12OSi",
+                        "mass": 104.065741534
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CO",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O",
+                        "mass": 32.026214748
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Water",
+                "time": "The reaction is likely rapid, completing within minutes under the given conditions."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Hydrolysis of trimethylmethoxysilane to form methanol"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(C#N)ccc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H6ClNO",
+                        "mass": 167.013791492
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                },
+                {
+                    "smiles": "[Pt]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pt",
+                        "mass": 194.9647911
+                    }
+                },
+                {
+                    "smiles": "CC(=O)OC(C)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6O3",
+                        "mass": 102.031694052
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(CN)ccc1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H10ClNO",
+                        "mass": 171.04509162
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "1 atm (not applicable)",
+                "solvent": "Ethyl acetate",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Catalytic hydrogenation of nitriles to primary amines using platinum catalyst"
+                }
+            ]
+        }
+    ]
+}

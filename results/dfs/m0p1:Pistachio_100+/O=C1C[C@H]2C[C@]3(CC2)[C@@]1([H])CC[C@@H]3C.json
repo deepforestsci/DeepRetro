@@ -1,0 +1,158 @@
+{
+    "dependencies": {
+        "1": [
+            "3",
+            "3"
+        ],
+        "2": [],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCCC2CCCCC12",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H16O",
+                        "mass": 152.120115132
+                    }
+                },
+                {
+                    "smiles": "O=C1CCCC2CCCCC12",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H16O",
+                        "mass": 152.120115132
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][Mg][Br]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HBrMg",
+                        "mass": 103.911203832
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C[C@H]2C[C@]3(CC2)[C@@]1([H])CC[C@@H]3C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H18O",
+                        "mass": 178.135765196
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure (no special pressure conditions required)",
+                "solvent": "Anhydrous ether or THF",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.65,
+                    "closestliterature": "Intramolecular pinacol coupling of a diketone using a Grignard reagent"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCCC2CCCC(=O)C12",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H14O2",
+                        "mass": 166.099379688
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CCCC2CCCCC12",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H16O",
+                        "mass": 152.120115132
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "150-200 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "The reaction is likely carried out neat (without solvent) due to the high temperature.",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Wolff-Kishner reduction of a cyclic 1,3-diketone to the corresponding cycloalkane"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCCC2CCCC(=O)C12",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H14O2",
+                        "mass": 166.099379688
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CCCC2CCCCC12",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H16O",
+                        "mass": 152.120115132
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "150-200 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "The reaction is likely carried out neat (without solvent) due to the high temperature.",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Wolff-Kishner reduction of a cyclic 1,3-diketone to the corresponding cycloalkane"
+                }
+            ]
+        }
+    ]
+}

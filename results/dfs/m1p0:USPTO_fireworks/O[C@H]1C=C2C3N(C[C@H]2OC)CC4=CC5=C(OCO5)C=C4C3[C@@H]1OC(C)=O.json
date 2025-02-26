@@ -1,0 +1,343 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3",
+            "5"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [],
+        "5": [],
+        "6": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H19NO5",
+                        "mass": 317.126322708
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3ClO",
+                        "mass": 77.987242396
+                    }
+                },
+                {
+                    "smiles": "CC(=O)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3ClO",
+                        "mass": 77.987242396
+                    }
+                },
+                {
+                    "smiles": "C1CCNCC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H11N",
+                        "mass": 85.08914935199999
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H21NO6",
+                        "mass": 359.13688739199995
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "The reaction is typically carried out at atmospheric pressure, as no special pressure conditions are required.",
+                "solvent": "An organic solvent such as dichloromethane (DCM) or chloroform (CHCl3) is commonly used for this type of acetylation reaction.",
+                "time": "The reaction is usually complete within 1-4 hours, depending on the specific conditions and scale of the reaction."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "Acetylation of a secondary alcohol using acetyl chloride (CH3COCl) and pyridine (C5H5N) as a base"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "Oc1ccc2c(c1)CC3N(C[C@H]4OC)CC4=CC5=C(O)C=C5C3[C@@H]2O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H21NO4",
+                        "mass": 339.147058152
+                    }
+                },
+                {
+                    "smiles": "COC(=O)c1ccc(O)c(O)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H8O4",
+                        "mass": 168.042258736
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C(OC)c1cc(Br)c(O)c(O)c1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7BrO4",
+                        "mass": 245.952770804
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H19NO5",
+                        "mass": 317.126322708
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF or DMSO",
+                "time": "Several hours to overnight, depending on the specific substrates and scale of the reaction"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Mitsunobu reaction"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "NCCc1ccc(O)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H11NO",
+                        "mass": 137.084063972
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C1C=CC(=O)C=C1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4O2",
+                        "mass": 108.021129368
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "Oc1ccc2c(c1)CC3N(C[C@H]4OC)CC4=CC5=C(O)C=C5C3[C@@H]2O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H21NO4",
+                        "mass": 339.147058152
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely takes place in a polar aprotic solvent such as DMF, DMSO, or acetonitrile to facilitate the condensation reaction",
+                "time": "Several hours to overnight, depending on the specific reaction conditions and scale"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "This appears to be a Pictet-Spengler reaction, which involves the condensation of a \u03b2-arylethylamine (such as the tyramine derivative NCCc1ccc(O)cc1) with an aldehyde or ketone (such as the 1,4-cyclohexanedione O=C1C=CC(=O)C=C1) to form a tetrahydroisoquinoline product. The use of 1,4-dioxane (C1CCOC1) as a solvent or additive is common in these reactions."
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)NCCc1ccc(O)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H19NO3",
+                        "mass": 237.136493468
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "NCCc1ccc(O)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H11NO",
+                        "mass": 137.084063972
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.89,
+                    "closestliterature": "Boc deprotection of an amine using ethanol as solvent at reflux"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH2O3",
+                        "mass": 62.000393923999994
+                    }
+                },
+                {
+                    "smiles": "O=C(O)c1ccc(O)c(O)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H6O4",
+                        "mass": 154.026608672
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CS(C)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6OS",
+                        "mass": 78.013935812
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COC(=O)c1ccc(O)c(O)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H8O4",
+                        "mass": 168.042258736
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Dimethyl sulfoxide (DMSO)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Fischer esterification of a phenolic acid"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "O=S(Cl)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2OS",
+                        "mass": 117.90469098
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4",
+                        "mass": 16.031300127999998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(=O)Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3ClO",
+                        "mass": 77.987242396
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0 \u00b0C to room temperature",
+                "pressure": "Ambient pressure (1 atm)",
+                "solvent": "Not applicable; reaction likely occurs without solvent",
+                "time": "Reaction is likely rapid, completing within minutes to a few hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Thionyl chloride (SOCl2) reacts with carboxylic acids (RCOOH) to form acyl chlorides (RCOCl). This is a common method for converting carboxylic acids to the more reactive acyl chloride derivatives."
+                }
+            ]
+        }
+    ]
+}
