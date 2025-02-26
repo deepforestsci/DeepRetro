@@ -137,6 +137,69 @@ def clear_molecule_cache():
     clear_cache_for_molecule(molecule)
     return jsonify({"status": "success"}), 200
 
+@app.route('/api/rerun_retrosynthesis', methods=['POST'])
+@require_api_key
+def rerun_retrosynthesis():
+    """
+    Endpoint to rerun retrosynthesis for a specific molecule.
+    """
+    data = request.get_json()
+    if not data or 'smiles' not in data:
+        return jsonify({
+            "error":
+            "Molecule string is required, Please include a 'smiles' field"
+        }), 400
+
+    molecule = data['smiles']
+
+    # Clear the cache for the molecule
+    clear_cache_for_molecule(molecule)
+    deepseek_r1 = False
+    try:
+        advanced_model: str = data['advanced_model']
+        if advanced_model.lower() == "true":
+            deepseek_r1 = True
+    except Exception as e:
+        print(e)
+        advanced_model = False
+
+    if not Chem.MolFromSmiles(molecule):
+        return jsonify({"error": "Invalid SMILES string"}), 400
+
+    if deepseek_r1:
+        llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
+    else:
+        llm = "claude-3-opus-20240229"
+
+    # Advanced prompt handling
+    advanced_prompt = False
+    try:
+        advanced_prompt: str = data['advanced_prompt']
+        if advanced_prompt.lower() == "true":
+            advanced_prompt = True
+    except Exception as e:
+        print(e)
+        advanced_prompt = False
+
+    if advanced_prompt:
+        llm = llm + ":adv"
+
+    # Choose AiZynthFinder model
+    az_model = "USPTO"
+    try:
+        az_model: str = data['model_version']
+        assert az_model in AZ_MODEL_LIST
+    except Exception as e:
+        print(e)
+        az_model = "USPTO"
+
+    # Rerun retrosynthesis
+    try:
+        result = main(smiles=molecule, llm=llm, az_model=az_model)
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "Error in retrosynthesis, Please rerun"}), 500
+    return jsonify(result), 200
 
 @app.route('/api/partial_rerun', methods=['POST'])
 @require_api_key
