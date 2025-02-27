@@ -19,20 +19,10 @@ root_dir = rootutils.setup_root(__file__,
 
 load_dotenv()
 from src.utils.job_context import logger as context_logger
-from src.utils.utils_molecule import calc_mol_wt, is_valid_smiles, calc_chemical_formula
-from src.cache import cache_results
+from src.utils.utils_molecule import is_valid_smiles
 
 ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
                                     "true").lower() == "false" else True
-
-metadata = {
-    "generation_name": "prod",  # set langfuse generation name
-    "project": "Retrosynthesis",  # set langfuse project name
-    "version": "0.0.3",  # set langfuse version
-    "trace_name": "prod",  # set langfuse Trace Name
-    "trace_user_id": "sv",  # set langfuse Trace User ID
-    "session_id": "stability",  # set langfuse Session ID
-}
 
 
 def log_message(message: str, logger=None):

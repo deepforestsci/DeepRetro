@@ -15,7 +15,7 @@ from src.cache import cache_results
 from src.utils.utils_molecule import validity_check, detect_seven_member_rings
 from src.utils.job_context import logger as context_logger
 from src.utils.stability_checks import stability_checker
-# from src.utils.hallucination_checks import hallucination_checker
+from src.utils.hallucination_checks import hallucination_checker
 
 load_dotenv()
 
@@ -443,9 +443,17 @@ def llm_pipeline(
 
         # --------------------
         # Hallucination check
-        # if hallucination_check.lower() == "true":
-        #     # Implement hallucination check
-        #     pass
+        if hallucination_check.lower() == "true":
+            status_code, hallucination_pathways = hallucination_checker(
+                molecule, output_pathways)
+            if status_code != 200:
+                log_message(
+                    f"Error in hallucination check: {hallucination_pathways}",
+                    logger)
+                run += 0.1
+                get_error_log(status_code)
+                continue
+            output_pathways = hallucination_pathways
 
         # --------------------
         # Update the messages for the next call
