@@ -22,7 +22,7 @@ mapper = {
 # folder_list = [ "m1p0:Pistachio_100+", "m1p0:Pistachio_50", "m0p1:Pistachio_100+", "m0p1:Pistachio_50"]
 folder_list = [ "m0p1:Pistachio_100+", "m1p0:Pistachio_100+"]
 
-for run_no in range(6,9):
+for run_no in range(9,12):
     for folder in folder_list:
         if not os.path.exists(f"{root_dir}/results/dfs/{folder}"):
             os.makedirs(f"{root_dir}/results/dfs/{folder}")
@@ -37,8 +37,8 @@ for run_no in range(6,9):
             try:
                 clear_cache_for_molecule(molecule)
                 print(f"Running {molecule} with {llm} and {az_model}")
-                res_dict = main(molecule ,llm=llm, az_model=az_model, stability_flag="True")
-                with open(f"{root_dir}/results/dfs/{folder}/run_{run_no}/{mol}_stability.json", "w") as f:
+                res_dict = main(molecule ,llm=llm, az_model=az_model, stability_flag="True", hallucination_check="True")
+                with open(f"{root_dir}/results/dfs/{folder}/run_{run_no}/{mol}_stability_hallucination.json", "w") as f:
                     json.dump(res_dict, f, indent=4)
             except Exception as e:
                 print("Error in molecule:", mol)
