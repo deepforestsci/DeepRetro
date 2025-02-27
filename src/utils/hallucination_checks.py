@@ -599,8 +599,8 @@ def calculate_hallucination_score(reactant_smiles: str, product_smiles: str):
         # Check how many ring changes occurred
         num_ring_changes = len(comparison_results["ring_size_changes"])
 
-        # Penalty: 40 points per ring change
-        ring_penalty = min(40 * num_ring_changes, 80)
+        # Penalty: 25 points per ring change
+        ring_penalty = min(25 * num_ring_changes, 50)
         penalty_factors.append(ring_penalty)
         penalty_descriptions.append(
             f"Ring structure changes: -{ring_penalty} points")
@@ -652,7 +652,7 @@ def calculate_hallucination_score(reactant_smiles: str, product_smiles: str):
     # Determine severity level based on score
     if final_score >= 80:
         severity = "low"
-    elif final_score >= 60:
+    elif final_score >= 40:
         severity = "medium"
     elif final_score >= 20:
         severity = "high"
@@ -717,7 +717,7 @@ def hallucination_checker(product: str, res_smiles: list):
             for smiles in smile_list:
                 if not is_valid_smiles(smiles):
                     log_message("Invalid SMILES string", logger)
-                hallucination_report = calculate_hallucination_score(smiles)
+                hallucination_report = calculate_hallucination_score(smiles, product)
                 log_message(f"Hallucination report: {hallucination_report}",
                             logger)
 
@@ -738,71 +738,71 @@ def hallucination_checker(product: str, res_smiles: list):
     return 200, valid_pathways
 
 
-# Test with the provided example
-if __name__ == "__main__":
-    test_reactant = "c1c(CCNC)cc(C(=O)O)cc1"
-    test_product = "c1cc(CCN(C)CC)c(C(=O)O)cc1"
+# # Test with the provided example
+# if __name__ == "__main__":
+#     test_reactant = "c1c(CCNC)cc(C(=O)O)cc1"
+#     test_product = "c1cc(CCN(C)CC)c(C(=O)O)cc1"
 
-    # test_reactant = "C2CC1CCCC1C2"
-    # test_product = "C2CCC1CCCCC1C2"
+#     # test_reactant = "C2CC1CCCC1C2"
+#     # test_product = "C2CCC1CCCCC1C2"
 
-    print("Testing with provided example:")
-    print(f"Reactant: {test_reactant}")
-    print(f"Product: {test_product}")
+#     print("Testing with provided example:")
+#     print(f"Reactant: {test_reactant}")
+#     print(f"Product: {test_product}")
 
-    results = hallucination_compare_molecules(test_reactant, test_product)
+#     results = hallucination_compare_molecules(test_reactant, test_product)
 
-    print("\nValidation Results:")
-    print("-------------------")
+#     print("\nValidation Results:")
+#     print("-------------------")
 
-    if results['substituent_position_changes']:
-        print("\nSubstituent Position Changes:")
-        for change in results['substituent_position_changes']:
-            print(
-                f"- {change['substituent']} moved from {', '.join(change['from_positions'])} "
-                f"to {', '.join(change['to_positions'])}")
+#     if results['substituent_position_changes']:
+#         print("\nSubstituent Position Changes:")
+#         for change in results['substituent_position_changes']:
+#             print(
+#                 f"- {change['substituent']} moved from {', '.join(change['from_positions'])} "
+#                 f"to {', '.join(change['to_positions'])}")
 
-    if results['detected_issues']:
-        print("\nDetected Issues:")
-        for issue in results['detected_issues']:
-            print(f"- {issue}")
+#     if results['detected_issues']:
+#         print("\nDetected Issues:")
+#         for issue in results['detected_issues']:
+#             print(f"- {issue}")
 
-    print("=== Valid transformation example ===")
-    # Simple methylation (adding a methyl group)
-    valid_reactant = "c1ccccc1"
-    valid_product = "c1ccccc1OC"
-    valid_result = calculate_hallucination_score(valid_reactant, valid_product)
-    print(f"Score: {valid_result['score']}")
-    print(f"Severity: {valid_result['severity']}")
-    print(f"Message: {valid_result['message']}")
-    if 'penalties' in valid_result:
-        print("Penalties applied:")
-        for penalty in valid_result['penalties']:
-            print(f"- {penalty}")
+#     print("=== Valid transformation example ===")
+#     # Simple methylation (adding a methyl group)
+#     valid_reactant = "c1ccccc1"
+#     valid_product = "c1ccccc1OC"
+#     valid_result = calculate_hallucination_score(valid_reactant, valid_product)
+#     print(f"Score: {valid_result['score']}")
+#     print(f"Severity: {valid_result['severity']}")
+#     print(f"Message: {valid_result['message']}")
+#     if 'penalties' in valid_result:
+#         print("Penalties applied:")
+#         for penalty in valid_result['penalties']:
+#             print(f"- {penalty}")
 
-    print("\n=== Problematic transformation example ===")
-    # Position swap example (likely hallucination)
-    test_reactant = "c1c(CCNC)cc(C(=O)O)cc1"
-    test_product = "c1cc(CCN(C)CC)c(C(=O)O)cc1"
-    problem_result = calculate_hallucination_score(test_reactant, test_product)
-    print(f"Score: {problem_result['score']}")
-    print(f"Severity: {problem_result['severity']}")
-    print(f"Message: {problem_result['message']}")
-    if 'penalties' in problem_result:
-        print("Penalties applied:")
-        for penalty in problem_result['penalties']:
-            print(f"- {penalty}")
+#     print("\n=== Problematic transformation example ===")
+#     # Position swap example (likely hallucination)
+#     test_reactant = "c1c(CCNC)cc(C(=O)O)cc1"
+#     test_product = "c1cc(CCN(C)CC)c(C(=O)O)cc1"
+#     problem_result = calculate_hallucination_score(test_reactant, test_product)
+#     print(f"Score: {problem_result['score']}")
+#     print(f"Severity: {problem_result['severity']}")
+#     print(f"Message: {problem_result['message']}")
+#     if 'penalties' in problem_result:
+#         print("Penalties applied:")
+#         for penalty in problem_result['penalties']:
+#             print(f"- {penalty}")
 
-    print("\n=== Invalid transformation example ===")
-    # Complete hallucination example (atom count mismatch)
-    invalid_reactant = "c1ccccc1.CC"
-    invalid_product = "c1ccccc1CCC(=O)C"
-    invalid_result = calculate_hallucination_score(invalid_reactant,
-                                                   invalid_product)
-    print(f"Score: {invalid_result['score']}")
-    print(f"Severity: {invalid_result['severity']}")
-    print(f"Message: {invalid_result['message']}")
-    if 'penalties' in invalid_result:
-        print("Penalties applied:")
-        for penalty in invalid_result['penalties']:
-            print(f"- {penalty}")
+#     print("\n=== Invalid transformation example ===")
+#     # Complete hallucination example (atom count mismatch)
+#     invalid_reactant = "c1ccccc1.CC"
+#     invalid_product = "c1ccccc1CCC(=O)C"
+#     invalid_result = calculate_hallucination_score(invalid_reactant,
+#                                                    invalid_product)
+#     print(f"Score: {invalid_result['score']}")
+#     print(f"Severity: {invalid_result['severity']}")
+#     print(f"Message: {invalid_result['message']}")
+#     if 'penalties' in invalid_result:
+#         print("Penalties applied:")
+#         for penalty in invalid_result['penalties']:
+#             print(f"- {penalty}")

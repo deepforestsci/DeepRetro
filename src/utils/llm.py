@@ -444,6 +444,8 @@ def llm_pipeline(
         # --------------------
         # Hallucination check
         if hallucination_check.lower() == "true":
+            log_message(f"Calling hallucination check with pathways: {output_pathways}",
+                        logger)
             status_code, hallucination_pathways = hallucination_checker(
                 molecule, output_pathways)
             if status_code != 200:
