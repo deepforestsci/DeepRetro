@@ -84,7 +84,7 @@ def stability_checker(res_smiles: list):
                         "Likely stable", "Moderately stable"
                 ]:
                     valid.append(smiles)
-            if len(valid) > 0:
+            if len(valid) == len(smile_list):
                 valid_pathways.append(valid)
         else:
             if is_valid_smiles(smile_list):

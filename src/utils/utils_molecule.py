@@ -135,7 +135,7 @@ def validity_check(molecule, res_molecules, res_explanations, res_confidence):
                     log_message(
                         f"Molecule : {molecule} is invalid or cannot be parsed",
                         logger)
-            if len(valid) >= 1:
+            if len(valid) == len(smile_list):
                 valid_pathways.append(valid)
                 valid_explanations.append(res_explanations[idx])
                 valid_confidence.append(res_confidence[idx])
