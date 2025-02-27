@@ -714,17 +714,26 @@ def hallucination_checker(product: str, res_smiles: list):
     for idx, smile_list in enumerate(res_smiles):
         valid = []
         if isinstance(smile_list, list):
-            for smiles in smile_list:
-                if not is_valid_smiles(smiles):
-                    log_message("Invalid SMILES string", logger)
-                hallucination_report = calculate_hallucination_score(smiles, product)
-                log_message(f"Hallucination report: {hallucination_report}",
-                            logger)
+            smiles_combined = ".".join(smile_list)
+            if not is_valid_smiles(smiles_combined):
+                log_message(f"Invalid SMILES string: {smiles_combined}", logger)
+            
+            hallucination_report = calculate_hallucination_score(smiles_combined, product)
+            log_message(f"Hallucination report: {hallucination_report}", logger)
+            
+            if hallucination_report['severity'] in ['low', 'medium']:
+                valid_pathways.append(smile_list)
+            # for smiles in smile_list:
+            #     if not is_valid_smiles(smiles):
+            #         log_message("Invalid SMILES string", logger)
+            #     hallucination_report = calculate_hallucination_score(smiles, product)
+            #     log_message(f"Hallucination report: {hallucination_report}",
+            #                 logger)
 
-                if hallucination_report['severity'] in ['low', 'medium']:
-                    valid.append(smiles)
-            if len(valid) == len(smile_list):
-                valid_pathways.append(valid)
+            #     if hallucination_report['severity'] in ['low', 'medium']:
+            #         valid.append(smiles)
+            # if len(valid) == len(smile_list):
+            #     valid_pathways.append(valid)
         else:
             if is_valid_smiles(smile_list):
                 hallucination_report = calculate_hallucination_score(
