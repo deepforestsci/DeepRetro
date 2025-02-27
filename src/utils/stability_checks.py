@@ -19,8 +19,7 @@ root_dir = rootutils.setup_root(__file__,
 
 load_dotenv()
 from src.utils.job_context import logger as context_logger
-from src.utils.utils_molecule import calc_mol_wt, is_valid_smiles, calc_chemical_formula
-from src.cache import cache_results
+from src.utils.utils_molecule import is_valid_smiles
 
 ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
                                     "true").lower() == "false" else True
