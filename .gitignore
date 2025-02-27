@@ -7,3 +7,4 @@ aizynthfinder/
 pistachio/
 .idea/
 .vscode/
+.pytest_cache/
