@@ -8,3 +8,4 @@ pistachio/
 .idea/
 .vscode/
 .pytest_cache/
+logs/
