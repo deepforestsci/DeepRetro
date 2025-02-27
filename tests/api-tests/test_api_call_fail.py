@@ -19,7 +19,6 @@ def test_retrosynthesis_fail():
     url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
 
     payload = json.dumps({
-        "smiles": "",
         "advanced_model": "True",
         "advanced_prompt": "True",
         "llm": CLAUDE_ADV_MODEL,
@@ -32,8 +31,8 @@ def test_retrosynthesis_fail():
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
-    assert response.status_code == 500
-    assert response.json() == {'error': 'Error in retrosynthesis, Please rerun'}
+    assert response.status_code == 400
+    assert response.json() == {"error": "SMILES string is required. Please include a 'smiles' field"}
 
 
 def test_rerun_retro_fail():
@@ -46,7 +45,6 @@ def test_rerun_retro_fail():
     url = f"{BASE_URL}{ENDPOINTS['rerun_retro']}"
 
     payload = json.dumps({
-        "smiles": "",
         "advanced_model": "True",
         "advanced_prompt": "True",
         "llm": DEEPSEEK_FIREWORKS_MODEL,
@@ -59,8 +57,8 @@ def test_rerun_retro_fail():
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
-    assert response.status_code == 500
-    assert response.json() == {'error': 'Error in retrosynthesis, Please rerun'}
+    assert response.status_code == 400
+    assert response.json() == {"error": "Molecule string is required, Please include a 'smiles' field"}
 
 if __name__ == '__main__':
     pytest.main()
