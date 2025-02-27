@@ -90,7 +90,7 @@ def obtain_prompt(LLM: str):
         if LLM in DEEPSEEK_MODELS:
             sys_prompt_final = SYS_PROMPT_DEEPSEEK
             user_prompt_final = USER_PROMPT_DEEPSEEK
-            max_completion_tokens = 8192
+            max_completion_tokens = 8192 * 2
         elif LLM in OPENAI_MODELS:
             sys_prompt_final = SYS_PROMPT_OPENAI
             user_prompt_final = USER_PROMPT_OPENAI
@@ -166,7 +166,8 @@ def call_LLM(molecule: str,
             "role":
             "user",
             "content":
-            user_prompt_final.replace('{target_smiles}', molecule)
+            user_prompt_final.replace('{target_smiles}', molecule) + "\n\n" +
+            add_on
         }]
     params["messages"] = messages
 

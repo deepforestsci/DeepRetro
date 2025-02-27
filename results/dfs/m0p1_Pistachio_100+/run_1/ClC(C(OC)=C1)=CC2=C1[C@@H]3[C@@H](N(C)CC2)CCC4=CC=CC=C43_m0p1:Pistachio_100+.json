@@ -1,0 +1,164 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "Brc1cccc2c1CCCC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H11Br",
+                        "mass": 210.004412452
+                    }
+                },
+                {
+                    "smiles": "COc1ccc(B(O)O)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H9BO3",
+                        "mass": 152.064474548
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1P(c2ccccc2)c3ccccc3",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                },
+                {
+                    "smiles": "CN",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH5N",
+                        "mass": 31.042199159999996
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1C(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H8O2",
+                        "mass": 136.052429496
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "1,4-dioxane or another aprotic polar solvent like DMF or THF",
+                "time": "several hours, typically 2-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Suzuki-Miyaura cross-coupling"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCCc2cccc(Br)c21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H9BrO",
+                        "mass": 223.983677008
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Brc1cccc2c1CCCC2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H11Br",
+                        "mass": 210.004412452
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-200 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent needed",
+                "time": "0.5-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.84,
+                    "closestliterature": "Wolff-Kishner reduction"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "COc1ccc(Br)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7BrO",
+                        "mass": 185.968026944
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "COc1ccc(B(O)O)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H9BO3",
+                        "mass": 152.064474548
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100 \u00b0C",
+                "pressure": "Not applicable. This reaction is typically carried out at atmospheric pressure.",
+                "solvent": "1,4-dioxane",
+                "time": "12-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "2",
+                    "confidenceestimate": 0.78,
+                    "closestliterature": "Miyaura borylation of aryl halides using bis(pinacolato)diboron, catalyzed by Pd(dppf)Cl2"
+                }
+            ]
+        }
+    ]
+}

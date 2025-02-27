@@ -1,0 +1,473 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "4"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": [],
+        "4": [
+            "5",
+            "8"
+        ],
+        "5": [
+            "6"
+        ],
+        "6": [
+            "7"
+        ],
+        "7": [],
+        "8": [
+            "9"
+        ],
+        "9": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "FC1(F)CCc2ccncc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7F2N",
+                        "mass": 155.054655664
+                    }
+                },
+                {
+                    "smiles": "ClC1=NC=C(C(F)(F)F)C(=C1)N1C=C(C(F)(F)F)C=C1OC(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H5ClF8N2O",
+                        "mass": 379.99626622
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "FC1(F)C2=C(C=CN=C2Cl)[C@]3(CN(C=C(C(F)(F)F)C=C4OC(F)F)C4=N3)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H11ClF7N3O",
+                        "mass": 441.047887192
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Heat",
+                "pressure": "The reaction likely proceeds at atmospheric pressure, as no special pressure conditions are specified.",
+                "solvent": "A polar aprotic solvent like DMF, DMSO, or acetonitrile is likely used to facilitate the SN2 reaction.",
+                "time": "The reaction time depends on the specific conditions used, but likely ranges from 30 minutes to several hours to achieve complete conversion."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Nucleophilic aromatic substitution (SNAr) reaction between a fluorinated pyridine and a secondary amine"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "c1cc2c(cn1)C1(CC2)SCCS1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H11NS2",
+                        "mass": 209.033291352
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "F[Si](F)(C)C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6F2Si",
+                        "mass": 96.020683162
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC1(F)CCc2ccncc21",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7F2N",
+                        "mass": 155.054655664
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0 \u00b0C to room temperature",
+                "pressure": "atmospheric pressure",
+                "solvent": "dichloromethane (CH2Cl2) or other aprotic solvent",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Electrophilic fluorination of indolizidine using fluorosilane reagent"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "SCCS",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6S2",
+                        "mass": 93.991092192
+                    }
+                },
+                {
+                    "smiles": "O=C1CCc2ccncc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7NO",
+                        "mass": 133.052763844
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=S(=O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O4S",
+                        "mass": 97.96737954400001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "c1cc2c(cn1)C1(CC2)SCCS1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H11NS2",
+                        "mass": 209.033291352
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Ambient pressure",
+                "solvent": "Acetic acid",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.84,
+                    "closestliterature": "Paal-Knorr pyrrole synthesis"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "Nc1ccc(C2=NC(=O)C=C(C(F)(F)F)C2=O)cc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H6ClF3N2O2",
+                        "mass": 302.006989772
+                    }
+                },
+                {
+                    "smiles": "FC(F)(F)C(F)(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2F6",
+                        "mass": 137.99041932
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC1=NC=C(C(F)(F)F)C(=C1)N1C=C(C(F)(F)F)C=C1OC(F)F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H5ClF8N2O",
+                        "mass": 379.99626622
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF or DMSO",
+                "time": "1-24 hours, depending on the specific substrates and scale"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Nucleophilic aromatic substitution (SNAr) of a perfluoroalkyl-substituted pyridone with a phenoxide anion, formed in situ from the corresponding phenol under basic conditions."
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "O=C1C=C(C(F)(F)F)C(=O)C(c2ccc(NC(=O)C(F)(F)F)c(Cl)c2)=N1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H5ClF6N2O3",
+                        "mass": 397.98928902000006
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C(=O)(C)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "Nc1ccc(C2=NC(=O)C=C(C(F)(F)F)C2=O)cc1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H6ClF3N2O2",
+                        "mass": 302.006989772
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Acetic acid (C(=O)(C)O)",
+                "time": "The reaction time depends on the scale and specific conditions, but likely ranges from 30 minutes to a few hours."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Reduction of an aromatic nitro group to an amine using hydrogen gas with acetic acid as solvent"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "O=C(Nc1ccc(I)cc1Cl)C(F)(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H4ClF3INO",
+                        "mass": 348.897824088
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Cu]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cu",
+                        "mass": 62.9295975
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C=C(C(F)(F)F)C(=O)C(c2ccc(NC(=O)C(F)(F)F)c(Cl)c2)=N1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H5ClF6N2O3",
+                        "mass": 397.98928902000006
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-150 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "C1CCOC1 (1,4-dioxane)",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Copper-catalyzed intramolecular C-N coupling of 2,2,2-trifluoroacetamide with aryl iodide"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "O=C(Nc1ccccc1Cl)C(F)(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H5ClF3NO",
+                        "mass": 223.00117612
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[I+].[I-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "I2",
+                        "mass": 253.808946
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(Nc1ccc(I)cc1Cl)C(F)(F)F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H4ClF3INO",
+                        "mass": 348.897824088
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Acetic acid (CH3COOH)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Electrophilic aromatic substitution of aniline derivative with iodine monochloride"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "ClC(Cl)(Cl)C(Cl)(Cl)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2Cl6",
+                        "mass": 233.81311608
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[F-].[K+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "FK",
+                        "mass": 57.9621099
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC(F)(F)C(F)(F)F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2F6",
+                        "mass": 137.99041932
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "150-200 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction is typically carried out in the absence of solvent, as both reactants are liquids or gases.",
+                "time": "2-6 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Halogen exchange reaction: Hexachloroethane is treated with potassium fluoride at elevated temperatures (150-200 \u00b0C) to yield hexafluoroethane."
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "ClCCl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH2Cl2",
+                        "mass": 83.953355424
+                    }
+                },
+                {
+                    "smiles": "C=C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4",
+                        "mass": 28.031300127999998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(Cl)(Cl)C(Cl)(Cl)Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2Cl6",
+                        "mass": 233.81311608
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "No external heat needed",
+                "pressure": "Ambient pressure",
+                "solvent": "No solvent required",
+                "time": "Reaction occurs rapidly upon mixing"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "Chlorination of ethylene with chlorine gas"
+                }
+            ]
+        }
+    ]
+}

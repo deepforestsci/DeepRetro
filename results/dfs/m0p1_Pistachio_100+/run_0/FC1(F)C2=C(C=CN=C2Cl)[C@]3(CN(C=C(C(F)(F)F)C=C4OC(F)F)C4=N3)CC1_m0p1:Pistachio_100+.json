@@ -1,0 +1,854 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "14"
+        ],
+        "2": [
+            "3",
+            "7"
+        ],
+        "3": [
+            "4",
+            "5",
+            "6"
+        ],
+        "4": [
+            "14"
+        ],
+        "5": [],
+        "6": [
+            "14"
+        ],
+        "7": [
+            "8",
+            "10",
+            "13"
+        ],
+        "8": [
+            "12",
+            "9"
+        ],
+        "9": [],
+        "10": [
+            "11",
+            "12"
+        ],
+        "11": [],
+        "12": [],
+        "13": [],
+        "14": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "FC1(F)C2=C(C=CN=C2)C3(CN(C=C(C(F)(F)F)C=C4)C4=N3)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H12F5N3",
+                        "mass": 341.095138484
+                    }
+                },
+                {
+                    "smiles": "Clc1ccccn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H4ClN",
+                        "mass": 113.003226808
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "[Cu]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cu",
+                        "mass": 62.9295975
+                    }
+                },
+                {
+                    "smiles": "C1COC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6O",
+                        "mass": 58.041864812
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC1(F)C2=C(C=CN=C2Cl)[C@]3(CN(C=C(C(F)(F)F)C=C4OC(F)F)C4=N3)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H11ClF7N3O",
+                        "mass": 441.047887192
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "C1COC1 (1,3-dioxolane)",
+                "time": "The reaction time depends on the scale and specific conditions, but likely ranges from 30 minutes to several hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Copper-catalyzed chlorination of pyridine using N-chlorosuccinimide (NCS)"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "N1=CC=C(C2=C1C3(CC2)CC(F)(F)C3)C4=NN(C=C4C(F)(F)F)C5=CC=NC=C5",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H15F5N4",
+                        "mass": 406.12168758000007
+                    }
+                },
+                {
+                    "smiles": "FC1(F)CC2C1C(C3=NN(C=C3C(F)(F)F)C4=CC=NC=C4)=CC=N2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H11F5N4",
+                        "mass": 354.0903874520001
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "FC1(F)C2=C(C=CN=C2)C3(CN(C=C(C(F)(F)F)C=C4)C4=N3)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H12F5N3",
+                        "mass": 341.095138484
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely proceeds in a polar aprotic solvent such as DMF, DMSO, or acetonitrile to facilitate the intramolecular cyclization",
+                "time": "The reaction time depends on the specific conditions and catalyst used, but likely ranges from 30 minutes to several hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Intramolecular Buchwald-Hartwig amination"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "FC(F)(F)c1cn[nH]c1.O=C1CCC2(C1)CC(F)(F)C2.c1ccncc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H18F5N3O",
+                        "mass": 375.137003296
+                    }
+                },
+                {
+                    "smiles": "FC(F)(F)c1cn[nH]c1.O=C(c1ccncc1)C1CC(F)(F)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H12F5N3O",
+                        "mass": 333.090053104
+                    }
+                },
+                {
+                    "smiles": "O=C(Cl)c1ccnc2c1CCC21CC(F)(F)C1.c1ccncc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H15ClF2N2O",
+                        "mass": 336.08409722000005
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N1=CC=C(C2=C1C3(CC2)CC(F)(F)C3)C4=NN(C=C4C(F)(F)F)C5=CC=NC=C5",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H15F5N4",
+                        "mass": 406.12168758000007
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "Ambient pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or NMP",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Nucleophilic aromatic substitution (SNAr) reaction between a fluorinated pyrazole and a substituted pyridine to form a biaryl system"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "Clc1ccccn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H4ClN",
+                        "mass": 113.003226808
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C(C(F)(F)F)C(F)(F)F",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H2F6",
+                        "mass": 152.006069384
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC(F)(F)c1cn[nH]c1.O=C1CCC2(C1)CC(F)(F)C2.c1ccncc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H18F5N3O",
+                        "mass": 375.137003296
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "120-150 \u00b0C",
+                "pressure": "Not applicable. The reaction likely proceeds at atmospheric pressure.",
+                "solvent": "Ethylene glycol dimethyl ether (C1CCOC1)",
+                "time": "Several hours, depending on the exact conditions"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Nucleophilic aromatic substitution (SNAr) of 2-chloropyridine with hexafluoroisopropanol (HFIP), followed by intramolecular cyclization and hydrolysis."
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "CON(C)C(=O)C1CC(F)(F)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H11F2NO2",
+                        "mass": 179.075785032
+                    }
+                },
+                {
+                    "smiles": "Ic1ccncc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H4IN",
+                        "mass": 204.938847128
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC(F)(F)c1cn[nH]c1.O=C(c1ccncc1)C1CC(F)(F)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H12F5N3O",
+                        "mass": 333.090053104
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or NMP",
+                "time": "2-24 hours, depending on the specific substrates and scale of the reaction"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Nucleophilic acyl substitution reaction between an amide (CON(C)C(=O)C1CC(F)(F)C1) and an iodopyridine (Ic1ccncc1) under basic conditions to form a ketone (O=C(c1ccncc1)C1CC(F)(F)C1) and a trifluoromethylpyrazole (FC(F)(F)c1cn[nH]c1)."
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "Clc1ccccn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H4ClN",
+                        "mass": 113.003226808
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C1CC1.[Mg+].[Br-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6BrMg",
+                        "mass": 144.95032899199998
+                    }
+                },
+                {
+                    "smiles": "FC(F)(F)C(F)(F)F",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2F6",
+                        "mass": 137.99041932
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(Cl)c1ccnc2c1CCC21CC(F)(F)C1.c1ccncc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H15ClF2N2O",
+                        "mass": 336.08409722000005
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "-78\u00b0C to room temperature",
+                "pressure": "atmospheric pressure",
+                "solvent": "tetrahydrofuran (THF)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Grignard addition of cyclopropylmagnesium bromide to 2-chloropyridine, followed by trifluoromethylation using Ruppert's reagent (trifluoromethyltrimethylsilane)"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "FC1(F)CC(n2ncc(Nc3ccccn3)c2C(F)(F)F)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H11F5N4",
+                        "mass": 318.090387452
+                    }
+                },
+                {
+                    "smiles": "FC(F)(F)c1cnn(c1)Nc1ccccn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H7F3N4",
+                        "mass": 228.062280884
+                    }
+                },
+                {
+                    "smiles": "O=C1CC(F)(F)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4F2O",
+                        "mass": 106.023021188
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC1(F)CC2C1C(C3=NN(C=C3C(F)(F)F)C4=CC=NC=C4)=CC=N2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H11F5N4",
+                        "mass": 354.0903874520001
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent (e.g., DMF, DMSO, or acetonitrile)",
+                "time": "1-24 hours, depending on the specific reactants and conditions"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "Nc1ccccn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H6N2",
+                        "mass": 94.053098192
+                    }
+                },
+                {
+                    "smiles": "FC1(F)CC(n2ncc(Br)c2C(F)(F)F)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H6BrF5N2",
+                        "mass": 303.96345139199997
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1P(c2ccccc2)c3ccccc3",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                },
+                {
+                    "smiles": "CN(C)C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7NO",
+                        "mass": 73.052763844
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1[O-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7O-",
+                        "mass": 107.05023842391
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC1(F)CC(n2ncc(Nc3ccccn3)c2C(F)(F)F)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H11F5N4",
+                        "mass": 318.090387452
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "1,4-dioxane or toluene",
+                "time": "2-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.87,
+                    "closestliterature": "Buchwald-Hartwig amination"
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [
+                {
+                    "smiles": "OC1CC(F)(F)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6F2O",
+                        "mass": 108.038671252
+                    }
+                },
+                {
+                    "smiles": "FC(F)(F)c1[nH]ncc1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H2BrF3N2",
+                        "mass": 213.935344824
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC1(F)CC(n2ncc(Br)c2C(F)(F)F)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H6BrF5N2",
+                        "mass": 303.96345139199997
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "1,4-Dioxane (C1CCOC1)",
+                "time": "The reaction time depends on the scale and specific conditions, but it typically ranges from 30 minutes to a few hours for similar SNAr reactions."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "The closest literature reaction is a nucleophilic aromatic substitution (SNAr) reaction between an alkoxide nucleophile (generated from the alcohol OC1CC(F)(F)C1 and base [Na+].[OH-]) and a fluoropyridine electrophile (FC(F)(F)c1[nH]ncc1Br)."
+                }
+            ]
+        },
+        {
+            "step": "10",
+            "reactants": [
+                {
+                    "smiles": "FC(F)(F)c1cn[nH]c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H3F3N2",
+                        "mass": 136.024832756
+                    }
+                },
+                {
+                    "smiles": "Nc1ccccn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H6N2",
+                        "mass": 94.053098192
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC(F)(F)c1cnn(c1)Nc1ccccn1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H7F3N4",
+                        "mass": 228.062280884
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "1-24 hours, depending on the specific reaction conditions and scale"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "10",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Nucleophilic aromatic substitution (SNAr) reaction between a fluorinated heterocycle and an aminopyridine"
+                }
+            ]
+        },
+        {
+            "step": "11",
+            "reactants": [
+                {
+                    "smiles": "Cn1cc(C(F)(F)F)cn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H5F3N2",
+                        "mass": 150.04048282
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC(F)(F)c1cn[nH]c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H3F3N2",
+                        "mass": 136.024832756
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar protic solvent such as methanol or ethanol",
+                "time": "Reaction should be complete within 30 minutes to 2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Hydrolysis of a nitrile to an amidine under basic conditions"
+                }
+            ]
+        },
+        {
+            "step": "12",
+            "reactants": [
+                {
+                    "smiles": "O=[N+]([O-])c1ccccn1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H4N2O2",
+                        "mass": 124.027277368
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4",
+                        "mass": 16.031300127999998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "Nc1ccccn1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H6N2",
+                        "mass": 94.053098192
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol or methanol",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.81,
+                    "closestliterature": "Reduction of nitropyridine to aminopyridine using hydrogen gas and palladium catalyst"
+                }
+            ]
+        },
+        {
+            "step": "13",
+            "reactants": [
+                {
+                    "smiles": "OC1CC(F)(F)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6F2O",
+                        "mass": 108.038671252
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[O-][Cr+3](=O)(=O)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CrO4+2",
+                        "mass": 115.91906882018002
+                    }
+                },
+                {
+                    "smiles": "C(Cl)(Cl)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CHCl3",
+                        "mass": 117.91438307199999
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CC(F)(F)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4F2O",
+                        "mass": 106.023021188
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "dichloromethane (CH2Cl2)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.91,
+                    "closestliterature": "Oxidation of a secondary alcohol to a ketone using chromium trioxide (CrO3) and chloroform (CHCl3)"
+                }
+            ]
+        },
+        {
+            "step": "14",
+            "reactants": [
+                {
+                    "smiles": "[O-][n+]1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H5NO",
+                        "mass": 95.03711378
+                    }
+                },
+                {
+                    "smiles": "O=P(Cl)(Cl)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl3OP",
+                        "mass": 151.87523428999998
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Clc1ccccn1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H4ClN",
+                        "mass": 113.003226808
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent needed",
+                "time": "Rapid reaction, likely complete within minutes"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Chlorination of pyridine N-oxide with phosphorus oxychloride"
+                }
+            ]
+        }
+    ]
+}

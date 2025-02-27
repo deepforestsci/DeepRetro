@@ -1,0 +1,745 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": [
+            "4",
+            "13"
+        ],
+        "4": [
+            "5",
+            "11",
+            "12"
+        ],
+        "5": [
+            "6",
+            "10"
+        ],
+        "6": [
+            "7",
+            "9"
+        ],
+        "7": [
+            "8"
+        ],
+        "8": [],
+        "9": [],
+        "10": [],
+        "11": [],
+        "12": [],
+        "13": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "Nc1ccc(S(=O)(=O)Cl)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6ClNO2S",
+                        "mass": 190.980777112
+                    }
+                },
+                {
+                    "smiles": "COCCCO[C@@H]1CC(C)(C)[C@@H]2CN(CCN3C=CC=C(C(=O)NS(=O)(=O)c4ccc([N+](=O)[O-])c(NC[C@H]5OC[C@H](OC)C5)c4)C3=C12)C6=CC=C(Cl)C=C6",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C38H48ClN5O9S",
+                        "mass": 785.286126796
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C(O)C(F)(F)F",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2HF3O2",
+                        "mass": 113.992863932
+                    }
+                },
+                {
+                    "smiles": "CN1CCCC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H11N",
+                        "mass": 85.08914935199999
+                    }
+                },
+                {
+                    "smiles": "C1COCCO1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O2",
+                        "mass": 88.052429496
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C=C1)=CC=C1C2=C3CN([C@H](COCCCO[C@@H]3CC(C)(C)C2)C4)CCN4C5=CC(N6C(C=C(C=CN7)C7=N8)=C8OCCC6)=C(C(NS(C9=CC([N+]([O-])=O)=C(NC[C@H]%10OC[C@H](OC)CC%10)C=C9)(=O)=O)=O)C=C5",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C53H63ClN8O10S",
+                        "mass": 1038.4076388960002
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "A polar aprotic solvent such as DMF, DMSO, or NMP",
+                "time": "Several hours to overnight, depending on the specific substrates and catalyst used"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.65,
+                    "closestliterature": "Buchwald-Hartwig amination"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "Nc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H7N",
+                        "mass": 93.057849224
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=S(=O)(Cl)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2O2S",
+                        "mass": 133.8996056
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "Nc1ccc(S(=O)(=O)Cl)cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6ClNO2S",
+                        "mass": 190.980777112
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-5 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "dichloromethane (DCM) or 1,2-dichloroethane (DCE)",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.92,
+                    "closestliterature": "Chlorosulfonation of aniline with sulfuryl chloride"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "O=C(Nc1ccc(S(=O)(=O)Nc2ccccc2Cl)cc1[N+](=O)[O-])C1=CN2CCC(C1)C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H19ClN4O5S",
+                        "mass": 462.076468388
+                    }
+                },
+                {
+                    "smiles": "ClCc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7Cl",
+                        "mass": 126.023627904
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(C)(C1)C2CN(CCN3C=CC=C(C3=C12)C(=O)NS(=O)(=O)c4ccc([N+](=O)[O-])c(NC[C@H]5OC[C@H](OC)C5)c4)C6=CC=C(Cl)C=C6",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C33H38ClN5O7S",
+                        "mass": 683.218047236
+                    }
+                },
+                {
+                    "smiles": "COCCCO",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H10O2",
+                        "mass": 90.06807956
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COCCCO[C@@H]1CC(C)(C)[C@@H]2CN(CCN3C=CC=C(C(=O)NS(=O)(=O)c4ccc([N+](=O)[O-])c(NC[C@H]5OC[C@H](OC)C5)c4)C3=C12)C6=CC=C(Cl)C=C6",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C38H48ClN5O9S",
+                        "mass": 785.286126796
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely takes place in an organic solvent such as dichloromethane (DCM), tetrahydrofuran (THF), or dimethylformamide (DMF)",
+                "time": "The reaction time depends on the specific conditions and scale, but likely ranges from 2-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Reductive amination of a ketone with a primary amine, followed by N-alkylation"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "O=C(Cl)C1=CN2CCC(C1)C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H10ClNO",
+                        "mass": 171.04509162
+                    }
+                },
+                {
+                    "smiles": "Nc1ccc([N+](=O)[O-])cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6N2O2",
+                        "mass": 138.042927432
+                    }
+                },
+                {
+                    "smiles": "O=S(=O)(Cl)c1ccccc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4Cl2O2S",
+                        "mass": 209.930905728
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(Nc1ccc(S(=O)(=O)Nc2ccccc2Cl)cc1[N+](=O)[O-])C1=CN2CCC(C1)C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H19ClN4O5S",
+                        "mass": 462.076468388
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm (no special pressure conditions required)",
+                "solvent": "Dichloromethane (DCM) or other aprotic solvent",
+                "time": "1-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Schotten-Baumann reaction: Acyl chloride reacts with an amine to form an amide, with hydroxide as the base"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "ClC(=O)Cl.c1cc[nH]c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H5Cl2NO",
+                        "mass": 164.97481914
+                    }
+                },
+                {
+                    "smiles": "BrCCCCBr.c1cc[nH]c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H13Br2N",
+                        "mass": 280.94147361600005
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl[Mg]Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2Mg",
+                        "mass": 93.92274705999999
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(Cl)C1=CN2CCC(C1)C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H10ClNO",
+                        "mass": 171.04509162
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Ambient pressure (1 atm)",
+                "solvent": "Tetrahydrofuran (THF) or diethyl ether",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Acylation of pyrrole with oxalyl chloride, followed by intramolecular Friedel-Crafts alkylation with 1,4-dibromobutane under Grignard conditions"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "ClC(=O)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CCl2O",
+                        "mass": 97.93261998
+                    }
+                },
+                {
+                    "smiles": "c1cc[nH]c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H5N",
+                        "mass": 67.04219916
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "ClC(=O)Cl.c1cc[nH]c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H5Cl2NO",
+                        "mass": 164.97481914
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Dichloromethane (DCM) or other non-polar aprotic solvent",
+                "time": "0.5-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Schotten-Baumann reaction: Acylation of pyrrole with oxalyl chloride"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "CCl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3Cl",
+                        "mass": 49.992327775999996
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CO2",
+                        "mass": 43.98982924
+                    }
+                },
+                {
+                    "smiles": "O=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O2",
+                        "mass": 31.98982924
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(=O)Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CCl2O",
+                        "mass": 97.93261998
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "The reaction is carried out in the gas phase without solvent.",
+                "time": "The reaction is rapid and occurs within seconds under these conditions."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Phosgene synthesis: CO + Cl2 \u2192 COCl2"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "CC",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6",
+                        "mass": 30.046950192
+                    }
+                },
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CCl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3Cl",
+                        "mass": 49.992327775999996
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "High temperature (500-1000\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent needed, gas phase reaction",
+                "time": "Short reaction time, likely seconds to minutes"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Methane chlorination"
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [
+                {
+                    "smiles": "O=S(=O)(c1ccccc1)n1cccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H9NO2S",
+                        "mass": 207.035399528
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "c1cc[nH]c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H5N",
+                        "mass": 67.04219916
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar protic solvent (e.g., methanol, ethanol, or water)",
+                "time": "30 minutes to 2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Sulfonamide hydrolysis under basic conditions"
+                }
+            ]
+        },
+        {
+            "step": "10",
+            "reactants": [
+                {
+                    "smiles": "OCCCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H9BrO",
+                        "mass": 151.983677008
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "c1cc[nH]c1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H5N",
+                        "mass": 67.04219916
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "BrCCCCBr.c1cc[nH]c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H13Br2N",
+                        "mass": 280.94147361600005
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux (80-100 \u00b0C)",
+                "pressure": "Ambient pressure",
+                "solvent": "Pyrrole (c1cc[nH]c1) as solvent and reagent",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "Alkylation of pyrrole with 1,4-dibromobutane"
+                }
+            ]
+        },
+        {
+            "step": "11",
+            "reactants": [
+                {
+                    "smiles": "O=C(Nc1ccc([N+](=O)[O-])cc1)C(F)(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H5F3N2O3",
+                        "mass": 234.02522668
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "Nc1ccc([N+](=O)[O-])cc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6N2O2",
+                        "mass": 138.042927432
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Aqueous solution",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Hydrolysis of a trifluoroacetamide to the corresponding aniline using aqueous hydroxide"
+                }
+            ]
+        },
+        {
+            "step": "12",
+            "reactants": [
+                {
+                    "smiles": "Nc1ccccc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6ClN",
+                        "mass": 127.01887687199999
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=S(=O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O4S",
+                        "mass": 97.96737954400001
+                    }
+                },
+                {
+                    "smiles": "[Cl][Cl]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2",
+                        "mass": 69.93770536
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=S(=O)(Cl)c1ccccc1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4Cl2O2S",
+                        "mass": 209.930905728
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Dichloromethane (CH2Cl2) or 1,2-dichloroethane (ClCH2CH2Cl)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.92,
+                    "closestliterature": "Chlorosulfonation of 2-chloroaniline with chlorosulfonic acid and chlorine gas"
+                }
+            ]
+        },
+        {
+            "step": "13",
+            "reactants": [
+                {
+                    "smiles": "OCc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8O",
+                        "mass": 108.057514876
+                    }
+                },
+                {
+                    "smiles": "O=S(Cl)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2OS",
+                        "mass": 117.90469098
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Zn]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Zn",
+                        "mass": 63.9291422
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClCc1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7Cl",
+                        "mass": 126.023627904
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure (no special pressure conditions required)",
+                "solvent": "Ether or another aprotic solvent",
+                "time": "30 minutes to 2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Reduction of benzylic alcohols to alkyl chlorides using thionyl chloride and zinc"
+                }
+            ]
+        }
+    ]
+}

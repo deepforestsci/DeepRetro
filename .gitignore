@@ -6,3 +6,4 @@ aizynthfinder/
 *.pkl
 pistachio/
 .idea/
+.vscode/

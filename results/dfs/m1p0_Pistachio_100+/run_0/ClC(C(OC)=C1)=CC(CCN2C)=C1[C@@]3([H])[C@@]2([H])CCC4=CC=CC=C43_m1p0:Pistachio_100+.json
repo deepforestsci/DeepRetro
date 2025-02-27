@@ -1,0 +1,549 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "8"
+        ],
+        "2": [
+            "3",
+            "7"
+        ],
+        "3": [
+            "4",
+            "5"
+        ],
+        "4": [],
+        "5": [
+            "6"
+        ],
+        "6": [],
+        "7": [],
+        "8": [
+            "9"
+        ],
+        "9": [
+            "10"
+        ],
+        "10": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "ClC(C(O)=C1)=CC(CCN2C)=C1[C@@]3([H])[C@@]2([H])CCC4=CC=CC=C43",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H20ClNO",
+                        "mass": 313.12334194
+                    }
+                },
+                {
+                    "smiles": "CI",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3I",
+                        "mass": 141.927948096
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C[O-].[Na+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3NaO",
+                        "mass": 54.00815899599999
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC(CCN2C)=C1[C@@]3([H])[C@@]2([H])CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetone",
+                "time": "1-4 hours, depending on the scale of the reaction"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Williamson ether synthesis"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "ClC(C(O)=C1)=CC(CCBr)=C1C2CCC3=CC=CC=C23",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H16BrClO",
+                        "mass": 350.007304912
+                    }
+                },
+                {
+                    "smiles": "CN",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH5N",
+                        "mass": 31.042199159999996
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(O)=C1)=CC(CCN2C)=C1[C@@]3([H])[C@@]2([H])CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H20ClNO",
+                        "mass": 313.12334194
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "2-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.6,
+                    "closestliterature": "Buchwald-Hartwig amination"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "Oc1ccc(Br)cc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4BrClO",
+                        "mass": 205.913404528
+                    }
+                },
+                {
+                    "smiles": "BrC1CCc2ccccc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9Br",
+                        "mass": 195.988762388
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1P(c2ccccc2)c3ccccc3",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                },
+                {
+                    "smiles": "CN(C)C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7NO",
+                        "mass": 73.052763844
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(O)=C1)=CC(CCBr)=C1C2CCC3=CC=CC=C23",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H16BrClO",
+                        "mass": 350.007304912
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "toluene or another non-polar solvent",
+                "time": "several hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.6,
+                    "closestliterature": "Suzuki coupling"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "Oc1ccccc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H5ClO",
+                        "mass": 128.00289246
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Br",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HBr",
+                        "mass": 79.926162132
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "Oc1ccc(Br)cc1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4BrClO",
+                        "mass": 205.913404528
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Aqueous solution",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.93,
+                    "closestliterature": "Electrophilic aromatic substitution of phenol with bromine"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "O=C1CC(Br)c2ccccc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H7BrO",
+                        "mass": 209.968026944
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "BrC1CCc2ccccc21",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9Br",
+                        "mass": 195.988762388
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol, methanol, or other protic solvent",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Reduction of \u03b1-bromoketone to \u03b1-bromoalkane using hydrogen gas (H2) and a metal catalyst like Pd/C or Raney Ni"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCc2ccccc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8O",
+                        "mass": 132.057514876
+                    }
+                },
+                {
+                    "smiles": "O=C1CCC(=O)N1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4BrNO2",
+                        "mass": 176.942540468
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CC(Br)c2ccccc21",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H7BrO",
+                        "mass": 209.968026944
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.89,
+                    "closestliterature": "\u03b1-Bromination of ketones using N-bromosuccinimide (NBS)"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "CNC(=O)OC(C)(C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H13NO2",
+                        "mass": 131.094628656
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CN",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH5N",
+                        "mass": 31.042199159999996
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Elevated temperature (80-100 \u00b0C)",
+                "pressure": "Ambient pressure",
+                "solvent": "Aqueous solution",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Hydrolysis of a carbamate ester (urethane)"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "CCl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3Cl",
+                        "mass": 49.992327775999996
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CI",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3I",
+                        "mass": 141.927948096
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Not applicable",
+                "pressure": "Not applicable",
+                "solvent": "Not applicable",
+                "time": "Not applicable",
+                "explanation": "The reaction of CCl to form CI is too simple to meaningfully predict reaction conditions. It likely represents an incomplete or unbalanced reaction rather than a real chemical transformation that would require specific conditions."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "None"
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [
+                {
+                    "smiles": "ClCl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2",
+                        "mass": 69.93770536
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4",
+                        "mass": 16.031300127999998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CCl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3Cl",
+                        "mass": 49.992327775999996
+                    }
+                }
+            ],
+            "conditions": "",
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "None"
+                }
+            ]
+        },
+        {
+            "step": "10",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "O=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O2",
+                        "mass": 31.98982924
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClCl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2",
+                        "mass": 69.93770536
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Not applicable. This is a gas phase reaction.",
+                "time": "Rapid reaction, no specific time needed."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Cl2 + O2 -> 2 Cl2O (chlorine monoxide)"
+                }
+            ]
+        }
+    ]
+}

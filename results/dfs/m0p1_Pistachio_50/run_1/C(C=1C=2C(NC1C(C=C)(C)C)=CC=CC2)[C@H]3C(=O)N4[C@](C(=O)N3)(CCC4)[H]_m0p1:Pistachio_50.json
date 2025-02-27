@@ -1,0 +1,246 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3",
+            "4"
+        ],
+        "2": [],
+        "3": [],
+        "4": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1NC(=O)C2(CCC2)N1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8N2O2",
+                        "mass": 140.058577496
+                    }
+                },
+                {
+                    "smiles": "c1ccc2[nH]ccc2c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7N",
+                        "mass": 117.057849224
+                    }
+                },
+                {
+                    "smiles": "CC1(C)C=CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H10",
+                        "mass": 82.07825032
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=P(O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H3O4P",
+                        "mass": 97.97689520600001
+                    }
+                },
+                {
+                    "smiles": "CN(C)C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7NO",
+                        "mass": 73.052763844
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C(C=1C=2C(NC1C(C=C)(C)C)=CC=CC2)[C@H]3C(=O)N4[C@](C(=O)N3)(CCC4)[H]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H25N3O2",
+                        "mass": 351.19467704
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or NMP",
+                "time": "2-24 hours, depending on the specific substrates and scale of the reaction"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Ugi four-component reaction"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1CNC(=O)N1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H4N2O2",
+                        "mass": 100.027277368
+                    }
+                },
+                {
+                    "smiles": "BrCCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6Br2",
+                        "mass": 199.883624392
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1NC(=O)C2(CCC2)N1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8N2O2",
+                        "mass": 140.058577496
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "1,4-dioxane (C1CCOC1)",
+                "time": "2-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Alkylation of cyclic imides with dibromoalkanes under basic conditions"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)n1ccc2ccccc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H15NO2",
+                        "mass": 217.11027872
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "c1ccc2[nH]ccc2c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7N",
+                        "mass": 117.057849224
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "200-250 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "no solvent required",
+                "time": "0.5-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.92,
+                    "closestliterature": "Thermal decarboxylation of N-Boc indoles to give the corresponding indoles"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "CC1(C)CC(O)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H12O",
+                        "mass": 100.088815004
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=S(=O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O4S",
+                        "mass": 97.96737954400001
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC1(C)C=CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H10",
+                        "mass": 82.07825032
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent needed",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Dehydration of a tertiary alcohol using sulfuric acid"
+                }
+            ]
+        }
+    ]
+}
