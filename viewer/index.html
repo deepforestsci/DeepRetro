@@ -505,33 +505,8 @@
                 <span class="arrow-down" id="settings-arrow"></span>
             </div>
             <div class="settings-content" id="settings-content">
-            <div class="toggle-row">
-                    <label for="modelVersion" class="toggle-label" style="margin-right: 10px;">Model Version:</label>
-                    <select id="modelVersion" class="model-select">
-                        <option value="USPTO">USPTO</option>
-                        <option value="Pistachio_25">Pistachio (25)</option>
-                        <option value="Pistachio_50">Pistachio (50)</option>
-                        <option value="Pistachio_100">Pistachio (100)</option>
-                        <option value="Pistachio_100+">Pistachio (100+)</option>
-                    </select>
-                </div>
-                <div class="toggle-row">
-                    <div class="toggle-switch">
-                        <label class="switch">
-                            <input type="checkbox" id="advancedToggle">
-                            <span class="slider"></span>
-                        </label>
-                        <span class="toggle-label">Advanced Model</span>
-                    </div>
-                </div>
-                <div class="toggle-row">
-                    <div class="toggle-switch">
-                        <label class="switch">
-                            <input type="checkbox" id="promptToggle" checked>
-                            <span class="slider"></span>
-                        </label>
-                        <span class="toggle-label">Advanced Prompt</span>
-                    </div>
+                <div id="server-settings-container">
+                    <!-- Server settings will be dynamically generated here -->
                 </div>
             </div>
         </div>
@@ -540,6 +515,9 @@
             <div class="input-group">
                 <input type="text" id="smiles" placeholder="Enter SMILES string" aria-label="SMILES input">
                 <button onclick="analyze()" id="analyzeBtn">Analyze</button>
+            </div>
+            <div class="note-section" style="margin-top: 8px; font-size: 13px; color: #555; background-color: #f8f8f8; padding: 10px; border-radius: 4px; border-left: 3px solid #222222;">
+                <strong>Note:</strong> You are using our recommended settings. Advanced settings can be modified above if needed.
             </div>
             <div id="status" class="status"></div>
             
@@ -571,6 +549,83 @@
     <script>
         const API_URL = 'http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
         const API_KEY = 'your-secure-api-key';
+
+        // Function to initialize server settings
+        function initializeServerSettings() {
+            const container = document.getElementById('server-settings-container');
+            
+            // Clear any existing content
+            container.innerHTML = '';
+            
+            // Generate settings for each server in the config
+            config.instances.forEach((instance, index) => {
+                const serverNum = index + 1;
+                
+                // Create a div for this server's settings
+                const serverDiv = document.createElement('div');
+                serverDiv.className = 'server-settings';
+                
+                // Create the server header
+                const serverHeader = document.createElement('h4');
+                serverHeader.textContent = `Server ${serverNum} Settings`;
+                serverDiv.appendChild(serverHeader);
+                
+                // Create the model version selection
+                const modelRow = document.createElement('div');
+                modelRow.className = 'toggle-row';
+                modelRow.innerHTML = `
+                    <label for="modelVersion${serverNum}" class="toggle-label" style="margin-right: 10px;">Model Version:</label>
+                    <select id="modelVersion${serverNum}" class="model-select" data-server="${serverNum}">
+                        <option value="USPTO">USPTO</option>
+                        <option value="Pistachio_25">Pistachio (25)</option>
+                        <option value="Pistachio_50">Pistachio (50)</option>
+                        <option value="Pistachio_100">Pistachio (100)</option>
+                        <option value="Pistachio_100+" selected>Pistachio (100+)</option>
+                    </select>
+                `;
+                serverDiv.appendChild(modelRow);
+                
+                // Create the advanced model toggle
+                const advancedModelRow = document.createElement('div');
+                advancedModelRow.className = 'toggle-row';
+                advancedModelRow.innerHTML = `
+                    <div class="toggle-switch">
+                        <label class="switch">
+                            <input type="checkbox" id="advancedToggle${serverNum}" data-server="${serverNum}">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label">Advanced Model</span>
+                    </div>
+                `;
+                serverDiv.appendChild(advancedModelRow);
+                
+                // Create the advanced prompt toggle
+                const promptRow = document.createElement('div');
+                promptRow.className = 'toggle-row';
+                promptRow.innerHTML = `
+                    <div class="toggle-switch">
+                        <label class="switch">
+                            <input type="checkbox" id="promptToggle${serverNum}" checked data-server="${serverNum}">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label">Advanced Prompt</span>
+                    </div>
+                `;
+                serverDiv.appendChild(promptRow);
+                
+                // Add a horizontal line after each server except the last one
+                if (index < config.instances.length - 1) {
+                    const separator = document.createElement('hr');
+                    separator.style.margin = '15px 0';
+                    separator.style.border = '0';
+                    separator.style.borderTop = '1px solid var(--border)';
+                    serverDiv.appendChild(separator);
+                }
+                
+                // Add this server's settings to the container
+                container.appendChild(serverDiv);
+            });
+        }
 
         // Setup file upload handler
         function setupFileUploadHandler() {
@@ -676,10 +731,10 @@
             
             // Clear any existing elements from API view
             const existingJsonToggle = document.getElementById('json-toggle');
-            if (existingJsonToggle) existingJsonToggle.remove();
+            if (existingJsonToggle) existingJsonToggle.style.display = 'none';
             
             const existingResult = document.getElementById('result');
-            if (existingResult) existingResult.remove();
+            if (existingResult) existingResult.style.display = 'none';
             
             const existingDownloadBtn = document.querySelector('.download-btn');
             if (existingDownloadBtn) existingDownloadBtn.remove();
@@ -715,9 +770,6 @@
 
         async function analyze(isRerun = false) {
             const smilesInput = document.getElementById('smiles');
-            const modelSelect = document.getElementById('modelVersion');
-            const advancedToggle = document.getElementById('advancedToggle');
-            const promptToggle = document.getElementById('promptToggle');
             const button = document.getElementById('analyzeBtn');
             const status = document.getElementById('status');
             
@@ -748,24 +800,31 @@
                     return `${baseUrl}${endpointPath}`;
                 });
 
-                const requestBody = {
-                    smiles,
-                    advanced_model: advancedToggle.checked.toString(),
-                    advanced_prompt: promptToggle.checked.toString(),
-                    model_version: modelSelect.value
-                };
-
-                // Create fetch promises for all instances
-                const fetchPromises = endpoints.map(endpoint => 
-                    fetch(endpoint, {
+                // Create fetch promises for all instances with their specific settings
+                const fetchPromises = endpoints.map((endpoint, index) => {
+                    const serverNum = index + 1;
+                    
+                    // Get the server-specific settings
+                    const modelSelect = document.getElementById(`modelVersion${serverNum}`);
+                    const advancedToggle = document.getElementById(`advancedToggle${serverNum}`);
+                    const promptToggle = document.getElementById(`promptToggle${serverNum}`);
+                    
+                    const requestBody = {
+                        smiles,
+                        advanced_model: advancedToggle.checked.toString(),
+                        advanced_prompt: promptToggle.checked.toString(),
+                        model_version: modelSelect.value
+                    };
+                    
+                    return fetch(endpoint, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-API-KEY': API_KEY
                         },
                         body: JSON.stringify(requestBody)
-                    })
-                );
+                    });
+                });
 
                 // Make parallel API calls
                 const responses = await Promise.all(fetchPromises);
@@ -820,6 +879,12 @@
                 rerunTitle.textContent = 'Partial Rerun Analysis';
                 rerunTitle.style.width = '100%';
                 rerunSection.appendChild(rerunTitle);
+                // Add note about partial rerun
+                const rerunNote = document.createElement('div');
+                rerunNote.className = 'note-section';
+                rerunNote.style.cssText = 'margin-bottom: 15px; font-size: 13px; color: #555; background-color: #f8f8f8; padding: 10px; border-radius: 4px; border-left: 3px solid #222222; width: 100%;';
+                rerunNote.innerHTML = '<strong>Note:</strong> Please use this feature only with steps having a single molecule for an accurate output.';
+                rerunSection.appendChild(rerunNote);
                 
                 config.instances.forEach((_, index) => {
                     const rerunControl = document.createElement('div');
@@ -864,6 +929,11 @@
                         rerunButton.disabled = true;
                         select.disabled = true;
                         rerunButton.innerHTML = `<span class="loading"></span>Rerunning...`;
+                        
+                        // Get server-specific settings for the rerun
+                        const modelSelect = document.getElementById(`modelVersion${pathwayNumber}`);
+                        const advancedToggle = document.getElementById(`advancedToggle${pathwayNumber}`);
+                        const promptToggle = document.getElementById(`promptToggle${pathwayNumber}`);
                         
                         const endpoint = `${config.instances[index]}${config.endpoints.partial_rerun}`;
                         console.log('Attempting partial rerun with:', {
@@ -1013,6 +1083,14 @@
         // Initialize UI by hiding advanced settings by default
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('settings-content').style.display = 'none';
+            
+            // Initialize server settings once the config is loaded
+            if (typeof config !== 'undefined' && config.instances) {
+                initializeServerSettings();
+            } else {
+                // If config isn't loaded yet, set up an event listener
+                window.addEventListener('configLoaded', initializeServerSettings);
+            }
         });
     </script>
     <script src="app_v4.js"></script>
