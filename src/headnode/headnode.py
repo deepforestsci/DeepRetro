@@ -229,7 +229,9 @@ def check_parameter_cache(smiles, parameters):
 
     cursor.execute(
         '''
-    SELECT output_json_1, output_json_2, output_json_3 FROM parameter_cache
+    SELECT output_json_1, output_json_2, output_json_3, 
+           timestamp_1, timestamp_2, timestamp_3 
+    FROM parameter_cache
     WHERE smiles = ? AND parameters = ?
     ''', (smiles, params_hash))
 
@@ -237,27 +239,48 @@ def check_parameter_cache(smiles, parameters):
     conn.close()
 
     if result:
-        # Return the most recent non-null result
-        for output in result:
+        # Extract outputs and timestamps
+        outputs = result[:3]
+        timestamps = result[3:]
+
+        # Create a list of results with their timestamps
+        all_results = []
+        for i, (output, timestamp) in enumerate(zip(outputs, timestamps)):
             if output:
-                return json.loads(output)
-    return None
+                try:
+                    # Parse JSON and add metadata
+                    parsed_result = json.loads(output)
+                    parsed_result["cache_index"] = i + 1
+                    parsed_result["timestamp"] = timestamp
+                    all_results.append(parsed_result)
+                except:
+                    pass
+
+        # Sort by timestamp (newest first) if available
+        all_results.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+
+        # Return newest result for backward compatibility
+        return all_results[0] if all_results else None, all_results
+    return None, []
 
 
 # Check cache for all results in a parameters list
 def check_all_parameter_cache(smiles, parameters_list):
     results = []
+    all_results = []
     cache_hits = True
 
     for params in parameters_list:
-        result = check_parameter_cache(smiles, params)
+        result, all_param_results = check_parameter_cache(smiles, params)
         if result is not None:
             results.append(result)
+            all_results.append(all_param_results)
         else:
             results.append(None)
+            all_results.append([])
             cache_hits = False
 
-    return results, cache_hits
+    return results, all_results, cache_hits
 
 
 # Update parameter cache with result, using a rotating system of 3 slots
@@ -459,7 +482,7 @@ def retrosynthesis_api():
     request_id = str(uuid.uuid4())
 
     # Check if all parameters are already in the cache
-    cached_results, all_cached = check_all_parameter_cache(
+    cached_results, all_cached_results, all_cached = check_all_parameter_cache(
         smiles, parameters_list)
 
     # Get available worker nodes
@@ -530,6 +553,8 @@ def retrosynthesis_api():
             "Some results are available from cache, additional calculations in progress",
             "request_id": request_id,
             "results": cached_results,
+            "all_cached_results":
+            all_cached_results,  # Include all cached results
             "from_cache": True,
             "background_processing": True,
             "worker_status": active_workers
