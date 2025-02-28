@@ -50,6 +50,6 @@ jobs:
                 python -m pip install --upgrade pip
                 pip install -r requirements_tests.txt
                 
-            - name: Run tests
+            - name: Run LLM tests
               run: |
-                pytest -v
+                pytest ./llm-tests/ -v
