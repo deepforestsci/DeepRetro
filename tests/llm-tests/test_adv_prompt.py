@@ -3,7 +3,7 @@ import ast
 import pytest
 
 import rootutils
-root_dir = rootutils.setup_root("..",
+root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
 
