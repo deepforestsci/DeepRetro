@@ -16,8 +16,6 @@ root_dir = rootutils.setup_root(__file__,
 
 date_dir = f'{root_dir}/logs/{time.strftime("%Y-%m-%d")}'
 
-ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
-                                    "true").lower() == "false" else True
 
 def run_prithvi(molecule: str,
                 llm="claude-3-opus-20240229",
@@ -36,7 +34,7 @@ def run_prithvi(molecule: str,
     dict
         Result after running prithvi.
     """
-    
+
     # Generate a unique job ID using timestamp and a random suffix
     job_id = f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}"
 

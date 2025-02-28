@@ -47,7 +47,7 @@ def test_run_prithvi_success(mock_context_logger, mock_structlog, mock_add_job_s
     mock_format_output.return_value = {'steps': []}
     mock_add_job_specific_handler.return_value = MagicMock()
 
-    result = run_prithvi(molecule="CCO")
+    result = run_prithvi(molecule="")
 
     assert result == {'steps': []}
     mock_rec_run_prithvi.assert_called_once()
