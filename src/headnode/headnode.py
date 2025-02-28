@@ -46,8 +46,12 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         smiles TEXT,
         parameters TEXT,
-        output_json TEXT,
-        timestamp TEXT,
+        output_json_1 TEXT,
+        output_json_2 TEXT,
+        output_json_3 TEXT,
+        timestamp_1 TEXT,
+        timestamp_2 TEXT,
+        timestamp_3 TEXT,
         UNIQUE(smiles, parameters)
     )
     ''')
@@ -225,15 +229,18 @@ def check_parameter_cache(smiles, parameters):
 
     cursor.execute(
         '''
-    SELECT output_json FROM parameter_cache
+    SELECT output_json_1, output_json_2, output_json_3 FROM parameter_cache
     WHERE smiles = ? AND parameters = ?
     ''', (smiles, params_hash))
 
     result = cursor.fetchone()
     conn.close()
 
-    if result and result[0]:
-        return json.loads(result[0])
+    if result:
+        # Return the most recent non-null result
+        for output in result:
+            if output:
+                return json.loads(output)
     return None
 
 
@@ -253,23 +260,74 @@ def check_all_parameter_cache(smiles, parameters_list):
     return results, cache_hits
 
 
-# Update parameter cache with result
+# Update parameter cache with result, using a rotating system of 3 slots
 def update_parameter_cache(smiles, parameters, result):
     conn = sqlite3.connect('retrosynthesis.db')
     cursor = conn.cursor()
 
     params_hash = hash_parameters(parameters)
-    timestamp = datetime.now().isoformat()
+    current_timestamp = datetime.now().isoformat()
 
     # Convert result to JSON string
     result_json = json.dumps(result) if result is not None else None
 
+    # Check if this parameter set exists
     cursor.execute(
         '''
-    INSERT OR REPLACE INTO parameter_cache 
-    (smiles, parameters, output_json, timestamp)
-    VALUES (?, ?, ?, ?)
-    ''', (smiles, params_hash, result_json, timestamp))
+    SELECT output_json_1, output_json_2, output_json_3, 
+           timestamp_1, timestamp_2, timestamp_3 
+    FROM parameter_cache
+    WHERE smiles = ? AND parameters = ?
+    ''', (smiles, params_hash))
+
+    existing = cursor.fetchone()
+
+    if existing:
+        print(
+            f"found existing cache entry for {smiles} with params {params_hash}"
+        )
+        # Determine which slot to update (the oldest one or the first empty one)
+        outputs = existing[:3]  # The three output JSONs
+        timestamps = existing[3:]  # The three timestamps
+
+        # Find first empty slot
+        empty_slot = None
+        for i, output in enumerate(outputs):
+            if output is None:
+                empty_slot = i + 1  # Slots are 1-indexed in the database
+                break
+
+        # If no empty slot, find oldest
+        if empty_slot is None:
+            # Convert timestamps to datetime objects for comparison
+            dt_timestamps = []
+            for ts in timestamps:
+                try:
+                    dt_timestamps.append(
+                        datetime.fromisoformat(ts) if ts else datetime.max)
+                except ValueError:
+                    dt_timestamps.append(datetime.max)
+
+            # Find index of oldest timestamp
+            oldest_idx = dt_timestamps.index(min(dt_timestamps))
+            empty_slot = oldest_idx + 1  # Slots are 1-indexed
+
+        # Update the selected slot
+        cursor.execute(
+            f'''
+        UPDATE parameter_cache
+        SET output_json_{empty_slot} = ?, timestamp_{empty_slot} = ?
+        WHERE smiles = ? AND parameters = ?
+        ''', (result_json, current_timestamp, smiles, params_hash))
+    else:
+        # Insert new record with the result in the first slot
+        cursor.execute(
+            '''
+        INSERT INTO parameter_cache 
+        (smiles, parameters, output_json_1, output_json_2, output_json_3, 
+         timestamp_1, timestamp_2, timestamp_3)
+        VALUES (?, ?, ?, NULL, NULL, ?, NULL, NULL)
+        ''', (smiles, params_hash, result_json, current_timestamp))
 
     conn.commit()
     conn.close()
@@ -404,21 +462,6 @@ def retrosynthesis_api():
     cached_results, all_cached = check_all_parameter_cache(
         smiles, parameters_list)
 
-    if all_cached:
-        # All results are in cache
-        log_event(request_id, smiles, parameters_list, 'cache_hit', None, 0)
-
-        # Add parameter info to each result
-        for i, result in enumerate(cached_results):
-            if result:
-                result["parameters_used"] = parameters_list[i]
-
-        return jsonify({
-            "status": "completed",
-            "results": cached_results,
-            "from_cache": True
-        }), 200
-
     # Get available worker nodes
     available_nodes = get_available_worker_nodes()
     if not available_nodes:
@@ -429,17 +472,8 @@ def retrosynthesis_api():
     # Track which workers are processing which parameter sets
     active_workers = []
 
-    # Start a job for each parameter set that isn't cached
+    # Start a job for each parameter set, regardless of cache status
     for i, params in enumerate(parameters_list):
-        # Skip if this result is already in cache
-        if cached_results[i] is not None:
-            active_workers.append({
-                "worker_index": i,
-                "status": "cache_hit",
-                "parameter_set": params
-            })
-            continue
-
         # Check if this specific job is already running
         running_job = is_job_running(request_id, smiles, params, i)
         if running_job:
@@ -450,7 +484,8 @@ def retrosynthesis_api():
                 "start_time": start_time,
                 "request_id": job_id,
                 "status": "already_processing",
-                "parameter_set": params
+                "parameter_set": params,
+                "cached": cached_results[i] is not None
             })
             continue
 
@@ -478,21 +513,34 @@ def retrosynthesis_api():
                 "worker_index": i,
                 "worker_node": worker_node['host'],
                 "status": "processing",
-                "parameter_set": params
+                "parameter_set": params,
+                "cached": cached_results[i] is not None
             })
 
-    return jsonify({
-        "status":
-        "processing",
-        "message":
-        f"Retrosynthesis request distributed across workers",
-        "request_id":
-        request_id,
-        "worker_status":
-        active_workers,
-        "partial_results":
-        cached_results if any(r is not None for r in cached_results) else None
-    }), 202
+    # Return cached results if available, while calculations continue in background
+    if any(r is not None for r in cached_results):
+        # Add parameter info to each result
+        for i, result in enumerate(cached_results):
+            if result:
+                result["parameters_used"] = parameters_list[i]
+
+        return jsonify({
+            "status": "partial_results_available",
+            "message":
+            "Some results are available from cache, additional calculations in progress",
+            "request_id": request_id,
+            "results": cached_results,
+            "from_cache": True,
+            "background_processing": True,
+            "worker_status": active_workers
+        }), 200
+    else:
+        return jsonify({
+            "status": "processing",
+            "message": "Retrosynthesis request distributed across workers",
+            "request_id": request_id,
+            "worker_status": active_workers,
+        }), 202
 
 
 @app.route('/api/result/<request_id>', methods=['GET'])
@@ -507,7 +555,7 @@ def get_result(request_id):
     # Get all jobs related to this request
     cursor.execute(
         '''
-    SELECT smiles, parameters, status, worker_index FROM logs
+    SELECT smiles, parameters, status, worker_node FROM logs
     WHERE request_id = ? AND status IN ('started', 'completed', 'failed')
     ORDER BY timestamp DESC
     ''', (request_id, ))
@@ -547,6 +595,8 @@ def get_result(request_id):
     # Sort parameter sets by index
     parameters_list = []
     max_index = max(parameters_by_index.keys()) if parameters_by_index else -1
+    max_index = int(max_index.split("[")[1].split(']')[0]) if isinstance(
+        max_index, str) else max_index
 
     for i in range(max_index + 1):
         if i in parameters_by_index:
@@ -673,9 +723,6 @@ def single_parameter_retrosynthesis():
 
     # Check if this exact parameter set is already in cache
     cached_result = check_parameter_cache(smiles, parameters)
-    if cached_result:
-        cached_result["parameters_used"] = parameters
-        return jsonify(cached_result), 200
 
     # Generate a unique request ID
     request_id = str(uuid.uuid4())
@@ -693,12 +740,24 @@ def single_parameter_retrosynthesis():
     running_job = is_job_running(request_id, smiles, parameters, 0)
     if running_job:
         job_id, worker, start_time = running_job
-        return jsonify({
-            "status": "processing",
-            "message":
-            f"This request is already being processed by worker {worker}",
-            "request_id": job_id
-        }), 202
+        # Return cached result if available while job is running
+        if cached_result:
+            cached_result["parameters_used"] = parameters
+            return jsonify({
+                "status": "partial_results_available",
+                "message":
+                f"This request is already being processed by worker {worker}, partial results available",
+                "request_id": job_id,
+                "result": cached_result,
+                "from_cache": True
+            }), 200
+        else:
+            return jsonify({
+                "status": "processing",
+                "message":
+                f"This request is already being processed by worker {worker}",
+                "request_id": job_id
+            }), 202
 
     # Register the job
     if register_running_job(request_id, smiles, parameters,
@@ -712,12 +771,25 @@ def single_parameter_retrosynthesis():
                          args=(request_id, smiles, parameters, worker_node,
                                0)).start()
 
-        return jsonify({
-            "status": "processing",
-            "message": "Retrosynthesis request has been submitted",
-            "request_id": request_id,
-            "worker_node": worker_node['host']
-        }), 202
+        # Return cached result if available while job starts
+        if cached_result:
+            cached_result["parameters_used"] = parameters
+            return jsonify({
+                "status": "partial_results_available",
+                "message":
+                "Additional calculation in progress, partial results available",
+                "request_id": request_id,
+                "worker_node": worker_node['host'],
+                "result": cached_result,
+                "from_cache": True
+            }), 200
+        else:
+            return jsonify({
+                "status": "processing",
+                "message": "Retrosynthesis request has been submitted",
+                "request_id": request_id,
+                "worker_node": worker_node['host']
+            }), 202
     else:
         return jsonify({"error": "Failed to register job"}), 500
 
