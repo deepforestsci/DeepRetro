@@ -5,7 +5,11 @@ const config = {
         'http://ec2-18-222-202-30.us-east-2.compute.amazonaws.com:5000',
         'http://ec2-18-118-34-4.us-east-2.compute.amazonaws.com:5000',
         'http://ec2-3-20-205-97.us-east-2.compute.amazonaws.com:5000',
-        'http://ec2-18-118-215-217.us-east-2.compute.amazonaws.com:5000'
+        'http://ec2-3-135-238-102.us-east-2.compute.amazonaws.com:5000',
+        'http://ec2-18-224-139-148.us-east-2.compute.amazonaws.com:5000',
+        'http://ec2-18-117-169-71.us-east-2.compute.amazonaws.com:5000',
+        'http://ec2-3-138-103-124.us-east-2.compute.amazonaws.com:5000',
+        'http://ec2-13-59-117-221.us-east-2.compute.amazonaws.com:5000'
     ],
     endpoints: {
         retrosynthesis: '/api/retrosynthesis',
