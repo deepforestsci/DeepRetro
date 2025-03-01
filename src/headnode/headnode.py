@@ -382,6 +382,80 @@ def get_available_worker_nodes():
     return available_nodes
 
 
+# function to get worker node load
+def get_worker_load():
+    conn = sqlite3.connect('retrosynthesis.db')
+    cursor = conn.cursor()
+
+    # Get current running job counts per worker
+    cursor.execute('''
+    SELECT worker_node, COUNT(*) as job_count 
+    FROM running_jobs 
+    GROUP BY worker_node
+    ''')
+
+    worker_loads = {row[0]: row[1] for row in cursor.fetchall()}
+    conn.close()
+
+    return worker_loads
+
+
+# Select appropriate worker node based on molecular weight
+def select_worker_node_for_molecule(smiles, available_nodes):
+    # Calculate molecular mass
+    mol_mass = calculate_molecular_mass(smiles)
+
+    # Get current worker loads
+    worker_loads = get_worker_load()
+
+    # High mass molecules (>500) - need high RAM nodes, only 1 per node
+    if mol_mass > 500:
+        # Find high RAM nodes with no current jobs
+        for node in available_nodes:
+            if node.get('high_ram', False
+                        ):  # Assuming config.yml has 'high_ram' flag for nodes
+                node_load = worker_loads.get(node['host'], 0)
+                if node_load == 0:
+                    return node
+
+        # If no free high RAM nodes, return None to indicate no suitable node available
+        return None
+
+    # Medium mass molecules (300-500) - max 3 per node
+    elif mol_mass >= 300:
+        # Try to find an empty node first
+        for node in available_nodes:
+            node_load = worker_loads.get(node['host'], 0)
+            if node_load == 0:
+                return node
+
+        # If no empty nodes, find one with less than 3 jobs
+        for node in available_nodes:
+            node_load = worker_loads.get(node['host'], 0)
+            if node_load < 3:
+                return node
+
+        # If all nodes have 3+ jobs, return None
+        return None
+
+    # Low mass molecules (<300) - max 5 per node
+    else:
+        # Try to find an empty node first
+        for node in available_nodes:
+            node_load = worker_loads.get(node['host'], 0)
+            if node_load == 0:
+                return node
+
+        # If no empty nodes, find one with less than 5 jobs
+        for node in available_nodes:
+            node_load = worker_loads.get(node['host'], 0)
+            if node_load < 5:
+                return node
+
+        # If all nodes have 5+ jobs, return None
+        return None
+
+
 # Forward request to selected worker node
 def forward_to_worker(worker_node, endpoint, data):
     url = f"http://{worker_node['host']}:{worker_node['port']}/api/{endpoint}"
@@ -523,8 +597,19 @@ def retrosynthesis_api():
             })
             continue
 
-        # Select the worker node for this parameter set
-        worker_node = available_nodes[i % len(available_nodes)]
+        # Select the worker node for this parameter set based on molecular mass
+        worker_node = select_worker_node_for_molecule(smiles, available_nodes)
+
+        # If no suitable worker is available
+        if worker_node is None:
+            active_workers.append({
+                "worker_index": i,
+                "status": "queued",
+                "message": "No suitable worker node available, job is queued",
+                "parameter_set": params,
+                "cached": cached_results[i] is not None
+            })
+            continue
 
         # Register the job as running
         if register_running_job(request_id, smiles, params,
@@ -766,14 +851,22 @@ def single_parameter_retrosynthesis():
     # Check if this is a rerun request
     is_rerun = data.get('rerun', False)
 
-    # Select a worker node
+    # Select a worker node based on molecular mass
     available_nodes = get_available_worker_nodes()
     if not available_nodes:
         log_event(request_id, smiles, parameters, 'no_workers', None, 0,
                   'No available worker nodes')
         return jsonify({"error": "No worker nodes available"}), 503
 
-    worker_node = available_nodes[0]  # Use the first available node
+    worker_node = select_worker_node_for_molecule(smiles, available_nodes)
+
+    # If no suitable worker is available
+    if worker_node is None:
+        return jsonify({
+            "status": "queued",
+            "message": "No suitable worker node available, job is queued",
+            "request_id": request_id
+        }), 202
 
     # Check if job is already running
     running_job = is_job_running(request_id, smiles, parameters, 0)

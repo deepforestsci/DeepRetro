@@ -10,22 +10,15 @@ debug: True
 
 # Worker node configuration
 worker_nodes:
-  - host: "ec2-18-222-202-30.us-east-2.compute.amazonaws.com"
+  - host: "ec2-3-17-191-215.us-east-2.compute.amazonaws.com"
     port: 5000
     api_key: "your-secure-api-key"
-    
-  - host: "ec2-3-20-205-97.us-east-2.compute.amazonaws.com"
-    port: 5000
-    api_key: "your-secure-api-key"
-    
-  - host: "ec2-18-118-215-217.us-east-2.compute.amazonaws.com"
-    port: 5000
-    api_key: "your-secure-api-key"
+    high_ram: false
 
 # Cache configuration
 cache:
   # Maximum age of cache entries in days (0 for no expiration)
-  max_age: 30
+  max_age: 0
   
   # Maximum entries in cache (0 for unlimited)
   max_entries: 10000

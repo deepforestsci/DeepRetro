@@ -312,6 +312,12 @@ def main():
                                                     args.smiles,
                                                     parameters_list)
 
+        print("--------------------")
+        print(f"Response status code: {status_code}")
+        print("--------------------")
+        print(f"Response: {result}")
+        print("--------------------")
+
         if status_code == 200:
             # Job completed immediately (cache hit)
             print("Results retrieved from cache:")
