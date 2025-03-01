@@ -14,6 +14,23 @@ from datetime import datetime
 app = Flask(__name__)
 
 
+def calculate_molecular_mass(smiles):
+    try:
+        from rdkit import Chem
+        from rdkit.Chem import Descriptors
+
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None:
+            # Invalid SMILES
+            return 0
+
+        return Descriptors.MolWt(mol)
+    except ImportError:
+        # If RDKit is not available, use a default value
+        print("Warning: RDKit not available for molecular weight calculation")
+        return 400  # Default to medium size
+
+
 # Load configuration from YAML file
 def load_config():
     with open('config.yml', 'r') as file:
@@ -52,25 +69,6 @@ def init_db():
         timestamp_1 TEXT,
         timestamp_2 TEXT,
         timestamp_3 TEXT,
-        UNIQUE(smiles, parameters)
-    )
-    ''')
-
-    # Keep the original cache table for compatibility
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS cache (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        smiles TEXT,
-        parameters TEXT,
-        output_json_1 TEXT,
-        output_json_2 TEXT,
-        output_json_3 TEXT,
-        output_json_4 TEXT,
-        output_json_5 TEXT,
-        output_json_6 TEXT,
-        output_json_7 TEXT,
-        output_json_8 TEXT,
-        timestamp TEXT,
         UNIQUE(smiles, parameters)
     )
     ''')
@@ -284,7 +282,7 @@ def check_all_parameter_cache(smiles, parameters_list):
 
 
 # Update parameter cache with result, using a rotating system of 3 slots
-def update_parameter_cache(smiles, parameters, result):
+def update_parameter_cache(smiles, parameters, result, is_rerun=False):
     conn = sqlite3.connect('retrosynthesis.db')
     cursor = conn.cursor()
 
@@ -309,7 +307,7 @@ def update_parameter_cache(smiles, parameters, result):
         print(
             f"found existing cache entry for {smiles} with params {params_hash}"
         )
-        # Determine which slot to update (the oldest one or the first empty one)
+        # Check if all slots are filled
         outputs = existing[:3]  # The three output JSONs
         timestamps = existing[3:]  # The three timestamps
 
@@ -320,8 +318,16 @@ def update_parameter_cache(smiles, parameters, result):
                 empty_slot = i + 1  # Slots are 1-indexed in the database
                 break
 
-        # If no empty slot, find oldest
-        if empty_slot is None:
+        if empty_slot is not None:
+            # We have an empty slot, so use it regardless of endpoint
+            cursor.execute(
+                f'''
+            UPDATE parameter_cache
+            SET output_json_{empty_slot} = ?, timestamp_{empty_slot} = ?
+            WHERE smiles = ? AND parameters = ?
+            ''', (result_json, current_timestamp, smiles, params_hash))
+        elif is_rerun:
+            # All slots are filled and this is a rerun, so overwrite the oldest one
             # Convert timestamps to datetime objects for comparison
             dt_timestamps = []
             for ts in timestamps:
@@ -333,15 +339,16 @@ def update_parameter_cache(smiles, parameters, result):
 
             # Find index of oldest timestamp
             oldest_idx = dt_timestamps.index(min(dt_timestamps))
-            empty_slot = oldest_idx + 1  # Slots are 1-indexed
+            update_slot = oldest_idx + 1  # Slots are 1-indexed
 
-        # Update the selected slot
-        cursor.execute(
-            f'''
-        UPDATE parameter_cache
-        SET output_json_{empty_slot} = ?, timestamp_{empty_slot} = ?
-        WHERE smiles = ? AND parameters = ?
-        ''', (result_json, current_timestamp, smiles, params_hash))
+            # Update the oldest slot
+            cursor.execute(
+                f'''
+            UPDATE parameter_cache
+            SET output_json_{update_slot} = ?, timestamp_{update_slot} = ?
+            WHERE smiles = ? AND parameters = ?
+            ''', (result_json, current_timestamp, smiles, params_hash))
+        # If all slots are filled and this is not a rerun, do nothing
     else:
         # Insert new record with the result in the first slot
         cursor.execute(
@@ -384,15 +391,19 @@ def forward_to_worker(worker_node, endpoint, data):
     }
 
     try:
-        response = requests.post(url, headers=headers, json=data, timeout=60)
+        response = requests.post(url, headers=headers, json=data, timeout=6000)
         return response.json(), response.status_code
     except requests.exceptions.RequestException as e:
         return {"error": f"Worker node communication error: {str(e)}"}, 500
 
 
 # Process retrosynthesis request asynchronously for a specific worker with specific parameters
-def process_retrosynthesis(request_id, smiles, parameters, worker_node,
-                           worker_index):
+def process_retrosynthesis(request_id,
+                           smiles,
+                           parameters,
+                           worker_node,
+                           worker_index,
+                           is_rerun=False):
     start_time = time.time()
 
     # Add the SMILES to the parameters if not already there
@@ -409,7 +420,7 @@ def process_retrosynthesis(request_id, smiles, parameters, worker_node,
 
         if status_code == 200:
             # Update cache with this worker's result
-            update_parameter_cache(smiles, parameters, result)
+            update_parameter_cache(smiles, parameters, result, is_rerun)
 
             # Add parameter info to the result
             result["parameters_used"] = parameters
@@ -527,10 +538,10 @@ def retrosynthesis_api():
                       0,
                       worker_index=i)
 
-            # Start processing in a separate thread
+            # Start processing in a separate thread - Pass False for is_rerun
             threading.Thread(target=process_retrosynthesis,
-                             args=(request_id, smiles, params, worker_node,
-                                   i)).start()
+                             args=(request_id, smiles, params, worker_node, i,
+                                   False)).start()
 
             active_workers.append({
                 "worker_index": i,
@@ -747,10 +758,13 @@ def single_parameter_retrosynthesis():
         parameters["smiles"] = smiles
 
     # Check if this exact parameter set is already in cache
-    cached_result = check_parameter_cache(smiles, parameters)
+    cached_result, _ = check_parameter_cache(smiles, parameters)
 
     # Generate a unique request ID
     request_id = str(uuid.uuid4())
+
+    # Check if this is a rerun request
+    is_rerun = data.get('rerun', False)
 
     # Select a worker node
     available_nodes = get_available_worker_nodes()
@@ -791,10 +805,10 @@ def single_parameter_retrosynthesis():
         log_event(request_id, smiles, parameters, 'started',
                   worker_node['host'], 0)
 
-        # Start processing
+        # Start processing - Pass the is_rerun flag
         threading.Thread(target=process_retrosynthesis,
-                         args=(request_id, smiles, parameters, worker_node,
-                               0)).start()
+                         args=(request_id, smiles, parameters, worker_node, 0,
+                               is_rerun)).start()
 
         # Return cached result if available while job starts
         if cached_result:
