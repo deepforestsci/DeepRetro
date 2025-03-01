@@ -145,7 +145,6 @@
             color: var(--primary);
         }
 
-        /* Graph styles - not touching as requested */
         .links line {
             stroke: #999;
             stroke-opacity: 0.6;
@@ -547,7 +546,6 @@
     </div>
 
     <script>
-        const API_URL = 'http://ec2-3-142-141-95.us-east-2.compute.amazonaws.com:5000/api/retrosynthesis';
         const API_KEY = 'your-secure-api-key';
 
         // Function to initialize server settings
@@ -613,6 +611,34 @@
                 `;
                 serverDiv.appendChild(promptRow);
                 
+                 // Create stability checker toggle  
+                 const stabilityRow = document.createElement('div');
+                stabilityRow.className = 'toggle-row';
+                stabilityRow.innerHTML = `
+                    <div class="toggle-switch">  
+                        <label class="switch">
+                            <input type="checkbox" id="stabilityToggle${serverNum}" data-server="${serverNum}">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label">Stability Checker</span>  
+                    </div>
+                `;
+                serverDiv.appendChild(stabilityRow);
+
+                // Create hallucination checker toggle
+                const hallucinationRow = document.createElement('div');  
+                hallucinationRow.className = 'toggle-row';
+                hallucinationRow.innerHTML = `
+                    <div class="toggle-switch">
+                        <label class="switch">
+                            <input type="checkbox" id="hallucinationToggle${serverNum}" data-server="${serverNum}">  
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label">Hallucination Checker</span>
+                    </div>
+                `;
+                serverDiv.appendChild(hallucinationRow);
+
                 // Add a horizontal line after each server except the last one
                 if (index < config.instances.length - 1) {
                     const separator = document.createElement('hr');
@@ -808,12 +834,17 @@
                     const modelSelect = document.getElementById(`modelVersion${serverNum}`);
                     const advancedToggle = document.getElementById(`advancedToggle${serverNum}`);
                     const promptToggle = document.getElementById(`promptToggle${serverNum}`);
+                    const stabilityToggle = document.getElementById(`stabilityToggle${serverNum}`);
+                    const hallucinationToggle = document.getElementById(`hallucinationToggle${serverNum}`);
+
                     
                     const requestBody = {
                         smiles,
                         advanced_model: advancedToggle.checked.toString(),
                         advanced_prompt: promptToggle.checked.toString(),
-                        model_version: modelSelect.value
+                        model_version: modelSelect.value,
+                        stability_flag: stabilityToggle.checked.toString(),
+                        hallucination_check: hallucinationToggle.checked.toString()
                     };
                     
                     return fetch(endpoint, {
@@ -934,6 +965,9 @@
                         const modelSelect = document.getElementById(`modelVersion${pathwayNumber}`);
                         const advancedToggle = document.getElementById(`advancedToggle${pathwayNumber}`);
                         const promptToggle = document.getElementById(`promptToggle${pathwayNumber}`);
+                        const stabilityToggle = document.getElementById(`stabilityToggle${pathwayNumber}`);
+                        const hallucinationToggle = document.getElementById(`hallucinationToggle${pathwayNumber}`);
+
                         
                         const endpoint = `${config.instances[index]}${config.endpoints.partial_rerun}`;
                         console.log('Attempting partial rerun with:', {
@@ -944,7 +978,9 @@
                                 pathway_id: pathwayNumber,
                                 advanced_model: advancedToggle.checked.toString(),
                                 advanced_prompt: promptToggle.checked.toString(),
-                                model_version: modelSelect.value
+                                model_version: modelSelect.value,
+                                stability_flag: stabilityToggle.checked.toString(),
+                                hallucination_check: hallucinationToggle.checked.toString()
                             }
                         });
                         fetch(endpoint, {

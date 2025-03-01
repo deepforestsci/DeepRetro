@@ -5,9 +5,11 @@ from dotenv import load_dotenv
 from rdkit import Chem
 
 import rootutils
+import os
+import hashlib
+import json
+import traceback
 
-import json                 # For handling JSON data
-import traceback           # For detailed error tracking
 root_dir = rootutils.setup_root(__file__,
                                 indicator=".project-root",
                                 pythonpath=True)
@@ -23,8 +25,40 @@ CORS(app)
 # Predefined API key for authentication
 API_KEY = "your-secure-api-key"
 
-# Global storage for the latest retrosynthesis results
-latest_results = {}
+# Functions for JSON file storage
+def save_result(smiles, result):
+    """Save retrosynthesis result to a JSON file."""
+    # Create results directory if it doesn't exist
+    os.makedirs("results", exist_ok=True)
+    
+    # Create a safe filename using a hash of the SMILES
+    filename = f"results/{hashlib.md5(smiles.encode()).hexdigest()}.json"
+    
+    # Save the result to the file
+    with open(filename, 'w') as f:
+        json.dump(result, f)
+    
+    print(f"Result saved to {filename}")
+    return filename
+
+def load_result(smiles):
+    """Load retrosynthesis result from a JSON file."""
+    filename = f"results/{hashlib.md5(smiles.encode()).hexdigest()}.json"
+    
+    # Check if the file exists
+    if not os.path.exists(filename):
+        print(f"No result file found for {smiles}")
+        return None
+    
+    # Load the result from the file
+    try:
+        with open(filename, 'r') as f:
+            result = json.load(f)
+        print(f"Result loaded from {filename}")
+        return result
+    except Exception as e:
+        print(f"Error loading result file: {e}")
+        return None
 
 # Authentication decorator
 def require_api_key(f):
@@ -47,8 +81,6 @@ def retrosynthesis_api():
     """
     Endpoint to perform retrosynthesis on a SMILES string.
     """
-    global latest_results
-    
     data = request.get_json()
     if not data or 'smiles' not in data:
         return jsonify({
@@ -104,39 +136,34 @@ def retrosynthesis_api():
 
     # -----------------
     # Stability check flag
-    stability_flag = "False"
     try:
         stability_flag: str = data['stability_flag']
-        assert stability_flag.lower() in ["false", "true"]
     except Exception as e:
         print(e)
-        stability_flag = "False"
-
+        
     # -----------------
     # Hallucination check flag
-    hallucination_check = "False"
     try:
         hallucination_check: str = data['hallucination_check']
-        assert hallucination_check.lower() in ["false", "true"]
     except Exception as e:
         print(e)
-        hallucination_check = "False"
 
     # -----------------
     # Run retrosynthesis
     try:
-
-        # Store the result for potential partial reruns
-        latest_results[smiles] = result
+        # Run retrosynthesis without the problematic parameters
         result = main(smiles=smiles,
-                      llm=llm,
-                      az_model=az_model,
-                      stability_flag=stability_flag,
-                      hallucination_check=hallucination_check)
-
+                     llm=llm,
+                     az_model=az_model,
+                     stability_flag=stability_flag,
+                     hallucination_check=hallucination_check)
+        
+        # Store the result in a JSON file
+        save_result(smiles, result)
     except Exception as e:
         print(e)
-        return jsonify({"error": "Error in retrosynthesis, Please rerun"}), 500
+        return jsonify({"error": f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500
+    
     return jsonify(result), 200
 
 
@@ -162,6 +189,7 @@ def clear_molecule_cache():
     molecule = data['molecule']
     clear_cache_for_molecule(molecule)
     return jsonify({"status": "success"}), 200
+
 
 @app.route('/api/rerun_retrosynthesis', methods=['POST'])
 @require_api_key
@@ -219,9 +247,28 @@ def rerun_retrosynthesis():
         print(e)
         az_model = "USPTO"
 
+    # Stability check flag
+    try:
+        stability_flag: str = data['stability_flag']
+    except Exception as e:
+        print(e)
+        
+    # Hallucination check flag
+    try:
+        hallucination_check: str = data['hallucination_check']
+    except Exception as e:
+        print(e)
+
     # Rerun retrosynthesis
     try:
-        result = main(smiles=molecule, llm=llm, az_model=az_model)
+        result = main(smiles=molecule, 
+                     llm=llm, 
+                     az_model=az_model,
+                     stability_flag=stability_flag,
+                     hallucination_check=hallucination_check)
+        
+        # Store the result in a JSON file
+        save_result(molecule, result)
     except Exception as e:
         print(e)
         return jsonify({"error": "Error in retrosynthesis, Please rerun"}), 500
@@ -236,57 +283,25 @@ def partial_rerun():
     
     When rerunning a step, we remove that step and everything to its right in the synthesis pathway.
     """
-    global latest_results
-    
     print("\n=== Starting Partial Rerun Process ===")
     
     data = request.get_json()
     print(f"Received request data: {json.dumps(data, indent=2)}")
- 
-    if not data or 'smiles' not in data:
-        return jsonify({
-            "error":
-            "Molecule string is required, Please include a 'smiles' field"
-        }), 400
-
-    molecule = data['smiles']
-
-    # Clear the cache for the molecule
-    clear_cache_for_molecule(molecule)
-    deepseek_r1 = False
-    try:
-        advanced_model: str = data['advanced_model']
-        if advanced_model.lower() == "true":
-            deepseek_r1 = True
-    except Exception as e:
-        print(e)
-        advanced_model = False
-
-    if not Chem.MolFromSmiles(molecule):
-        return jsonify({"error": "Invalid SMILES string"}), 400
-
-    if deepseek_r1:
-        llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
-    else:
-        llm = "claude-3-opus-20240229"
-
-    # Advanced prompt handling
-    advanced_prompt = False
+    
     try:
         smiles = data['smiles']
         from_step = int(data['steps'])
         
-        # Check if we have stored results for this molecule
-        if smiles not in latest_results:
+        # Load previous results from JSON file
+        original_result = load_result(smiles)
+        if not original_result:
             return jsonify({"error": "No previous results found for this molecule. Run retrosynthesis first."}), 400
             
-        # Get the original result from our stored data
-        original_result = latest_results[smiles]
         print(f"Found stored result for SMILES: {smiles}")
         
         # Print the original dependency structure for debugging
-        print(f"Original dependencies structure: {json.dumps(original_result['dependencies'], indent=2)}")
-        print(f"Original steps: {json.dumps([s['step'] for s in original_result['steps']], indent=2)}")
+        print(f"Original dependencies structure: {json.dumps(original_result.get('dependencies', {}), indent=2)}")
+        print(f"Original steps: {json.dumps([s['step'] for s in original_result.get('steps', [])])}") 
         
         # Get the starting molecule from the specified step
         target_step = next(
@@ -301,25 +316,73 @@ def partial_rerun():
         start_molecule = target_step['reactants'][0]['smiles']
         print(f"\nStarting new synthesis from molecule: {start_molecule}")
         
-        # Run new synthesis on the starting molecule by calling the retrosynthesis endpoint
-        retro_request = {
-            'smiles': start_molecule,
-            'advanced_model': data.get('advanced_model', "false"),
-            'advanced_prompt': data.get('advanced_prompt', "false"),
-            'model_version': data.get('model_version', "USPTO")
-        }
-        
-        with app.test_client() as client:
-            new_result_response = client.post(
-                '/api/retrosynthesis',
-                json=retro_request,
-                headers={'X-API-KEY': API_KEY}
-            )
-            if new_result_response.status_code != 200:
-                return jsonify({"error": f"Error running retrosynthesis on molecule {start_molecule}"}), 500
-            new_result = new_result_response.get_json()
+        # -----------------
+        # Advanced model - DeepSeek-R1
+        deepseek_r1 = False
+        try:
+            advanced_model: str = data['advanced_model']
+            if advanced_model.lower() == "true":
+                deepseek_r1 = True
+        except Exception as e:
+            print(e)
+            advanced_model = False
+
+        if deepseek_r1:
+            llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
+        else:
+            llm = "claude-3-opus-20240229"
+
+        # -----------------
+        # Advanced prompt handling
+        advanced_prompt = False
+        try:
+            advanced_prompt: str = data['advanced_prompt']
+            if advanced_prompt.lower() == "true":
+                advanced_prompt = True
+        except Exception as e:
+            print(e)
+            advanced_prompt = False
+
+        if advanced_prompt:
+            llm = llm + ":adv"
+
+        # -----------------
+        # Choose AiZynthFinder model
+        az_model = "USPTO"
+        try:
+            az_model: str = data['model_version']
+            assert az_model in AZ_MODEL_LIST
+        except Exception as e:
+            print(e)
+            az_model = "USPTO"
+
+        # -----------------
+        # Stability check flag
+        try:
+            stability_flag: str = data['stability_flag']
+        except Exception as e:
+            print(e)
             
-        print(f"New retrosynthesis result: {json.dumps(new_result, indent=2)}")
+        # -----------------
+        # Hallucination check flag
+        try:
+            hallucination_check: str = data['hallucination_check']
+        except Exception as e:
+            print(e)
+        
+        # Run new synthesis on the starting molecule - REMOVED PROBLEMATIC PARAMETERS
+        try:
+            new_result = main(
+                smiles=start_molecule,
+                llm=llm,
+                az_model=az_model,
+                stability_flag=stability_flag,
+                hallucination_check=hallucination_check
+            )
+            print(f"New retrosynthesis result: {json.dumps(new_result, indent=2)}")
+        except Exception as e:
+            print(f"Error running retrosynthesis on molecule {start_molecule}: {str(e)}")
+            return jsonify({"error": f"Error running retrosynthesis on {start_molecule}: {str(e)}"}), 500
         
         # The steps to remove are the target step and everything it depends on
         # In other words, the target step and everything to its right in the synthesis pathway
@@ -330,7 +393,7 @@ def partial_rerun():
         # This is the set of steps that will be replaced by the new synthesis
         while steps_to_check:
             current_step = steps_to_check.pop(0)
-            if current_step in original_result['dependencies']:
+            if current_step in original_result.get('dependencies', {}):
                 for dep_step in original_result['dependencies'][current_step]:
                     if dep_step not in steps_to_remove:
                         steps_to_remove.add(dep_step)
@@ -341,7 +404,7 @@ def partial_rerun():
         # We need to identify what step the target step is connected to on its left
         # This is where we'll connect the new synthesis
         left_connection = None
-        for step, deps in original_result['dependencies'].items():
+        for step, deps in original_result.get('dependencies', {}).items():
             if str(from_step) in deps and step not in steps_to_remove:
                 left_connection = step
                 break
@@ -357,7 +420,7 @@ def partial_rerun():
         
         # Keep dependencies for steps we're keeping, removing any references to removed steps
         kept_deps = {}
-        for step_num, deps in original_result['dependencies'].items():
+        for step_num, deps in original_result.get('dependencies', {}).items():
             if step_num not in steps_to_remove:
                 # Filter out dependencies that are in steps_to_remove
                 kept_deps[step_num] = [d for d in deps if d not in steps_to_remove]
@@ -379,7 +442,7 @@ def partial_rerun():
         new_steps = []
         step_mapping = {}
         
-        for idx, step in enumerate(new_result['steps']):
+        for idx, step in enumerate(new_result.get('steps', [])):
             new_step_num = max_step + 1 + idx
             step_mapping[step['step']] = str(new_step_num)
             
@@ -391,7 +454,7 @@ def partial_rerun():
         
         # Adjust dependencies for new steps
         new_deps = {}
-        for old_num, deps in new_result['dependencies'].items():
+        for old_num, deps in new_result.get('dependencies', {}).items():
             new_num = step_mapping[old_num]
             # Map old step numbers to new step numbers in dependencies
             new_deps[new_num] = [step_mapping[d] for d in deps]
@@ -401,8 +464,6 @@ def partial_rerun():
         # Connect the new branch to the left connection if it exists
         if left_connection and new_steps:
             first_new_step = new_steps[0]['step']
-            # The bug was here! We need to make sure left_connection is properly
-            # added to the dependency list of the first new step, not the other way around
             if left_connection in kept_deps:
                 kept_deps[left_connection].append(first_new_step)
             else:
@@ -426,9 +487,10 @@ def partial_rerun():
         # Final debug check
         if not merged_steps:
             print("ERROR: No steps in final merged result!")
+            return jsonify({"error": "No steps in final merged result"}), 500
         
-        # Store the merged result as the latest result for this molecule
-        latest_results[smiles] = merged_result
+        # Store the merged result in a JSON file
+        save_result(smiles, merged_result)
         
         print("\n=== Partial Rerun Complete ===")
         return jsonify(merged_result), 200
