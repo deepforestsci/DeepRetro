@@ -14,6 +14,8 @@ from src.variables import ERROR_MAP
 from src.cache import cache_results
 from src.utils.utils_molecule import validity_check, detect_seven_member_rings
 from src.utils.job_context import logger as context_logger
+from src.utils.stability_checks import stability_checker
+from src.utils.hallucination_checks import hallucination_checker
 
 load_dotenv()
 
@@ -136,11 +138,26 @@ def call_LLM(molecule: str,
     sys_prompt_final, user_prompt_final, max_completion_tokens = obtain_prompt(
         LLM)
     LLM = LLM.split(":")[0]
+
+    params = {
+        "model": LLM,
+        "max_completion_tokens": max_completion_tokens,
+        "temperature": temperature,
+        "seed": 42,
+        "top_p": 0.9,
+        "metadata": metadata,
+    }
+
     if LLM in DEEPSEEK_MODELS:
-        # user_prompt_final = user_prompt_final+"\n\n"+ add_on
-        temperature = 0.6
+        user_prompt_final += add_on
+
     if "3-7" in LLM:
-        max_completion_tokens = 8192 + 5000
+        params["max_tokens"] = 13192 + 5000
+        params["temperature"] = 1
+        params.pop("top_p", None)
+        params.pop("max_completion_tokens", None)
+        params['thinking'] = {"type": "enabled", "budget_tokens": 5000}
+
     if messages is None:
         messages = [{
             "role": "system",
@@ -152,27 +169,18 @@ def call_LLM(molecule: str,
             user_prompt_final.replace('{target_smiles}', molecule) + "\n\n" +
             add_on
         }]
+    params["messages"] = messages
 
     try:
-        response = completion(model=LLM,
-                              messages=messages,
-                              max_completion_tokens=max_completion_tokens,
-                              temperature=temperature,
-                              seed=42,
-                              top_p=0.9,
-                              metadata=metadata)
+        # Call the LLM model
+        response = completion(**params)
+
         res_text = response.choices[0].message.content
     except Exception as e:
         log_message(f"Error in calling {LLM}: {e}", logger)
         log_message(f"Retrying call to {LLM}", logger)
         try:
-            response = completion(model=LLM,
-                                  messages=messages,
-                                  max_completion_tokens=4096,
-                                  temperature=temperature,
-                                  seed=42,
-                                  top_p=0.9,
-                                  metadata=metadata)
+            response = completion(**params)
             res_text = response.choices[0].message.content
         except Exception as e:
             log_message(f"2nd Error in calling {LLM}: {e}", logger)
@@ -345,7 +353,9 @@ def validate_split_json(
 def llm_pipeline(
     molecule: str,
     LLM: str = "claude-3-opus-20240229",
-    messages: Optional[list[dict]] = None
+    messages: Optional[list[dict]] = None,
+    stability_flag: str = "False",
+    hallucination_check: str = "False"
 ) -> tuple[list[list[str]], list[str], list[float]]:
     """Pipeline to call LLM and validate the results
 
@@ -368,7 +378,12 @@ def llm_pipeline(
     output_explanations: list[str] = []
     output_confidence: list[float] = []
     run = 0.0
-    while (output_pathways == [] and run < 0.6):
+    if stability_flag.lower() == "true" or hallucination_check.lower(
+    ) == "true":
+        max_run = 0.9
+    else:
+        max_run = 0.6
+    while (output_pathways == [] and run < max_run):
         log_message(f"Calling LLM with molecule: {molecule} and run: {run}",
                     logger)
 
@@ -414,6 +429,52 @@ def llm_pipeline(
         # Check the validity of the molecules obtained from LLM
         output_pathways, output_explanations, output_confidence = validity_check(
             molecule, res_molecules, res_explanations, res_confidence)
+
+        # --------------------
+        # Stability check
+        if stability_flag.lower() == "true":
+            status_code, stable_pathways = stability_checker(output_pathways)
+            if status_code != 200:
+                log_message(f"Error in stability check: {stable_pathways}",
+                            logger)
+                run += 0.1
+                get_error_log(status_code)
+                continue
+            output_pathways = stable_pathways
+
+        # --------------------
+        # Hallucination check
+        if hallucination_check.lower() == "true":
+            log_message(f"Calling hallucination check with pathways: {output_pathways}",
+                        logger)
+            status_code, hallucination_pathways = hallucination_checker(
+                molecule, output_pathways)
+            if status_code != 200:
+                log_message(
+                    f"Error in hallucination check: {hallucination_pathways}",
+                    logger)
+                run += 0.1
+                get_error_log(status_code)
+                continue
+            output_pathways = hallucination_pathways
+
+        # --------------------
+        # Update the messages for the next call
+        # if output_pathways == []:
+        #     messages = [{
+        #         "role": "system",
+        #         "content": SYS_PROMPT
+        #     }, {
+        #         "role": "user",
+        #         "content": USER_PROMPT
+        #     }, {
+        #         "role": "assistant",
+        #         "content": res_text
+        #     }, {
+        #         "role": "user",
+        #         "content": "<add something here>"
+        #     }]
+
         log_message(
             f"Output Pathways: {output_pathways},\n\
                 Output Explanations: {output_explanations},\n\

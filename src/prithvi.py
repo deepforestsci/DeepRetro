@@ -19,7 +19,9 @@ date_dir = f'{root_dir}/logs/{time.strftime("%Y-%m-%d")}'
 
 def run_prithvi(molecule: str,
                 llm="claude-3-opus-20240229",
-                az_model: str = "USPTO") -> dict:
+                az_model: str = "USPTO",
+                stability_flag: str = "False",
+                hallucination_check: str = "False") -> dict:
     """Run prithvi services to generate retrosynthesis on a molecule.
 
     Parameters
@@ -48,10 +50,13 @@ def run_prithvi(molecule: str,
     log.info(f"Starting new synthesis job {job_id} for molecule {molecule}")
 
     try:
-        result_dict, _ = rec_run_prithvi(molecule=molecule,
-                                         job_id=job_id,
-                                         llm=llm,
-                                         az_model=az_model)
+        result_dict, _ = rec_run_prithvi(
+            molecule=molecule,
+            job_id=job_id,
+            llm=llm,
+            az_model=az_model,
+            stability_flag=stability_flag,
+            hallucination_check=hallucination_check)
         output_data = format_output(result_dict)
         output_data = add_metadata(output_data)
         return output_data

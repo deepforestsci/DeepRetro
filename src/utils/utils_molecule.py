@@ -135,17 +135,17 @@ def validity_check(molecule, res_molecules, res_explanations, res_confidence):
                     log_message(
                         f"Molecule : {molecule} is invalid or cannot be parsed",
                         logger)
-            if len(valid) >= 2:
+            if len(valid) == len(smile_list):
                 valid_pathways.append(valid)
                 valid_explanations.append(res_explanations[idx])
                 valid_confidence.append(res_confidence[idx])
         else:
             if is_valid_smiles(smile_list):
-                if are_molecules_same(molecule, smiles):
+                if are_molecules_same(molecule, smile_list):
                     log_message("Molecule is same as target molecule", logger)
-                elif substructure_matching(smiles, molecule):
+                elif substructure_matching(smile_list, molecule):
                     log_message(
-                        f"Molecule : {molecule} is substructure of target molecule {smiles}",
+                        f"Molecule : {molecule} is substructure of target molecule {smile_list}",
                         logger)
                 else:
                     valid_pathways.append([smile_list])
