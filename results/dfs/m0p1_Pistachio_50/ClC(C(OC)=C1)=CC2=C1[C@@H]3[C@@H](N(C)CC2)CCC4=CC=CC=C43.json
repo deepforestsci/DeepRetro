@@ -1,0 +1,190 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(Cl)cc(CN)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H10ClNO",
+                        "mass": 171.04509162
+                    }
+                },
+                {
+                    "smiles": "O=C1CCCC(=O)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8O2",
+                        "mass": 112.052429496
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=P(O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H3O4P",
+                        "mass": 97.97689520600001
+                    }
+                },
+                {
+                    "smiles": "C[N+](C)(C)CCCCCC",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H22N+",
+                        "mass": 144.17467612408998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-120 \u00b0C",
+                "pressure": "Ambient pressure",
+                "solvent": "Polar aprotic solvent such as DMF or DMSO",
+                "time": "2-6 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.6,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(Cl)cc(C#N)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H6ClNO",
+                        "mass": 167.013791492
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                },
+                {
+                    "smiles": "[Pt]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pt",
+                        "mass": 194.9647911
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(Cl)cc(CN)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H10ClNO",
+                        "mass": 171.04509162
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "1 atm (atmospheric pressure)",
+                "solvent": "Ethanol (EtOH) or Methanol (MeOH)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.73,
+                    "closestliterature": "Catalytic hydrogenation of nitriles to primary amines using platinum catalyst"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCCC2(C1)OCCO2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H12O3",
+                        "mass": 156.078644244
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CCCC(=O)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8O2",
+                        "mass": 112.052429496
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Acetone or another polar aprotic solvent",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Baeyer-Villiger oxidation of a cyclic ketone to a lactone using a peroxyacid oxidant"
+                }
+            ]
+        }
+    ]
+}

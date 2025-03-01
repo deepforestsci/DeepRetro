@@ -1,0 +1,230 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3",
+            "4"
+        ],
+        "3": [],
+        "4": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1C[C@H]2CC(CC[C@@H]3C)(C3)[C@@]21[H]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H16O",
+                        "mass": 164.120115132
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH2O",
+                        "mass": 30.010564684
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C[C@H]2C[C@]3(CC2)[C@@]1([H])CC[C@@H]3C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H18O",
+                        "mass": 178.135765196
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol (EtOH)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.65,
+                    "closestliterature": "Hydrogenation of an \u03b1,\u03b2-unsaturated ketone to a saturated ketone using hydrogen gas (H2) and a transition metal catalyst."
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "C1=CCC=C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H6",
+                        "mass": 66.046950192
+                    }
+                },
+                {
+                    "smiles": "O=C1C=CCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H6O",
+                        "mass": 82.041864812
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C1C[C@H]2CC(CC[C@@H]3C)(C3)[C@@]21[H]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H16O",
+                        "mass": 164.120115132
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Heat",
+                "pressure": "Not applicable",
+                "solvent": "Not specified",
+                "time": "Not specified"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Diels-Alder cycloaddition"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "C1=CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H8",
+                        "mass": 68.062600256
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pt]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pt",
+                        "mass": 194.9647911
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "S",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2S",
+                        "mass": 33.987721064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C1=CCC=C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H6",
+                        "mass": 66.046950192
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "200-300 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "The reaction is likely carried out in the gas phase without solvent due to the high temperature.",
+                "time": "The reaction time would be on the order of seconds to minutes under these high temperature gas-phase conditions."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Cyclopentene can be produced from cyclopentane via dehydrogenation over platinum or palladium catalysts at 200-300 \u00b0C."
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H8O",
+                        "mass": 84.057514876
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Se]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Se",
+                        "mass": 79.9165213
+                    }
+                },
+                {
+                    "smiles": "[O]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O",
+                        "mass": 15.99491462
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C=CCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H6O",
+                        "mass": 82.041864812
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Dioxane",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.79,
+                    "closestliterature": "Oxidation of cyclohexanone to cyclohex-2-enone using selenium dioxide"
+                }
+            ]
+        }
+    ]
+}

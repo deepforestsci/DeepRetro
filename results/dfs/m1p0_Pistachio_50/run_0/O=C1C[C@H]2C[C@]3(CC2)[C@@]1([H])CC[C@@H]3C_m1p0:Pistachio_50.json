@@ -1,0 +1,148 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "C=CC=C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6",
+                        "mass": 54.046950192
+                    }
+                },
+                {
+                    "smiles": "O=C=C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H2O",
+                        "mass": 42.010564684
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CO",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O",
+                        "mass": 32.026214748
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C[C@H]2C[C@]3(CC2)[C@@]1([H])CC[C@@H]3C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H18O",
+                        "mass": 178.135765196
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-150 \u00b0C",
+                "pressure": "10-20 atm",
+                "solvent": "Toluene or xylene",
+                "time": "2-6 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.6,
+                    "closestliterature": "Pauson-Khand reaction"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "C#CC=C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4",
+                        "mass": 52.031300128
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "C=CC=C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6",
+                        "mass": 54.046950192
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "400-500 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent needed, reaction occurs in the gas phase",
+                "time": "Very short residence time, on the order of seconds to minutes"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "2",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Propyne (C#CC) undergoes thermal rearrangement to form allene (C=C=C) at high temperatures (400-500 \u00b0C) in the gas phase."
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4",
+                        "mass": 16.031300127999998
+                    }
+                },
+                {
+                    "smiles": "O=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O2",
+                        "mass": 31.98982924
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C=C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H2O",
+                        "mass": 42.010564684
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "High temperature (1000-2000\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent used. The reaction occurs in the gas phase.",
+                "time": "Very short residence time, on the order of milliseconds to seconds"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "C + O2 \u2192 CO + CO2"
+                }
+            ]
+        }
+    ]
+}

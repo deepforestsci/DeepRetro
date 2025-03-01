@@ -1,0 +1,433 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "5"
+        ],
+        "2": [
+            "3",
+            "4"
+        ],
+        "3": [],
+        "4": [],
+        "5": [
+            "6"
+        ],
+        "6": [
+            "7"
+        ],
+        "7": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1CC2(O)CC3CCC(C)C3CC21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H18O2",
+                        "mass": 194.130679816
+                    }
+                },
+                {
+                    "smiles": "C=C(C)C(=O)CC1CC=C(C)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H18O",
+                        "mass": 178.135765196
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "CO",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O",
+                        "mass": 32.026214748
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C[C@H]2C[C@]3(CC2)[C@@]1([H])CC[C@@H]3C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H18O",
+                        "mass": 178.135765196
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "50-100 \u00b0C",
+                "pressure": "1-5 atm CO",
+                "solvent": "Toluene or THF",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Pauson-Khand reaction"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(=O)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8O2",
+                        "mass": 112.052429496
+                    }
+                },
+                {
+                    "smiles": "CC1C=CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H12",
+                        "mass": 96.093900384
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[Al+3]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Al+3",
+                        "mass": 26.979892890269998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CC2(O)CC3CCC(C)C3CC21",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H18O2",
+                        "mass": 194.130679816
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure (no special pressure conditions required)",
+                "solvent": "Dichloromethane (CH2Cl2) or other non-polar aprotic solvent",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Diels-Alder cycloaddition of 1,4-cyclohexanedione (dienophile) and 1-methylcyclohexa-1,3-diene (diene) catalyzed by aluminum(III)"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(O)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H10O2",
+                        "mass": 114.06807956
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[O-][Cr+3](=O)(=O)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CrO4+2",
+                        "mass": 115.91906882018002
+                    }
+                },
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CCC(=O)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8O2",
+                        "mass": 112.052429496
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-5 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "acetone",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.88,
+                    "closestliterature": "Oxidation of 4-hydroxycyclohexanone to 1,4-cyclohexanedione using chromium trioxide in acetic acid"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "CC1CCCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H14",
+                        "mass": 98.109550448
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Br][Br]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Br2",
+                        "mass": 157.8366742
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC1C=CCCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H12",
+                        "mass": 96.093900384
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "150-200 \u00b0C",
+                "pressure": "Not applicable. This reaction is typically carried out at atmospheric pressure.",
+                "solvent": "Not applicable. This reaction is usually performed in the gas phase without solvent.",
+                "time": "A few seconds to a few minutes, depending on the exact setup and scale."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Dehydrogenation of methylcyclohexane to methylcyclohexene"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "C=C(C)C(=O)CC1CCC(C)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H20O",
+                        "mass": 180.15141526
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=S(=O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O4S",
+                        "mass": 97.96737954400001
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=C(C)C(=O)CC1CC=C(C)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H18O",
+                        "mass": 178.135765196
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "Ambient pressure",
+                "solvent": "Ethylene glycol dimethyl ether (C1CCOC1)",
+                "time": "2-6 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Palladium-catalyzed oxidative dehydrogenation of cyclohexene to 1-methylcyclohexene"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "CC(=O)C(=O)CC1CCC(C)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H18O2",
+                        "mass": 182.130679816
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=C(C)C(=O)CC1CCC(C)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H20O",
+                        "mass": 180.15141526
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Dioxane (C1CCOC1)",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Aldol condensation of a ketone with a base to form an \u03b1,\u03b2-unsaturated ketone"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "CC(=O)C(=O)Cc1ccc(C)cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H12O2",
+                        "mass": 176.083729624
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H",
+                        "mass": 1.007825032
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(=O)C(=O)CC1CCC(C)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H18O2",
+                        "mass": 182.130679816
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "1 atm (not applicable)",
+                "solvent": "Ethanol or ethyl acetate",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.96,
+                    "closestliterature": "Catalytic hydrogenation of alkenes: R-CH=CH-R' + H2 ->[Pd] R-CH2-CH2-R'"
+                }
+            ]
+        }
+    ]
+}

@@ -60,20 +60,24 @@ def load_result(smiles):
         print(f"Error loading result file: {e}")
         return None
 
+
 # Authentication decorator
 def require_api_key(f):
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         # Allow OPTIONS requests to bypass API key check
         if request.method == 'OPTIONS':
             return f(*args, **kwargs)
-            
+
         api_key = request.headers.get('X-API-KEY')
         if api_key and api_key == API_KEY:
             return f(*args, **kwargs)
         else:
             return jsonify({"error": "Unauthorized"}), 401
+
     return decorated_function
+
 
 @app.route('/api/retrosynthesis', methods=['POST'])
 @require_api_key
@@ -81,6 +85,7 @@ def retrosynthesis_api():
     """
     Endpoint to perform retrosynthesis on a SMILES string.
     """
+
     data = request.get_json()
     if not data or 'smiles' not in data:
         return jsonify({
@@ -151,6 +156,7 @@ def retrosynthesis_api():
     # -----------------
     # Run retrosynthesis
     try:
+
         # Run retrosynthesis without the problematic parameters
         result = main(smiles=smiles,
                      llm=llm,
@@ -160,6 +166,7 @@ def retrosynthesis_api():
         
         # Store the result in a JSON file
         save_result(smiles, result)
+
     except Exception as e:
         print(e)
         return jsonify({"error": f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500
@@ -206,8 +213,14 @@ def rerun_retrosynthesis():
 
     molecule = data['smiles']
 
+    if not Chem.MolFromSmiles(molecule):
+        return jsonify({"error": "Invalid SMILES string"}), 400
+
     # Clear the cache for the molecule
     clear_cache_for_molecule(molecule)
+
+    # -----------------
+    # Advanced model - DeepSeek-R1
     deepseek_r1 = False
     try:
         advanced_model: str = data['advanced_model']
@@ -217,15 +230,13 @@ def rerun_retrosynthesis():
         print(e)
         advanced_model = False
 
-    if not Chem.MolFromSmiles(molecule):
-        return jsonify({"error": "Invalid SMILES string"}), 400
-
     if deepseek_r1:
         llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
     else:
         llm = "claude-3-opus-20240229"
 
-    # Advanced prompt handling
+    # -----------------
+    # Advanced Prompt - To use the more guardrails prompt
     advanced_prompt = False
     try:
         advanced_prompt: str = data['advanced_prompt']
@@ -238,6 +249,7 @@ def rerun_retrosynthesis():
     if advanced_prompt:
         llm = llm + ":adv"
 
+    # -----------------
     # Choose AiZynthFinder model
     az_model = "USPTO"
     try:
@@ -247,32 +259,40 @@ def rerun_retrosynthesis():
         print(e)
         az_model = "USPTO"
 
+    # -----------------
     # Stability check flag
+    stability_flag = "False"
     try:
         stability_flag: str = data['stability_flag']
+        assert stability_flag.lower() in ["false", "true"]
     except Exception as e:
         print(e)
-        
+        stability_flag = "False"
+
+    # -----------------
     # Hallucination check flag
+    hallucination_check = "False"
     try:
         hallucination_check: str = data['hallucination_check']
+        assert hallucination_check.lower() in ["false", "true"]
     except Exception as e:
         print(e)
+        hallucination_check = "False"
 
     # Rerun retrosynthesis
     try:
-        result = main(smiles=molecule, 
-                     llm=llm, 
-                     az_model=az_model,
-                     stability_flag=stability_flag,
-                     hallucination_check=hallucination_check)
-        
-        # Store the result in a JSON file
+        result = main(smiles=molecule,
+                      llm=llm,
+                      az_model=az_model,
+                      stability_flag=stability_flag,
+                      hallucination_check=hallucination_check)
         save_result(molecule, result)
+
     except Exception as e:
         print(e)
         return jsonify({"error": "Error in retrosynthesis, Please rerun"}), 500
     return jsonify(result), 200
+
 
 @app.route('/api/partial_rerun', methods=['POST'])
 @require_api_key
@@ -283,10 +303,12 @@ def partial_rerun():
     
     When rerunning a step, we remove that step and everything to its right in the synthesis pathway.
     """
+
     print("\n=== Starting Partial Rerun Process ===")
-    
+
     data = request.get_json()
     print(f"Received request data: {json.dumps(data, indent=2)}")
+
     
     try:
         smiles = data['smiles']
@@ -298,7 +320,7 @@ def partial_rerun():
             return jsonify({"error": "No previous results found for this molecule. Run retrosynthesis first."}), 400
             
         print(f"Found stored result for SMILES: {smiles}")
-        
+
         # Print the original dependency structure for debugging
         print(f"Original dependencies structure: {json.dumps(original_result.get('dependencies', {}), indent=2)}")
         print(f"Original steps: {json.dumps([s['step'] for s in original_result.get('steps', [])])}") 
@@ -309,10 +331,20 @@ def partial_rerun():
              if int(step['step']) == from_step),
             None
         )
-        
+        print(
+            f"Original steps: {json.dumps([s['step'] for s in original_result['steps']], indent=2)}"
+        )
+
+        # Get the starting molecule from the specified step
+        target_step = next((step for step in original_result['steps']
+                            if int(step['step']) == from_step), None)
+
         if not target_step:
-            return jsonify({"error": f"Step {from_step} not found in the synthesis pathway"}), 404
-            
+            return jsonify({
+                "error":
+                f"Step {from_step} not found in the synthesis pathway"
+            }), 404
+
         start_molecule = target_step['reactants'][0]['smiles']
         print(f"\nStarting new synthesis from molecule: {start_molecule}")
         
@@ -388,7 +420,7 @@ def partial_rerun():
         # In other words, the target step and everything to its right in the synthesis pathway
         steps_to_remove = {str(from_step)}
         steps_to_check = [str(from_step)]
-        
+
         # Identify all steps that the target step depends on (to the right in the pathway)
         # This is the set of steps that will be replaced by the new synthesis
         while steps_to_check:
@@ -398,9 +430,11 @@ def partial_rerun():
                     if dep_step not in steps_to_remove:
                         steps_to_remove.add(dep_step)
                         steps_to_check.append(dep_step)
-        
-        print(f"Steps to remove (target and everything to its right): {steps_to_remove}")
-        
+
+        print(
+            f"Steps to remove (target and everything to its right): {steps_to_remove}"
+        )
+
         # We need to identify what step the target step is connected to on its left
         # This is where we'll connect the new synthesis
         left_connection = None
@@ -408,26 +442,29 @@ def partial_rerun():
             if str(from_step) in deps and step not in steps_to_remove:
                 left_connection = step
                 break
-                
-        print(f"Left connection (step that the target connects to on the left): {left_connection}")
-        
+
+        print(
+            f"Left connection (step that the target connects to on the left): {left_connection}"
+        )
+
         # Keep steps that are not in the steps_to_remove set
         kept_steps = [
-            step.copy() 
-            for step in original_result['steps'] 
+            step.copy() for step in original_result['steps']
             if str(step['step']) not in steps_to_remove
         ]
-        
+
         # Keep dependencies for steps we're keeping, removing any references to removed steps
         kept_deps = {}
         for step_num, deps in original_result.get('dependencies', {}).items():
             if step_num not in steps_to_remove:
                 # Filter out dependencies that are in steps_to_remove
-                kept_deps[step_num] = [d for d in deps if d not in steps_to_remove]
-        
+                kept_deps[step_num] = [
+                    d for d in deps if d not in steps_to_remove
+                ]
+
         print(f"Kept steps: {[s['step'] for s in kept_steps]}")
         print(f"Kept dependencies: {kept_deps}")
-        
+
         # Find max step number from kept steps
         max_step = 0
         if kept_steps:
@@ -435,32 +472,33 @@ def partial_rerun():
         else:
             # If no steps were kept, there might be a problem
             print("WARNING: No steps from original pathway were kept!")
-            
+
         print(f"Max step number from kept steps: {max_step}")
-            
+
         # Adjust new steps (renumber them starting from max_step + 1)
         new_steps = []
         step_mapping = {}
         
         for idx, step in enumerate(new_result.get('steps', [])):
+
             new_step_num = max_step + 1 + idx
             step_mapping[step['step']] = str(new_step_num)
-            
+
             adjusted_step = step.copy()
             adjusted_step['step'] = str(new_step_num)
             new_steps.append(adjusted_step)
-        
+
         print(f"New steps after renumbering: {[s['step'] for s in new_steps]}")
-        
+
         # Adjust dependencies for new steps
         new_deps = {}
         for old_num, deps in new_result.get('dependencies', {}).items():
             new_num = step_mapping[old_num]
             # Map old step numbers to new step numbers in dependencies
             new_deps[new_num] = [step_mapping[d] for d in deps]
-        
+
         print(f"New dependencies after renumbering: {new_deps}")
-        
+
         # Connect the new branch to the left connection if it exists
         if left_connection and new_steps:
             first_new_step = new_steps[0]['step']
@@ -468,25 +506,25 @@ def partial_rerun():
                 kept_deps[left_connection].append(first_new_step)
             else:
                 kept_deps[left_connection] = [first_new_step]
-            print(f"Connected left step {left_connection} to new step {first_new_step}")
-        
+            print(
+                f"Connected left step {left_connection} to new step {first_new_step}"
+            )
+
         # Merge results - this should include ALL kept steps AND new steps
         merged_steps = kept_steps + new_steps
         merged_deps = {**kept_deps, **new_deps}
-        
+
         # Verify the merging was successful
         print(f"Merged steps: {[s['step'] for s in merged_steps]}")
         print(f"Merged dependencies: {merged_deps}")
-        
+
         # Create the final merged result
-        merged_result = {
-            'steps': merged_steps,
-            'dependencies': merged_deps
-        }
-        
+        merged_result = {'steps': merged_steps, 'dependencies': merged_deps}
+
         # Final debug check
         if not merged_steps:
             print("ERROR: No steps in final merged result!")
+            
             return jsonify({"error": "No steps in final merged result"}), 500
         
         # Store the merged result in a JSON file
@@ -494,14 +532,14 @@ def partial_rerun():
         
         print("\n=== Partial Rerun Complete ===")
         return jsonify(merged_result), 200
-        
+
     except Exception as e:
         print(f"\nERROR in partial rerun:")
         print(f"Exception: {str(e)}")
         print(f"Traceback: {traceback.format_exc()}")
-        return jsonify({
-            "error": f"Error in partial retrosynthesis: {str(e)}"
-        }), 500
-    
+        return jsonify({"error":
+                        f"Error in partial retrosynthesis: {str(e)}"}), 500
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
