@@ -164,8 +164,6 @@ def retrosynthesis_api():
     # -----------------
     # Run retrosynthesis
     try:
-
-        # Run retrosynthesis without the problematic parameters
         result = main(smiles=smiles,
                       llm=llm,
                       az_model=az_model,
@@ -403,19 +401,25 @@ def partial_rerun():
 
         # -----------------
         # Stability check flag
+        stability_flag = "False"
         try:
             stability_flag: str = data['stability_flag']
+            assert stability_flag.lower() in ["false", "true"]
         except Exception as e:
             print(e)
+            stability_flag = "False"
 
         # -----------------
         # Hallucination check flag
+        hallucination_check = "False"
         try:
             hallucination_check: str = data['hallucination_check']
+            assert hallucination_check.lower() in ["false", "true"]
         except Exception as e:
             print(e)
+            hallucination_check = "False"
 
-        # Run new synthesis on the starting molecule - REMOVED PROBLEMATIC PARAMETERS
+        # Run new synthesis on the starting molecule
         try:
             new_result = main(smiles=start_molecule,
                               llm=llm,
