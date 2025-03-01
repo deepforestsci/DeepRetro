@@ -25,31 +25,33 @@ CORS(app)
 # Predefined API key for authentication
 API_KEY = "your-secure-api-key"
 
+
 # Functions for JSON file storage
 def save_result(smiles, result):
     """Save retrosynthesis result to a JSON file."""
     # Create results directory if it doesn't exist
     os.makedirs("results", exist_ok=True)
-    
+
     # Create a safe filename using a hash of the SMILES
     filename = f"results/{hashlib.md5(smiles.encode()).hexdigest()}.json"
-    
+
     # Save the result to the file
     with open(filename, 'w') as f:
         json.dump(result, f)
-    
+
     print(f"Result saved to {filename}")
     return filename
+
 
 def load_result(smiles):
     """Load retrosynthesis result from a JSON file."""
     filename = f"results/{hashlib.md5(smiles.encode()).hexdigest()}.json"
-    
+
     # Check if the file exists
     if not os.path.exists(filename):
         print(f"No result file found for {smiles}")
         return None
-    
+
     # Load the result from the file
     try:
         with open(filename, 'r') as f:
@@ -141,17 +143,23 @@ def retrosynthesis_api():
 
     # -----------------
     # Stability check flag
+    stability_flag = "False"
     try:
         stability_flag: str = data['stability_flag']
+        assert stability_flag.lower() in ["false", "true"]
     except Exception as e:
         print(e)
-        
+        stability_flag = "False"
+
     # -----------------
     # Hallucination check flag
+    hallucination_check = "False"
     try:
         hallucination_check: str = data['hallucination_check']
+        assert hallucination_check.lower() in ["false", "true"]
     except Exception as e:
         print(e)
+        hallucination_check = "False"
 
     # -----------------
     # Run retrosynthesis
@@ -159,18 +167,20 @@ def retrosynthesis_api():
 
         # Run retrosynthesis without the problematic parameters
         result = main(smiles=smiles,
-                     llm=llm,
-                     az_model=az_model,
-                     stability_flag=stability_flag,
-                     hallucination_check=hallucination_check)
-        
+                      llm=llm,
+                      az_model=az_model,
+                      stability_flag=stability_flag,
+                      hallucination_check=hallucination_check)
+
         # Store the result in a JSON file
         save_result(smiles, result)
 
     except Exception as e:
         print(e)
-        return jsonify({"error": f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500
-    
+        return jsonify(
+            {"error":
+             f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500
+
     return jsonify(result), 200
 
 
@@ -309,28 +319,31 @@ def partial_rerun():
     data = request.get_json()
     print(f"Received request data: {json.dumps(data, indent=2)}")
 
-    
     try:
         smiles = data['smiles']
         from_step = int(data['steps'])
-        
+
         # Load previous results from JSON file
         original_result = load_result(smiles)
         if not original_result:
-            return jsonify({"error": "No previous results found for this molecule. Run retrosynthesis first."}), 400
-            
+            return jsonify({
+                "error":
+                "No previous results found for this molecule. Run retrosynthesis first."
+            }), 400
+
         print(f"Found stored result for SMILES: {smiles}")
 
         # Print the original dependency structure for debugging
-        print(f"Original dependencies structure: {json.dumps(original_result.get('dependencies', {}), indent=2)}")
-        print(f"Original steps: {json.dumps([s['step'] for s in original_result.get('steps', [])])}") 
-        
-        # Get the starting molecule from the specified step
-        target_step = next(
-            (step for step in original_result['steps'] 
-             if int(step['step']) == from_step),
-            None
+        print(
+            f"Original dependencies structure: {json.dumps(original_result.get('dependencies', {}), indent=2)}"
         )
+        print(
+            f"Original steps: {json.dumps([s['step'] for s in original_result.get('steps', [])])}"
+        )
+
+        # Get the starting molecule from the specified step
+        target_step = next((step for step in original_result['steps']
+                            if int(step['step']) == from_step), None)
         print(
             f"Original steps: {json.dumps([s['step'] for s in original_result['steps']], indent=2)}"
         )
@@ -347,7 +360,7 @@ def partial_rerun():
 
         start_molecule = target_step['reactants'][0]['smiles']
         print(f"\nStarting new synthesis from molecule: {start_molecule}")
-        
+
         # -----------------
         # Advanced model - DeepSeek-R1
         deepseek_r1 = False
@@ -394,28 +407,33 @@ def partial_rerun():
             stability_flag: str = data['stability_flag']
         except Exception as e:
             print(e)
-            
+
         # -----------------
         # Hallucination check flag
         try:
             hallucination_check: str = data['hallucination_check']
         except Exception as e:
             print(e)
-        
+
         # Run new synthesis on the starting molecule - REMOVED PROBLEMATIC PARAMETERS
         try:
-            new_result = main(
-                smiles=start_molecule,
-                llm=llm,
-                az_model=az_model,
-                stability_flag=stability_flag,
-                hallucination_check=hallucination_check
+            new_result = main(smiles=start_molecule,
+                              llm=llm,
+                              az_model=az_model,
+                              stability_flag=stability_flag,
+                              hallucination_check=hallucination_check)
+            print(
+                f"New retrosynthesis result: {json.dumps(new_result, indent=2)}"
             )
-            print(f"New retrosynthesis result: {json.dumps(new_result, indent=2)}")
         except Exception as e:
-            print(f"Error running retrosynthesis on molecule {start_molecule}: {str(e)}")
-            return jsonify({"error": f"Error running retrosynthesis on {start_molecule}: {str(e)}"}), 500
-        
+            print(
+                f"Error running retrosynthesis on molecule {start_molecule}: {str(e)}"
+            )
+            return jsonify({
+                "error":
+                f"Error running retrosynthesis on {start_molecule}: {str(e)}"
+            }), 500
+
         # The steps to remove are the target step and everything it depends on
         # In other words, the target step and everything to its right in the synthesis pathway
         steps_to_remove = {str(from_step)}
@@ -478,7 +496,7 @@ def partial_rerun():
         # Adjust new steps (renumber them starting from max_step + 1)
         new_steps = []
         step_mapping = {}
-        
+
         for idx, step in enumerate(new_result.get('steps', [])):
 
             new_step_num = max_step + 1 + idx
@@ -524,12 +542,12 @@ def partial_rerun():
         # Final debug check
         if not merged_steps:
             print("ERROR: No steps in final merged result!")
-            
+
             return jsonify({"error": "No steps in final merged result"}), 500
-        
+
         # Store the merged result in a JSON file
         save_result(smiles, merged_result)
-        
+
         print("\n=== Partial Rerun Complete ===")
         return jsonify(merged_result), 200
 
