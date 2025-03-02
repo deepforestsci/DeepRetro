@@ -380,7 +380,7 @@ def llm_pipeline(
     run = 0.0
     if stability_flag.lower() == "true" or hallucination_check.lower(
     ) == "true":
-        max_run = 0.9
+        max_run = 1.2
     else:
         max_run = 0.6
     while (output_pathways == [] and run < max_run):
