@@ -1,0 +1,311 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "6"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [
+            "5"
+        ],
+        "5": [],
+        "6": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "[C@@]12(C=3C(=NC=CC3)C[C@@]1([H])C[C@@H](C)CC2=O)CC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H19NO",
+                        "mass": 229.146664228
+                    }
+                },
+                {
+                    "smiles": "OCCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7BrO",
+                        "mass": 137.968026944
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C(CCO)[C@@]12C=3C(C[C@@]1(C[C@@H](C)CC2=O)[H])=NC=CC3",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H21NO2",
+                        "mass": 259.157228912
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "2-24 hours, depending on the specific substrates and scale of the reaction"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Williamson ether synthesis"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "[H][C@]12Cc3ncccc3[C@@]1([H])C(=O)C[C@H](C)C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H15NO",
+                        "mass": 201.1153641
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CCBr",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H5Br",
+                        "mass": 107.95746226
+                    }
+                },
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "[C@@]12(C=3C(=NC=CC3)C[C@@]1([H])C[C@@H](C)CC2=O)CC",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H19NO",
+                        "mass": 229.146664228
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Ambient pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Bischler-Napieralski reaction"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "CC1=CC(=O)[C@@H]2c3cccnc3C[C@@H]2C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H13NO",
+                        "mass": 199.099714036
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "[H][C@]12Cc3ncccc3[C@@]1([H])C(=O)C[C@H](C)C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H15NO",
+                        "mass": 201.1153641
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required",
+                "time": "This reaction is likely spontaneous and would occur rapidly upon mixing the reactants, likely completing within seconds to minutes."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Intramolecular Diels-Alder reaction of a pyridine-containing triene"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "CC1=CC[C@@H]2c3cccnc3C[C@@H]2C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H15N",
+                        "mass": 185.12044948
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[O]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O",
+                        "mass": 15.99491462
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC1=CC(=O)[C@@H]2c3cccnc3C[C@@H]2C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H13NO",
+                        "mass": 199.099714036
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Dichloromethane (CH2Cl2) or chloroform (CHCl3)",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Oxidation of a tetrahydronaphthalene derivative to the corresponding \u03b1-tetralone using an oxidizing agent such as chromium trioxide (CrO3) or 2,3-dichloro-5,6-dicyano-1,4-benzoquinone (DDQ)."
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "C=CC(=C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H8",
+                        "mass": 68.062600256
+                    }
+                },
+                {
+                    "smiles": "C1=Cc2cccnc2C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7N",
+                        "mass": 117.057849224
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "CC1=CC[C@@H]2c3cccnc3C[C@@H]2C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H15N",
+                        "mass": 185.12044948
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-150 \u00b0C",
+                "pressure": "Not applicable. This Diels-Alder reaction does not require high pressure.",
+                "solvent": "None. This reaction can be run neat (without solvent) due to the favorable interaction of the diene and dienophile.",
+                "time": "1-24 hours, depending on the exact temperature used"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Diels-Alder cycloaddition of isoprene (2-methyl-1,3-butadiene) with quinoline to form a tetrahydroquinoline derivative"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)CCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H5BrO2",
+                        "mass": 151.9472915
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CO",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O",
+                        "mass": 32.026214748
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OCCCBr",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7BrO",
+                        "mass": 137.968026944
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "THF",
+                "time": "This is a simple reduction that would proceed rapidly, likely completing in under 1 hour."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.87,
+                    "closestliterature": "Reduction of a carboxylic acid to a primary alcohol using carbon monoxide (CO) as the reducing agent."
+                }
+            ]
+        }
+    ]
+}

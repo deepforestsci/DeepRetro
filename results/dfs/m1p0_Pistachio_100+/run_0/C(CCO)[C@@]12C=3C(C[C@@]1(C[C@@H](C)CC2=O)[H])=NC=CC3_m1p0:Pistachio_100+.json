@@ -1,0 +1,450 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3",
+            "8"
+        ],
+        "3": [
+            "4",
+            "7"
+        ],
+        "4": [
+            "5",
+            "6"
+        ],
+        "5": [],
+        "6": [],
+        "7": [],
+        "8": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "C(CCO)C1(C[C@@H](C)CC(=O)O1)CCN",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H21NO3",
+                        "mass": 215.152143532
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "O=S(=O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O4S",
+                        "mass": 97.96737954400001
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C(CCO)[C@@]12C=3C(C[C@@]1(C[C@@H](C)CC2=O)[H])=NC=CC3",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H21NO2",
+                        "mass": 259.157228912
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Acetic acid",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Baeyer-Villiger oxidation"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "C(CCO)C1(C[C@@H](C)CC(=O)O1)CCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H19BrO3",
+                        "mass": 278.05175656800003
+                    }
+                },
+                {
+                    "smiles": "N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "H3N",
+                        "mass": 17.026549096
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C(CCO)C1(C[C@@H](C)CC(=O)O1)CCN",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H21NO3",
+                        "mass": 215.152143532
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol or methanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Reductive amination of an alkyl bromide with ammonia"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "OC(CCO)C(CC)CC(O)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H16O4",
+                        "mass": 176.104858992
+                    }
+                },
+                {
+                    "smiles": "BrC1=CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H7Br",
+                        "mass": 145.973112324
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=S(=O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O4S",
+                        "mass": 97.96737954400001
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C(CCO)C1(C[C@@H](C)CC(=O)O1)CCBr",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H19BrO3",
+                        "mass": 278.05175656800003
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "1,4-Dioxane (C1CCOC1) is used as the solvent in this reaction",
+                "time": "The reaction time is not provided and would depend on the specific reaction conditions and scale. Typical reaction times for similar reactions range from a few hours to overnight."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Intramolecular lactonization of a hydroxy acid with an alkyl halide to form a \u03b3-lactone"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "CCC(C=O)CCO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H12O2",
+                        "mass": 116.083729624
+                    }
+                },
+                {
+                    "smiles": "COC(=O)CCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H7BrO2",
+                        "mass": 165.962941564
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OC(CCO)C(CC)CC(O)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H16O4",
+                        "mass": 176.104858992
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Aldol condensation of an aldehyde with the enolate of an ester, followed by hydrolysis of the resulting \u03b2-ketoester."
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "O=CCO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "CCCC=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CCC(C=O)CCO",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H12O2",
+                        "mass": 116.083729624
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol or methanol",
+                "time": "30 minutes - 2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "10",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Aldol condensation of butanal and hydroxyacetaldehyde under basic conditions"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "COC(=O)CCO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O3",
+                        "mass": 104.047344116
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CBr",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3Br",
+                        "mass": 93.941812196
+                    }
+                },
+                {
+                    "smiles": "[Br][Br]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Br2",
+                        "mass": 157.8366742
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COC(=O)CCBr",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H7BrO2",
+                        "mass": 165.962941564
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "dichloromethane (CH2Cl2)",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Conversion of alcohols to alkyl bromides using carbon tetrabromide (CBr4) and triphenylphosphine (PPh3) (Appel reaction)"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "BrC1=CCCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H9Br",
+                        "mass": 159.988762388
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "BrC1=CCCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H7Br",
+                        "mass": 145.973112324
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-200 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "None required",
+                "time": "0.5-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Cope rearrangement of 5-bromo-1,5-hexadiene"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH2O",
+                        "mass": 30.010564684
+                    }
+                },
+                {
+                    "smiles": "C=C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4",
+                        "mass": 28.031300127999998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "H3N",
+                        "mass": 17.026549096
+                    }
+                }
+            ],
+            "conditions": "",
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": ""
+                }
+            ]
+        }
+    ]
+}

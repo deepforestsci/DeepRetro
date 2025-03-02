@@ -19,20 +19,10 @@ root_dir = rootutils.setup_root(__file__,
 
 load_dotenv()
 from src.utils.job_context import logger as context_logger
-from src.utils.utils_molecule import calc_mol_wt, is_valid_smiles, calc_chemical_formula
-from src.cache import cache_results
+from src.utils.utils_molecule import is_valid_smiles
 
 ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
                                     "true").lower() == "false" else True
-
-metadata = {
-    "generation_name": "prod",  # set langfuse generation name
-    "project": "Retrosynthesis",  # set langfuse project name
-    "version": "0.0.3",  # set langfuse version
-    "trace_name": "prod",  # set langfuse Trace Name
-    "trace_user_id": "sv",  # set langfuse Trace User ID
-    "session_id": "stability",  # set langfuse Session ID
-}
 
 
 def log_message(message: str, logger=None):
@@ -84,7 +74,7 @@ def stability_checker(res_smiles: list):
                         "Likely stable", "Moderately stable"
                 ]:
                     valid.append(smiles)
-            if len(valid) > 0:
+            if len(valid) == len(smile_list):
                 valid_pathways.append(valid)
         else:
             if is_valid_smiles(smile_list):
@@ -319,6 +309,114 @@ def check_molecule_stability(smiles):
 
     # Penalize for each identified issue
     stability_score -= len(results["issues"]) * 15
+
+    # ----------------- DETECT CARBOCATIONS -----------------
+    # SMARTS patterns for detecting carbocations
+    # sp2 carbocation pattern (trigonal planar)
+    sp2_carbocation_pattern = Chem.MolFromSmarts("[C+;X3]")
+    # sp carbocation pattern (linear)
+    sp_carbocation_pattern = Chem.MolFromSmarts("[C+;X2]")
+    # Non-stabilized carbocation (adjacent to electron-withdrawing groups)
+    unstabilized_carbocation_pattern = Chem.MolFromSmarts(
+        "[C+][F,Cl,Br,I,N+,S+,O+]")
+    # Primary carbocation (less stable)
+    primary_carbocation_pattern = Chem.MolFromSmarts("[CH2+][#6]")
+    # Secondary carbocation (moderately stable)
+    secondary_carbocation_pattern = Chem.MolFromSmarts("[CH+]([#6])[#6]")
+    # Tertiary carbocation (more stable but still reactive)
+    tertiary_carbocation_pattern = Chem.MolFromSmarts("[C+]([#6])([#6])[#6]")
+    # Allylic carbocation (stabilized by resonance)
+    allylic_carbocation_pattern = Chem.MolFromSmarts("[C+]-[C]=[C]")
+    # Benzylic carbocation (stabilized by resonance)
+    benzylic_carbocation_pattern = Chem.MolFromSmarts("[C+]-c")
+
+    # Check for each carbocation type
+    if sp2_carbocation_pattern and mol.HasSubstructMatch(
+            sp2_carbocation_pattern):
+        matches = mol.GetSubstructMatches(sp2_carbocation_pattern)
+        # Check if any of these are stabilized
+        for match in matches:
+            carbon_idx = match[0]
+            carbon_atom = mol.GetAtomWithIdx(carbon_idx)
+            neighbors = [
+                mol.GetAtomWithIdx(a.GetIdx())
+                for a in carbon_atom.GetNeighbors()
+            ]
+
+            # Check for stability factors
+            is_allylic = mol.HasSubstructMatch(allylic_carbocation_pattern)
+            is_benzylic = mol.HasSubstructMatch(benzylic_carbocation_pattern)
+
+            if any(a.GetIsAromatic()
+                   for a in neighbors) or is_allylic or is_benzylic:
+                stability_score += 10
+            else:
+                results["issues"].append(
+                    "Contains non-stabilized sp2 carbocation (highly unstable intermediate)"
+                )
+                stability_score -= 25  # Major penalty
+
+    if sp_carbocation_pattern and mol.HasSubstructMatch(
+            sp_carbocation_pattern):
+        results["issues"].append(
+            "Contains sp carbocation (highly unstable intermediate)")
+        stability_score -= 30  # Major penalty
+
+    if unstabilized_carbocation_pattern and mol.HasSubstructMatch(
+            unstabilized_carbocation_pattern):
+        results["issues"].append(
+            "Contains carbocation adjacent to electron-withdrawing group (extremely unstable)"
+        )
+        stability_score -= 35  # Severe penalty
+
+    # Check primary, secondary, tertiary carbocations
+    if primary_carbocation_pattern and mol.HasSubstructMatch(
+            primary_carbocation_pattern):
+        results["issues"].append(
+            "Contains primary carbocation (highly unstable)")
+        stability_score -= 30
+    elif secondary_carbocation_pattern and mol.HasSubstructMatch(
+            secondary_carbocation_pattern):
+        results["issues"].append(
+            "Contains secondary carbocation (unstable intermediate)")
+        stability_score -= 25
+
+    # ----------------- DETECT CARBENES -----------------
+    # Carbene patterns (neutral carbon with 2 bonds and no charge)
+    singlet_carbene_pattern = Chem.MolFromSmarts("[C;X2;H0;+0]")
+    # Carbenes with adjacent electron-withdrawing groups
+    unstable_carbene_pattern = Chem.MolFromSmarts(
+        "[C;X2;H0;+0][F,Cl,Br,I,N+,S+,O+]")
+    # Carbenes in small rings (highly strained)
+    ring_carbene_pattern_3 = Chem.MolFromSmarts("[C;X2;H0;+0]1[C,N,O][C,N,O]1")
+    ring_carbene_pattern_4 = Chem.MolFromSmarts(
+        "[C;X2;H0;+0]1[C,N,O][C,N,O][C,N,O]1")
+
+    if singlet_carbene_pattern and mol.HasSubstructMatch(
+            singlet_carbene_pattern):
+        results["issues"].append(
+            "Contains carbene (highly reactive intermediate)")
+        stability_score -= 35  # Severe penalty
+
+        # Check for additional destabilizing factors
+        if unstable_carbene_pattern and mol.HasSubstructMatch(
+                unstable_carbene_pattern):
+            results["issues"].append(
+                "Contains carbene adjacent to electron-withdrawing group (extremely unstable)"
+            )
+            stability_score -= 10  # Additional penalty
+
+        if ring_carbene_pattern_3 and mol.HasSubstructMatch(
+                ring_carbene_pattern_3):
+            results["issues"].append(
+                "Contains carbene in 3-membered ring (extremely unstable)")
+            stability_score -= 15  # Additional penalty
+
+        if ring_carbene_pattern_4 and mol.HasSubstructMatch(
+                ring_carbene_pattern_4):
+            results["issues"].append(
+                "Contains carbene in 4-membered ring (highly unstable)")
+            stability_score -= 10  # Additional penalty
 
     # Penalize for extreme values of properties
     if abs(logp) > 10: stability_score -= 10

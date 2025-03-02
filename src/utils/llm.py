@@ -15,7 +15,7 @@ from src.cache import cache_results
 from src.utils.utils_molecule import validity_check, detect_seven_member_rings
 from src.utils.job_context import logger as context_logger
 from src.utils.stability_checks import stability_checker
-# from src.utils.hallucination_checks import hallucination_checker
+from src.utils.hallucination_checks import hallucination_checker
 
 load_dotenv()
 
@@ -90,7 +90,7 @@ def obtain_prompt(LLM: str):
         if LLM in DEEPSEEK_MODELS:
             sys_prompt_final = SYS_PROMPT_DEEPSEEK
             user_prompt_final = USER_PROMPT_DEEPSEEK
-            max_completion_tokens = 8192
+            max_completion_tokens = 8192 * 2
         elif LLM in OPENAI_MODELS:
             sys_prompt_final = SYS_PROMPT_OPENAI
             user_prompt_final = USER_PROMPT_OPENAI
@@ -138,8 +138,26 @@ def call_LLM(molecule: str,
     sys_prompt_final, user_prompt_final, max_completion_tokens = obtain_prompt(
         LLM)
     LLM = LLM.split(":")[0]
+
+    params = {
+        "model": LLM,
+        "max_completion_tokens": max_completion_tokens,
+        "temperature": temperature,
+        "seed": 42,
+        "top_p": 0.9,
+        "metadata": metadata,
+    }
+
     if LLM in DEEPSEEK_MODELS:
         user_prompt_final += add_on
+
+    if "3-7" in LLM:
+        params["max_tokens"] = 13192 + 5000
+        params["temperature"] = 1
+        params.pop("top_p", None)
+        params.pop("max_completion_tokens", None)
+        params['thinking'] = {"type": "enabled", "budget_tokens": 5000}
+
     if messages is None:
         messages = [{
             "role": "system",
@@ -148,29 +166,21 @@ def call_LLM(molecule: str,
             "role":
             "user",
             "content":
-            user_prompt_final.replace('{target_smiles}', molecule)
+            user_prompt_final.replace('{target_smiles}', molecule) + "\n\n" +
+            add_on
         }]
+    params["messages"] = messages
 
     try:
-        response = completion(model=LLM,
-                              messages=messages,
-                              max_completion_tokens=max_completion_tokens,
-                              temperature=temperature,
-                              seed=42,
-                              top_p=0.9,
-                              metadata=metadata)
+        # Call the LLM model
+        response = completion(**params)
+
         res_text = response.choices[0].message.content
     except Exception as e:
         log_message(f"Error in calling {LLM}: {e}", logger)
         log_message(f"Retrying call to {LLM}", logger)
         try:
-            response = completion(model=LLM,
-                                  messages=messages,
-                                  max_completion_tokens=4096,
-                                  temperature=temperature,
-                                  seed=42,
-                                  top_p=0.9,
-                                  metadata=metadata)
+            response = completion(**params)
             res_text = response.choices[0].message.content
         except Exception as e:
             log_message(f"2nd Error in calling {LLM}: {e}", logger)
@@ -434,9 +444,19 @@ def llm_pipeline(
 
         # --------------------
         # Hallucination check
-        # if hallucination_check.lower() == "true":
-        #     # Implement hallucination check
-        #     pass
+        if hallucination_check.lower() == "true":
+            log_message(f"Calling hallucination check with pathways: {output_pathways}",
+                        logger)
+            status_code, hallucination_pathways = hallucination_checker(
+                molecule, output_pathways)
+            if status_code != 200:
+                log_message(
+                    f"Error in hallucination check: {hallucination_pathways}",
+                    logger)
+                run += 0.1
+                get_error_log(status_code)
+                continue
+            output_pathways = hallucination_pathways
 
         # --------------------
         # Update the messages for the next call

@@ -1,0 +1,347 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": [
+            "4",
+            "7"
+        ],
+        "4": [
+            "5"
+        ],
+        "5": [],
+        "6": [],
+        "7": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "C=CC=C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6",
+                        "mass": 54.046950192
+                    }
+                },
+                {
+                    "smiles": "O=C(C=CC1C(C)(C)NC1C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H17NO",
+                        "mass": 167.131014164
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "CO",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O",
+                        "mass": 32.026214748
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C(C=1C=2C(NC1C(C=C)(C)C)=CC=CC2)[C@H]3C(=O)N4[C@](C(=O)N3)(CCC4)[H]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H25N3O2",
+                        "mass": 351.19467704
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-120 \u00b0C",
+                "pressure": "1-5 atm CO",
+                "solvent": "DMF or dioxane",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.65,
+                    "closestliterature": "Intramolecular Pauson-Khand reaction"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "C#CC=C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4",
+                        "mass": 52.031300128
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "C=CC=C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6",
+                        "mass": 54.046950192
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "400-500 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent needed, reaction occurs in the gas phase",
+                "time": "Very short residence time, on the order of seconds to minutes"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "2",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Propyne (C#CC) undergoes thermal rearrangement to form allene (C=C=C) at high temperatures (400-500 \u00b0C) in the gas phase."
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "C=CC1C(C)NC1(C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H15N",
+                        "mass": 125.12044947999999
+                    }
+                },
+                {
+                    "smiles": "CC(C)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6O",
+                        "mass": 58.041864812
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(C=CC1C(C)(C)NC1C)C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H17NO",
+                        "mass": 167.131014164
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm (not a key factor)",
+                "solvent": "Ethanol or other polar protic solvent",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Base-catalyzed aldol condensation of a ketone with an imine"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "C=CC1C(C)N(C(=O)OCC)C1(C)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H19NO2",
+                        "mass": 197.141578848
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=CC1C(C)NC1(C)C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H15N",
+                        "mass": 125.12044947999999
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "150-200 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent needed",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Thermal decarboxylation of N-carbethoxy-2,2,5-trimethyl-4-methylenepyrrolidine"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "CCO",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6O",
+                        "mass": 46.041864812
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=CC1C(C)N(C(=O)OCC)C1(C)C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H19NO2",
+                        "mass": 197.141578848
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely does not require an additional solvent as ethyl chloroformate (ClCO2Et) is used as both a reagent and solvent.",
+                "time": "The reaction is expected to proceed rapidly and be complete within 1-2 hours."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Protection of a secondary amine with ethyl chloroformate to form an N-ethyl carbamate (N-carbethoxy group)"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CCO",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6O",
+                        "mass": 46.041864812
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux (78\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "10",
+                    "confidenceestimate": 0.94,
+                    "closestliterature": "Fischer esterification"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "CC(C)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H8O",
+                        "mass": 60.057514876
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H6O",
+                        "mass": 58.041864812
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No additional solvent required, as the alcohol reactant acts as the solvent",
+                "time": "Minutes to a few hours, depending on the specific alcohol and acid catalyst used"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Oxidation of isopropanol to acetone using an acid catalyst"
+                }
+            ]
+        }
+    ]
+}

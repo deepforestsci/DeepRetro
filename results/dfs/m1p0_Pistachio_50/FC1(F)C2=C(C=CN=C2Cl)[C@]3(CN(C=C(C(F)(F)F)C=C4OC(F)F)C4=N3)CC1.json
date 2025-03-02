@@ -1,0 +1,1380 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "9"
+        ],
+        "2": [
+            "3",
+            "8"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [
+            "5"
+        ],
+        "5": [
+            "6"
+        ],
+        "6": [
+            "7"
+        ],
+        "7": [],
+        "8": [],
+        "9": [
+            "10",
+            "22"
+        ],
+        "10": [
+            "11",
+            "16"
+        ],
+        "11": [
+            "12"
+        ],
+        "12": [
+            "13"
+        ],
+        "13": [
+            "14"
+        ],
+        "14": [
+            "15"
+        ],
+        "15": [],
+        "16": [
+            "17",
+            "19"
+        ],
+        "17": [
+            "18"
+        ],
+        "18": [],
+        "19": [
+            "20"
+        ],
+        "20": [
+            "26"
+        ],
+        "21": [],
+        "22": [
+            "23"
+        ],
+        "23": [
+            "24",
+            "26"
+        ],
+        "24": [
+            "25"
+        ],
+        "25": [],
+        "26": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "FC1(F)C2=C(C=CN=C2Cl)[C@]3(CN(C=C(C(F)(F)F)C=C4O)C4=N3)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H11ClF5N3O",
+                        "mass": 391.051080752
+                    }
+                },
+                {
+                    "smiles": "FC(F)(F)Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CBrF3",
+                        "mass": 147.91354676
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C[Si](C)(C)C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H12Si",
+                        "mass": 88.070826914
+                    }
+                },
+                {
+                    "smiles": "[H][O][C](=[O])[C]([F])([F])[F]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2HF3O2",
+                        "mass": 113.992863932
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC1(F)C2=C(C=CN=C2Cl)[C@]3(CN(C=C(C(F)(F)F)C=C4OC(F)F)C4=N3)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H11ClF7N3O",
+                        "mass": 441.047887192
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "atmospheric pressure",
+                "solvent": "dichloromethane (DCM) or tetrahydrofuran (THF)",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Fluoroalkylation of phenols using fluoroalkyl bromides and silyl protection/deprotection"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(F)(F)c2c1ccnc2Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H6ClF2NO",
+                        "mass": 217.010597932
+                    }
+                },
+                {
+                    "smiles": "Nc1nccc(C(F)(F)F)c1O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H5F3N2O",
+                        "mass": 178.03539744
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Br",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HBr",
+                        "mass": 79.926162132
+                    }
+                },
+                {
+                    "smiles": "CC(=O)N(C)C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H9NO",
+                        "mass": 87.068413908
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC1(F)C2=C(C=CN=C2Cl)[C@]3(CN(C=C(C(F)(F)F)C=C4O)C4=N3)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H11ClF5N3O",
+                        "mass": 391.051080752
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "polar aprotic solvent such as DMF, DMSO, or NMP",
+                "time": "2-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Buchwald-Hartwig amination"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H10O2",
+                        "mass": 90.06807956
+                    }
+                },
+                {
+                    "smiles": "FC1(F)CCCc2ccnc(Cl)c21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8ClF2N",
+                        "mass": 203.031333376
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[O-][Mn+5](=O)(=O)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "MnO4+4",
+                        "mass": 118.91550926036
+                    }
+                },
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CCC(F)(F)c2c1ccnc2Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H6ClF2NO",
+                        "mass": 217.010597932
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-5 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Acetic acid",
+                "time": "30 min to 2 h"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.93,
+                    "closestliterature": "Oxidation of 4-chloro-6,7-dihydro-5H-cyclopenta[c]pyridine with potassium permanganate to form 4-chloro-5,6-dihydrocyclopenta[c]pyridin-7(4H)-one"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "O=P(Cl)(Cl)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl3OP",
+                        "mass": 151.87523428999998
+                    }
+                },
+                {
+                    "smiles": "[O-][n+]1ccc2c(c1)C(F)(F)CCC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9F2NO",
+                        "mass": 185.065220348
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC1(F)CCCc2ccnc(Cl)c21",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8ClF2N",
+                        "mass": 203.031333376
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "C1CCOC1 (1,4-dioxane)",
+                "time": "1-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Chlorination of 4-fluoroquinoline using phosphorus oxychloride (POCl3)"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "FC1(F)CCCc2ccncc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9F2N",
+                        "mass": 169.070305728
+                    }
+                },
+                {
+                    "smiles": "O=C(OO)c1cccc(Cl)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H5ClO3",
+                        "mass": 171.99272169999998
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[O-][O+]=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O3",
+                        "mass": 47.984743859999995
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "[O-][n+]1ccc2c(c1)C(F)(F)CCC2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9F2NO",
+                        "mass": 185.065220348
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure (no special pressure conditions required)",
+                "solvent": "A polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.69,
+                    "closestliterature": "Oxidative cyclization of 2-chloro-N-(2,2-difluoro-3,4-dihydronaphthalen-1-yl)nicotinamide using peroxymonosulfate"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "c1cc2c(cn1)C1(CCC2)SCCS1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H13NS2",
+                        "mass": 223.048941416
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "F[Si](C)(C)C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H9FSi",
+                        "mass": 92.045755038
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "FC1(F)CCCc2ccncc21",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9F2N",
+                        "mass": 169.070305728
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0 \u00b0C to room temperature",
+                "pressure": "Ambient pressure (1 atm)",
+                "solvent": "Dichloromethane (CH2Cl2) or similar aprotic solvent",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "Electrophilic fluorination of a cyclic thioether using a fluorosilane reagent"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "SCCS",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6S2",
+                        "mass": 93.991092192
+                    }
+                },
+                {
+                    "smiles": "O=C1CCCc2ccncc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9NO",
+                        "mass": 147.068413908
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=S(=O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O4S",
+                        "mass": 97.96737954400001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "c1cc2c(cn1)C1(CCC2)SCCS1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H13NS2",
+                        "mass": 223.048941416
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Ambient pressure",
+                "solvent": "Acetic acid",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.86,
+                    "closestliterature": "Paal-Knorr pyrrole synthesis"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "COc1c(C(F)(F)F)ccnc1N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7F3N2O",
+                        "mass": 192.051047504
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "Nc1nccc(C(F)(F)F)c1O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H5F3N2O",
+                        "mass": 178.03539744
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Ambient pressure",
+                "solvent": "Acetic acid",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.82,
+                    "closestliterature": "Demethylation of aryl methyl ethers using acetic acid and HCl"
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [
+                {
+                    "smiles": "ClC(F)(F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CClF3",
+                        "mass": 103.96406234
+                    }
+                },
+                {
+                    "smiles": "Br[K]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "BrK",
+                        "mass": 117.88204378
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "FC(F)(F)Br",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CBrF3",
+                        "mass": 147.91354676
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required",
+                "time": "Reaction is likely instantaneous or very rapid (on the order of seconds to minutes)"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Halogen exchange reaction between chlorotrifluoromethane (ClCF3) and potassium bromide (KBr) to form bromotrifluoromethane (CF3Br)"
+                }
+            ]
+        },
+        {
+            "step": "10",
+            "reactants": [
+                {
+                    "smiles": "ClC(Cl)(Cl)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CCl4",
+                        "mass": 151.87541072
+                    }
+                },
+                {
+                    "smiles": "F[Sb](F)F",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "F3Sb",
+                        "mass": 177.89902536
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Sb-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Sb-",
+                        "mass": 120.90436427991
+                    }
+                },
+                {
+                    "smiles": "[Sb+3]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Sb+3",
+                        "mass": 120.90216996027
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(F)(F)F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CClF3",
+                        "mass": 103.96406234
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Elevated temperature (e.g. 100-150\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required",
+                "time": "Reaction likely occurs rapidly upon mixing reactants"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "Halogen exchange reaction between carbon tetrachloride and antimony trifluoride to produce chlorotrifluoromethane"
+                }
+            ]
+        },
+        {
+            "step": "11",
+            "reactants": [
+                {
+                    "smiles": "ClC(Cl)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CHCl3",
+                        "mass": 117.91438307199999
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(Cl)(Cl)Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CCl4",
+                        "mass": 151.87541072
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "No solvent needed",
+                "time": "Rapid reaction, likely complete within minutes"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Chlorination of chloroform"
+                }
+            ]
+        },
+        {
+            "step": "12",
+            "reactants": [
+                {
+                    "smiles": "N#CC(Cl)(Cl)c1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H5Cl2N",
+                        "mass": 184.97990452
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(Cl)Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CHCl3",
+                        "mass": 117.91438307199999
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "No specific temperature required",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent needed",
+                "time": "Reaction occurs rapidly upon mixing"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.6,
+                    "closestliterature": "Chlorination of benzal chloride (PhCHCl2) with chlorine gas (Cl2)"
+                }
+            ]
+        },
+        {
+            "step": "13",
+            "reactants": [
+                {
+                    "smiles": "NC(=O)C(Cl)(Cl)c1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7Cl2NO",
+                        "mass": 202.990469204
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[P]([P])(=O)O[P]([P])(=O)O[P]([P])(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO6P6",
+                        "mass": 282.819882532
+                    }
+                },
+                {
+                    "smiles": "[Na+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Na+",
+                        "mass": 22.98922070009
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N#CC(Cl)(Cl)c1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H5Cl2N",
+                        "mass": 184.97990452
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely proceeds without an additional solvent, as the sodium trimetaphosphate reagent can act as a molten salt solvent at elevated temperatures.",
+                "time": "The reaction time depends on the scale, but likely ranges from 30 minutes to a few hours to reach completion."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Dehydration of an amide using sodium trimetaphosphate to form a nitrile, as described by Kondo et al. (Synthesis, 1988, 403-404)."
+                }
+            ]
+        },
+        {
+            "step": "14",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)C(Cl)(Cl)c1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H6Cl2O2",
+                        "mass": 203.974484792
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "N",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H3N",
+                        "mass": 17.026549096
+                    }
+                },
+                {
+                    "smiles": "C(=O)(Cl)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CCl2O",
+                        "mass": 97.93261998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "NC(=O)C(Cl)(Cl)c1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7Cl2NO",
+                        "mass": 202.990469204
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Dichloromethane (CH2Cl2) or other aprotic solvent",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.97,
+                    "closestliterature": "Benzoic acid, 2,2-dichloro-, reaction with phosgene to form 2,2-dichlorobenzoyl isocyanate"
+                }
+            ]
+        },
+        {
+            "step": "15",
+            "reactants": [
+                {
+                    "smiles": "CCOC(=O)C(Cl)(Cl)c1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H10Cl2O2",
+                        "mass": 232.00578492
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(O)C(Cl)(Cl)c1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H6Cl2O2",
+                        "mass": 203.974484792
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Water",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.96,
+                    "closestliterature": "Hydrolysis of an ester (CCOC(=O)C(Cl)(Cl)c1ccccc1) to a carboxylic acid (O=C(O)C(Cl)(Cl)c1ccccc1) under aqueous basic conditions"
+                }
+            ]
+        },
+        {
+            "step": "16",
+            "reactants": [
+                {
+                    "smiles": "O=[Sb]O[Sb]=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "O3Sb2",
+                        "mass": 289.79237526
+                    }
+                },
+                {
+                    "smiles": "O=[Sb]([O-])O[Sb](=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO5Sb2-",
+                        "mass": 322.79057811191
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "F",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HF",
+                        "mass": 20.006228252
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "F[Sb](F)F",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "F3Sb",
+                        "mass": 177.89902536
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "High temperature",
+                "pressure": "The reaction likely occurs at atmospheric pressure",
+                "solvent": "No solvent needed as the reactants are likely heated neat",
+                "time": "Insufficient information to determine reaction time"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.6,
+                    "closestliterature": "No literature reaction found"
+                }
+            ]
+        },
+        {
+            "step": "17",
+            "reactants": [
+                {
+                    "smiles": "O=[Sb]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "OSb",
+                        "mass": 136.89873032
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=[Sb]O[Sb]=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "O3Sb2",
+                        "mass": 289.79237526
+                    }
+                }
+            ],
+            "conditions": "",
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "None"
+                }
+            ]
+        },
+        {
+            "step": "18",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "O=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O2",
+                        "mass": 31.98982924
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=[Sb]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "OSb",
+                        "mass": 136.89873032
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Not applicable",
+                "pressure": "Not applicable",
+                "solvent": "Not applicable",
+                "time": "Not applicable",
+                "explanation": "The reaction to form antimony oxide from antimony and oxygen is too simple to meaningfully specify reaction conditions. It would occur spontaneously upon mixing the reactants."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "None"
+                }
+            ]
+        },
+        {
+            "step": "19",
+            "reactants": [
+                {
+                    "smiles": "[Sb]Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "ClSb",
+                        "mass": 155.87266838
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=[Sb]([O-])O[Sb](=O)O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO5Sb2-",
+                        "mass": 322.79057811191
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Elevated temperature (e.g. 200-400\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required for this gas-phase reaction",
+                "time": "Reaction likely occurs rapidly upon mixing reactants at elevated temperature"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "2 SbCl3 + 3 O2 \u2192 Sb2O3 + 3 Cl2 (at 200-400\u00b0C)"
+                }
+            ]
+        },
+        {
+            "step": "20",
+            "reactants": [
+                {
+                    "smiles": "ClCl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2",
+                        "mass": 69.93770536
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "[Sb]Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "ClSb",
+                        "mass": 155.87266838
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "High temperature (>300\u00b0C)",
+                "pressure": "Not applicable. This reaction does not require any special pressure conditions.",
+                "solvent": "Not applicable. This is a gas-phase reaction and does not require a solvent.",
+                "time": "Short reaction time (<1 hour)"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "2 Sb + 3 Cl2 \u2192 2 SbCl3 (Synthesis of antimony trichloride from the elements)"
+                }
+            ]
+        },
+        {
+            "step": "21",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "O=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O2",
+                        "mass": 31.98982924
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClCl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2",
+                        "mass": 69.93770536
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Not applicable. This is a gas phase reaction.",
+                "time": "Rapid reaction, no specific time needed."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Cl2 + O2 -> 2 Cl2O (chlorine monoxide)"
+                }
+            ]
+        },
+        {
+            "step": "22",
+            "reactants": [
+                {
+                    "smiles": "[Br]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Br",
+                        "mass": 78.9183371
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Br[K]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "BrK",
+                        "mass": 117.88204378
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Not applicable. This is a simple inorganic reaction that does not require specific temperature control.",
+                "pressure": "Not applicable. This reaction does not require any specific pressure conditions.",
+                "solvent": "Not applicable. This reaction can be carried out in the absence of a solvent, as it involves the direct combination of two elements.",
+                "time": "Not applicable. The reaction between bromine and potassium is expected to occur rapidly upon contact, without the need for a specific reaction time."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Not applicable. The reaction between elemental bromine and potassium is a simple combination reaction that does not require a literature precedent."
+                }
+            ]
+        },
+        {
+            "step": "23",
+            "reactants": [
+                {
+                    "smiles": "[K+].[Br-]",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "BrK",
+                        "mass": 117.88204378
+                    }
+                },
+                {
+                    "smiles": "ClCl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2",
+                        "mass": 69.93770536
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "[Br]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "Br",
+                        "mass": 78.9183371
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "No solvent required, as the reaction occurs in the gas phase",
+                "time": "The reaction is rapid and occurs almost instantaneously upon mixing the reactants"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "Br2 + 2 KCl -> 2 KBr + Cl2"
+                }
+            ]
+        },
+        {
+            "step": "24",
+            "reactants": [
+                {
+                    "smiles": "BrBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "Br2",
+                        "mass": 157.8366742
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[K]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "K",
+                        "mass": 38.96370668
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "[K+].[Br-]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "BrK",
+                        "mass": 117.88204378
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "No solvent required, as the reaction occurs between elemental potassium and bromine",
+                "time": "The reaction between potassium and bromine is rapid and occurs almost instantaneously upon contact"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "2 K (s) + Br2 (l) \u2192 2 KBr (s)"
+                }
+            ]
+        },
+        {
+            "step": "25",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "C=C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4",
+                        "mass": 28.031300127999998
+                    }
+                },
+                {
+                    "smiles": "Br",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HBr",
+                        "mass": 79.926162132
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "BrBr",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "Br2",
+                        "mass": 157.8366742
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "CCl4, CHCl3, or CH2Cl2",
+                "time": "30 min - 2 h"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "Alkene + Br2 \u2192 Dibromoalkane"
+                }
+            ]
+        },
+        {
+            "step": "26",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "O=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O2",
+                        "mass": 31.98982924
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClCl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2",
+                        "mass": 69.93770536
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Not applicable. This is a gas phase reaction.",
+                "time": "Rapid reaction, no specific time needed."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Cl2 + O2 -> 2 Cl2O (chlorine monoxide)"
+                }
+            ]
+        }
+    ]
+}
