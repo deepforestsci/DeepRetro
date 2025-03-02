@@ -6,7 +6,6 @@ from rdkit import Chem
 
 import rootutils
 import os
-import hashlib
 import json
 import traceback
 
@@ -25,42 +24,44 @@ CORS(app)
 # Predefined API key for authentication
 API_KEY = "your-secure-api-key"
 
+# File path for storing results
+PARTIAL_JSON_PATH = "partial.json"
+
 
 # Functions for JSON file storage
 def save_result(smiles, result):
-    """Save retrosynthesis result to a JSON file."""
-    # Create results directory if it doesn't exist
-    os.makedirs("results", exist_ok=True)
+    """Save retrosynthesis result to partial.json file."""
+    # Create a data structure with the SMILES and result
+    data = {"smiles": smiles, "result": result}
 
-    # Create a safe filename using a hash of the SMILES
-    filename = f"results/{hashlib.md5(smiles.encode()).hexdigest()}.json"
+    # Save the result to the file (overwriting any existing data)
+    with open(PARTIAL_JSON_PATH, 'w') as f:
+        json.dump(data, f, indent=2)
 
-    # Save the result to the file
-    with open(filename, 'w') as f:
-        json.dump(result, f)
-
-    print(f"Result saved to {filename}")
-    return filename
+    print(f"Result for {smiles} saved to {PARTIAL_JSON_PATH}")
+    return PARTIAL_JSON_PATH
 
 
-def load_result(smiles):
-    """Load retrosynthesis result from a JSON file."""
-    filename = f"results/{hashlib.md5(smiles.encode()).hexdigest()}.json"
-
+def load_result():
+    """Load the most recent retrosynthesis result from partial.json."""
     # Check if the file exists
-    if not os.path.exists(filename):
-        print(f"No result file found for {smiles}")
-        return None
+    if not os.path.exists(PARTIAL_JSON_PATH):
+        print(f"No result file found at {PARTIAL_JSON_PATH}")
+        return None, None
 
     # Load the result from the file
     try:
-        with open(filename, 'r') as f:
-            result = json.load(f)
-        print(f"Result loaded from {filename}")
-        return result
+        with open(PARTIAL_JSON_PATH, 'r') as f:
+            data = json.load(f)
+
+        smiles = data.get("smiles")
+        result = data.get("result")
+
+        print(f"Result for {smiles} loaded from {PARTIAL_JSON_PATH}")
+        return smiles, result
     except Exception as e:
         print(f"Error loading result file: {e}")
-        return None
+        return None, None
 
 
 # Authentication decorator
@@ -87,7 +88,6 @@ def retrosynthesis_api():
     """
     Endpoint to perform retrosynthesis on a SMILES string.
     """
-
     data = request.get_json()
     if not data or 'smiles' not in data:
         return jsonify({
@@ -103,29 +103,35 @@ def retrosynthesis_api():
 
     # -----------------
     # Advanced model - DeepSeek-R1
-    deepseek_r1 = False
+    model_type = "claude3"  # Default is Claude 3 Opus
     try:
-        advanced_model: str = data['advanced_model']
-        if advanced_model.lower() == "true":
-            deepseek_r1 = True
+        if 'model_type' in data:
+            model_type = data['model_type'].lower()
+            assert model_type in ["claude3", "claude37", "deepseek"]
+            print(f"USING MODEL TYPE: {model_type}")
     except Exception as e:
-        print(e)
-        advanced_model = False
+        print(f"Error processing model type: {e}")
+        model_type = "claude3"
+        print(f"FALLING BACK TO DEFAULT MODEL TYPE: {model_type}")
 
-    if deepseek_r1:
+    # Select the appropriate LLM based on model_type
+    if model_type == "deepseek":
         llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
-    else:
+    elif model_type == "claude37":
+        llm = "anthropic/claude-3-7-sonnet-20250219"
+    else:  # Default to Claude 3 Opus
         llm = "claude-3-opus-20240229"
 
     # -----------------
     # Advanced Prompt - To use the more guardrails prompt
     advanced_prompt = False
     try:
-        advanced_prompt: str = data['advanced_prompt']
-        if advanced_prompt.lower() == "true":
-            advanced_prompt = True
+        if 'advanced_prompt' in data:
+            advanced_prompt = data['advanced_prompt']
+            if advanced_prompt.lower() == "true":
+                advanced_prompt = True
     except Exception as e:
-        print(e)
+        print(f"Error processing advanced prompt: {e}")
         advanced_prompt = False
 
     if advanced_prompt:
@@ -135,44 +141,47 @@ def retrosynthesis_api():
     # Choose AiZynthFinder model
     az_model = "USPTO"
     try:
-        az_model: str = data['model_version']
-        assert az_model in AZ_MODEL_LIST
+        if 'model_version' in data:
+            az_model = data['model_version']
+            assert az_model in AZ_MODEL_LIST
     except Exception as e:
-        print(e)
+        print(f"Error processing model version: {e}")
         az_model = "USPTO"
 
     # -----------------
     # Stability check flag
     stability_flag = "False"
     try:
-        stability_flag: str = data['stability_flag']
-        assert stability_flag.lower() in ["false", "true"]
+        if 'stability_flag' in data:
+            stability_flag = data['stability_flag']
+            assert stability_flag.lower() in ["false", "true"]
     except Exception as e:
-        print(e)
+        print(f"Error processing stability flag: {e}")
         stability_flag = "False"
 
     # -----------------
     # Hallucination check flag
     hallucination_check = "False"
     try:
-        hallucination_check: str = data['hallucination_check']
-        assert hallucination_check.lower() in ["false", "true"]
+        if 'hallucination_check' in data:
+            hallucination_check = data['hallucination_check']
+            assert hallucination_check.lower() in ["false", "true"]
     except Exception as e:
-        print(e)
+        print(f"Error processing hallucination check: {e}")
         hallucination_check = "False"
 
     # -----------------
     # Run retrosynthesis
     try:
+        # Run retrosynthesis
         result = main(smiles=smiles,
                       llm=llm,
                       az_model=az_model,
                       stability_flag=stability_flag,
                       hallucination_check=hallucination_check)
 
-        # Store the result in a JSON file
+        # Store the result in partial.json
         save_result(smiles, result)
-
     except Exception as e:
         print(e)
         return jsonify(
@@ -221,37 +230,44 @@ def rerun_retrosynthesis():
 
     molecule = data['smiles']
 
-    if not Chem.MolFromSmiles(molecule):
-        return jsonify({"error": "Invalid SMILES string"}), 400
-
     # Clear the cache for the molecule
     clear_cache_for_molecule(molecule)
 
+    # Check if the SMILES string is valid
+    if not Chem.MolFromSmiles(molecule):
+        return jsonify({"error": "Invalid SMILES string"}), 400
+
     # -----------------
     # Advanced model - DeepSeek-R1
-    deepseek_r1 = False
+    model_type = "claude3"  # Default is Claude 3 Opus
     try:
-        advanced_model: str = data['advanced_model']
-        if advanced_model.lower() == "true":
-            deepseek_r1 = True
+        if 'model_type' in data:
+            model_type = data['model_type'].lower()
+            assert model_type in ["claude3", "claude37", "deepseek"]
+            print(f"USING MODEL TYPE: {model_type}")
     except Exception as e:
-        print(e)
-        advanced_model = False
+        print(f"Error processing model type: {e}")
+        model_type = "claude3"
+        print(f"FALLING BACK TO DEFAULT MODEL TYPE: {model_type}")
 
-    if deepseek_r1:
+    # Select the appropriate LLM based on model_type
+    if model_type == "deepseek":
         llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
-    else:
+    elif model_type == "claude37":
+        llm = "anthropic/claude-3-7-sonnet-20250219"
+    else:  # Default to Claude 3 Opus
         llm = "claude-3-opus-20240229"
 
     # -----------------
-    # Advanced Prompt - To use the more guardrails prompt
+    # Advanced prompt handling
     advanced_prompt = False
     try:
-        advanced_prompt: str = data['advanced_prompt']
-        if advanced_prompt.lower() == "true":
-            advanced_prompt = True
+        if 'advanced_prompt' in data:
+            advanced_prompt = data['advanced_prompt']
+            if advanced_prompt.lower() == "true":
+                advanced_prompt = True
     except Exception as e:
-        print(e)
+        print(f"Error processing advanced prompt: {e}")
         advanced_prompt = False
 
     if advanced_prompt:
@@ -261,32 +277,36 @@ def rerun_retrosynthesis():
     # Choose AiZynthFinder model
     az_model = "USPTO"
     try:
-        az_model: str = data['model_version']
-        assert az_model in AZ_MODEL_LIST
+        if 'model_version' in data:
+            az_model = data['model_version']
+            assert az_model in AZ_MODEL_LIST
     except Exception as e:
-        print(e)
+        print(f"Error processing model version: {e}")
         az_model = "USPTO"
 
     # -----------------
     # Stability check flag
     stability_flag = "False"
     try:
-        stability_flag: str = data['stability_flag']
-        assert stability_flag.lower() in ["false", "true"]
+        if 'stability_flag' in data:
+            stability_flag = data['stability_flag']
+            assert stability_flag.lower() in ["false", "true"]
     except Exception as e:
-        print(e)
+        print(f"Error processing stability flag: {e}")
         stability_flag = "False"
 
     # -----------------
     # Hallucination check flag
     hallucination_check = "False"
     try:
-        hallucination_check: str = data['hallucination_check']
-        assert hallucination_check.lower() in ["false", "true"]
+        if 'hallucination_check' in data:
+            hallucination_check = data['hallucination_check']
+            assert hallucination_check.lower() in ["false", "true"]
     except Exception as e:
-        print(e)
+        print(f"Error processing hallucination check: {e}")
         hallucination_check = "False"
 
+    # -----------------
     # Rerun retrosynthesis
     try:
         result = main(smiles=molecule,
@@ -294,11 +314,15 @@ def rerun_retrosynthesis():
                       az_model=az_model,
                       stability_flag=stability_flag,
                       hallucination_check=hallucination_check)
-        save_result(molecule, result)
 
+        # Store the result in partial.json
+        save_result(molecule, result)
     except Exception as e:
         print(e)
-        return jsonify({"error": "Error in retrosynthesis, Please rerun"}), 500
+        return jsonify(
+            {"error":
+             f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500
+
     return jsonify(result), 200
 
 
@@ -307,119 +331,176 @@ def rerun_retrosynthesis():
 def partial_rerun():
     """
     Endpoint to partially rerun retrosynthesis from a specific step.
-    Uses the stored results from the most recent retrosynthesis run.
+    Uses the stored results from the most recent retrosynthesis run in partial.json.
     
     When rerunning a step, we remove that step and everything to its right in the synthesis pathway.
     """
-
-    print("\n=== Starting Partial Rerun Process ===")
+    print(
+        "\n===================== STARTING PARTIAL RERUN PROCESS ====================="
+    )
 
     data = request.get_json()
-    print(f"Received request data: {json.dumps(data, indent=2)}")
+    print(f"RECEIVED REQUEST DATA: {json.dumps(data, indent=2)}")
 
     try:
         smiles = data['smiles']
+        print(f"TARGET MOLECULE: {smiles}")
         from_step = int(data['steps'])
+        print(f"TARGET STEP FOR RERUN: {from_step}")
 
-        # Load previous results from JSON file
-        original_result = load_result(smiles)
+        # Load previous results from partial.json
+        stored_smiles, original_result = load_result()
+        print(f"LOADED FROM STORAGE - SMILES: {stored_smiles}")
+
         if not original_result:
+            print("ERROR: No results found in storage")
             return jsonify({
                 "error":
-                "No previous results found for this molecule. Run retrosynthesis first."
+                "No previous results found. Run retrosynthesis first."
             }), 400
 
-        print(f"Found stored result for SMILES: {smiles}")
+        if stored_smiles != smiles:
+            print(
+                f"ERROR: Stored SMILES ({stored_smiles}) doesn't match requested SMILES ({smiles})"
+            )
+            return jsonify({
+                "error":
+                "No results found for this molecule. Run retrosynthesis first."
+            }), 400
+
+        print(f"FOUND STORED RESULT FOR SMILES: {smiles}")
+
+        # Print the original steps for debugging
+        print(f"ORIGINAL STEPS:")
+        for step in original_result.get('steps', []):
+            print(f"  Step {step.get('step', 'unknown')}: {json.dumps(step)}")
 
         # Print the original dependency structure for debugging
         print(
-            f"Original dependencies structure: {json.dumps(original_result.get('dependencies', {}), indent=2)}"
-        )
-        print(
-            f"Original steps: {json.dumps([s['step'] for s in original_result.get('steps', [])])}"
+            f"ORIGINAL DEPENDENCIES: {json.dumps(original_result.get('dependencies', {}), indent=2)}"
         )
 
-        # Get the starting molecule from the specified step
-        target_step = next((step for step in original_result['steps']
-                            if int(step['step']) == from_step), None)
-        print(
-            f"Original steps: {json.dumps([s['step'] for s in original_result['steps']], indent=2)}"
-        )
-
-        # Get the starting molecule from the specified step
+        # Get the step we're rerunning from the original result
         target_step = next((step for step in original_result['steps']
                             if int(step['step']) == from_step), None)
 
         if not target_step:
+            print(f"ERROR: Step {from_step} not found in synthesis pathway")
             return jsonify({
                 "error":
                 f"Step {from_step} not found in the synthesis pathway"
             }), 404
 
-        start_molecule = target_step['reactants'][0]['smiles']
-        print(f"\nStarting new synthesis from molecule: {start_molecule}")
+        # Print the target step for debugging
+        print(f"TARGET STEP DETAILS: {json.dumps(target_step, indent=2)}")
+
+        # Get the target molecule from the step's product
+        # This is what we want to resynthesize with a new approach
+        if not target_step.get('products') or not isinstance(
+                target_step['products'], list) or len(
+                    target_step['products']) == 0:
+            print(f"ERROR: Step {from_step} doesn't have valid products")
+            return jsonify(
+                {"error":
+                 f"Step {from_step} doesn't have valid products"}), 400
+
+        # Log all products in the target step
+        print(f"PRODUCTS IN TARGET STEP:")
+        for i, product in enumerate(target_step['products']):
+            print(f"  Product {i}: {json.dumps(product)}")
+
+        # Get the first product's SMILES (this is what we'll resynthesize)
+        start_molecule = target_step['products'][0]['smiles']
+        print(f"\nSTARTING NEW SYNTHESIS FROM MOLECULE: {start_molecule}")
 
         # -----------------
         # Advanced model - DeepSeek-R1
-        deepseek_r1 = False
+        model_type = "claude3"  # Default is Claude 3 Opus
         try:
-            advanced_model: str = data['advanced_model']
-            if advanced_model.lower() == "true":
-                deepseek_r1 = True
+            if 'model_type' in data:
+                model_type = data['model_type'].lower()
+                assert model_type in ["claude3", "claude37", "deepseek"]
+                print(f"USING MODEL TYPE: {model_type}")
         except Exception as e:
-            print(e)
-            advanced_model = False
+            print(f"Error processing model type: {e}")
+            model_type = "claude3"
+            print(f"FALLING BACK TO DEFAULT MODEL TYPE: {model_type}")
 
-        if deepseek_r1:
+        # Select the appropriate LLM based on model_type
+        if model_type == "deepseek":
             llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
-        else:
+        elif model_type == "claude37":
+            llm = "anthropic/claude-3-7-sonnet-20250219"
+        else:  # Default to Claude 3 Opus
             llm = "claude-3-opus-20240229"
+        print(f"SELECTED LLM: {llm}")
 
         # -----------------
         # Advanced prompt handling
         advanced_prompt = False
         try:
-            advanced_prompt: str = data['advanced_prompt']
-            if advanced_prompt.lower() == "true":
-                advanced_prompt = True
+            if 'advanced_prompt' in data:
+                advanced_prompt = data['advanced_prompt']
+                if advanced_prompt.lower() == "true":
+                    advanced_prompt = True
+                print(f"USING ADVANCED PROMPT: {advanced_prompt}")
         except Exception as e:
-            print(e)
+            print(f"ERROR PROCESSING ADVANCED PROMPT: {e}")
             advanced_prompt = False
 
         if advanced_prompt:
             llm = llm + ":adv"
+            print(f"UPDATED LLM WITH ADVANCED PROMPT: {llm}")
 
         # -----------------
         # Choose AiZynthFinder model
         az_model = "USPTO"
         try:
-            az_model: str = data['model_version']
-            assert az_model in AZ_MODEL_LIST
+            if 'model_version' in data:
+                az_model = data['model_version']
+                assert az_model in AZ_MODEL_LIST
+                print(f"USING MODEL VERSION: {az_model}")
         except Exception as e:
-            print(e)
+            print(f"ERROR PROCESSING MODEL VERSION: {e}")
             az_model = "USPTO"
+            print(f"FALLING BACK TO DEFAULT MODEL: {az_model}")
 
         # -----------------
         # Stability check flag
         stability_flag = "False"
         try:
-            stability_flag: str = data['stability_flag']
-            assert stability_flag.lower() in ["false", "true"]
+            if 'stability_flag' in data:
+                stability_flag = data['stability_flag']
+                assert stability_flag.lower() in ["false", "true"]
+                print(f"USING STABILITY FLAG: {stability_flag}")
         except Exception as e:
-            print(e)
+            print(f"ERROR PROCESSING STABILITY FLAG: {e}")
             stability_flag = "False"
+            print(f"FALLING BACK TO DEFAULT STABILITY FLAG: {stability_flag}")
 
         # -----------------
         # Hallucination check flag
         hallucination_check = "False"
         try:
-            hallucination_check: str = data['hallucination_check']
-            assert hallucination_check.lower() in ["false", "true"]
+            if 'hallucination_check' in data:
+                hallucination_check = data['hallucination_check']
+                assert hallucination_check.lower() in ["false", "true"]
+                print(f"USING HALLUCINATION CHECK: {hallucination_check}")
         except Exception as e:
-            print(e)
+            print(f"ERROR PROCESSING HALLUCINATION CHECK: {e}")
             hallucination_check = "False"
+            print(
+                f"FALLING BACK TO DEFAULT HALLUCINATION CHECK: {hallucination_check}"
+            )
 
         # Run new synthesis on the starting molecule
+        print(f"\nCALLING MAIN FUNCTION WITH PARAMETERS:")
+        print(f"  SMILES: {start_molecule}")
+        print(f"  LLM: {llm}")
+        print(f"  AZ MODEL: {az_model}")
+        print(f"  STABILITY FLAG: {stability_flag}")
+        print(f"  HALLUCINATION CHECK: {hallucination_check}")
+
         try:
             new_result = main(smiles=start_molecule,
                               llm=llm,
@@ -427,12 +508,28 @@ def partial_rerun():
                               stability_flag=stability_flag,
                               hallucination_check=hallucination_check)
             print(
-                f"New retrosynthesis result: {json.dumps(new_result, indent=2)}"
+                f"NEW RETROSYNTHESIS RESULT: {json.dumps(new_result, indent=2)}"
             )
+
+            # Note if the retrosynthesis result is empty, but treat it as a valid result
+            if not new_result.get('steps'):
+                print(
+                    f"NOTE: Empty synthesis result for {start_molecule}. This molecule doesn't require further decomposition or is a building block."
+                )
+
+                # Initialize with empty steps and dependencies if not present
+                if 'steps' not in new_result:
+                    new_result['steps'] = []
+                    print("INITIALIZED empty steps list")
+                if 'dependencies' not in new_result:
+                    new_result['dependencies'] = {}
+                    print("INITIALIZED empty dependencies dict")
+
         except Exception as e:
             print(
-                f"Error running retrosynthesis on molecule {start_molecule}: {str(e)}"
-            )
+                f"ERROR RUNNING RETROSYNTHESIS ON MOLECULE {start_molecule}:")
+            print(f"  EXCEPTION: {str(e)}")
+            print(f"  TRACEBACK: {traceback.format_exc()}")
             return jsonify({
                 "error":
                 f"Error running retrosynthesis on {start_molecule}: {str(e)}"
@@ -443,18 +540,26 @@ def partial_rerun():
         steps_to_remove = {str(from_step)}
         steps_to_check = [str(from_step)]
 
+        print(f"\nIDENTIFYING STEPS TO REMOVE:")
+        print(f"  STARTING WITH STEP: {from_step}")
+
         # Identify all steps that the target step depends on (to the right in the pathway)
         # This is the set of steps that will be replaced by the new synthesis
         while steps_to_check:
             current_step = steps_to_check.pop(0)
+            print(f"  CHECKING DEPENDENCIES FOR STEP: {current_step}")
             if current_step in original_result.get('dependencies', {}):
+                print(
+                    f"    FOUND DEPENDENCIES: {original_result['dependencies'][current_step]}"
+                )
                 for dep_step in original_result['dependencies'][current_step]:
                     if dep_step not in steps_to_remove:
                         steps_to_remove.add(dep_step)
                         steps_to_check.append(dep_step)
+                        print(f"    ADDED STEP {dep_step} TO REMOVAL LIST")
 
         print(
-            f"Steps to remove (target and everything to its right): {steps_to_remove}"
+            f"STEPS TO REMOVE (TARGET AND EVERYTHING TO ITS RIGHT): {steps_to_remove}"
         )
 
         # We need to identify what step the target step is connected to on its left
@@ -463,10 +568,13 @@ def partial_rerun():
         for step, deps in original_result.get('dependencies', {}).items():
             if str(from_step) in deps and step not in steps_to_remove:
                 left_connection = step
+                print(
+                    f"FOUND LEFT CONNECTION: STEP {step} DEPENDS ON STEP {from_step}"
+                )
                 break
 
         print(
-            f"Left connection (step that the target connects to on the left): {left_connection}"
+            f"LEFT CONNECTION (STEP THAT THE TARGET CONNECTS TO ON THE LEFT): {left_connection}"
         )
 
         # Keep steps that are not in the steps_to_remove set
@@ -484,81 +592,115 @@ def partial_rerun():
                     d for d in deps if d not in steps_to_remove
                 ]
 
-        print(f"Kept steps: {[s['step'] for s in kept_steps]}")
-        print(f"Kept dependencies: {kept_deps}")
+        print(f"KEPT STEPS: {[s['step'] for s in kept_steps]}")
+        print(f"KEPT DEPENDENCIES: {kept_deps}")
 
         # Find max step number from kept steps
         max_step = 0
         if kept_steps:
             max_step = max(int(step['step']) for step in kept_steps)
+            print(f"MAX STEP NUMBER FROM KEPT STEPS: {max_step}")
         else:
             # If no steps were kept, there might be a problem
             print("WARNING: No steps from original pathway were kept!")
-
-        print(f"Max step number from kept steps: {max_step}")
 
         # Adjust new steps (renumber them starting from max_step + 1)
         new_steps = []
         step_mapping = {}
 
+        print(f"\nRENUMBERING NEW STEPS STARTING FROM {max_step + 1}:")
         for idx, step in enumerate(new_result.get('steps', [])):
-
             new_step_num = max_step + 1 + idx
-            step_mapping[step['step']] = str(new_step_num)
+            old_step_num = step['step']
+            step_mapping[old_step_num] = str(new_step_num)
+            print(f"  MAPPING STEP {old_step_num} -> {new_step_num}")
 
             adjusted_step = step.copy()
             adjusted_step['step'] = str(new_step_num)
             new_steps.append(adjusted_step)
 
-        print(f"New steps after renumbering: {[s['step'] for s in new_steps]}")
+        print(f"NEW STEPS AFTER RENUMBERING: {[s['step'] for s in new_steps]}")
 
         # Adjust dependencies for new steps
         new_deps = {}
+        print(f"\nADJUSTING DEPENDENCIES FOR NEW STEPS:")
         for old_num, deps in new_result.get('dependencies', {}).items():
             new_num = step_mapping[old_num]
-            # Map old step numbers to new step numbers in dependencies
-            new_deps[new_num] = [step_mapping[d] for d in deps]
+            print(f"  STEP {old_num} -> {new_num} DEPENDS ON:")
 
-        print(f"New dependencies after renumbering: {new_deps}")
+            # Map old step numbers to new step numbers in dependencies
+            mapped_deps = []
+            for d in deps:
+                mapped_d = step_mapping[d]
+                mapped_deps.append(mapped_d)
+                print(f"    OLD DEP {d} -> NEW DEP {mapped_d}")
+
+            new_deps[new_num] = mapped_deps
+
+        print(f"NEW DEPENDENCIES AFTER RENUMBERING: {new_deps}")
 
         # Connect the new branch to the left connection if it exists
         if left_connection and new_steps:
             first_new_step = new_steps[0]['step']
+            print(
+                f"\nCONNECTING LEFT STEP {left_connection} TO NEW STEP {first_new_step}"
+            )
+
             if left_connection in kept_deps:
                 kept_deps[left_connection].append(first_new_step)
+                print(
+                    f"  ADDED {first_new_step} TO EXISTING DEPENDENCIES OF {left_connection}: {kept_deps[left_connection]}"
+                )
             else:
                 kept_deps[left_connection] = [first_new_step]
-            print(
-                f"Connected left step {left_connection} to new step {first_new_step}"
-            )
+                print(
+                    f"  CREATED NEW DEPENDENCIES FOR {left_connection}: {kept_deps[left_connection]}"
+                )
 
         # Merge results - this should include ALL kept steps AND new steps
         merged_steps = kept_steps + new_steps
         merged_deps = {**kept_deps, **new_deps}
 
         # Verify the merging was successful
-        print(f"Merged steps: {[s['step'] for s in merged_steps]}")
-        print(f"Merged dependencies: {merged_deps}")
+        print(f"\nFINAL MERGED STEPS: {[s['step'] for s in merged_steps]}")
+        print(f"FINAL MERGED DEPENDENCIES: {merged_deps}")
 
-        # Create the final merged result
-        merged_result = {'steps': merged_steps, 'dependencies': merged_deps}
-
-        # Final debug check
-        if not merged_steps:
-            print("ERROR: No steps in final merged result!")
-
+        # Final debug check - NOTE: Empty results are now considered valid when a molecule
+        # is identified as a building block or starting material
+        if not merged_steps and not new_result.get('steps'):
+            print(
+                "NOTE: Final result has no steps. The molecule was identified as a building block or starting material."
+            )
+            # Create a minimal result that acknowledges this molecule as a building block
+            merged_result = {
+                'steps': [],
+                'dependencies': {},
+                'message':
+                f"The molecule {start_molecule} was identified as a building block or starting material and doesn't require further synthesis."
+            }
+        elif not merged_steps:
+            print("ERROR: NO STEPS IN FINAL MERGED RESULT!")
             return jsonify({"error": "No steps in final merged result"}), 500
+        else:
+            # Create the normal merged result
+            merged_result = {
+                'steps': merged_steps,
+                'dependencies': merged_deps
+            }
 
-        # Store the merged result in a JSON file
+        # Store the merged result in partial.json
         save_result(smiles, merged_result)
+        print(f"SAVED MERGED RESULT TO {PARTIAL_JSON_PATH}")
 
-        print("\n=== Partial Rerun Complete ===")
+        print(
+            "\n===================== PARTIAL RERUN COMPLETE ====================="
+        )
         return jsonify(merged_result), 200
 
     except Exception as e:
-        print(f"\nERROR in partial rerun:")
-        print(f"Exception: {str(e)}")
-        print(f"Traceback: {traceback.format_exc()}")
+        print(f"\nFATAL ERROR IN PARTIAL RERUN:")
+        print(f"  EXCEPTION: {str(e)}")
+        print(f"  TRACEBACK: {traceback.format_exc()}")
         return jsonify({"error":
                         f"Error in partial retrosynthesis: {str(e)}"}), 500
 

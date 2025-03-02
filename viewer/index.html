@@ -558,10 +558,17 @@
             // Generate settings for each server in the config
             config.instances.forEach((instance, index) => {
                 const serverNum = index + 1;
+                const defaults = instance.defaults || {
+                    model_type: 'claude3',
+                    advanced_prompt: false,
+                    model_version: 'USPTO',
+                    stability_flag: false,
+                    hallucination_check: false
+                };
                 
                 // Create a div for this server's settings
                 const serverDiv = document.createElement('div');
-                serverDiv.className = 'server-settings';
+                        serverDiv.className = 'server-settings';
                 
                 // Create the server header
                 const serverHeader = document.createElement('h4');
@@ -574,28 +581,27 @@
                 modelRow.innerHTML = `
                     <label for="modelVersion${serverNum}" class="toggle-label" style="margin-right: 10px;">Model Version:</label>
                     <select id="modelVersion${serverNum}" class="model-select" data-server="${serverNum}">
-                        <option value="USPTO">USPTO</option>
-                        <option value="Pistachio_25">Pistachio (25)</option>
-                        <option value="Pistachio_50">Pistachio (50)</option>
-                        <option value="Pistachio_100">Pistachio (100)</option>
-                        <option value="Pistachio_100+" selected>Pistachio (100+)</option>
+                        <option value="USPTO" ${defaults.model_version === 'USPTO' ? 'selected' : ''}>USPTO</option>
+                        <option value="Pistachio_25" ${defaults.model_version === 'Pistachio_25' ? 'selected' : ''}>Pistachio (25)</option>
+                        <option value="Pistachio_50" ${defaults.model_version === 'Pistachio_50' ? 'selected' : ''}>Pistachio (50)</option>
+                        <option value="Pistachio_100" ${defaults.model_version === 'Pistachio_100' ? 'selected' : ''}>Pistachio (100)</option>
+                        <option value="Pistachio_100+" ${defaults.model_version === 'Pistachio_100+' ? 'selected' : ''}>Pistachio (100+)</option>
                     </select>
                 `;
                 serverDiv.appendChild(modelRow);
                 
-                // Create the advanced model toggle
-                const advancedModelRow = document.createElement('div');
-                advancedModelRow.className = 'toggle-row';
-                advancedModelRow.innerHTML = `
-                    <div class="toggle-switch">
-                        <label class="switch">
-                            <input type="checkbox" id="advancedToggle${serverNum}" data-server="${serverNum}">
-                            <span class="slider"></span>
-                        </label>
-                        <span class="toggle-label">Advanced Model</span>
-                    </div>
+                // Create the model type dropdown
+                const modelTypeRow = document.createElement('div');
+                modelTypeRow.className = 'toggle-row';
+                modelTypeRow.innerHTML = `
+                    <label for="modelType${serverNum}" class="toggle-label" style="margin-right: 10px;">LLM Model:</label>
+                    <select id="modelType${serverNum}" class="model-select" data-server="${serverNum}">
+                        <option value="claude3" ${defaults.model_type === 'claude3' ? 'selected' : ''}>Claude 3 Opus</option>
+                        <option value="claude37" ${defaults.model_type === 'claude37' ? 'selected' : ''}>Claude 3.7 Sonnet</option>
+                        <option value="deepseek" ${defaults.model_type === 'deepseek' ? 'selected' : ''}>DeepSeek</option>
+                    </select>
                 `;
-                serverDiv.appendChild(advancedModelRow);
+                serverDiv.appendChild(modelTypeRow);
                 
                 // Create the advanced prompt toggle
                 const promptRow = document.createElement('div');
@@ -603,7 +609,7 @@
                 promptRow.innerHTML = `
                     <div class="toggle-switch">
                         <label class="switch">
-                            <input type="checkbox" id="promptToggle${serverNum}" checked data-server="${serverNum}">
+                            <input type="checkbox" id="promptToggle${serverNum}" ${defaults.advanced_prompt ? 'checked' : ''} data-server="${serverNum}">
                             <span class="slider"></span>
                         </label>
                         <span class="toggle-label">Advanced Prompt</span>
@@ -611,13 +617,13 @@
                 `;
                 serverDiv.appendChild(promptRow);
                 
-                 // Create stability checker toggle  
-                 const stabilityRow = document.createElement('div');
+                // Create stability checker toggle  
+                const stabilityRow = document.createElement('div');
                 stabilityRow.className = 'toggle-row';
                 stabilityRow.innerHTML = `
                     <div class="toggle-switch">  
                         <label class="switch">
-                            <input type="checkbox" id="stabilityToggle${serverNum}" data-server="${serverNum}">
+                            <input type="checkbox" id="stabilityToggle${serverNum}" ${defaults.stability_flag ? 'checked' : ''} data-server="${serverNum}">
                             <span class="slider"></span>
                         </label>
                         <span class="toggle-label">Stability Checker</span>  
@@ -631,7 +637,7 @@
                 hallucinationRow.innerHTML = `
                     <div class="toggle-switch">
                         <label class="switch">
-                            <input type="checkbox" id="hallucinationToggle${serverNum}" data-server="${serverNum}">  
+                            <input type="checkbox" id="hallucinationToggle${serverNum}" ${defaults.hallucination_check ? 'checked' : ''} data-server="${serverNum}">  
                             <span class="slider"></span>
                         </label>
                         <span class="toggle-label">Hallucination Checker</span>
@@ -821,9 +827,9 @@
                 status.style.display = 'none';
 
                 // Create endpoints from config
-                const endpoints = config.instances.map(baseUrl => {
+                const endpoints = config.instances.map(instance => {
                     const endpointPath = isRerun ? config.endpoints.rerun : config.endpoints.retrosynthesis;
-                    return `${baseUrl}${endpointPath}`;
+                    return `${instance.url}${endpointPath}`;
                 });
 
                 // Create fetch promises for all instances with their specific settings
@@ -832,7 +838,7 @@
                     
                     // Get the server-specific settings
                     const modelSelect = document.getElementById(`modelVersion${serverNum}`);
-                    const advancedToggle = document.getElementById(`advancedToggle${serverNum}`);
+                    const modelTypeSelect = document.getElementById(`modelType${serverNum}`);
                     const promptToggle = document.getElementById(`promptToggle${serverNum}`);
                     const stabilityToggle = document.getElementById(`stabilityToggle${serverNum}`);
                     const hallucinationToggle = document.getElementById(`hallucinationToggle${serverNum}`);
@@ -840,7 +846,7 @@
                     
                     const requestBody = {
                         smiles,
-                        advanced_model: advancedToggle.checked.toString(),
+                        model_type: modelTypeSelect.value,
                         advanced_prompt: promptToggle.checked.toString(),
                         model_version: modelSelect.value,
                         stability_flag: stabilityToggle.checked.toString(),
@@ -939,7 +945,7 @@
                     select.appendChild(defaultOption);
                     
                     const stepsCount = Object.keys(results[`instance${index + 1}`].steps).length;
-                    for(let i = 2; i <= stepsCount; i++) {
+                    for(let i = 1; i <= stepsCount; i++) {
                         const option = document.createElement('option');
                         option.value = i;
                         option.textContent = `From Step ${i}`;
@@ -963,20 +969,20 @@
                         
                         // Get server-specific settings for the rerun
                         const modelSelect = document.getElementById(`modelVersion${pathwayNumber}`);
-                        const advancedToggle = document.getElementById(`advancedToggle${pathwayNumber}`);
+                        const modelTypeSelect = document.getElementById(`modelType${pathwayNumber}`);
                         const promptToggle = document.getElementById(`promptToggle${pathwayNumber}`);
                         const stabilityToggle = document.getElementById(`stabilityToggle${pathwayNumber}`);
                         const hallucinationToggle = document.getElementById(`hallucinationToggle${pathwayNumber}`);
 
                         
-                        const endpoint = `${config.instances[index]}${config.endpoints.partial_rerun}`;
+                        const endpoint = `${config.instances[index].url}${config.endpoints.partial_rerun}`;
                         console.log('Attempting partial rerun with:', {
                             endpoint,
                             requestBody: {
                                 smiles: smilesInput.value,
                                 steps: parseInt(select.value),
                                 pathway_id: pathwayNumber,
-                                advanced_model: advancedToggle.checked.toString(),
+                                model_type: modelTypeSelect.value,
                                 advanced_prompt: promptToggle.checked.toString(),
                                 model_version: modelSelect.value,
                                 stability_flag: stabilityToggle.checked.toString(),
