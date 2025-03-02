@@ -1,11 +1,45 @@
+import os
 import rdkit
 from rdkit import Chem
 from rdkit.Chem import rdmolops
 from collections import Counter
+from dotenv import load_dotenv
 import numpy as np
+import rootutils
+
+root_dir = rootutils.setup_root(__file__,
+                                indicator=".project-root",
+                                pythonpath=True)
+
+load_dotenv()
+from src.utils.job_context import logger as context_logger
+from src.utils.utils_molecule import is_valid_smiles
+
+ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
+                                    "true").lower() == "false" else True
 
 
-def compare_molecules(reactant_smiles, product_smiles):
+def log_message(message: str, logger=None):
+    """Log the message
+
+    Parameters
+    ----------
+    message : str
+        The message to be logged
+    logger : _type_, optional
+        The logger object, by default None
+
+    Returns
+    -------
+    None
+    """
+    if logger is not None:
+        logger.info(message)
+    else:
+        print(message)
+
+
+def hallucination_compare_molecules(reactant_smiles, product_smiles):
     """
     Compare reactant and product molecules to detect potential hallucinations or inconsistencies.
     
@@ -498,31 +532,286 @@ pos_map = {
     "para": "para"
 }
 
-# Test with the provided example
-if __name__ == "__main__":
-    test_reactant = "c1c(CCNC)cc(C(=O)O)cc1"
-    test_product = "c1cc(CCN(C)CC)c(C(=O)O)cc1"
 
-    # test_reactant = "C2CC1CCCC1C2"
-    # test_product = "C2CCC1CCCCC1C2"
+def calculate_hallucination_score(reactant_smiles: str, product_smiles: str):
+    """
+    Calculate a hallucination score for a chemical transformation from reactant to product.
+    
+    Parameters:
+    -----------
+    reactant_smiles : str
+        SMILES string of the reactant molecule
+    product_smiles : str
+        SMILES string of the product molecule
+        
+    Returns:
+    --------
+    dict
+        Dictionary containing the hallucination score (0-100) and detailed analysis
+    """
+    # Get the detailed comparison results first
+    comparison_results = hallucination_compare_molecules(
+        reactant_smiles, product_smiles)
 
-    print("Testing with provided example:")
-    print(f"Reactant: {test_reactant}")
-    print(f"Product: {test_product}")
+    # Initialize the score at 100 (no hallucinations)
+    base_score = 100
+    penalty_factors = []
+    penalty_descriptions = []
 
-    results = compare_molecules(test_reactant, test_product)
+    # Check if molecules are valid - severe penalty if not
+    if not comparison_results["valid_reactant"] or not comparison_results[
+            "valid_product"]:
+        return {
+            "score": 0,
+            "severity": "critical",
+            "message":
+            "Invalid SMILES string detected - cannot assess transformation",
+            "details": comparison_results
+        }
 
-    print("\nValidation Results:")
-    print("-------------------")
+    # Apply penalties based on detected issues
 
-    if results['substituent_position_changes']:
-        print("\nSubstituent Position Changes:")
-        for change in results['substituent_position_changes']:
-            print(
-                f"- {change['substituent']} moved from {', '.join(change['from_positions'])} "
-                f"to {', '.join(change['to_positions'])}")
+    # 1. Atom count consistency - Critical issue
+    if not comparison_results["atom_count_consistent"]:
+        atom_mismatch_penalties = []
 
-    if results['detected_issues']:
-        print("\nDetected Issues:")
-        for issue in results['detected_issues']:
-            print(f"- {issue}")
+        for issue in comparison_results["detected_issues"]:
+            if "Atom count mismatch" in issue:
+                # Extract the difference in atom counts
+                parts = issue.split(':')[1].strip()
+                reactant_count = int(parts.split(',')[0].split()[-1])
+                product_count = int(parts.split(',')[1].split()[-1])
+                difference = abs(reactant_count - product_count)
+
+                # Penalty: 5 points per atom mismatch
+                penalty = min(5 * difference, 100)
+                atom_mismatch_penalties.append(penalty)
+
+                penalty_descriptions.append(
+                    f"Atom count inconsistency: -{penalty} points")
+
+        # Take the maximum penalty from atom mismatches
+        if atom_mismatch_penalties:
+            penalty_factors.append(max(atom_mismatch_penalties))
+
+    # 2. Ring size changes - Potential issue, but could be valid in some reactions
+    if comparison_results["ring_size_changes"]:
+        # Check how many ring changes occurred
+        num_ring_changes = len(comparison_results["ring_size_changes"])
+
+        # Penalty: 25 points per ring change
+        ring_penalty = min(25 * num_ring_changes, 50)
+        penalty_factors.append(ring_penalty)
+        penalty_descriptions.append(
+            f"Ring structure changes: -{ring_penalty} points")
+
+    # 3. Substituent position changes - Usually suspicious
+    if comparison_results["substituent_position_changes"]:
+        # Check how many substituent position changes
+        num_position_changes = len(
+            comparison_results["substituent_position_changes"])
+
+        # Penalty: 60 points per substituent position change
+        position_penalty = min(60 * num_position_changes, 100)
+        penalty_factors.append(position_penalty)
+        penalty_descriptions.append(
+            f"Substituent position changes: -{position_penalty} points")
+
+    # 4. Aromaticity changes - Significant structural change
+    for issue in comparison_results["detected_issues"]:
+        if "Significant change in aromaticity" in issue:
+            aromaticity_penalty = 40
+            penalty_factors.append(aromaticity_penalty)
+            penalty_descriptions.append(
+                f"Significant aromaticity changes: -{aromaticity_penalty} points"
+            )
+
+    # 5. Unnecessary bond formations - Could indicate hallucination
+    for issue in comparison_results["detected_issues"]:
+        if "Possible unnecessary bonds formed" in issue:
+            # Extract number of additional bonds
+            parts = issue.split(':')[1].strip()
+            reactant_bonds = int(parts.split(',')[0].split()[-2])
+            product_bonds = int(parts.split(',')[1].split()[-2])
+            additional_bonds = product_bonds - reactant_bonds
+
+            # Penalty: 5 points per additional bond
+            bond_penalty = min(5 * additional_bonds, 30)
+            penalty_factors.append(bond_penalty)
+            penalty_descriptions.append(
+                f"Unnecessary bond formations: -{bond_penalty} points")
+
+    # Calculate the final score by applying all penalties
+    final_score = base_score
+    for penalty in penalty_factors:
+        final_score -= penalty
+
+    # Ensure score doesn't go below 0
+    final_score = max(0, final_score)
+
+    # Determine severity level based on score
+    if final_score >= 80:
+        severity = "low"
+    elif final_score >= 40:
+        severity = "medium"
+    elif final_score >= 20:
+        severity = "high"
+    else:
+        severity = "critical"
+
+    return {
+        "score": final_score,
+        "severity": severity,
+        "penalties": penalty_descriptions,
+        "message": interpret_score(final_score),
+        "details": comparison_results
+    }
+
+
+def interpret_score(score):
+    """
+    Provide a human-readable interpretation of the hallucination score.
+    
+    Parameters:
+    -----------
+    score : int
+        Hallucination score (0-100)
+        
+    Returns:
+    --------
+    str
+        Interpretation of the score
+    """
+    if score >= 90:
+        return "Highly reliable transformation with minimal or no structural inconsistencies"
+    elif score >= 80:
+        return "Generally reliable transformation with minor structural inconsistencies"
+    elif score >= 70:
+        return "Mostly reliable transformation with some structural inconsistencies"
+    elif score >= 50:
+        return "Questionable transformation with significant structural inconsistencies"
+    elif score >= 30:
+        return "Likely hallucination with major structural inconsistencies"
+    elif score >= 10:
+        return "Severe hallucination with critical structural inconsistencies"
+    else:
+        return "Complete hallucination or invalid transformation"
+
+
+def hallucination_checker(product: str, res_smiles: list):
+    """Wrapper function to run the hallucination checks on the incoming product and reactant smiles list.
+    
+
+    Parameters
+    ----------
+    product : str
+        SMILES string of the product molecule
+    res_smiles : list
+        List of list of reactant SMILES strings
+    """
+    logger = context_logger.get() if ENABLE_LOGGING else None
+    valid_pathways = []
+    for idx, smile_list in enumerate(res_smiles):
+        valid = []
+        if isinstance(smile_list, list):
+            smiles_combined = ".".join(smile_list)
+            if not is_valid_smiles(smiles_combined):
+                log_message(f"Invalid SMILES string: {smiles_combined}", logger)
+            
+            hallucination_report = calculate_hallucination_score(smiles_combined, product)
+            log_message(f"Hallucination report: {hallucination_report}", logger)
+            
+            if hallucination_report['severity'] in ['low', 'medium']:
+                valid_pathways.append(smile_list)
+            # for smiles in smile_list:
+            #     if not is_valid_smiles(smiles):
+            #         log_message("Invalid SMILES string", logger)
+            #     hallucination_report = calculate_hallucination_score(smiles, product)
+            #     log_message(f"Hallucination report: {hallucination_report}",
+            #                 logger)
+
+            #     if hallucination_report['severity'] in ['low', 'medium']:
+            #         valid.append(smiles)
+            # if len(valid) == len(smile_list):
+            #     valid_pathways.append(valid)
+        else:
+            if is_valid_smiles(smile_list):
+                hallucination_report = calculate_hallucination_score(
+                    smile_list)
+                log_message(f"Hallucination report: {hallucination_report}",
+                            logger)
+
+                if hallucination_report['severity'] in ['low', 'medium']:
+                    valid_pathways.append([smile_list])
+    log_message(f"Valid pathways: {valid_pathways}", logger)
+    return 200, valid_pathways
+
+
+# # Test with the provided example
+# if __name__ == "__main__":
+#     test_reactant = "c1c(CCNC)cc(C(=O)O)cc1"
+#     test_product = "c1cc(CCN(C)CC)c(C(=O)O)cc1"
+
+#     # test_reactant = "C2CC1CCCC1C2"
+#     # test_product = "C2CCC1CCCCC1C2"
+
+#     print("Testing with provided example:")
+#     print(f"Reactant: {test_reactant}")
+#     print(f"Product: {test_product}")
+
+#     results = hallucination_compare_molecules(test_reactant, test_product)
+
+#     print("\nValidation Results:")
+#     print("-------------------")
+
+#     if results['substituent_position_changes']:
+#         print("\nSubstituent Position Changes:")
+#         for change in results['substituent_position_changes']:
+#             print(
+#                 f"- {change['substituent']} moved from {', '.join(change['from_positions'])} "
+#                 f"to {', '.join(change['to_positions'])}")
+
+#     if results['detected_issues']:
+#         print("\nDetected Issues:")
+#         for issue in results['detected_issues']:
+#             print(f"- {issue}")
+
+#     print("=== Valid transformation example ===")
+#     # Simple methylation (adding a methyl group)
+#     valid_reactant = "c1ccccc1"
+#     valid_product = "c1ccccc1OC"
+#     valid_result = calculate_hallucination_score(valid_reactant, valid_product)
+#     print(f"Score: {valid_result['score']}")
+#     print(f"Severity: {valid_result['severity']}")
+#     print(f"Message: {valid_result['message']}")
+#     if 'penalties' in valid_result:
+#         print("Penalties applied:")
+#         for penalty in valid_result['penalties']:
+#             print(f"- {penalty}")
+
+#     print("\n=== Problematic transformation example ===")
+#     # Position swap example (likely hallucination)
+#     test_reactant = "c1c(CCNC)cc(C(=O)O)cc1"
+#     test_product = "c1cc(CCN(C)CC)c(C(=O)O)cc1"
+#     problem_result = calculate_hallucination_score(test_reactant, test_product)
+#     print(f"Score: {problem_result['score']}")
+#     print(f"Severity: {problem_result['severity']}")
+#     print(f"Message: {problem_result['message']}")
+#     if 'penalties' in problem_result:
+#         print("Penalties applied:")
+#         for penalty in problem_result['penalties']:
+#             print(f"- {penalty}")
+
+#     print("\n=== Invalid transformation example ===")
+#     # Complete hallucination example (atom count mismatch)
+#     invalid_reactant = "c1ccccc1.CC"
+#     invalid_product = "c1ccccc1CCC(=O)C"
+#     invalid_result = calculate_hallucination_score(invalid_reactant,
+#                                                    invalid_product)
+#     print(f"Score: {invalid_result['score']}")
+#     print(f"Severity: {invalid_result['severity']}")
+#     print(f"Message: {invalid_result['message']}")
+#     if 'penalties' in invalid_result:
+#         print("Penalties applied:")
+#         for penalty in invalid_result['penalties']:
+#             print(f"- {penalty}")

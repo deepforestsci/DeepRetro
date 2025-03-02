@@ -1,0 +1,547 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": [
+            "4",
+            "9"
+        ],
+        "4": [
+            "5",
+            "6"
+        ],
+        "5": [],
+        "6": [
+            "7",
+            "8"
+        ],
+        "7": [
+            "2"
+        ],
+        "8": [],
+        "9": [
+            "10"
+        ],
+        "10": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(C(=O)O)cc(OC)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12O5",
+                        "mass": 212.068473484
+                    }
+                },
+                {
+                    "smiles": "O[C@@H](CCCN1CCCN(CCCC2=CC(OC)=C(OC)C(OC)=C2C(=O)N)CC1)CO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C23H39N3O6",
+                        "mass": 453.283885968
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl[S](Cl)(=O)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl2O2S",
+                        "mass": 133.8996056
+                    }
+                },
+                {
+                    "smiles": "Nc1ncnc2n(cnc12)C3OC(CO)C(O)C3O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H13N5O4",
+                        "mass": 267.096753896
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(C1=CC(OCCC2)=C(OC)C(OC)=C1)NCCCN3CCCN(CC[C@@H]2OC(C4=CC(OC)=C(OC)C(OC)=C4)=O)CC3",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C33H47N3O9",
+                        "mass": 629.3312300839999
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "The reaction likely proceeds at atmospheric pressure, as no special pressure conditions are typically required for amide coupling reactions.",
+                "solvent": "A polar aprotic solvent such as DMF (N,N-dimethylformamide) or DMSO (dimethyl sulfoxide) is commonly used for amide coupling reactions to dissolve the reactants.",
+                "time": "The reaction time can vary depending on the specific substrates, but amide coupling reactions often require several hours (e.g., 4-24 hours) to reach completion."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Amide coupling reaction between a carboxylic acid and an amine using a sulfonyl chloride activating agent"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COC(=O)c1cc(OC)c(OC)c(OC)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H14O5",
+                        "mass": 226.084123548
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "OC(=O)C(O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O5",
+                        "mass": 108.005873228
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(C(=O)O)cc(OC)c1OC",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12O5",
+                        "mass": 212.068473484
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Water",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.77,
+                    "closestliterature": "Oxidative demethylation of a trimethoxy aromatic ester to a dihydroxy aromatic carboxylic acid using oxalic acid"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "CCCN1CCCN(CCCC2=CC(OC)=C(OC)C(OC)=C2C(=O)N)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H35N3O4",
+                        "mass": 393.2627566
+                    }
+                },
+                {
+                    "smiles": "C1CO1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O",
+                        "mass": 44.026214748
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O[C@@H](CCCN1CCCN(CCCC2=CC(OC)=C(OC)C(OC)=C2C(=O)N)CC1)CO",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C23H39N3O6",
+                        "mass": 453.283885968
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "Epoxidation of alkenes with molecular oxygen"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "CCCN1CCNCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H16N2",
+                        "mass": 128.131348512
+                    }
+                },
+                {
+                    "smiles": "BrCCCC2=CC(OC)=C(OC)C(OC)=C2C(=O)N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H18BrNO4",
+                        "mass": 331.041920156
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)O.[K+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4KO2+",
+                        "mass": 98.98428746809
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CCCN1CCCN(CCCC2=CC(OC)=C(OC)C(OC)=C2C(=O)N)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H35N3O4",
+                        "mass": 393.2627566
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "2-24 hours, depending on the specific substrates and scale of the reaction"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "N-Alkylation of a secondary amine with an alkyl halide"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "CCCN1CCN(C(=O)OC(C)(C)C)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H24N2O2",
+                        "mass": 228.183778008
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CO2",
+                        "mass": 43.98982924
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CCCN1CCNCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H16N2",
+                        "mass": 128.131348512
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required",
+                "time": "The reaction is typically fast and should be complete within 30 minutes to 2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.89,
+                    "closestliterature": "Boc deprotection of an N-Boc piperazine using carbon dioxide gas"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(C(N)=O)cc(OC)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H13NO4",
+                        "mass": 211.084457896
+                    }
+                },
+                {
+                    "smiles": "BrCCCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8Br2",
+                        "mass": 213.899274456
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "BrCCCC2=CC(OC)=C(OC)C(OC)=C2C(=O)N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H18BrNO4",
+                        "mass": 331.041920156
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux (80-100\u00b0C)",
+                "pressure": "Ambient pressure",
+                "solvent": "1,4-Dioxane (C1CCOC1)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.65,
+                    "closestliterature": "Williamson ether synthesis"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(C(=O)O)cc(OC)c1OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12O5",
+                        "mass": 212.068473484
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "N",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H3N",
+                        "mass": 17.026549096
+                    }
+                },
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(C(N)=O)cc(OC)c1OC",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H13NO4",
+                        "mass": 211.084457896
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Explanation: The reaction likely does not require a solvent as it appears to be a direct amidation of the carboxylic acid using the reagents N and O, which could represent hydroxylamine (NH2OH).",
+                "time": "Explanation: Insufficient information provided to determine the reaction time. Amidation reactions can vary in duration depending on the specific conditions and reactivity of the substrates."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.84,
+                    "closestliterature": "Conversion of carboxylic acids to primary amides using hydroxylamine (NH2OH)"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "OCCCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H9BrO",
+                        "mass": 151.983677008
+                    }
+                },
+                {
+                    "smiles": "O=C1CCC(=O)N1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4BrNO2",
+                        "mass": 176.942540468
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "BrCCCCBr",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8Br2",
+                        "mass": 213.899274456
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent needed",
+                "time": "Reaction should be rapid, likely complete within minutes to an hour"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "Alkyl bromide synthesis via nucleophilic substitution of an alcohol with HBr or PBr3"
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [
+                {
+                    "smiles": "OC1CO1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "C1CO1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O",
+                        "mass": 44.026214748
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Not applicable",
+                "pressure": "Not applicable",
+                "solvent": "Not applicable",
+                "time": "Not applicable",
+                "explanation": "The given reaction is a decarboxylation of oxirane-2-carboxylic acid to form oxirane. This is a very simple reaction that does not require any special conditions. It would likely occur spontaneously upon heating the starting material."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Not applicable"
+                }
+            ]
+        },
+        {
+            "step": "10",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)CBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3BrO2",
+                        "mass": 137.931641436
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Ag+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HAgO",
+                        "mass": 123.907836652
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OC1CO1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Water",
+                "time": "Less than 1 hour"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "10",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Bromoacetic acid is treated with silver hydroxide in water at room temperature to form the strained 3-membered ring epoxide glycidic acid."
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,239 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3",
+            "4"
+        ],
+        "3": [],
+        "4": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H19NO5",
+                        "mass": 317.126322708
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "CC(=O)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3ClO",
+                        "mass": 77.987242396
+                    }
+                },
+                {
+                    "smiles": "C1CCNCC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H11N",
+                        "mass": 85.08914935199999
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H21NO6",
+                        "mass": 359.13688739199995
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Pyridine or other basic solvent like triethylamine",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Acetylation of a secondary alcohol using acetyl chloride (or acetic anhydride) in the presence of a base like pyridine or triethylamine"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COc1ccccc1O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8O2",
+                        "mass": 124.052429496
+                    }
+                },
+                {
+                    "smiles": "OCC(O)C=CCN1CCOCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H17NO3",
+                        "mass": 187.120843404
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=[Cr](=O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2CrO4",
+                        "mass": 117.935816044
+                    }
+                },
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H19NO5",
+                        "mass": 317.126322708
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Ambient pressure",
+                "solvent": "Acetic acid",
+                "time": "Several hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "COc1ccccc1OCc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H14O2",
+                        "mass": 214.099379688
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1ccccc1O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8O2",
+                        "mass": 124.052429496
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol or methanol",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.87,
+                    "closestliterature": "Acid-catalyzed cleavage of benzyl ethers to form phenols"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "C1COCCN1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H9NO",
+                        "mass": 87.068413908
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OCC(O)C=CCN1CCOCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H17NO3",
+                        "mass": 187.120843404
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely proceeds without an additional solvent, as both the reactant and the product contain polar functional groups that can act as solvents themselves.",
+                "time": "The reaction time depends on the specific oxidation conditions and catalyst used, but it typically ranges from a few hours to overnight."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Oxidation of a morpholine derivative to form an N-substituted morpholine N-oxide"
+                }
+            ]
+        }
+    ]
+}

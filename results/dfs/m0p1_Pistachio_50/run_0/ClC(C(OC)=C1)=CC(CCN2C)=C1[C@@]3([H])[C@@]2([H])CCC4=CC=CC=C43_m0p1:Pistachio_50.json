@@ -1,0 +1,247 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "4"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": [],
+        "4": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "COc1cc2c(cc1Cl)CCN2C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12ClNO",
+                        "mass": 197.060741684
+                    }
+                },
+                {
+                    "smiles": "NC1CCc2ccccc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H11N",
+                        "mass": 133.089149352
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C=NCCl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H2ClNO",
+                        "mass": 90.982491364
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC(CCN2C)=C1[C@@]3([H])[C@@]2([H])CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "2-24 hours, depending on the specific substrates and scale of the reaction"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COc1cc2c(ccn2C)cc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H10ClNO",
+                        "mass": 195.04509162
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H",
+                        "mass": 1.007825032
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc2c(cc1Cl)CCN2C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12ClNO",
+                        "mass": 197.060741684
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol or methanol",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.92,
+                    "closestliterature": "Catalytic hydrogenation of a pyrrole to a pyrrolidine"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "COS(=O)(=O)OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6O4S",
+                        "mass": 125.99867967200001
+                    }
+                },
+                {
+                    "smiles": "COc1cc2[nH]ccc2cc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8ClNO",
+                        "mass": 181.029441556
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C[N-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH3N-",
+                        "mass": 29.027097675909996
+                    }
+                },
+                {
+                    "smiles": "[K+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "K+",
+                        "mass": 38.96315810009
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc2c(ccn2C)cc1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H10ClNO",
+                        "mass": 195.04509162
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "1-24 hours, depending on the specific reaction conditions and scale"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Nucleophilic aromatic substitution (SNAr) of a chloropyridine with potassium cyanate (KOCN)"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCc2ccccc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8O",
+                        "mass": 132.057514876
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "N",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H3N",
+                        "mass": 17.026549096
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "NC1CCc2ccccc21",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H11N",
+                        "mass": 133.089149352
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-200 \u00b0C",
+                "pressure": "10-50 atm H2",
+                "solvent": "Ethanol or other protic solvent",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.84,
+                    "closestliterature": "Catalytic hydrogenation of \u03b1-tetralone oxime to 2-aminotetralin"
+                }
+            ]
+        }
+    ]
+}

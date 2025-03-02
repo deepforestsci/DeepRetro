@@ -1,0 +1,335 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": [
+            "4",
+            "5"
+        ],
+        "4": [],
+        "5": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(=O)N1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H5NO2",
+                        "mass": 99.0320284
+                    }
+                },
+                {
+                    "smiles": "NC1=CC=CC2=C1NC(C=C)(C)C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H14N2",
+                        "mass": 174.115698448
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][O][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C(C=1C=2C(NC1C(C=C)(C)C)=CC=CC2)[C@H]3C(=O)N4[C@](C(=O)N3)(CCC4)[H]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H25N3O2",
+                        "mass": 351.19467704
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Condensation of a cyclic imide (succinimide) with an aromatic amine (substituted aniline) to form a cyclic amidine"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N1C(=O)CCC1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H13NO4",
+                        "mass": 199.084457896
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(C)(C)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H10O",
+                        "mass": 74.07316494
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1CCC(=O)N1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H5NO2",
+                        "mass": 99.0320284
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required",
+                "time": "The reaction is likely very fast, on the order of seconds to minutes"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Decarboxylation of N-Boc-succinimide to form succinimide"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "Nc1ccccc1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6BrN",
+                        "mass": 170.968361292
+                    }
+                },
+                {
+                    "smiles": "C=C(C)c1cc[nH]c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H9N",
+                        "mass": 107.073499288
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Cc1cccc(c1)P(c1ccccc1)c1ccccc1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1C(=O)[O-].[K+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7KO2",
+                        "mass": 174.008311144
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "NC1=CC=CC2=C1NC(C=C)(C)C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H14N2",
+                        "mass": 174.115698448
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-120 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "polar aprotic solvent such as DMF, DMSO, or dioxane",
+                "time": "2-24 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Buchwald-Hartwig amination"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "O=[N+]([O-])c1ccccc1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4BrNO2",
+                        "mass": 200.942540468
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH2O2",
+                        "mass": 46.005479304
+                    }
+                },
+                {
+                    "smiles": "[H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H",
+                        "mass": 1.007825032
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "Nc1ccccc1Br",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6BrN",
+                        "mass": 170.968361292
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Acetic acid (CH3COOH)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.62,
+                    "closestliterature": "Reduction of nitroarenes to anilines using formic acid"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "Brc1cc[nH]c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4BrN",
+                        "mass": 144.952711228
+                    }
+                },
+                {
+                    "smiles": "C=C(C)B1OC(C)(C)C(C)(C)O1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H17BO2",
+                        "mass": 168.13216018399999
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1P(c2ccccc2)c3ccccc3",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1P(c2ccccc2)c3ccccc3",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H17P",
+                        "mass": 276.10678717400003
+                    }
+                },
+                {
+                    "smiles": "CN(C)C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H7NO",
+                        "mass": 73.052763844
+                    }
+                },
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=C(C)c1cc[nH]c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H9N",
+                        "mass": 107.073499288
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "1,4-dioxane or another aprotic polar solvent like DMF or THF",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Suzuki coupling"
+                }
+            ]
+        }
+    ]
+}

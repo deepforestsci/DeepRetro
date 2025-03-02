@@ -6,6 +6,8 @@ from src.variables import BASIC_MOLECULES, ENCODING_SCALABILITY
 from src.cache import cache_results
 from src.utils.job_context import logger as context_logger
 import rootutils
+from rdkit import Chem
+from rdkit.Chem import rdqueries
 
 root_dir = rootutils.setup_root(__file__,
                                 indicator=".project-root",
@@ -51,7 +53,7 @@ def run_az(smiles: str,
             raise FileNotFoundError(
                 f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}")
     # if simple molecule, skip the retrosynthesis
-    if smiles in BASIC_MOLECULES:
+    if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
         return True, [{
             'type': 'mol',
             'hide': False,
@@ -90,7 +92,7 @@ def run_az_with_img(smiles: str) -> tuple[Any, Sequence[Dict[str, Any]]]:
         
     """
     # if simple molecule, skip the retrosynthesis
-    if smiles in BASIC_MOLECULES:
+    if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
         return True, [{
             'type': 'mol',
             'hide': False,
@@ -111,3 +113,35 @@ def run_az_with_img(smiles: str) -> tuple[Any, Sequence[Dict[str, Any]]]:
                                                 include_scores=True)
     images = finder.routes.images
     return status, result_dict, images
+
+
+def is_basic_molecule(smiles: str) -> bool:
+    """Check if the molecule is a basic molecule
+    (if number of C atons is less than 5)
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES string of the target molecule
+
+    Returns
+    -------
+    bool
+        True if the molecule is a basic molecule, False otherwise
+    """
+    #
+    try:
+        mol = Chem.MolFromSmiles(smiles)
+    except:
+        return False
+
+    q = rdqueries.AtomNumEqualsQueryAtom(6)
+    num_c_atoms = len(mol.GetAtomsMatchingQuery(q))
+    # if total number of atoms is less than 5, return True
+    if mol.GetNumAtoms() < 5:
+        return True
+    elif num_c_atoms < 5:
+        return True
+    # if total number of C atoms is less than 5, return True
+
+    return False
