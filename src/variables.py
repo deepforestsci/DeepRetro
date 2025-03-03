@@ -1383,6 +1383,12 @@ ERROR_MAP = {
     505: {
         "description": "split_json_master() failed.",
     },
+    601: {
+        "description": "Hallucination Check failed.",
+    },
+    602: {
+        "description": "Stability Check failed.",
+    },
 }
 
 AZ_MODEL_LIST = [
