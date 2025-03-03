@@ -81,18 +81,24 @@ def add_metadata(output_data: dict) -> dict:
         json output with metadata
     """
     for idx, step in enumerate(output_data['steps']):
-        status, reagents = reagent_agent(step['reactants'], step['products'])
+        status, reagents = reagent_agent(reactants=step['reactants'],
+                                         product=step['products'],
+                                         LLM="perplexity/sonar-deep-research")
         output_data['steps'][idx]['reagents'].extend(reagents)
 
-        status, conditions = conditions_agent(step['reactants'],
-                                              step['products'],
-                                              step['reagents'])
+        status, conditions = conditions_agent(
+            step['reactants'],
+            step['products'],
+            step['reagents'],
+            LLM="perplexity/sonar-deep-research")
         output_data['steps'][idx]['conditions'] = conditions
 
-        status, literature = literature_agent(step['reactants'],
-                                              step['products'],
-                                              step['reagents'],
-                                              step['conditions'])
+        status, literature = literature_agent(
+            step['reactants'],
+            step['products'],
+            step['reagents'],
+            step['conditions'],
+            LLM="perplexity/sonar-deep-research")
         output_data['steps'][idx]['reactionmetrics'][0][
             'closestliterature'] = literature
 
