@@ -475,6 +475,38 @@
             font-size: 12px;
         }
 
+        .instance-status {
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .status-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-indicator.loading {
+            border: 2px solid var(--primary);
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        .status-indicator.success {
+            background-color: #28a745;
+        }
+
+        .status-indicator.error {
+            background-color: #dc3545;
+        }
+
         @keyframes spin {
             to {
                 transform: rotate(360deg);
@@ -558,10 +590,17 @@
             // Generate settings for each server in the config
             config.instances.forEach((instance, index) => {
                 const serverNum = index + 1;
+                const defaults = instance.defaults || {
+                    model_type: 'claude3',
+                    advanced_prompt: false,
+                    model_version: 'USPTO',
+                    stability_flag: false,
+                    hallucination_check: false
+                };
                 
                 // Create a div for this server's settings
                 const serverDiv = document.createElement('div');
-                serverDiv.className = 'server-settings';
+                        serverDiv.className = 'server-settings';
                 
                 // Create the server header
                 const serverHeader = document.createElement('h4');
@@ -574,28 +613,27 @@
                 modelRow.innerHTML = `
                     <label for="modelVersion${serverNum}" class="toggle-label" style="margin-right: 10px;">Model Version:</label>
                     <select id="modelVersion${serverNum}" class="model-select" data-server="${serverNum}">
-                        <option value="USPTO">USPTO</option>
-                        <option value="Pistachio_25">Pistachio (25)</option>
-                        <option value="Pistachio_50">Pistachio (50)</option>
-                        <option value="Pistachio_100">Pistachio (100)</option>
-                        <option value="Pistachio_100+" selected>Pistachio (100+)</option>
+                        <option value="USPTO" ${defaults.model_version === 'USPTO' ? 'selected' : ''}>USPTO</option>
+                        <option value="Pistachio_25" ${defaults.model_version === 'Pistachio_25' ? 'selected' : ''}>Pistachio (25)</option>
+                        <option value="Pistachio_50" ${defaults.model_version === 'Pistachio_50' ? 'selected' : ''}>Pistachio (50)</option>
+                        <option value="Pistachio_100" ${defaults.model_version === 'Pistachio_100' ? 'selected' : ''}>Pistachio (100)</option>
+                        <option value="Pistachio_100+" ${defaults.model_version === 'Pistachio_100+' ? 'selected' : ''}>Pistachio (100+)</option>
                     </select>
                 `;
                 serverDiv.appendChild(modelRow);
                 
-                // Create the advanced model toggle
-                const advancedModelRow = document.createElement('div');
-                advancedModelRow.className = 'toggle-row';
-                advancedModelRow.innerHTML = `
-                    <div class="toggle-switch">
-                        <label class="switch">
-                            <input type="checkbox" id="advancedToggle${serverNum}" data-server="${serverNum}">
-                            <span class="slider"></span>
-                        </label>
-                        <span class="toggle-label">Advanced Model</span>
-                    </div>
+                // Create the model type dropdown
+                const modelTypeRow = document.createElement('div');
+                modelTypeRow.className = 'toggle-row';
+                modelTypeRow.innerHTML = `
+                    <label for="modelType${serverNum}" class="toggle-label" style="margin-right: 10px;">LLM Model:</label>
+                    <select id="modelType${serverNum}" class="model-select" data-server="${serverNum}">
+                        <option value="claude3" ${defaults.model_type === 'claude3' ? 'selected' : ''}>Claude 3 Opus</option>
+                        <option value="claude37" ${defaults.model_type === 'claude37' ? 'selected' : ''}>Claude 3.7 Sonnet</option>
+                        <option value="deepseek" ${defaults.model_type === 'deepseek' ? 'selected' : ''}>DeepSeek</option>
+                    </select>
                 `;
-                serverDiv.appendChild(advancedModelRow);
+                serverDiv.appendChild(modelTypeRow);
                 
                 // Create the advanced prompt toggle
                 const promptRow = document.createElement('div');
@@ -603,7 +641,7 @@
                 promptRow.innerHTML = `
                     <div class="toggle-switch">
                         <label class="switch">
-                            <input type="checkbox" id="promptToggle${serverNum}" checked data-server="${serverNum}">
+                            <input type="checkbox" id="promptToggle${serverNum}" ${defaults.advanced_prompt ? 'checked' : ''} data-server="${serverNum}">
                             <span class="slider"></span>
                         </label>
                         <span class="toggle-label">Advanced Prompt</span>
@@ -611,13 +649,13 @@
                 `;
                 serverDiv.appendChild(promptRow);
                 
-                 // Create stability checker toggle  
-                 const stabilityRow = document.createElement('div');
+                // Create stability checker toggle  
+                const stabilityRow = document.createElement('div');
                 stabilityRow.className = 'toggle-row';
                 stabilityRow.innerHTML = `
                     <div class="toggle-switch">  
                         <label class="switch">
-                            <input type="checkbox" id="stabilityToggle${serverNum}" data-server="${serverNum}">
+                            <input type="checkbox" id="stabilityToggle${serverNum}" ${defaults.stability_flag ? 'checked' : ''} data-server="${serverNum}">
                             <span class="slider"></span>
                         </label>
                         <span class="toggle-label">Stability Checker</span>  
@@ -631,7 +669,7 @@
                 hallucinationRow.innerHTML = `
                     <div class="toggle-switch">
                         <label class="switch">
-                            <input type="checkbox" id="hallucinationToggle${serverNum}" data-server="${serverNum}">  
+                            <input type="checkbox" id="hallucinationToggle${serverNum}" ${defaults.hallucination_check ? 'checked' : ''} data-server="${serverNum}">  
                             <span class="slider"></span>
                         </label>
                         <span class="toggle-label">Hallucination Checker</span>
@@ -801,10 +839,18 @@
             
             // Remove any existing elements
             const existingJsonToggle = document.getElementById('json-toggle');
-            if (existingJsonToggle) existingJsonToggle.remove();
+            if (existingJsonToggle) existingJsonToggle.style.display = 'none';
             
-            const existingResult = document.getElementById('result');
-            if (existingResult) existingResult.remove();
+            // Create/reset the result area
+            let resultDiv = document.getElementById('result');
+            if (resultDiv) {
+                resultDiv.style.display = 'none';
+            } else {
+                resultDiv = document.createElement('div');
+                resultDiv.id = 'result';
+                resultDiv.className = 'result';
+                document.getElementById('status').after(resultDiv);
+            }
             
             const existingDownloadBtn = document.querySelector('.download-btn');
             if (existingDownloadBtn) existingDownloadBtn.remove();
@@ -820,69 +866,12 @@
                 button.innerHTML = `<span class="loading"></span>${isRerun ? 'Rerunning...' : 'Analyzing...'}`;
                 status.style.display = 'none';
 
-                // Create endpoints from config
-                const endpoints = config.instances.map(baseUrl => {
-                    const endpointPath = isRerun ? config.endpoints.rerun : config.endpoints.retrosynthesis;
-                    return `${baseUrl}${endpointPath}`;
-                });
-
-                // Create fetch promises for all instances with their specific settings
-                const fetchPromises = endpoints.map((endpoint, index) => {
-                    const serverNum = index + 1;
-                    
-                    // Get the server-specific settings
-                    const modelSelect = document.getElementById(`modelVersion${serverNum}`);
-                    const advancedToggle = document.getElementById(`advancedToggle${serverNum}`);
-                    const promptToggle = document.getElementById(`promptToggle${serverNum}`);
-                    const stabilityToggle = document.getElementById(`stabilityToggle${serverNum}`);
-                    const hallucinationToggle = document.getElementById(`hallucinationToggle${serverNum}`);
-
-                    
-                    const requestBody = {
-                        smiles,
-                        advanced_model: advancedToggle.checked.toString(),
-                        advanced_prompt: promptToggle.checked.toString(),
-                        model_version: modelSelect.value,
-                        stability_flag: stabilityToggle.checked.toString(),
-                        hallucination_check: hallucinationToggle.checked.toString()
-                    };
-                    
-                    return fetch(endpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-API-KEY': API_KEY
-                        },
-                        body: JSON.stringify(requestBody)
-                    });
-                });
-
-                // Make parallel API calls
-                const responses = await Promise.all(fetchPromises);
-
-                // Parse all responses
-                const resultsArray = await Promise.all(responses.map(response => response.json()));
-
-                if (responses.some(response => !response.ok)) {
-                    const errors = resultsArray
-                        .filter((data, index) => !responses[index].ok)
-                        .map(data => data.error)
-                        .join(', ');
-                    throw new Error(errors || 'Analysis failed');
-                }
-
-                // Store results for all instances
-                const results = resultsArray.reduce((acc, data, index) => {
-                    acc[`instance${index + 1}`] = data;
-                    return acc;
-                }, {});
-
-                // Create the necessary containers
-                const formattedJson = JSON.stringify(results.instance1, null, 2);
-                
-                // Create controls container
+                // Create the main controls container
                 const controlsContainer = document.createElement('div');
                 controlsContainer.className = 'controls-container';
+                
+                // Initialize results object
+                const results = {};
                 
                 // Create pathway viewing section
                 const pathwaySection = document.createElement('div');
@@ -894,22 +883,59 @@
                 sectionTitle.style.width = '100%';
                 pathwaySection.appendChild(sectionTitle);
                 
-                config.instances.forEach((_, index) => {
+                // Create status indicators for each instance
+                const instanceStatusContainer = document.createElement('div');
+                instanceStatusContainer.className = 'instance-status-container';
+                instanceStatusContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; width: 100%;';
+                pathwaySection.appendChild(instanceStatusContainer);
+                
+                // Create endpoints and status indicators for each instance
+                const endpoints = [];
+                const statusIndicators = [];
+                const pathwayButtons = [];
+                
+                config.instances.forEach((instance, index) => {
+                    const endpointPath = isRerun ? config.endpoints.rerun : config.endpoints.retrosynthesis;
+                    endpoints.push(`${instance.url}${endpointPath}`);
+                    
+                    // Create status indicator
+                    const statusIndicator = document.createElement('div');
+                    statusIndicator.id = `status-instance-${index + 1}`;
+                    statusIndicator.className = 'instance-status';
+                    statusIndicator.style.cssText = 'background-color: #f8f8f8; border-radius: 4px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;';
+                    statusIndicator.innerHTML = `
+                        <span class="loading" style="width: 16px; height: 16px; border: 2px solid var(--primary); border-top-color: transparent;"></span>
+                        <span>Pathway ${index + 1}: Processing...</span>
+                    `;
+                    instanceStatusContainer.appendChild(statusIndicator);
+                    statusIndicators.push(statusIndicator);
+                    
+                    // Create button (initially disabled)
                     const button = document.createElement('button');
+                    button.id = `show-pathway-${index + 1}`;
                     button.textContent = `Show Pathway ${index + 1}`;
+                    button.disabled = true;
+                    button.style.opacity = '0.5';
+                    button.dataset.instance = `instance${index + 1}`;
                     button.onclick = () => showResult(`instance${index + 1}`);
                     pathwaySection.appendChild(button);
+                    pathwayButtons.push(button);
                 });
                 
-                // Create rerun section
+                controlsContainer.appendChild(pathwaySection);
+                
+                // Create rerun section (initially empty, will be populated later)
                 const rerunSection = document.createElement('div');
                 rerunSection.className = 'rerun-section';
+                rerunSection.id = 'rerun-section';
+                rerunSection.style.display = 'none'; // Hide until at least one result is available
                 
                 const rerunTitle = document.createElement('h3');
                 rerunTitle.className = 'section-title';
                 rerunTitle.textContent = 'Partial Rerun Analysis';
                 rerunTitle.style.width = '100%';
                 rerunSection.appendChild(rerunTitle);
+                
                 // Add note about partial rerun
                 const rerunNote = document.createElement('div');
                 rerunNote.className = 'note-section';
@@ -917,197 +943,297 @@
                 rerunNote.innerHTML = '<strong>Note:</strong> Please use this feature only with steps having a single molecule for an accurate output.';
                 rerunSection.appendChild(rerunNote);
                 
-                config.instances.forEach((_, index) => {
-                    const rerunControl = document.createElement('div');
-                    rerunControl.className = 'rerun-control';
-                    
-                    // Ensure only 2 per row by forcing width
-                    rerunControl.style.width = 'calc(50% - 8px)';
-                    
-                    const label = document.createElement('span');
-                    label.className = 'rerun-label';
-                    label.textContent = `Pathway ${index + 1}:`;
-                    
-                    const select = document.createElement('select');
-                    select.className = 'steps-select';
-                    
-                    const defaultOption = document.createElement('option');
-                    defaultOption.value = '';
-                    defaultOption.textContent = 'Select number of steps';
-                    defaultOption.selected = true;
-                    defaultOption.disabled = true;
-                    select.appendChild(defaultOption);
-                    
-                    const stepsCount = Object.keys(results[`instance${index + 1}`].steps).length;
-                    for(let i = 2; i <= stepsCount; i++) {
-                        const option = document.createElement('option');
-                        option.value = i;
-                        option.textContent = `From Step ${i}`;
-                        select.appendChild(option);
-                    }
-                    
-                    const rerunButton = document.createElement('button');
-                    rerunButton.textContent = 'Start Partial Rerun';
-                    rerunButton.className = 'rerun-btn';
-                    rerunButton.style.display = 'none';
-                    
-                    select.onchange = () => {
-                        rerunButton.style.display = 'inline-flex';
-                    };
-                    
-                    rerunButton.onclick = () => {
-                        const pathwayNumber = index + 1;
-                        rerunButton.disabled = true;
-                        select.disabled = true;
-                        rerunButton.innerHTML = `<span class="loading"></span>Rerunning...`;
+                controlsContainer.appendChild(rerunSection);
+                
+                // Add the controls container to the DOM
+                const graphDiv = document.getElementById('graph');
+                graphDiv.parentNode.insertBefore(controlsContainer, graphDiv);
+                
+                // Add JSON toggle (initially hidden)
+                const jsonToggle = document.createElement('div');
+                jsonToggle.id = 'json-toggle';
+                jsonToggle.className = 'json-toggle';
+                jsonToggle.style.display = 'none';
+                jsonToggle.innerHTML = '<span>JSON Result</span><span class="json-toggle-icon arrow-down" id="json-arrow"></span>';
+                jsonToggle.onclick = toggleJson;
+                graphDiv.parentNode.insertBefore(jsonToggle, graphDiv);
+                
+                // Add download button (initially hidden)
+                const downloadButton = document.createElement('button');
+                downloadButton.id = 'download-btn';
+                downloadButton.className = 'download-btn';
+                downloadButton.textContent = 'Download Results';
+                downloadButton.onclick = () => downloadResults(results);
+                downloadButton.style.display = 'none';
+                graphDiv.parentNode.insertBefore(downloadButton, graphDiv);
+                
+                // Initialize counter for completed requests
+                let completedCount = 0;
+                let firstCompletedIndex = -1;
+                
+                // Make API calls for each instance asynchronously
+                endpoints.forEach(async (endpoint, index) => {
+                    try {
+                        const serverNum = index + 1;
                         
-                        // Get server-specific settings for the rerun
-                        const modelSelect = document.getElementById(`modelVersion${pathwayNumber}`);
-                        const advancedToggle = document.getElementById(`advancedToggle${pathwayNumber}`);
-                        const promptToggle = document.getElementById(`promptToggle${pathwayNumber}`);
-                        const stabilityToggle = document.getElementById(`stabilityToggle${pathwayNumber}`);
-                        const hallucinationToggle = document.getElementById(`hallucinationToggle${pathwayNumber}`);
-
+                        // Get the server-specific settings
+                        const modelSelect = document.getElementById(`modelVersion${serverNum}`);
+                        const modelTypeSelect = document.getElementById(`modelType${serverNum}`);
+                        const promptToggle = document.getElementById(`promptToggle${serverNum}`);
+                        const stabilityToggle = document.getElementById(`stabilityToggle${serverNum}`);
+                        const hallucinationToggle = document.getElementById(`hallucinationToggle${serverNum}`);
                         
-                        const endpoint = `${config.instances[index]}${config.endpoints.partial_rerun}`;
-                        console.log('Attempting partial rerun with:', {
-                            endpoint,
-                            requestBody: {
-                                smiles: smilesInput.value,
-                                steps: parseInt(select.value),
-                                pathway_id: pathwayNumber,
-                                advanced_model: advancedToggle.checked.toString(),
-                                advanced_prompt: promptToggle.checked.toString(),
-                                model_version: modelSelect.value,
-                                stability_flag: stabilityToggle.checked.toString(),
-                                hallucination_check: hallucinationToggle.checked.toString()
-                            }
-                        });
-                        fetch(endpoint, {
+                        const requestBody = {
+                            smiles,
+                            model_type: modelTypeSelect.value,
+                            advanced_prompt: promptToggle.checked.toString(),
+                            model_version: modelSelect.value,
+                            stability_flag: stabilityToggle.checked.toString(),
+                            hallucination_check: hallucinationToggle.checked.toString()
+                        };
+                        
+                        // Make API call
+                        const response = await fetch(endpoint, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'X-API-KEY': API_KEY
                             },
-                            body: JSON.stringify({
-                                smiles: smilesInput.value,
-                                steps: parseInt(select.value),
-                                pathway_id: pathwayNumber,
-                                advanced_model: advancedToggle.checked.toString(),
-                                advanced_prompt: promptToggle.checked.toString(),
-                                model_version: modelSelect.value
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            results[`instance${pathwayNumber}`] = data;
-                            showResult(`instance${pathwayNumber}`);
-                            rerunButton.disabled = false;
-                            select.disabled = false;
-                            rerunButton.innerHTML = 'Start Rerun';
-                        })
-                        .catch(error => {
-                            status.className = 'status error';
-                            status.textContent = `Error: ${error.message}`;
-                            status.style.display = 'block';
-                            rerunButton.disabled = false;
-                            select.disabled = false;
-                            rerunButton.innerHTML = 'Start Rerun';
+                            body: JSON.stringify(requestBody)
                         });
-                    };
-                    
-                    rerunControl.appendChild(label);
-                    rerunControl.appendChild(select);
-                    rerunControl.appendChild(rerunButton);
-                    rerunSection.appendChild(rerunControl);
+                        
+                        const data = await response.json();
+                        
+                        // Handle success
+                        if (response.ok) {
+                            // Store the result
+                            results[`instance${serverNum}`] = data;
+                            
+                            // Update status indicator
+                            statusIndicators[index].innerHTML = `
+                                <span style="background-color: #28a745; width: 16px; height: 16px; border-radius: 50%; display: inline-block;"></span>
+                                <span>Pathway ${serverNum}: Complete</span>
+                            `;
+                            
+                            // Enable the corresponding button
+                            pathwayButtons[index].disabled = false;
+                            pathwayButtons[index].style.opacity = '1';
+                            
+                            // Create rerun control for this instance
+                            createRerunControl(serverNum, data, results, rerunSection);
+                            
+                            // Show the rerun section if it was hidden
+                            document.getElementById('rerun-section').style.display = 'flex';
+                            document.getElementById('rerun-section').style.flexWrap = 'wrap';
+                            
+                            // Update the JSON toggle and result div
+                            jsonToggle.style.display = 'flex';
+                            resultDiv.style.display = 'block';
+                            resultDiv.textContent = JSON.stringify(data, null, 2);
+                            document.getElementById('json-arrow').className = 'json-toggle-icon arrow-up';
+                            
+                            // Enable the download button
+                            downloadButton.style.display = 'block';
+                            
+                            // If this is the first result, render it
+                            if (firstCompletedIndex === -1) {
+                                firstCompletedIndex = index;
+                                // Clear the graph and render this result
+                                document.getElementById('graph').innerHTML = '';
+                                try {
+                                    const processedTree = processData(data);
+                                    const rootStep = processedTree['0'];
+                                    renderGraph(rootStep);
+                                } catch (graphError) {
+                                    console.error('Error rendering graph:', graphError);
+                                }
+                            }
+                        } else {
+                            // Handle error
+                            statusIndicators[index].innerHTML = `
+                                <span style="background-color: #dc3545; width: 16px; height: 16px; border-radius: 50%; display: inline-block;"></span>
+                                <span>Pathway ${serverNum}: Error - ${data.error || 'Unknown error'}</span>
+                            `;
+                        }
+                    } catch (error) {
+                        // Handle network or other errors
+                        statusIndicators[index].innerHTML = `
+                            <span style="background-color: #dc3545; width: 16px; height: 16px; border-radius: 50%; display: inline-block;"></span>
+                            <span>Pathway ${index + 1}: Error - ${error.message}</span>
+                        `;
+                    } finally {
+                        // Increment completed count
+                        completedCount++;
+                        
+                        // If all requests are completed, update the button
+                        if (completedCount === endpoints.length) {
+                            button.disabled = false;
+                            button.textContent = isRerun ? 'Rerun Analysis' : 'Analyze';
+                            if (!isRerun) {
+                                button.textContent = 'Rerun Analysis';
+                                button.onclick = () => analyze(true);
+                            }
+                            
+                            // Update the status
+                            status.className = 'status success';
+                            status.textContent = 'Analysis completed';
+                            status.style.display = 'block';
+                        }
+                    }
                 });
                 
-                controlsContainer.appendChild(pathwaySection);
-                controlsContainer.appendChild(rerunSection);
-
-                // Add JSON toggle
-                const jsonToggle = document.createElement('div');
-                jsonToggle.id = 'json-toggle';
-                jsonToggle.className = 'json-toggle';
-                jsonToggle.innerHTML = '<span>JSON Result</span><span class="json-toggle-icon arrow-down" id="json-arrow"></span>';
-                jsonToggle.onclick = toggleJson;
-                jsonToggle.style.display = 'flex';
-                
-                // Add result div for JSON
-                const jsonResult = document.createElement('div');
-                jsonResult.id = 'result';
-                jsonResult.className = 'result';
-                jsonResult.style.display = 'none';
-                jsonResult.textContent = formattedJson;
-                
-                // Add download button
-                const downloadButton = document.createElement('button');
-                downloadButton.className = 'download-btn';
-                downloadButton.textContent = 'Download Results';
-                downloadButton.onclick = () => downloadResults(results);
-                downloadButton.style.display = 'block';
-                
-                // Remove existing elements if they exist
-                const existingJsonToggle = document.getElementById('json-toggle');
-                if (existingJsonToggle) existingJsonToggle.remove();
-                
-                const existingResult = document.getElementById('result');
-                if (existingResult) existingResult.remove();
-                
-                const existingDownloadBtn = document.querySelector('.download-btn');
-                if (existingDownloadBtn) existingDownloadBtn.remove();
-                
-                // Insert elements in the correct order
-                const graphDiv = document.getElementById('graph');
-                graphDiv.parentNode.insertBefore(jsonToggle, graphDiv);
-                graphDiv.parentNode.insertBefore(jsonResult, graphDiv);
-                graphDiv.parentNode.insertBefore(downloadButton, graphDiv);
-                graphDiv.parentNode.insertBefore(controlsContainer, graphDiv);
-
-                // Function to toggle between results
+                // Define the function to show a specific result
                 window.showResult = (instance) => {
                     // Update JSON content
                     const jsonResult = document.getElementById('result');
                     if (jsonResult) {
                         jsonResult.textContent = JSON.stringify(results[instance], null, 2);
+                        jsonResult.style.display = 'block';
+                        document.getElementById('json-toggle').style.display = 'flex';
+                        document.getElementById('json-arrow').className = 'json-toggle-icon arrow-up';
                     }
                     
                     // Clear existing graph
                     document.getElementById('graph').innerHTML = '';
                     
                     // Process and render new pathway
-                    const processedTree = processData(results[instance]);
-                    const rootStep = processedTree['0'];
-                    renderGraph(rootStep);
+                    try {
+                        const processedTree = processData(results[instance]);
+                        const rootStep = processedTree['0'];
+                        renderGraph(rootStep);
+                    } catch (graphError) {
+                        console.error('Error rendering graph:', graphError);
+                    }
                 };
-
-                status.className = 'status success';
-                status.textContent = 'Analysis completed successfully';
-                status.style.display = 'block';
-
-                document.getElementById('graph').innerHTML = '';
-
-                // Render graph for the first result by default
-                const processedTree = processData(results.instance1);
-                const rootStep = processedTree['0'];
-                renderGraph(rootStep);
-
-                button.disabled = false;
-                button.textContent = isRerun ? 'Rerun Analysis' : 'Analyze';
-                if (!isRerun) {
-                    button.textContent = 'Rerun Analysis';
-                    button.onclick = () => analyze(true);
-                }
 
             } catch (error) {
                 status.className = 'status error';
                 status.textContent = `Error: ${error.message}`;
                 status.style.display = 'block';
 
-                // Enable the button and set it to "Rerun Analysis" on fetch error
+                // Enable the button and set it to "Rerun Analysis" on error
                 button.disabled = false;
                 button.textContent = 'Rerun Analysis';
                 button.onclick = () => analyze(true);
+            }
+        }
+
+        // Helper function to create rerun controls
+        function createRerunControl(pathwayNumber, data, results, rerunSection) {
+            const rerunControl = document.createElement('div');
+            rerunControl.className = 'rerun-control';
+            rerunControl.style.width = 'calc(50% - 8px)';
+            
+            const label = document.createElement('span');
+            label.className = 'rerun-label';
+            label.textContent = `Pathway ${pathwayNumber}:`;
+            
+            const select = document.createElement('select');
+            select.className = 'steps-select';
+            select.id = `steps-select-${pathwayNumber}`;
+            
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Select number of steps';
+            defaultOption.selected = true;
+            defaultOption.disabled = true;
+            select.appendChild(defaultOption);
+            
+            const stepsCount = Object.keys(data.steps).length;
+            for (let i = 1; i <= stepsCount; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `From Step ${i}`;
+                select.appendChild(option);
+            }
+            
+            const rerunButton = document.createElement('button');
+            rerunButton.textContent = 'Start Partial Rerun';
+            rerunButton.className = 'rerun-btn';
+            rerunButton.id = `rerun-btn-${pathwayNumber}`;
+            rerunButton.style.display = 'none';
+            
+            select.onchange = () => {
+                rerunButton.style.display = 'inline-flex';
+            };
+            
+            rerunButton.onclick = () => {
+                startPartialRerun(pathwayNumber, select.value, results);
+            };
+            
+            rerunControl.appendChild(label);
+            rerunControl.appendChild(select);
+            rerunControl.appendChild(rerunButton);
+            rerunSection.appendChild(rerunControl);
+        }
+
+        // Function to handle partial reruns
+        async function startPartialRerun(pathwayNumber, stepNumber, results) {
+            const smilesInput = document.getElementById('smiles');
+            const rerunButton = document.getElementById(`rerun-btn-${pathwayNumber}`);
+            const select = document.getElementById(`steps-select-${pathwayNumber}`);
+            const status = document.getElementById('status');
+            
+            try {
+                // Disable controls
+                rerunButton.disabled = true;
+                select.disabled = true;
+                rerunButton.innerHTML = `<span class="loading"></span>Rerunning...`;
+                
+                // Get server-specific settings
+                const modelSelect = document.getElementById(`modelVersion${pathwayNumber}`);
+                const modelTypeSelect = document.getElementById(`modelType${pathwayNumber}`);
+                const promptToggle = document.getElementById(`promptToggle${pathwayNumber}`);
+                const stabilityToggle = document.getElementById(`stabilityToggle${pathwayNumber}`);
+                const hallucinationToggle = document.getElementById(`hallucinationToggle${pathwayNumber}`);
+                
+                // Get endpoint
+                const endpoint = `${config.instances[pathwayNumber-1].url}${config.endpoints.partial_rerun}`;
+                
+                // Make API call
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-KEY': API_KEY
+                    },
+                    body: JSON.stringify({
+                        smiles: smilesInput.value,
+                        steps: parseInt(stepNumber),
+                        pathway_id: pathwayNumber,
+                        model_type: modelTypeSelect.value,
+                        advanced_prompt: promptToggle.checked.toString(),
+                        model_version: modelSelect.value,
+                        stability_flag: stabilityToggle.checked.toString(),
+                        hallucination_check: hallucinationToggle.checked.toString()
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Update the results
+                    results[`instance${pathwayNumber}`] = data;
+                    
+                    // Show the updated result
+                    showResult(`instance${pathwayNumber}`);
+                    
+                    // Update status
+                    status.className = 'status success';
+                    status.textContent = `Partial rerun of Pathway ${pathwayNumber} completed successfully`;
+                    status.style.display = 'block';
+                } else {
+                    throw new Error(data.error || 'Partial rerun failed');
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = `Error: ${error.message}`;
+                status.style.display = 'block';
+            } finally {
+                // Re-enable controls
+                rerunButton.disabled = false;
+                select.disabled = false;
+                rerunButton.innerHTML = 'Start Partial Rerun';
             }
         }
 
