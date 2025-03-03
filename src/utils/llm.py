@@ -394,6 +394,8 @@ def llm_pipeline(
     # Store the last response text for feedback
     last_res_text = ""
 
+    RERUN_REASON = ""
+
     while (output_pathways == [] and run < max_run):
         log_message(f"Calling LLM with molecule: {molecule} and run: {run}",
                     logger)
@@ -407,7 +409,7 @@ def llm_pipeline(
         if feedback_flag.lower(
         ) == "true" and run > 0.0 and messages is not None and last_res_text:
             feedback_message = generate_feedback(last_res_text, current_model,
-                                                 molecule)
+                                                 molecule, RERUN_REASON)
             if feedback_message:
                 # Update messages with feedback for the next call
                 messages = update_messages_with_feedback(
@@ -451,6 +453,7 @@ def llm_pipeline(
             log_message(f"Error in validating split json content: {res_text}",
                         logger)
             run += 0.1
+            RERUN_REASON = "Molecule validation failed"
             get_error_log(status_code)
             continue
 
@@ -471,6 +474,7 @@ def llm_pipeline(
                 log_message(f"Error in stability check: {stable_pathways}",
                             logger)
                 run += 0.1
+                RERUN_REASON = "Stability check failed"
                 get_error_log(status_code)
                 continue
 
@@ -492,6 +496,12 @@ def llm_pipeline(
                     f"Error in hallucination check: {hallucination_pathways}",
                     logger)
                 run += 0.1
+                if status_code == 601:
+                    invalid_reasons = hallucination_pathways
+                    log_message(
+                        f"Invalid reasons for hallucination: {invalid_reasons}",
+                        logger)
+                RERUN_REASON = "Hallucination check failed"
                 get_error_log(status_code)
                 continue
 
@@ -535,7 +545,8 @@ def llm_pipeline(
     return output_pathways, output_explanations, output_confidence
 
 
-def generate_feedback(response_text: str, model: str, molecule: str) -> str:
+def generate_feedback(response_text: str, model: str, molecule: str,
+                      rerun_reason: str) -> str:
     """
     Generate feedback based on the most recent failed response.
     
@@ -553,53 +564,21 @@ def generate_feedback(response_text: str, model: str, molecule: str) -> str:
     str
         Specific feedback about what went wrong
     """
-    feedback = "Your previous attempt had issues. "
+    feedback = "Your previous attempt had issues. \n"
 
-    # Parse the response to identify issues
-    try:
-        # Extract JSON content
-        if model in DEEPSEEK_MODELS:
-            json_content = response_text[response_text.find("<json>\n") +
-                                         7:response_text.find("</json>")]
-        elif model in OPENAI_MODELS:
-            json_content = response_text[response_text.find("<json>\n") +
-                                         7:response_text.find("</json>")]
-        else:  # Claude models
-            json_content = response_text[response_text.find("<json>\n") +
-                                         7:response_text.find("</json>")]
-
-        # Parse the JSON content
-        try:
-            result_list = ast.literal_eval(json_content)
-            res_molecules = result_list.get('data', [])
-
-            # Check if molecules are valid
-            for idx, pathway in enumerate(res_molecules):
-                invalid_smiles = []
-                for smiles in pathway:
-                    # Use simple validity check - more detailed checking happens in validity_check function
-                    # This is just for feedback purposes
-                    if not smiles or '.' in smiles or '*' in smiles:
-                        invalid_smiles.append(smiles)
-
-                if invalid_smiles:
-                    feedback += f"Pathway {idx+1} contained invalid SMILES: {invalid_smiles}. "
-
-            # If no specific issues found but still failed, provide general guidance
-            if "invalid" not in feedback:
-                feedback += (
-                    "Please check that your proposed reactants are commercially available or easily synthesizable. "
-                    "Ensure all molecules have valid structures with proper valence. "
-                )
-        except (SyntaxError, ValueError):
-            feedback += "Your JSON format was incorrect or could not be parsed. Please ensure you provide valid JSON in the <json> tags. "
-    except Exception:
-        feedback += "Please ensure your response includes properly formatted <json> and </json> tags with valid content. "
+    if rerun_reason == "Molecule validation failed":
+        feedback += "The molecules generated were not valid. "
+    elif rerun_reason == "Stability check failed":
+        feedback += "The pathways generated were not stable. "
+    elif rerun_reason == "Hallucination check failed":
+        feedback += "The pathways generated had hallucinations. "
 
     feedback += (
         f"Recall that we're trying to perform retrosynthesis on this molecule: {molecule}. "
         "Focus on chemically feasible transformations, valid molecular structures, and "
-        "commercially available starting materials. ")
+        "commercially available starting materials. "
+        "Make sure to maintain the output format that includes <cot> and <json> tags. "
+    )
 
     return feedback
 

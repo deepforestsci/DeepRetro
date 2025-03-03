@@ -711,29 +711,28 @@ def hallucination_checker(product: str, res_smiles: list):
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
     valid_pathways = []
+    invalid_reasons = []
     for idx, smile_list in enumerate(res_smiles):
-        valid = []
         if isinstance(smile_list, list):
             smiles_combined = ".".join(smile_list)
             if not is_valid_smiles(smiles_combined):
-                log_message(f"Invalid SMILES string: {smiles_combined}", logger)
-            
-            hallucination_report = calculate_hallucination_score(smiles_combined, product)
-            log_message(f"Hallucination report: {hallucination_report}", logger)
-            
+                log_message(f"Invalid SMILES string: {smiles_combined}",
+                            logger)
+
+            hallucination_report = calculate_hallucination_score(
+                smiles_combined, product)
+            log_message(f"Hallucination report: {hallucination_report}",
+                        logger)
+
             if hallucination_report['severity'] in ['low', 'medium']:
                 valid_pathways.append(smile_list)
-            # for smiles in smile_list:
-            #     if not is_valid_smiles(smiles):
-            #         log_message("Invalid SMILES string", logger)
-            #     hallucination_report = calculate_hallucination_score(smiles, product)
-            #     log_message(f"Hallucination report: {hallucination_report}",
-            #                 logger)
-
-            #     if hallucination_report['severity'] in ['low', 'medium']:
-            #         valid.append(smiles)
-            # if len(valid) == len(smile_list):
-            #     valid_pathways.append(valid)
+            else:
+                invalid_reasons.append({
+                    "index":
+                    idx,
+                    "reason":
+                    hallucination_report['penalties']
+                })
         else:
             if is_valid_smiles(smile_list):
                 hallucination_report = calculate_hallucination_score(
@@ -744,6 +743,8 @@ def hallucination_checker(product: str, res_smiles: list):
                 if hallucination_report['severity'] in ['low', 'medium']:
                     valid_pathways.append([smile_list])
     log_message(f"Valid pathways: {valid_pathways}", logger)
+    if valid_pathways == []:
+        return 601, invalid_reasons
     return 200, valid_pathways
 
 
