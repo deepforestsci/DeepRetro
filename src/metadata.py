@@ -63,7 +63,7 @@ def reagent_agent(reactants: list[dict],
     reactants_smiles = [r['smiles'] for r in reactants]
     status, res = reagent_llm_call(reactants_smiles, product_smiles, LLM,
                                    temperature)
-    # logger.info(f"Received reagents from LLM: {res}")
+    logger.info(f"Received reagents from LLM: {res}")
 
     # Make sure the LLM call was successful
     if status != 200:
@@ -163,8 +163,11 @@ def reagent_llm_call(reactants: list[str],
             logger.info(f"2nd Error in calling {LLM}: {e}")
             logger.info(f"Exiting call to {LLM}")
             return 404, ""
-    logger.info(f"Received response from LLM: {res_text}")
-    res = ast.literal_eval(res_text)
+    logger.info(f"Received response from LLM (reagent call): {res_text}")
+    json_content = res_text.split("```json")[-1].split("```")[0]
+    if "perplexity" in LLM:
+        citations = response.citations
+    res = ast.literal_eval(json_content)
     return 200, res
 
 
@@ -282,8 +285,9 @@ def conditions_llm_call(reactants: list[str],
             logger.info(f"Exiting call to {LLM}")
             return 404, ""
     logger.info(f"Received response from LLM: {res_text}")
-    res_text = ast.literal_eval(res_text)
-    return 200, res_text
+    json_content = res_text.split("```json")[-1].split("```")[0]
+    res = ast.literal_eval(json_content)
+    return 200, res
 
 
 @cache_results
@@ -312,8 +316,8 @@ def literature_agent(reactants: list[str],
 
     Returns
     -------
-    int, str
-        Status code and response text
+    int, str, list
+        Status code and response text and citations
     """
     logger = context_logger.get()
     product_smiles = product[0]['smiles']
@@ -356,10 +360,27 @@ def literature_agent(reactants: list[str],
             logger.info(f"Exiting call to {LLM}")
             return 404, ""
     logger.info(f"Received response from LLM: {res_text}")
+    json_content = res_text.split("```json")[-1].split("```")[0]
+
+    try:
+        if "perplexity" in LLM:
+            citations = response.citations
+    except Exception as e:
+        logger.info(f"Error in getting citations: {e}")
+        citations = []
+
+    # format citations
+    try:
+        citations_text = ""
+        for i in range(len(citations)):
+            citations_text += f"[{i+1}] {citations[i]}\n"
+    except Exception as e:
+        logger.info(f"Error in formatting citations: {e}")
+        citations_text = ""
 
     # convert the response to a dictionary
     try:
-        res_text = ast.literal_eval(res_text)
+        res_text = ast.literal_eval(json_content)
     except Exception as e:
         logger.info(f"Error in parsing literature output: {e}")
         return 404, ""
@@ -370,4 +391,7 @@ def literature_agent(reactants: list[str],
     except Exception as e:
         logger.info(f"Error in parsing literature reaction: {e}")
         return 404, ""
-    return 200, res_lit
+
+    # Add citations to the literature
+    # res_lit += f"\n\n{citations_text}"
+    return 200, res_lit, citations
