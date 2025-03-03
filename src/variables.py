@@ -895,6 +895,8 @@ REAGENT_USER_PROMPT = """Predict the reagents used in the following reaction:
 Reactants: {reactants}
 Product: {product}
 
+Make sure to include any protecting groups that might be needed to achieve the desired transformation.
+
 Present your analysis in the following JSON format:
 
 {
