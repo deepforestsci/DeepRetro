@@ -93,7 +93,7 @@ def add_metadata(output_data: dict) -> dict:
             LLM="perplexity/sonar-deep-research")
         output_data['steps'][idx]['conditions'] = conditions
 
-        status, literature = literature_agent(
+        status, literature, citations = literature_agent(
             step['reactants'],
             step['products'],
             step['reagents'],
@@ -101,5 +101,7 @@ def add_metadata(output_data: dict) -> dict:
             LLM="perplexity/sonar-deep-research")
         output_data['steps'][idx]['reactionmetrics'][0][
             'closestliterature'] = literature
+        output_data['steps'][idx]['reactionmetrics'][0][
+            'citations'] = citations
 
     return output_data
