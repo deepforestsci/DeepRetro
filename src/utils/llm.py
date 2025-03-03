@@ -355,7 +355,8 @@ def llm_pipeline(
     LLM: str = "claude-3-opus-20240229",
     messages: Optional[list[dict]] = None,
     stability_flag: str = "False",
-    hallucination_check: str = "False"
+    hallucination_check: str = "False",
+    feedback_flag: str = "False"
 ) -> tuple[list[list[str]], list[str], list[float]]:
     """Pipeline to call LLM and validate the results
 
@@ -367,6 +368,12 @@ def llm_pipeline(
         LLM to be used for retrosynthesis , by default "claude-3-opus-20240229"
     messages : Optional[list[dict]], optional
         Conversation history, by default None
+    stability_flag : str, optional
+        Flag to enable stability check, by default "False"
+    hallucination_check : str, optional
+        Flag to enable hallucination check, by default "False"
+    feedback_flag : str, optional
+        Flag to enable feedback mechanism, by default "False"
 
     Returns
     -------
@@ -383,6 +390,12 @@ def llm_pipeline(
         max_run = 1.5
     else:
         max_run = 0.6
+
+    # Store the last response text for feedback
+    last_res_text = ""
+
+    RERUN_REASON = ""
+
     while (output_pathways == [] and run < max_run):
         log_message(f"Calling LLM with molecule: {molecule} and run: {run}",
                     logger)
@@ -390,14 +403,32 @@ def llm_pipeline(
         # Selecting the model based on the run number
         current_model = LLM
         if LLM in DEEPSEEK_MODELS and run > 0.0:
-            current_model = "claude-3-opus-20240229"
+            current_model = "anthropic/claude-3-7-sonnet-20250219"
+
+        # If feedback is enabled and this is not the first run, provide feedback
+        if feedback_flag.lower(
+        ) == "true" and run > 0.0 and messages is not None and last_res_text:
+            feedback_message = generate_feedback(last_res_text, current_model,
+                                                 molecule, RERUN_REASON)
+            if feedback_message:
+                # Update messages with feedback for the next call
+                messages = update_messages_with_feedback(
+                    messages, feedback_message, last_res_text)
+                log_message(f"Added feedback: {feedback_message}", logger)
 
         # --------------------
         # Call LLM
-        status_code, res_text = call_LLM(molecule,
-                                         current_model,
+        if run == 0.0 or feedback_flag.lower() == "false":
+            messages = None
+
+        status_code, res_text = call_LLM(molecule=molecule,
+                                         LLM=current_model,
                                          messages=messages,
                                          temperature=run)
+
+        # Store the response for potential feedback
+        last_res_text = res_text
+
         if status_code != 200:
             log_message(f"Error in calling LLM: {res_text}", logger)
             run += 0.1
@@ -422,6 +453,7 @@ def llm_pipeline(
             log_message(f"Error in validating split json content: {res_text}",
                         logger)
             run += 0.1
+            RERUN_REASON = "Molecule validation failed"
             get_error_log(status_code)
             continue
 
@@ -430,23 +462,33 @@ def llm_pipeline(
         output_pathways, output_explanations, output_confidence = validity_check(
             molecule, res_molecules, res_explanations, res_confidence)
 
+        validity_failed = (output_pathways == [])
+        stability_failed = False
+        hallucination_failed = False
+
         # --------------------
         # Stability check
-        if stability_flag.lower() == "true":
+        if stability_flag.lower() == "true" and output_pathways != []:
             status_code, stable_pathways = stability_checker(output_pathways)
             if status_code != 200:
                 log_message(f"Error in stability check: {stable_pathways}",
                             logger)
                 run += 0.1
+                RERUN_REASON = "Stability check failed"
                 get_error_log(status_code)
                 continue
+
+            # Check if stability filtering removed all pathways
+            stability_failed = (stable_pathways == []
+                                and output_pathways != [])
             output_pathways = stable_pathways
 
         # --------------------
         # Hallucination check
-        if hallucination_check.lower() == "true":
-            log_message(f"Calling hallucination check with pathways: {output_pathways}",
-                        logger)
+        if hallucination_check.lower() == "true" and output_pathways != []:
+            log_message(
+                f"Calling hallucination check with pathways: {output_pathways}",
+                logger)
             status_code, hallucination_pathways = hallucination_checker(
                 molecule, output_pathways)
             if status_code != 200:
@@ -454,26 +496,45 @@ def llm_pipeline(
                     f"Error in hallucination check: {hallucination_pathways}",
                     logger)
                 run += 0.1
+                if status_code == 601:
+                    invalid_reasons = hallucination_pathways
+                    log_message(
+                        f"Invalid reasons for hallucination: {invalid_reasons}",
+                        logger)
+                RERUN_REASON = "Hallucination check failed"
                 get_error_log(status_code)
                 continue
+
+            # Check if hallucination filtering removed all pathways
+            hallucination_failed = (hallucination_pathways == []
+                                    and output_pathways != [])
             output_pathways = hallucination_pathways
 
-        # --------------------
-        # Update the messages for the next call
-        # if output_pathways == []:
-        #     messages = [{
-        #         "role": "system",
-        #         "content": SYS_PROMPT
-        #     }, {
-        #         "role": "user",
-        #         "content": USER_PROMPT
-        #     }, {
-        #         "role": "assistant",
-        #         "content": res_text
-        #     }, {
-        #         "role": "user",
-        #         "content": "<add something here>"
-        #     }]
+        # If we're going to do another run and feedback is enabled, prepare messages
+        if output_pathways == [] and feedback_flag.lower() == "true":
+            # Initialize messages if not provided
+            if messages is None:
+                sys_prompt_final, user_prompt_final, _ = obtain_prompt(
+                    current_model)
+
+                # Check for seven member rings
+                add_on = ""
+                if detect_seven_member_rings(molecule):
+                    add_on = ADDON_PROMPT_7_MEMBER
+
+                messages = [{
+                    "role": "system",
+                    "content": sys_prompt_final + add_on
+                }, {
+                    "role":
+                    "user",
+                    "content":
+                    user_prompt_final.replace('{target_smiles}', molecule) +
+                    "\n\n" + add_on
+                }, {
+                    "role": "assistant",
+                    "content": res_text
+                }]
 
         log_message(
             f"Output Pathways: {output_pathways},\n\
@@ -482,6 +543,95 @@ def llm_pipeline(
         run += 0.1
 
     return output_pathways, output_explanations, output_confidence
+
+
+def generate_feedback(response_text: str, model: str, molecule: str,
+                      rerun_reason: str) -> str:
+    """
+    Generate feedback based on the most recent failed response.
+    
+    Parameters
+    ----------
+    response_text : str
+        The LLM response text that failed validation
+    model : str
+        The model that generated the response
+    molecule : str
+        The target molecule
+        
+    Returns
+    -------
+    str
+        Specific feedback about what went wrong
+    """
+    feedback = "Your previous attempt had issues. \n"
+
+    if rerun_reason == "Molecule validation failed":
+        feedback += "The molecules generated were not valid. "
+    elif rerun_reason == "Stability check failed":
+        feedback += "The pathways generated were not stable. "
+    elif rerun_reason == "Hallucination check failed":
+        feedback += "The pathways generated had hallucinations. "
+
+    feedback += (
+        f"Recall that we're trying to perform retrosynthesis on this molecule: {molecule}. "
+        "Focus on chemically feasible transformations, valid molecular structures, and "
+        "commercially available starting materials. "
+        "Make sure to maintain the output format that includes <cot> and <json> tags. "
+    )
+
+    return feedback
+
+
+def update_messages_with_feedback(messages: list[dict], feedback: str,
+                                  last_response: str) -> list[dict]:
+    """
+    Update the message history with feedback for the next LLM call.
+    
+    Parameters
+    ----------
+    messages : list[dict]
+        The current message history
+    feedback : str
+        The feedback to add
+    last_response : str
+        The last response from the LLM
+        
+    Returns
+    -------
+    list[dict]
+        Updated message history with feedback
+    """
+    # If the last message was from the assistant, add the user feedback
+    if messages and messages[-1]["role"] == "assistant":
+        messages.append({"role": "user", "content": feedback})
+    # If the last message was already from the user, replace it with feedback
+    elif messages and messages[-1]["role"] == "user":
+        messages[-1]["content"] = feedback
+    # Ensure we have the assistant's last response in the history
+    elif messages:
+        # Add the assistant's last response followed by feedback
+        messages.append({"role": "assistant", "content": last_response})
+        messages.append({"role": "user", "content": feedback})
+
+    # Ensure we don't exceed token limits by keeping only recent messages if needed
+    if len(messages) > 8:  # Arbitrary limit to prevent context length issues
+        # Keep system message, last assistant message, and feedback
+        system_message = next((m for m in messages if m["role"] == "system"),
+                              None)
+        new_messages = []
+        if system_message:
+            new_messages.append(system_message)
+
+        # Add the last few message pairs
+        recent_messages = messages[-4:]  # Last 4 messages
+        for msg in recent_messages:
+            if msg not in new_messages:  # Avoid duplicating system message
+                new_messages.append(msg)
+
+        return new_messages
+
+    return messages
 
 
 def get_error_log(status_code: int):
