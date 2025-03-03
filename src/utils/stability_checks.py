@@ -417,6 +417,36 @@ def check_molecule_stability(smiles):
             results["issues"].append(
                 "Contains carbene in 4-membered ring (highly unstable)")
             stability_score -= 10  # Additional penalty
+    
+    # ----------------- DETECT STRAINED 5-MEMBER RINGS WITH SMALL FUSED RINGS -----------------
+    # Find 5-membered carbon rings with attached 3/4-membered rings containing heteroatoms
+    cyclopentane_pattern = Chem.MolFromSmarts("C1CCCC1")
+    if cyclopentane_pattern and mol.HasSubstructMatch(cyclopentane_pattern):
+        # Find all 5-membered carbon rings
+        five_mem_rings = [ring for ring in atom_rings if len(ring) == 5 and all(
+            mol.GetAtomWithIdx(i).GetSymbol() == 'C' for i in ring)]
+        
+        # Find all 3/4-membered rings with heteroatoms
+        small_hetero_rings = [ring for ring in atom_rings if len(ring) in [3, 4] and any(
+            mol.GetAtomWithIdx(i).GetSymbol() != 'C' for i in ring)]
+        
+        # Check for fusion between these rings
+        for five_ring in five_mem_rings:
+            five_ring_set = set(five_ring)
+            for small_ring in small_hetero_rings:
+                small_ring_set = set(small_ring)
+                shared_atoms = five_ring_set.intersection(small_ring_set)
+                
+                if len(shared_atoms) >= 1:
+                    # Get heteroatom types in the small ring
+                    heteroatoms = [mol.GetAtomWithIdx(i).GetSymbol() 
+                                for i in small_ring if mol.GetAtomWithIdx(i).GetSymbol() != 'C']
+                    unique_hetero = set(heteroatoms)
+                    
+                    results["issues"].append(
+                        f"5-membered carbon ring fused with {len(small_ring)}-membered ring containing {', '.join(unique_hetero)} (strained system)"
+                    )
+                    stability_score -= 40  # Significant penalty for this strained system
 
     # Penalize for extreme values of properties
     if abs(logp) > 10: stability_score -= 10
