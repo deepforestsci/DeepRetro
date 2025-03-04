@@ -1,4 +1,3 @@
-# load up USPTO-50k test dataset
 import rootutils
 import os
 import pandas as pd
@@ -14,7 +13,7 @@ root_dir = rootutils.setup_root(".",
 from src.main import main
 from src.cache import clear_cache_for_molecule
 
-df = pd.read_csv(f"{root_dir}/results/dfs/dataset.csv")
+df = pd.read_csv(f"{root_dir}/results/SICIC/dataset.csv")
 mols_dfs = df['smiles'].to_list()
 mapper = {
     'm0p0': 'claude-3-opus-20240229', 'm0p1': 'anthropic/claude-3-7-sonnet-20250219:adv',
@@ -22,7 +21,7 @@ mapper = {
 }
 
 folder_list = ["m0p1:Pistachio_100+", "m1p0:Pistachio_100+"]
-MAX_CONCURRENT_TASKS = 6  # Process 5 molecules in parallel
+MAX_CONCURRENT_TASKS = 3  # Process 3 molecules in parallel
 
 async def process_molecule(mol, folder, run_no):
     """Process a single molecule asynchronously."""
@@ -43,7 +42,7 @@ async def process_molecule(mol, folder, run_no):
                 functools.partial(main, molecule, llm=llm, az_model=az_model, hallucination_check="True", stability_flag="True")
             )
             
-        output_path = f"{root_dir}/results/dfs/{folder}/run_{run_no}/{mol}_hallucination.json"
+        output_path = f"{root_dir}/results/SICIC/{folder}/run_{run_no}/{mol}.json"
         with open(output_path, "w") as f:
             json.dump(res_dict, f, indent=4)
             
@@ -56,13 +55,13 @@ async def process_molecule(mol, folder, run_no):
     return mol
 
 async def main_async():
-    for run_no in range(9, 12):
+    for run_no in range(0, 3):
         for folder in folder_list:
             # Create directories if they don't exist
-            if not os.path.exists(f"{root_dir}/results/dfs/{folder}"):
-                os.makedirs(f"{root_dir}/results/dfs/{folder}")
-            if not os.path.exists(f"{root_dir}/results/dfs/{folder}/run_{run_no}"):
-                os.makedirs(f"{root_dir}/results/dfs/{folder}/run_{run_no}")
+            if not os.path.exists(f"{root_dir}/results/SICIC/{folder}"):
+                os.makedirs(f"{root_dir}/results/SICIC/{folder}")
+            if not os.path.exists(f"{root_dir}/results/SICIC/{folder}/run_{run_no}"):
+                os.makedirs(f"{root_dir}/results/SICIC/{folder}/run_{run_no}")
             
             # Process molecules in batches to limit concurrency
             tasks = []
