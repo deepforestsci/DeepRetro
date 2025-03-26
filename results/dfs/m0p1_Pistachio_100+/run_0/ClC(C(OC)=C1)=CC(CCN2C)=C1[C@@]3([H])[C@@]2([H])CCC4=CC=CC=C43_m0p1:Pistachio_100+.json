@@ -1,0 +1,528 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "10"
+        ],
+        "2": [
+            "3",
+            "8"
+        ],
+        "3": [
+            "4",
+            "7"
+        ],
+        "4": [
+            "5",
+            "6"
+        ],
+        "5": [],
+        "6": [
+            "5"
+        ],
+        "7": [],
+        "8": [
+            "9"
+        ],
+        "9": [],
+        "10": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC(CC2)=C1[C@@]3([H])[C@@]2([H])CCC4=CC=CC=C43",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H19ClO",
+                        "mass": 298.112442908
+                    }
+                },
+                {
+                    "smiles": "NCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6BrN",
+                        "mass": 122.968361292
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)O.[K+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4KO2+",
+                        "mass": 98.98428746809
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC(CCN2C)=C1[C@@]3([H])[C@@]2([H])CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely takes place in a polar aprotic solvent such as acetonitrile, DMF, or DMSO to facilitate the SN2 reaction",
+                "time": "The reaction time can vary depending on the specific conditions, but it typically ranges from a few hours to overnight"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.7,
+                    "closestliterature": "N-alkylation of a secondary amine via an SN2 reaction with an alkyl halide"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "ClC(C(O)=C1)=CC(CC2)=C1[C@@]3([H])[C@@]2([H])CCC4=CC=CC=C43",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H17ClO",
+                        "mass": 284.096792844
+                    }
+                },
+                {
+                    "smiles": "COC=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC(CC2)=C1[C@@]3([H])[C@@]2([H])CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H19ClO",
+                        "mass": 298.112442908
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Dichloromethane (CH2Cl2) or other non-polar aprotic solvent",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Fischer esterification of a carboxylic acid with an alcohol under acidic conditions"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "C1=CC=C2C=CC=C(C1)C=C2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H10",
+                        "mass": 142.07825032
+                    }
+                },
+                {
+                    "smiles": "c1ccc2c(c1)CCC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H10",
+                        "mass": 118.07825032
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCl",
+                        "mass": 35.976677712
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "ClC(C(O)=C1)=CC(CC2)=C1[C@@]3([H])[C@@]2([H])CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H17ClO",
+                        "mass": 284.096792844
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Dichloromethane (DCM)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.65,
+                    "closestliterature": "Chlorination of phenanthrene with Cl2 in DCM, followed by acid-catalyzed intramolecular Friedel-Crafts alkylation with cyclohexene"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "Brc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H5Br",
+                        "mass": 155.95746226
+                    }
+                },
+                {
+                    "smiles": "OB(O)c1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H7BO2",
+                        "mass": 122.05390986399999
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "Cc1ccccc1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H8",
+                        "mass": 92.062600256
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C1=CC=C2C=CC=C(C1)C=C2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H10",
+                        "mass": 142.07825032
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "Ambient pressure (1 atm)",
+                "solvent": "Toluene",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Suzuki coupling"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "Nc1ccccc1Br",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6BrN",
+                        "mass": 170.968361292
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "Brc1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H5Br",
+                        "mass": 155.95746226
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "This reaction likely proceeds at room temperature.",
+                "pressure": "This reaction likely proceeds at atmospheric pressure.",
+                "solvent": "This reaction likely proceeds without solvent, as it is a simple elimination.",
+                "time": "This reaction is likely very fast, completing within minutes."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Elimination of HBr from 2-bromoaniline to form bromobenzene"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "Brc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H5Br",
+                        "mass": 155.95746226
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OB(O)c1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H7BO2",
+                        "mass": 122.05390986399999
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-5 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Water",
+                "time": "30 minutes to 1 hour"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "2",
+                    "confidenceestimate": 0.73,
+                    "closestliterature": "Phenylboronic acid synthesis via lithium-halogen exchange followed by borylation"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "Brc1ccc2c(c1)CCC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H9Br",
+                        "mass": 195.988762388
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "c1ccc2c(c1)CCC2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H10",
+                        "mass": 118.07825032
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-150 \u00b0C",
+                "pressure": "Not applicable. This reaction does not require high pressure.",
+                "solvent": "Not applicable. This reaction can be carried out neat (without solvent).",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Dehalogenation of aryl bromides using palladium on carbon (Pd/C) catalyst"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "O=CO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH2O2",
+                        "mass": 46.005479304
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CO",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O",
+                        "mass": 32.026214748
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COC=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1-10 atm",
+                "solvent": "Concentrated sulfuric acid (H2SO4)",
+                "time": "Instantaneous reaction under the given conditions"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Koch reaction (Koch-Haaf carboxylation)"
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [],
+            "reagents": [
+                {
+                    "smiles": "CO",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4O",
+                        "mass": 32.026214748
+                    }
+                },
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=CO",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH2O2",
+                        "mass": 46.005479304
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "500-1000 \u00b0C",
+                "pressure": "1-10 atm",
+                "solvent": "No solvent needed, gas phase reaction",
+                "time": "Residence time on the order of seconds to minutes, depending on reactor design"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "CO + 1/2 O2 -> CO2"
+                }
+            ]
+        },
+        {
+            "step": "10",
+            "reactants": [
+                {
+                    "smiles": "[N-]=[N+]=NCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4BrN3",
+                        "mass": 148.958859228
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "NCCBr",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6BrN",
+                        "mass": 122.968361292
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "No heating required",
+                "pressure": "Ambient pressure",
+                "solvent": "No solvent needed",
+                "time": "Reaction occurs instantaneously"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.96,
+                    "closestliterature": "Azide decomposition to form nitrene"
+                }
+            ]
+        }
+    ]
+}

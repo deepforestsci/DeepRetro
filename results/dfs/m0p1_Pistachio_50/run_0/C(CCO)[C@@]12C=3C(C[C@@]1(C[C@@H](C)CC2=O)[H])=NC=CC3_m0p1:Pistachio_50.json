@@ -1,0 +1,304 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "5"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [],
+        "5": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "[H][C@@]12CCC(=O)C1=CC=N[C@]21CC[C@@H](O)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H17NO2",
+                        "mass": 219.125928784
+                    }
+                },
+                {
+                    "smiles": "CCOC(=O)c1ccnc(C#N)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8N2O2",
+                        "mass": 176.058577496
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)OC(C)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6O3",
+                        "mass": 102.031694052
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C(CCO)[C@@]12C=3C(C[C@@]1(C[C@@H](C)CC2=O)[H])=NC=CC3",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H21NO2",
+                        "mass": 259.157228912
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "room temperature (20-25\u00b0C)",
+                "pressure": "atmospheric pressure",
+                "solvent": "acetic anhydride",
+                "time": "reaction time not specified, but likely several hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)C(=O)O[C@H]1CC[C@]2(CC1)N=CC=C1C(=O)CC[C@H]12",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H25NO3",
+                        "mass": 303.18344366
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "[H][C@@]12CCC(=O)C1=CC=N[C@]21CC[C@@H](O)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C13H17NO2",
+                        "mass": 219.125928784
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required",
+                "time": "The reaction is likely fast, on the order of minutes to a few hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Oxidation of a secondary alcohol to a ketone using molecular oxygen (O2)"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)C(=O)O[C@H]1CC[C@]2(CC1)N=CC=C1[C@H]2CCC12OCCO2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H29NO4",
+                        "mass": 347.209658408
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C1C=CC(=O)C=C1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4O2",
+                        "mass": 108.021129368
+                    }
+                },
+                {
+                    "smiles": "[O-][Mn+](=O)(=O)[O-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "MnO4-",
+                        "mass": 118.91825215991
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)C(=O)O[C@H]1CC[C@]2(CC1)N=CC=C1C(=O)CC[C@H]12",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C18H25NO3",
+                        "mass": 303.18344366
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0 \u00b0C to room temperature",
+                "pressure": "Ambient pressure (1 atm)",
+                "solvent": "Dichloromethane (CH2Cl2) or other aprotic solvent",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Oxidation of an acetal to a ketone using a quinone oxidant and a manganese dioxide catalyst"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)C(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H10O2",
+                        "mass": 102.06807956
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C=NCCl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H2ClNO",
+                        "mass": 90.982491364
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)C(=O)O[C@H]1CC[C@]2(CC1)N=CC=C1[C@H]2CCC12OCCO2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H29NO4",
+                        "mass": 347.209658408
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Ambient pressure (1 atm)",
+                "solvent": "The reaction likely does not require a solvent as both reactants are liquids. If a solvent is used, it would be an inert, aprotic solvent such as dichloromethane or chloroform to avoid side reactions with the isocyanate.",
+                "time": "The reaction is expected to proceed rapidly, likely completing within minutes to a few hours, depending on the scale and exact conditions employed."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Reaction of an alcohol (CC(C)(C)C(=O)O) with an isocyanate (O=C=NCCl) to form a carbamate ester (CC(C)(C)C(=O)O[C@H]1CC[C@]2(CC1)N=CC=C1[C@H]2CCC12OCCO2)"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "C[Si](C)(C)C#N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H9NSi",
+                        "mass": 99.050425818
+                    }
+                },
+                {
+                    "smiles": "CCOC(=O)c1cc[n+]([O-])cc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H9NO3",
+                        "mass": 167.058243148
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Cu]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cu",
+                        "mass": 62.9295975
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CCOC(=O)c1ccnc(C#N)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8N2O2",
+                        "mass": 176.058577496
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "80-100 \u00b0C",
+                "pressure": "atmospheric pressure",
+                "solvent": "1,4-dioxane",
+                "time": "2-12 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "Palladium-catalyzed cyanation of aryl halides with trimethylsilyl cyanide (TMSCN)"
+                }
+            ]
+        }
+    ]
+}

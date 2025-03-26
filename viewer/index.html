@@ -938,7 +938,6 @@
             if (!window.results) {
                 window.results = {};
             }
-            
             // Remove any existing elements
             const existingJsonToggle = document.getElementById('json-toggle');
             if (existingJsonToggle) existingJsonToggle.style.display = 'none';
@@ -1074,7 +1073,7 @@
                 if (pathwayNumber) {
                     graphDiv.parentNode.insertBefore(pathwayNumber, graphDiv);
                 }
-                
+
                 // Initialize counter for completed requests
                 let completedCount = 0;
                 let firstCompletedIndex = -1;
@@ -1116,6 +1115,7 @@
                         if (response.ok) {
                             // Store the result in the global object
                             window.results[`instance${serverNum}`] = data;
+
                             
                             // Update status indicator
                             statusIndicators[index].innerHTML = `
@@ -1214,6 +1214,7 @@
                             downloadResults(instance);
                         };
                     }
+
                     
                     // Clear existing graph
                     document.getElementById('graph').innerHTML = '';

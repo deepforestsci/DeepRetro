@@ -1,0 +1,296 @@
+{
+    "dependencies": {
+        "1": [
+            "2"
+        ],
+        "2": [
+            "3",
+            "5"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [],
+        "5": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2O)CC4=CC5=C(OCO5)C=C4C3[C@@H]1O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H17NO5",
+                        "mass": 303.110672644
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3ClO",
+                        "mass": 77.987242396
+                    }
+                },
+                {
+                    "smiles": "CC(=O)OC(C)=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H6O3",
+                        "mass": 102.031694052
+                    }
+                },
+                {
+                    "smiles": "CC(=O)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H3ClO",
+                        "mass": 77.987242396
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H21NO6",
+                        "mass": 359.13688739199995
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "The reaction is typically carried out at atmospheric pressure (1 atm)",
+                "solvent": "An aprotic polar solvent such as dichloromethane (DCM) or acetonitrile (MeCN)",
+                "time": "The reaction is usually complete within 1-4 hours, depending on the scale and specific conditions"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.95,
+                    "closestliterature": "Acetylation of alcohols using acetyl chloride (or acetic anhydride)"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1C=C2C[C@H](O)C3=C(C=CC4=CC(OCO4)=CC3=O)N2C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H13NO5",
+                        "mass": 299.07937251600003
+                    }
+                },
+                {
+                    "smiles": "C=CC(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H4O2",
+                        "mass": 72.021129368
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2O)CC4=CC5=C(OCO5)C=C4C3[C@@H]1O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H17NO5",
+                        "mass": 303.110672644
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Acetic acid",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Oxidative cyclization of 1,4-naphthoquinone with acrylic acid under acidic conditions to form a fused pyran ring system."
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)c1cccc2c1OCO2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H6O4",
+                        "mass": 166.026608672
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C=C2C[C@H](O)C3=C(C=CC4=CC(OCO4)=CC3=O)N2C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H13NO5",
+                        "mass": 299.07937251600003
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Acetic acid",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Oxidative cyclization of 3,4-methylenedioxyphenylacetic acid to form a benzofuran-2-one derivative"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "COC(=O)c1cccc2c1OCO2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8O4",
+                        "mass": 180.042258736
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "OC(=O)C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(O)c1cccc2c1OCO2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H6O4",
+                        "mass": 166.026608672
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Aqueous solution, likely water or water/ethanol mixture",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.78,
+                    "closestliterature": "Ester hydrolysis of methyl 1,3-benzodioxole-5-carboxylate to 1,3-benzodioxole-5-carboxylic acid under basic conditions"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)CCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H5BrO2",
+                        "mass": 151.9472915
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=CC(=O)O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C3H4O2",
+                        "mass": 72.021129368
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux (around 100\u00b0C for aqueous solution)",
+                "pressure": "Ambient pressure",
+                "solvent": "Aqueous solution (water)",
+                "time": "30 minutes to 2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Dehydrohalogenation of 3-bromopropanoic acid with hydroxide to form acrylic acid"
+                }
+            ]
+        }
+    ]
+}

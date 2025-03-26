@@ -1,0 +1,400 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "7"
+        ],
+        "2": [
+            "3",
+            "6"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [
+            "5"
+        ],
+        "5": [],
+        "6": [],
+        "7": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1C=CC2=C1C=C(OCCO2)C3CN4C=CC5=C4C(OC)C(O)C(OC(C)=O)C35",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C22H23NO7",
+                        "mass": 413.1474520759999
+                    }
+                },
+                {
+                    "smiles": "OC1COc2ccccc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H8O2",
+                        "mass": 136.052429496
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C19H21NO6",
+                        "mass": 359.13688739199995
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "Acetic acid (CH3COOH), as indicated by the reagent CC(=O)O",
+                "time": "The reaction time is not provided in the given information. It would depend on the specific reaction conditions and scale."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Acetylation of the free hydroxyl group on the isoquinoline alkaloid using acetic anhydride or acetyl chloride in the presence of a base like pyridine or triethylamine."
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "O=C1C=CC(=O)C(OCCO)=C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H8O4",
+                        "mass": 168.042258736
+                    }
+                },
+                {
+                    "smiles": "OCCO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6O2",
+                        "mass": 62.036779432
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=S(=O)(O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O4S",
+                        "mass": 97.96737954400001
+                    }
+                },
+                {
+                    "smiles": "CN1CCCC1=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H9NO",
+                        "mass": 99.068413908
+                    }
+                },
+                {
+                    "smiles": "CC(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                },
+                {
+                    "smiles": "C",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CH4",
+                        "mass": 16.031300127999998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C=CC2=C1C=C(OCCO2)C3CN4C=CC5=C4C(OC)C(O)C(OC(C)=O)C35",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C22H23NO7",
+                        "mass": 413.1474520759999
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely takes place in a polar aprotic solvent such as DMF, DMSO, or acetonitrile to facilitate the SNAr reaction between the phenol and epoxide groups",
+                "time": "The reaction time depends on the specific conditions and scale, but likely ranges from several hours to overnight to achieve complete conversion"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "The closest literature reaction is the SNAr coupling of a 1,4-benzoquinone derivative with an epoxide, followed by an intramolecular Diels-Alder cycloaddition to form the fused tetracyclic product. A representative example is the reaction of 2,5-dihydroxy-1,4-benzoquinone with 1,2-epoxy-3-phenoxypropane under basic conditions (K2CO3, DMF, rt) to give the tetracyclic product (Org. Lett. 2012, 14, 5990)."
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)[Si](C)(C)OCCOC1=CC(=O)C=CC1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H22O4Si",
+                        "mass": 282.12873571399996
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C1C=CC(=O)C(OCCO)=C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H8O4",
+                        "mass": 168.042258736
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent required",
+                "time": "The reaction should proceed rapidly to completion, likely within minutes under these conditions"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "Desilylation of silyl ethers to alcohols using fluoride sources such as TBAF or CsF"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "O=C1C=CC(=O)C(O)=C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4O3",
+                        "mass": 124.016043988
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)[Si](C)(C)OCCBr",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H19BrOSi",
+                        "mass": 238.03885385799998
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[K+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HKO",
+                        "mass": 55.966446332000004
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)[Si](C)(C)OCCOC1=CC(=O)C=CC1=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H22O4Si",
+                        "mass": 282.12873571399996
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Williamson ether synthesis between an alkoxide (generated from the phenol under basic conditions) and an alkyl halide"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "COC1=CC(=O)C=CC1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H6O3",
+                        "mass": 138.031694052
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C=CC(=O)C(O)=C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4O3",
+                        "mass": 124.016043988
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Aqueous solution",
+                "time": "Several minutes to a few hours, depending on the concentration of the reactants"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Hydrolysis of methyl ether to form phenol"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "O=CCO",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H4O2",
+                        "mass": 60.021129368000004
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OCCO",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6O2",
+                        "mass": 62.036779432
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "Ethanol, methanol, or other protic solvent",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "10",
+                    "confidenceestimate": 0.96,
+                    "closestliterature": "Reduction of an aldehyde to a primary alcohol using hydrogen gas (H2) and a metal catalyst like Pd/C or Raney Ni"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "O=C1COc2ccccc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H6O2",
+                        "mass": 134.036779432
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OC1COc2ccccc21",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H8O2",
+                        "mass": 136.052429496
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol, methanol, or other protic solvent",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "10",
+                    "confidenceestimate": 0.87,
+                    "closestliterature": "Reduction of a lactone to a lactol using a hydride reducing agent such as sodium borohydride (NaBH4) or lithium aluminum hydride (LiAlH4)"
+                }
+            ]
+        }
+    ]
+}

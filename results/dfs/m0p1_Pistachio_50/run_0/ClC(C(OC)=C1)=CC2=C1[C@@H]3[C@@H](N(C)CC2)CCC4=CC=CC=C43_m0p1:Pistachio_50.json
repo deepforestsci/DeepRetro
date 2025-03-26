@@ -1,0 +1,286 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "5"
+        ],
+        "2": [
+            "3",
+            "4"
+        ],
+        "3": [],
+        "4": [],
+        "5": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C1[C@H]2[C@@H](N(C)CC3=CC(OC)=C(Cl)C=C13)CCC4=CC=CC=C24",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H20ClNO2",
+                        "mass": 341.11825655999996
+                    }
+                },
+                {
+                    "smiles": "COc1cccc(Cl)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7ClO",
+                        "mass": 142.018542524
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "The reaction likely proceeds without the need for an additional solvent, as the reactants can act as solvents for each other.",
+                "time": "The reaction time depends on the specific conditions and scale but is likely relatively short (minutes to a few hours) due to the high reactivity of the reactants."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "This reaction appears to be a Pictet-Spengler reaction, which involves the condensation of a \u03b2-arylethylamine (in this case, the tetrahydroisoquinoline derivative) with an aldehyde or ketone (the substituted benzaldehyde) to form a tetrahydro-\u03b2-carboline product."
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "N[C@@H](CCc1ccccc1)C(=O)O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H13NO2",
+                        "mass": 179.094628656
+                    }
+                },
+                {
+                    "smiles": "COc1cc(Cl)cc(CN)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H10ClNO",
+                        "mass": 171.04509162
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C=N[C@@H]1CCCC[C@H]1N(C)Cc1cc(Cl)cc(OC)c1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C16H21ClN2O2",
+                        "mass": 308.129155592
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1[C@H]2[C@@H](N(C)CC3=CC(OC)=C(Cl)C=C13)CCC4=CC=CC=C24",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H20ClNO2",
+                        "mass": 341.11825655999996
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+                "time": "2-24 hours, depending on the specific substrates and scale of the reaction"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "COC(=O)[C@@H](N)CCc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H15NO2",
+                        "mass": 193.11027872
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N[C@@H](CCc1ccccc1)C(=O)O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H13NO2",
+                        "mass": 179.094628656
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Aqueous solution, likely water or water/alcohol mixture",
+                "time": "1-4 hours, depending on the specific reaction conditions"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.93,
+                    "closestliterature": "Ester hydrolysis under basic conditions (saponification)"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(Cl)cc(C#N)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H6ClNO",
+                        "mass": 167.013791492
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                },
+                {
+                    "smiles": "[Pt]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pt",
+                        "mass": 194.9647911
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(Cl)cc(CN)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H10ClNO",
+                        "mass": 171.04509162
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "1 atm (atmospheric pressure)",
+                "solvent": "Ethanol (EtOH) or Methanol (MeOH)",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.73,
+                    "closestliterature": "Catalytic hydrogenation of nitriles to primary amines using platinum catalyst"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "COS(=O)(=O)OC",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H6O4S",
+                        "mass": 125.99867967200001
+                    }
+                },
+                {
+                    "smiles": "Oc1cccc(Cl)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H5ClO",
+                        "mass": 128.00289246
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cccc(Cl)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H7ClO",
+                        "mass": 142.018542524
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetone",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Nucleophilic aromatic substitution (SNAr) of aryl chloride with sodium methoxide"
+                }
+            ]
+        }
+    ]
+}

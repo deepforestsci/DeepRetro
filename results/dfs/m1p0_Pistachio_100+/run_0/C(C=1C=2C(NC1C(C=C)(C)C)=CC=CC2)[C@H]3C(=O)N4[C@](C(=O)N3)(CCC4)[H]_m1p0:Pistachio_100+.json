@@ -1,0 +1,182 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "O=C(O)c1cc2ccccc2[nH]1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H7NO2",
+                        "mass": 161.047678464
+                    }
+                },
+                {
+                    "smiles": "N[C@@H]1CCNC1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8N2O",
+                        "mass": 100.063662876
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C=NCCl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C2H2ClNO",
+                        "mass": 90.982491364
+                    }
+                },
+                {
+                    "smiles": "Cl[Si](Cl)(Cl)Cl",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Cl4Si",
+                        "mass": 167.85233725
+                    }
+                },
+                {
+                    "smiles": "CN(C)CCC#N",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H10N2",
+                        "mass": 98.08439831999999
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C(C=1C=2C(NC1C(C=C)(C)C)=CC=CC2)[C@H]3C(=O)N4[C@](C(=O)N3)(CCC4)[H]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H25N3O2",
+                        "mass": 351.19467704
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "The reaction likely proceeds at atmospheric pressure, as no special pressure conditions are typically required for amide bond formation and nucleophilic addition reactions of this type.",
+                "solvent": "A polar aprotic solvent such as DMF, DMSO, or acetonitrile would likely be used to dissolve the reactants and facilitate the reaction.",
+                "time": "The reaction time depends on the specific conditions but likely ranges from 2-24 hours for complete conversion of the starting materials to the product."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "3",
+                    "confidenceestimate": 0.9,
+                    "closestliterature": "The closest literature reaction is the amide bond formation between an amine and a carboxylic acid using a coupling reagent. In this case, the amine is N[C@@H]1CCNC1=O and the carboxylic acid is O=C(O)c1cc2ccccc2[nH]1. The coupling likely proceeds via activation of the carboxylic acid with a reagent like O=C=NCCl, followed by nucleophilic addition of the amine to form the amide bond."
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "COC(=O)c1cc2ccccc2[nH]1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H9NO2",
+                        "mass": 175.063328528
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C(O)c1cc2ccccc2[nH]1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H7NO2",
+                        "mass": 161.047678464
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Aqueous ethanol or methanol",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.76,
+                    "closestliterature": "Base-promoted hydrolysis of a methyl ester to the corresponding carboxylic acid"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "CC(C)(C)OC(=O)N[C@@H]1CCNC1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H16N2O3",
+                        "mass": 200.116092372
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O",
+                        "mass": 18.010564684
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N[C@@H]1CCNC1=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8N2O",
+                        "mass": 100.063662876
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Methanol or ethanol",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.83,
+                    "closestliterature": "Boc deprotection of N-Boc-L-prolinamide using methanol as solvent"
+                }
+            ]
+        }
+    ]
+}

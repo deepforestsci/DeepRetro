@@ -1,0 +1,544 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "5"
+        ],
+        "2": [
+            "3",
+            "4"
+        ],
+        "3": [],
+        "4": [],
+        "5": [
+            "6",
+            "9"
+        ],
+        "6": [
+            "7",
+            "8"
+        ],
+        "7": [],
+        "8": [],
+        "9": [
+            "10"
+        ],
+        "10": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "N(CC=1C=CC=CC1)(C)[C@@H]2[C@H](C=3C(CC2)=CC=CC3)C4=CC(OC)=C(Cl)C=C4",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C25H26ClNO",
+                        "mass": 391.17029213199993
+                    }
+                },
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC2=C1C=CC=3[C@@H](N(C)CC3)[C@@H](C2)C",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H20ClNO",
+                        "mass": 289.12334194
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C20H22ClNO",
+                        "mass": 327.138992004
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Toluene or other high boiling aromatic solvent",
+                "time": "Several hours, until reaction is complete as monitored by TLC or HPLC"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Intramolecular Heck reaction"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "CN(Cc1ccccc1)C1CCC(=O)CC1.COc1ccc([Mg]Br)c(Cl)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H25BrClMgNO2",
+                        "mass": 461.0607605200001
+                    }
+                },
+                {
+                    "smiles": "BrCc1ccccc1.CN(C)C1CCC(=O)CC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H22BrNO",
+                        "mass": 311.08847642399996
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C1C=CC(=O)C=C1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H4O2",
+                        "mass": 108.021129368
+                    }
+                },
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "N(CC=1C=CC=CC1)(C)[C@@H]2[C@H](C=3C(CC2)=CC=CC3)C4=CC(OC)=C(Cl)C=C4",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C25H26ClNO",
+                        "mass": 391.17029213199993
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "The reaction likely takes place in an organic solvent such as dichloromethane (DCM), tetrahydrofuran (THF), or dimethylformamide (DMF)",
+                "time": "The reaction time can vary depending on the specific conditions, but it typically ranges from a few hours to overnight (12-24 hours)"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Grignard addition of an aryl magnesium bromide to a cyclic ketone, followed by a Friedel-Crafts alkylation with a benzyl bromide derivative"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "COc1ccc(Br)c(Cl)c1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H6BrClO",
+                        "mass": 219.929054592
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C1CCC(N(C)Cc2ccccc2)CC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C14H19NO",
+                        "mass": 217.146664228
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CN(Cc1ccccc1)C1CCC(=O)CC1.COc1ccc([Mg]Br)c(Cl)c1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H25BrClMgNO2",
+                        "mass": 461.0607605200001
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (approximately 20-25\u00b0C)",
+                "pressure": "Atmospheric pressure (1 atm)",
+                "solvent": "Anhydrous THF (tetrahydrofuran) or anhydrous diethyl ether",
+                "time": "The reaction is typically complete within 1-3 hours, depending on the scale and specific conditions employed."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Grignard addition of an aryl magnesium bromide to a cyclic ketone"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "CN(C)C1CCC2(CC1)OCCO2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H19NO2",
+                        "mass": 185.141578848
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C(Cl)c1ccccc1Br",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C7H4BrClO",
+                        "mass": 217.913404528
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "BrCc1ccccc1.CN(C)C1CCC(=O)CC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C15H22BrNO",
+                        "mass": 311.08847642399996
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Dichloromethane (CH2Cl2) or other non-polar aprotic solvent",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.74,
+                    "closestliterature": "Acylation of a tertiary amine with an acid chloride"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "CNC1CCc2c(c(Cl)cc(OC)c2)C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H16ClNO",
+                        "mass": 225.092041812
+                    }
+                },
+                {
+                    "smiles": "COc1cc(Cl)cc2c1CC[C@@H]2N",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12ClNO",
+                        "mass": 197.060741684
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "ClC(C(OC)=C1)=CC2=C1C=CC=3[C@@H](N(C)CC3)[C@@H](C2)C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C17H20ClNO",
+                        "mass": 289.12334194
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-150 \u00b0C",
+                "pressure": "Ambient pressure",
+                "solvent": "No solvent needed",
+                "time": "30 min - 2 h"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.75,
+                    "closestliterature": "Pictet-Spengler reaction"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(CCN)ccc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12ClNO",
+                        "mass": 185.060741684
+                    }
+                },
+                {
+                    "smiles": "COc1cc(C=O)ccc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7ClO2",
+                        "mass": 170.013457144
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                },
+                {
+                    "smiles": "[H+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H+",
+                        "mass": 1.00727645209
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CNC1CCc2c(c(Cl)cc(OC)c2)C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H16ClNO",
+                        "mass": 225.092041812
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Protic solvent such as methanol or ethanol",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.85,
+                    "closestliterature": "Reductive amination of an aldehyde with a primary amine, followed by intramolecular cyclization"
+                }
+            ]
+        },
+        {
+            "step": "7",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(CC#N)ccc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8ClNO",
+                        "mass": 181.029441556
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(CCN)ccc1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H12ClNO",
+                        "mass": 185.060741684
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Methanol or ethanol",
+                "time": "1-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.78,
+                    "closestliterature": "Reduction of nitriles to primary amines using hydrogen gas (H2) and a metal catalyst like Raney nickel or palladium on carbon"
+                }
+            ]
+        },
+        {
+            "step": "8",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(CO)ccc1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H9ClO2",
+                        "mass": 172.029107208
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=[Cr](=O)(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCrO4",
+                        "mass": 116.927991012
+                    }
+                },
+                {
+                    "smiles": "[O-]Cl=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "ClO2-",
+                        "mass": 66.95923049990999
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(C=O)ccc1Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C8H7ClO2",
+                        "mass": 170.013457144
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0\u00b0C to room temperature",
+                "pressure": "Atmospheric pressure (no special pressure conditions required)",
+                "solvent": "Dichloromethane (CH2Cl2) or similar chlorinated solvent",
+                "time": "1-3 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.82,
+                    "closestliterature": "Oxidation of a benzylic alcohol to an aldehyde using chromium trioxide (CrO3) and pyridinium chlorochromate (PCC)"
+                }
+            ]
+        },
+        {
+            "step": "9",
+            "reactants": [
+                {
+                    "smiles": "COc1cc(Cl)cc2c1CC[C@@H]2NC(C)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H14ClNO2",
+                        "mass": 239.071306368
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "O=C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CO2",
+                        "mass": 43.98982924
+                    }
+                },
+                {
+                    "smiles": "[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HO-",
+                        "mass": 17.00328823191
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(Cl)cc2c1CC[C@@H]2N",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C10H12ClNO",
+                        "mass": 197.060741684
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Reflux",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Hofmann rearrangement of an amide to a primary amine"
+                }
+            ]
+        },
+        {
+            "step": "10",
+            "reactants": [
+                {
+                    "smiles": "O=C1CCC(=O)N1Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H4ClNO2",
+                        "mass": 132.993056048
+                    }
+                },
+                {
+                    "smiles": "COc1cccc2c1CC[C@@H]2NC(C)=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H15NO2",
+                        "mass": 205.11027872
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Na+].[OH-]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HNaO",
+                        "mass": 39.99250893200001
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "COc1cc(Cl)cc2c1CC[C@@H]2NC(C)=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H14ClNO2",
+                        "mass": 239.071306368
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm (not a key factor)",
+                "solvent": "Ethanol, methanol, or other polar protic solvent",
+                "time": "1-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.98,
+                    "closestliterature": "Chlorination of anilines using N-chlorosuccinimide"
+                }
+            ]
+        }
+    ]
+}

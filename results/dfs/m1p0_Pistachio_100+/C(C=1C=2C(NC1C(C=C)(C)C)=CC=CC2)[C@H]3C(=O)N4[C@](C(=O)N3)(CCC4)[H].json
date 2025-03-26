@@ -1,0 +1,166 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "3"
+        ],
+        "2": [],
+        "3": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "C=CC(C)(C)C(=O)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H9ClO",
+                        "mass": 132.034192588
+                    }
+                },
+                {
+                    "smiles": "CC(C)(C)C=Nc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H15N",
+                        "mass": 161.12044948
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "C1CCOC1",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C4H8O",
+                        "mass": 72.057514876
+                    }
+                },
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C(C=1C=2C(NC1C(C=C)(C)C)=CC=CC2)[C@H]3C(=O)N4[C@](C(=O)N3)(CCC4)[H]",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C21H25N3O2",
+                        "mass": 351.19467704
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "1,4-Dioxane (C1CCOC1)",
+                "time": "The reaction time depends on the scale and specific conditions, but likely ranges from 30 minutes to several hours."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "8",
+                    "confidenceestimate": 0.65,
+                    "closestliterature": "This reaction appears to be an intramolecular Diels-Alder cycloaddition to form a fused bicyclic ring system. The diene component is formed via condensation of the ketone and hydrazine to generate an imine. The dienophile is an \u03b1,\u03b2-unsaturated acid chloride. The cycloaddition likely proceeds through an endo transition state to give the observed stereochemistry."
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "C#CC(C)(C)C(=O)Cl",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H7ClO",
+                        "mass": 130.018542524
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2",
+                        "mass": 2.015650064
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "C=CC(C)(C)C(=O)Cl",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H9ClO",
+                        "mass": 132.034192588
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-25 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Not applicable. This is an elimination reaction that does not require a solvent.",
+                "time": "Instantaneous to a few minutes, depending on the specific reaction setup."
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Dehydrohalogenation of a tertiary alkyl halide to form an alkene"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "Nc1ccccc1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H7N",
+                        "mass": 93.057849224
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "CC(C)(C)C=O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "C5H10O",
+                        "mass": 86.07316494
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "CC(C)(C)C=Nc1ccccc1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C11H15N",
+                        "mass": 161.12044948
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Condensation of an aromatic amine (aniline) with a ketone (pinacolone) to form an imine (N-benzylidene-tert-butylamine)"
+                }
+            ]
+        }
+    ]
+}

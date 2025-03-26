@@ -1,0 +1,320 @@
+{
+    "dependencies": {
+        "1": [
+            "2",
+            "5"
+        ],
+        "2": [
+            "3"
+        ],
+        "3": [
+            "4"
+        ],
+        "4": [],
+        "5": [
+            "6"
+        ],
+        "6": []
+    },
+    "steps": [
+        {
+            "step": "1",
+            "reactants": [
+                {
+                    "smiles": "[H]C1=C([H])C([H])([H])C([H])=C([H])C1=O",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6O",
+                        "mass": 94.041864812
+                    }
+                },
+                {
+                    "smiles": "O=C1C=CC2=C1CCCC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H10O",
+                        "mass": 134.07316494
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H][O][O][H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H2O2",
+                        "mass": 34.005479304
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C[C@H]2C[C@]3(CC2)[C@@]1([H])CC[C@@H]3C",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C12H18O",
+                        "mass": 178.135765196
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25\u00b0C)",
+                "pressure": "Atmospheric pressure",
+                "solvent": "Ethanol",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.8,
+                    "closestliterature": "Diels-Alder cycloaddition of 2-cyclohexenone and 1,3-cyclohexadiene, followed by hydrogenation"
+                }
+            ]
+        },
+        {
+            "step": "2",
+            "reactants": [
+                {
+                    "smiles": "OC1C=CCC=C1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8O",
+                        "mass": 96.057514876
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[O]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "O",
+                        "mass": 15.99491462
+                    }
+                },
+                {
+                    "smiles": "[Cr](=O)(=O)O[Cr](=O)(=O)O",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "HCr2O6",
+                        "mass": 200.858327752
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "[H]C1=C([H])C([H])([H])C([H])=C([H])C1=O",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H6O",
+                        "mass": 94.041864812
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "0-5 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "acetone",
+                "time": "30 min - 1 h"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Oxidation of phenol to p-benzoquinone using chromium trioxide (CrO3) in acetone"
+                }
+            ]
+        },
+        {
+            "step": "3",
+            "reactants": [
+                {
+                    "smiles": "OC1C=CCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H10O",
+                        "mass": 98.07316494
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OC1C=CCC=C1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H8O",
+                        "mass": 96.057514876
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-150 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Toluene or xylenes",
+                "time": "2-6 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Oxidative dehydrogenation of cyclohexenol to phenol using a palladium catalyst"
+                }
+            ]
+        },
+        {
+            "step": "4",
+            "reactants": [
+                {
+                    "smiles": "OC1CCCCC1",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H12O",
+                        "mass": 100.088815004
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                },
+                {
+                    "smiles": "C(=O)([O-])[O-].[K+].[K+]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "CK2O3",
+                        "mass": 137.91215721999998
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "OC1C=CCCC1",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C6H10O",
+                        "mass": 98.07316494
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "100-200 \u00b0C",
+                "pressure": "1 atm",
+                "solvent": "Not applicable. This is a gas-phase dehydrogenation reaction.",
+                "time": "0.5-2 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Dehydrogenation of cyclohexanol to cyclohexenol using a palladium catalyst and potassium formate"
+                }
+            ]
+        },
+        {
+            "step": "5",
+            "reactants": [
+                {
+                    "smiles": "O=C1C=CC2=C1CC=CC2",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8O",
+                        "mass": 132.057514876
+                    }
+                }
+            ],
+            "reagents": [
+                {
+                    "smiles": "[H]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "H",
+                        "mass": 1.007825032
+                    }
+                },
+                {
+                    "smiles": "[Pd]",
+                    "reagent_metadata": {
+                        "name": "",
+                        "chemical_formula": "Pd",
+                        "mass": 105.903486
+                    }
+                }
+            ],
+            "products": [
+                {
+                    "smiles": "O=C1C=CC2=C1CCCC2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H10O",
+                        "mass": 134.07316494
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "Room temperature (20-25 \u00b0C)",
+                "pressure": "1 atm (atmospheric pressure)",
+                "solvent": "Ethanol or ethyl acetate",
+                "time": "2-4 hours"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Catalytic hydrogenation of 1-indanone to 1-indanol"
+                }
+            ]
+        },
+        {
+            "step": "6",
+            "reactants": [
+                {
+                    "smiles": "O=C1C=Cc2ccccc21",
+                    "reactant_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H6O",
+                        "mass": 130.041864812
+                    }
+                }
+            ],
+            "reagents": [],
+            "products": [
+                {
+                    "smiles": "O=C1C=CC2=C1CC=CC2",
+                    "product_metadata": {
+                        "name": "",
+                        "chemical_formula": "C9H8O",
+                        "mass": 132.057514876
+                    }
+                }
+            ],
+            "conditions": {
+                "temperature": "200-300 \u00b0C",
+                "pressure": "Atmospheric pressure",
+                "solvent": "No solvent needed",
+                "time": "A few seconds to a few minutes"
+            },
+            "reactionmetrics": [
+                {
+                    "scalabilityindex": "9",
+                    "confidenceestimate": 0.99,
+                    "closestliterature": "Flash vacuum pyrolysis of 1-indanone at 800-1000 \u00b0C yields naphthalene."
+                }
+            ]
+        }
+    ]
+}
