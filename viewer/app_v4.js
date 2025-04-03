@@ -5,6 +5,30 @@ document.addEventListener('DOMContentLoaded', () => {
     fileInput.addEventListener('change', handleFileSelect, false);
 });
 
+function updatePathwayNumber(pathwayNum) {
+    try {
+        const pathwayDisplay = document.getElementById('pathway-number');
+        const currentPathway = document.getElementById('current-pathway');
+        
+        if (!pathwayDisplay || !currentPathway) {
+            console.error('Pathway display elements not found');
+            return;
+        }
+        
+        // Always show the pathway number
+        pathwayDisplay.style.display = 'block';
+        currentPathway.textContent = pathwayNum;
+        
+        // Make sure it's visible by bringing it to front
+        pathwayDisplay.style.position = 'relative';
+        pathwayDisplay.style.zIndex = '1000';
+        
+        console.log('Updated pathway number to:', pathwayNum);
+    } catch (error) {
+        console.error('Error updating pathway number:', error);
+    }
+}
+
 function handleFileSelect(event) {
     const file = event.target.files[0];
     if (file) {
@@ -14,6 +38,10 @@ function handleFileSelect(event) {
                 const data = JSON.parse(e.target.result);
                 const processedTree = processData(data);
                 const rootStep = processedTree['0'];
+                
+                // Always show pathway 1 for new file
+                updatePathwayNumber(1);
+                
                 renderGraph(rootStep);
             } catch (error) {
                 alert('Error parsing JSON: ' + error.message);
@@ -310,7 +338,7 @@ function renderGraph(rootStep) {
         const padding = 100;
         return {
             width: maxY - minY + padding * 2,
-            height: 2*(maxX - minX + padding * 2),
+            height: 4*(maxX - minX + padding * 2),
             minX: minX - padding,
             minY: minY - padding
         };
