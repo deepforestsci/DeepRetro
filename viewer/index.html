@@ -262,6 +262,32 @@
             background: var(--secondary);
         }
 
+        .pathway-number {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--primary);
+            margin: 20px auto;
+            padding: 12px;
+            background: #f8f8f8;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            max-width: 300px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .pathway-number strong {
+            color: var(--primary);
+            margin-right: 8px;
+        }
+        
+        #current-pathway {
+            font-weight: 600;
+            color: #2196F3;
+        }
+
         .model-select {
             padding: 8px;
             border: 1px solid var(--border);
@@ -575,6 +601,11 @@
         </div>
 
         <div id="graph"></div>
+
+        <!-- Pathway number display - always present in DOM -->
+        <div id="pathway-number" class="pathway-number">
+            <strong>Current Pathway:</strong> <span id="current-pathway">-</span>
+        </div>
     </div>
 
     <script>
@@ -819,24 +850,94 @@
             }
         }
 
-        function downloadResults(results) {
-            const data = JSON.stringify(results, null, 2);
-            const blob = new Blob([data], { type: 'application/json' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'retrosynthesis-results.json';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+        function downloadResults(currentInstance) {
+            try {
+                // Get the current instance data from the global results object
+                if (!window.results || !window.results[currentInstance]) {
+                    console.error('No data found for current instance:', currentInstance);
+                    alert('Error: No data found for the current pathway');
+                    return;
+                }
+
+                const data = window.results[currentInstance];
+                
+                // Convert the data to CSV format
+                let csvContent = 'Step,Products,Reactants,Conditions,Metrics\n';
+                
+                // Add data for each step
+                data.steps.forEach((step, index) => {
+                    const products = step.products.map(p => p.smiles).join(';');
+                    const reactants = step.reactants.map(r => r.smiles).join(';');
+                    const conditions = `Temperature:${step.conditions.temperature},Pressure:${step.conditions.pressure},Solvent:${step.conditions.solvent},Time:${step.conditions.time}`;
+                    const metrics = `ScalabilityIndex:${step.reactionmetrics[0].scalabilityindex},ConfidenceEstimate:${step.reactionmetrics[0].confidenceestimate}`;
+                    
+                    csvContent += `${index + 1},"${products}","${reactants}","${conditions}","${metrics}"\n`;
+                });
+
+                // Create and trigger download
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const pathwayNum = currentInstance.replace('instance', '');
+                a.href = url;
+                a.download = `retrosynthesis-pathway-${pathwayNum}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error('Error downloading CSV:', error);
+                alert('Error creating CSV file. Please try again.');
+            }
         }
+
+        // Update showResult function to handle download button
+        window.showResult = (instance) => {
+            // Update JSON content
+            const jsonResult = document.getElementById('result');
+            if (jsonResult) {
+                jsonResult.textContent = JSON.stringify(results[instance], null, 2);
+                jsonResult.style.display = 'block';
+                document.getElementById('json-toggle').style.display = 'flex';
+                document.getElementById('json-arrow').className = 'json-toggle-icon arrow-up';
+            }
+            
+            // Update pathway number using the new function
+            const pathwayNumber = instance.replace('instance', '');
+            updatePathwayNumber(pathwayNumber);
+            
+            // Update download button text and onclick handler
+            const downloadButton = document.getElementById('download-btn');
+            if (downloadButton) {
+                downloadButton.style.display = 'block';
+                downloadButton.textContent = `Download Pathway ${pathwayNumber} CSV`;
+                downloadButton.onclick = () => {
+                    downloadResults(instance);
+                };
+            }
+            
+            // Clear existing graph
+            document.getElementById('graph').innerHTML = '';
+            
+            // Process and render new pathway
+            try {
+                const processedTree = processData(results[instance]);
+                const rootStep = processedTree['0'];
+                renderGraph(rootStep);
+            } catch (graphError) {
+                console.error('Error rendering graph:', graphError);
+            }
+        };
 
         async function analyze(isRerun = false) {
             const smilesInput = document.getElementById('smiles');
             const button = document.getElementById('analyzeBtn');
             const status = document.getElementById('status');
             
+            // Initialize global results object if it doesn't exist
+            if (!window.results) {
+                window.results = {};
+            }
             // Remove any existing elements
             const existingJsonToggle = document.getElementById('json-toggle');
             if (existingJsonToggle) existingJsonToggle.style.display = 'none';
@@ -962,11 +1063,17 @@
                 const downloadButton = document.createElement('button');
                 downloadButton.id = 'download-btn';
                 downloadButton.className = 'download-btn';
-                downloadButton.textContent = 'Download Results';
-                downloadButton.onclick = () => downloadResults(results);
+                downloadButton.textContent = 'Download Pathway 1 CSV';
+                downloadButton.onclick = () => downloadResults('instance1');
                 downloadButton.style.display = 'none';
                 graphDiv.parentNode.insertBefore(downloadButton, graphDiv);
                 
+                // Move pathway number after download button
+                const pathwayNumber = document.getElementById('pathway-number');
+                if (pathwayNumber) {
+                    graphDiv.parentNode.insertBefore(pathwayNumber, graphDiv);
+                }
+
                 // Initialize counter for completed requests
                 let completedCount = 0;
                 let firstCompletedIndex = -1;
@@ -1006,8 +1113,9 @@
                         
                         // Handle success
                         if (response.ok) {
-                            // Store the result
-                            results[`instance${serverNum}`] = data;
+                            // Store the result in the global object
+                            window.results[`instance${serverNum}`] = data;
+
                             
                             // Update status indicator
                             statusIndicators[index].innerHTML = `
@@ -1092,6 +1200,21 @@
                         document.getElementById('json-toggle').style.display = 'flex';
                         document.getElementById('json-arrow').className = 'json-toggle-icon arrow-up';
                     }
+                    
+                    // Update pathway number using the new function
+                    const pathwayNumber = instance.replace('instance', '');
+                    updatePathwayNumber(pathwayNumber);
+                    
+                    // Update download button text and onclick handler
+                    const downloadButton = document.getElementById('download-btn');
+                    if (downloadButton) {
+                        downloadButton.style.display = 'block';
+                        downloadButton.textContent = `Download Pathway ${pathwayNumber} CSV`;
+                        downloadButton.onclick = () => {
+                            downloadResults(instance);
+                        };
+                    }
+
                     
                     // Clear existing graph
                     document.getElementById('graph').innerHTML = '';
