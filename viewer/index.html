@@ -538,6 +538,99 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Styles for JSON Edit Modal */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1001; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto; /* 10% from the top and centered */
+            padding: 25px;
+            border: 1px solid #888;
+            width: 70%; /* Could be more or less, depending on screen size */
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative; /* For positioning the close button */
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        .modal-body textarea {
+            width: 98%;
+            height: 400px; /* Adjust as needed */
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical; /* Allow vertical resizing */
+            margin-bottom: 15px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .modal-footer button {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .modal-footer .cancel-btn {
+            background-color: #6c757d;
+        }
+        .modal-footer .cancel-btn:hover {
+            background-color: #5a6268;
+        }
+        
+        .modal-error {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none; /* Hidden by default */
+        }
     </style>
 </head>
 
@@ -896,7 +989,7 @@
             // Update JSON content
             const jsonResult = document.getElementById('result');
             if (jsonResult) {
-                jsonResult.textContent = JSON.stringify(results[instance], null, 2);
+                jsonResult.textContent = JSON.stringify(window.results[instance], null, 2);
                 jsonResult.style.display = 'block';
                 document.getElementById('json-toggle').style.display = 'flex';
                 document.getElementById('json-arrow').className = 'json-toggle-icon arrow-up';
@@ -921,7 +1014,7 @@
             
             // Process and render new pathway
             try {
-                const processedTree = processData(results[instance]);
+                const processedTree = processData(window.results[instance]);
                 const rootStep = processedTree['0'];
                 renderGraph(rootStep);
             } catch (graphError) {
@@ -1195,7 +1288,7 @@
                     // Update JSON content
                     const jsonResult = document.getElementById('result');
                     if (jsonResult) {
-                        jsonResult.textContent = JSON.stringify(results[instance], null, 2);
+                        jsonResult.textContent = JSON.stringify(window.results[instance], null, 2);
                         jsonResult.style.display = 'block';
                         document.getElementById('json-toggle').style.display = 'flex';
                         document.getElementById('json-arrow').className = 'json-toggle-icon arrow-up';
@@ -1221,7 +1314,7 @@
                     
                     // Process and render new pathway
                     try {
-                        const processedTree = processData(results[instance]);
+                        const processedTree = processData(window.results[instance]);
                         const rootStep = processedTree['0'];
                         renderGraph(rootStep);
                     } catch (graphError) {
@@ -1274,24 +1367,32 @@
             rerunButton.textContent = 'Start Partial Rerun';
             rerunButton.className = 'rerun-btn';
             rerunButton.id = `rerun-btn-${pathwayNumber}`;
-            rerunButton.style.display = 'none';
+            rerunButton.style.display = 'none'; // Hidden until a step is selected
+
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit Data';
+            editButton.className = 'rerun-btn'; // Reuse styling
+            editButton.style.background = '#6c757d'; // Different color
+            editButton.style.display = 'inline-flex'; // Always visible
+            editButton.onclick = () => openEditModal(pathwayNumber);
             
             select.onchange = () => {
                 rerunButton.style.display = 'inline-flex';
             };
             
             rerunButton.onclick = () => {
-                startPartialRerun(pathwayNumber, select.value, results);
+                startPartialRerun(pathwayNumber, select.value, window.results);
             };
             
             rerunControl.appendChild(label);
             rerunControl.appendChild(select);
             rerunControl.appendChild(rerunButton);
+            rerunControl.appendChild(editButton);
             rerunSection.appendChild(rerunControl);
         }
 
         // Function to handle partial reruns
-        async function startPartialRerun(pathwayNumber, stepNumber, results) {
+        async function startPartialRerun(pathwayNumber, stepNumber, resultsData) {
             const smilesInput = document.getElementById('smiles');
             const rerunButton = document.getElementById(`rerun-btn-${pathwayNumber}`);
             const select = document.getElementById(`steps-select-${pathwayNumber}`);
@@ -1335,8 +1436,8 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    // Update the results
-                    results[`instance${pathwayNumber}`] = data;
+                    // Update the results in the correct object (passed as resultsData)
+                    resultsData[`instance${pathwayNumber}`] = data;
                     
                     // Show the updated result
                     showResult(`instance${pathwayNumber}`);
@@ -1360,6 +1461,71 @@
             }
         }
 
+        // --- JSON Editor Modal Functions ---
+
+        // Store the current pathway number being edited
+        let currentEditingPathway = null;
+
+        function openEditModal(pathwayNumber) {
+            const modal = document.getElementById('editJsonModal');
+            const textarea = document.getElementById('jsonEditorTextarea');
+            const title = document.getElementById('modal-title');
+            const errorDiv = document.getElementById('modal-error');
+
+            currentEditingPathway = pathwayNumber;
+            const instanceKey = `instance${pathwayNumber}`;
+
+            if (window.results && window.results[instanceKey]) {
+                title.textContent = `Edit Pathway ${pathwayNumber} Data`;
+                textarea.value = JSON.stringify(window.results[instanceKey], null, 2);
+                errorDiv.style.display = 'none'; // Hide previous errors
+                errorDiv.textContent = '';
+                modal.style.display = 'block';
+            } else {
+                console.error('No data found for pathway:', pathwayNumber);
+                alert('Error: Could not load data for this pathway.');
+            }
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editJsonModal');
+            modal.style.display = 'none';
+            currentEditingPathway = null; // Reset pathway number
+        }
+
+        function saveJsonChanges() {
+            if (currentEditingPathway === null) return;
+
+            const textarea = document.getElementById('jsonEditorTextarea');
+            const errorDiv = document.getElementById('modal-error');
+            const instanceKey = `instance${currentEditingPathway}`;
+
+            try {
+                const updatedData = JSON.parse(textarea.value);
+
+                // Basic validation (check if it has a 'steps' property)
+                if (!updatedData || typeof updatedData !== 'object' || !updatedData.steps) {
+                    throw new Error('Invalid JSON structure. Missing required \'steps\' property.');
+                }
+                
+                // Update the global results object
+                window.results[instanceKey] = updatedData;
+                console.log('[saveJsonChanges] Updated window.results[' + instanceKey + ']:', JSON.stringify(window.results[instanceKey], null, 2));
+
+                // Re-render the graph and update UI for this pathway
+                showResult(instanceKey);
+
+                // Close the modal
+                closeEditModal();
+
+            } catch (error) {
+                console.error('Error parsing or saving JSON:', error);
+                errorDiv.textContent = `Error: ${error.message}`;
+                errorDiv.style.display = 'block';
+            }
+        }
+        // --- End JSON Editor Modal Functions ---
+
         // Allow Enter key to trigger analysis
         document.getElementById('smiles').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') analyze();
@@ -1379,6 +1545,26 @@
         });
     </script>
     <script src="app_v4.js"></script>
+
+    <!-- JSON Edit Modal -->
+    <div id="editJsonModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Edit Pathway Data</h2>
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="jsonEditorTextarea" spellcheck="false"></textarea>
+                <div id="modal-error" class="modal-error"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+                <button onclick="saveJsonChanges()">Apply Changes</button>
+            </div>
+        </div>
+    </div>
+    <!-- End JSON Edit Modal -->
+
 </body>
 
 </html>

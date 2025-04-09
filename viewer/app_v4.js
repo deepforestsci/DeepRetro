@@ -52,73 +52,106 @@ function handleFileSelect(event) {
 }
 
 function processData(data) {
-    // Create step 0 from the green product in step 1
-    const step1Data = data.steps[0];
-    const greenProduct = step1Data.products[0];  // Assuming first product is green
-    const step0 = {
-        step: '0',
-        products: [greenProduct],
-        reactants: [],
-        conditions: step1Data.conditions,
-        reactionmetrics: step1Data.reactionmetrics
-    };
-    
-    // Modify step 1 to only include blue molecules
-    const step1Modified = {
-        ...step1Data,
-        step: '1',
-        products: step1Data.products.slice(1),  // Take all products except first one
-        parent_id: 0
-    };
+    // --- Add log here ---
+    console.log('[processData] Received data:', JSON.stringify(data, null, 2));
+    // --------------------
 
-    // Create new steps array with step 0
-    const newSteps = [step0, step1Modified, ...data.steps.slice(1)];
+    // Check if the data already contains an explicit Step 0 (handle string or number)
+    const hasExplicitStep0 = data.steps && data.steps.some(s => String(s.step) === '0');
+    // --- Add log here ---
+    console.log(`[processData] Does it have explicit Step 0? ${hasExplicitStep0}`);
+    // --------------------
 
-    // Update dependencies to start from step 0
-    const newDependencies = {
-        '0': ['1'],
-        ...Object.entries(data.dependencies).reduce((acc, [key, value]) => {
-            acc[key] = value;
-            return acc;
-        }, {})
-    };
+    let data_steps;
+    let newDependencies;
 
-    // Process parent-child relationships
-    const dependencyLength = Object.keys(newDependencies).length;
-    let parent_id_list = new Array(dependencyLength + 2).fill(-1);
-    parent_id_list[0] = null;
-    parent_id_list[1] = 0;  // Step 1 now has Step 0 as parent
-
-    for (const step in newDependencies) {
-        for (const child of newDependencies[step]) {
-            parent_id_list[parseInt(child)] = parseInt(step);
-        }
-    }
-
-    // Update steps with parent-child information
-    let data_steps = newSteps;
-    for (const step in newDependencies) {
-        const stepIndex = parseInt(step);
-        if (stepIndex < data_steps.length) {
-            data_steps[stepIndex]['child_id'] = newDependencies[step];
-            data_steps[stepIndex]['parent_id'] = parent_id_list[stepIndex];
-        }
-    }
-
-    function buildTree(data_steps, parent_id) {
+    // Define buildTree helper function (can be used by both branches)
+    function buildTree(steps, parent_id) {
         let tree = {};
-        for (const step of data_steps) {
-            if (step.parent_id === parent_id) {
+        for (const step of steps) {
+            // Ensure parent_id comparison handles null/undefined/0 correctly
+            const stepParentId = step.parent_id === undefined ? null : step.parent_id;
+            if (stepParentId === parent_id) {
                 tree[parseInt(step.step)] = {
-                    step: step,
-                    children: buildTree(data_steps, parseInt(step.step))
+                    step: step, // Use the whole step object
+                    children: buildTree(steps, parseInt(step.step))
                 };
             }
         }
         return tree;
     }
 
-    return buildTree(data_steps, null);
+    if (hasExplicitStep0) {
+        // Data already seems processed or edited, use it directly
+        console.log("[processData] Using existing Step 0.");
+        data_steps = data.steps;
+        // We assume the parent_id fields are correct in the edited/processed data
+        // No need to reconstruct dependencies or parent_id_list if structure is assumed correct
+        return buildTree(data_steps, null); // Build tree directly from provided steps
+
+    } else {
+        // Original data format: Construct Step 0 and process dependencies
+        console.log("[processData] Constructing Step 0.");
+        const step1Data = data.steps[0];
+        const greenProduct = step1Data.products[0];  // Assuming first product is green
+        const step0 = {
+            step: '0',
+            products: [greenProduct],
+            reactants: [],
+            conditions: step1Data.conditions,
+            reactionmetrics: step1Data.reactionmetrics
+        };
+        
+        const step1Modified = {
+            ...step1Data,
+            step: '1',
+            products: step1Data.products.slice(1),  // Take all products except first one
+            parent_id: 0 // Explicitly set parent_id for the modified step 1
+        };
+        // --- Add log here ---
+        console.log('[processData] Constructed step0:', JSON.stringify(step0, null, 2));
+        console.log('[processData] Constructed step1Modified:', JSON.stringify(step1Modified, null, 2));
+        // --------------------
+
+        // Create new steps array with step 0
+        const initialSteps = [step0, step1Modified, ...data.steps.slice(1)];
+
+        // Update dependencies to start from step 0
+        newDependencies = {
+            '0': ['1'],
+            ...Object.entries(data.dependencies).reduce((acc, [key, value]) => {
+                acc[key] = value;
+                return acc;
+            }, {})
+        };
+
+        // Calculate parent_id list based on reconstructed dependencies
+        const dependencyLength = initialSteps.length; // Use length of steps array
+        let parent_id_map = {}; // Use a map for easier lookup { childId: parentId }
+        parent_id_map[0] = null; // Step 0 has no parent
+        parent_id_map[1] = 0;    // Step 1's parent is 0
+
+        for (const parentStep in newDependencies) {
+            for (const childStep of newDependencies[parentStep]) {
+                 // Ensure keys are treated as numbers for lookups if necessary
+                 const childNum = parseInt(childStep);
+                 const parentNum = parseInt(parentStep);
+                 parent_id_map[childNum] = parentNum;
+            }
+        }
+
+        // Update steps array with correct parent_id and child_id information
+        data_steps = initialSteps.map(step => {
+            const stepNum = parseInt(step.step);
+            return {
+                ...step,
+                parent_id: parent_id_map[stepNum] !== undefined ? parent_id_map[stepNum] : null, // Assign from map
+                child_id: newDependencies[step.step] || [] // Assign children from dependencies
+            };
+        });
+        
+        return buildTree(data_steps, null); // Build tree from newly processed steps
+    }
 }
 
 function calculateMoleculeSize(metadata) {
@@ -498,97 +531,142 @@ function renderGraph(rootStep) {
 
 
             molecules.forEach((molecule, i) => {
-                if (!molecule || !molecule.smiles) return;
-
-                const molGroup = group.append('g')
-                    .attr('class', 'molecule-node')
-                    .attr('transform', `translate(0, ${i * spacing.moleculeSpacing})`);
-
-                const metadata = molecule.type === 'step0' ?
-                    molecule.product_metadata : molecule.reactant_metadata;
-
-                const { radius, svgSize } = calculateMoleculeSize(metadata);
-                
-                molGroup.append('circle')
-                    .attr('r', radius)
-                    .attr('fill', `url(#${molecule.type}Gradient)`)
-                    .attr('stroke', molecule.type === 'step0' ? '#66bb6a' : '#42a5f5')
-                    .attr('stroke-width', 2)
-                    .style('filter', 'drop-shadow(0px 2px 3px rgba(0,0,0,0.1))');
-
-                molGroup.on('mouseover', function(event) {
-                    d3.select(this).select('circle')
-                        .attr('stroke-width', 3)
-                        .style('filter', 'brightness(0.98)');
-
-                    if (metadata) {
-                        tooltip.style('opacity', 1)
-                            .html(`
-                                <div style="padding: 8px;">
-                                    <strong>Molecule Information</strong><br/>
-                                    <em>Formula:</em> ${metadata.chemical_formula}<br/>
-                                    <em>Mass:</em> ${metadata.mass.toFixed(1)} g/mol<br/>
-                                    ${metadata.smiles ? `<em>SMILES:</em> ${metadata.smiles}` : ''}<br/>
-                                    ${metadata.inchi ? `<em>InChI:</em> ${metadata.inchi}<br/>` : ''}
-                                    <br/>
-                                    <strong>Step ${d.data.step} Metrics</strong><br/>
-                                    <em>Scalability Index:</em> ${d.data.reactionmetrics[0].scalabilityindex}<br/>
-                                    <em>Confidence Estimate:</em> ${d.data.reactionmetrics[0].confidenceestimate}<br/>
-                                    <em>Closest Literature:</em> ${d.data.reactionmetrics[0].closestliterature}<br/>
-                                    <em>Reaction Conditions:</em><br/>
-                                    <ul style="margin: 5px 0; padding-left: 20px;"> 
-                                        <li><em>Temperature:</em> ${d.data.conditions.temperature}</li>
-                                        <li><em>Pressure:</em> ${d.data.conditions.pressure}</li>
-                                        <li><em>Solvent:</em> ${d.data.conditions.solvent}</li>
-                                        <li><em>Time:</em> ${d.data.conditions.time}</li>
-                                    </ul>
-                                </div>
-                            `)
-                            .style('left', (event.pageX + 15) + 'px')
-                            .style('top', (event.pageY - 28) + 'px');
+                // Wrap individual molecule rendering in try...catch
+                let molGroup; // Define molGroup here to be accessible in catch block
+                try {
+                    if (!molecule || !molecule.smiles) {
+                        console.warn(`Skipping molecule ${i} in Step ${d.data.step}: Missing molecule or SMILES string.`);
+                        return; // Skip this iteration
                     }
-                })
-                .on('mouseout', function() {
-                    d3.select(this).select('circle')
+
+                    molGroup = group.append('g') // Assign here
+                        .attr('class', 'molecule-node')
+                        .attr('transform', `translate(0, ${i * spacing.moleculeSpacing})`);
+
+                    const metadata = molecule.type === 'step0' ?
+                        molecule.product_metadata : molecule.reactant_metadata;
+
+                    const { radius, svgSize } = calculateMoleculeSize(metadata);
+                    
+                    molGroup.append('circle')
+                        .attr('r', radius)
+                        .attr('fill', `url(#${molecule.type}Gradient)`)
+                        .attr('stroke', molecule.type === 'step0' ? '#66bb6a' : '#42a5f5')
                         .attr('stroke-width', 2)
                         .style('filter', 'drop-shadow(0px 2px 3px rgba(0,0,0,0.1))');
-                        
-                    tooltip.style('opacity', 0);
-                });
 
-                const mol = OCL.Molecule.fromSmiles(molecule.smiles);
-                let molSVG = mol.toSVG(svgSize, svgSize, 'molecule', { suppressChiralText: true });
+                    molGroup.on('mouseover', function(event) {
+                        d3.select(this).select('circle')
+                            .attr('stroke-width', 3)
+                            .style('filter', 'brightness(0.98)');
 
-                const parser = new DOMParser();
-                const svgDoc = parser.parseFromString(molSVG, 'image/svg+xml');
+                        if (metadata) {
+                            tooltip.style('opacity', 1)
+                                .html(`
+                                    <div style="padding: 8px;">
+                                        <strong>Molecule Information</strong><br/>
+                                        <em>Formula:</em> ${metadata.chemical_formula}<br/>
+                                        <em>Mass:</em> ${metadata.mass.toFixed(1)} g/mol<br/>
+                                        ${metadata.smiles ? `<em>SMILES:</em> ${metadata.smiles}` : ''}<br/>
+                                        ${metadata.inchi ? `<em>InChI:</em> ${metadata.inchi}<br/>` : ''}
+                                        <br/>
+                                        <strong>Step ${d.data.step} Metrics</strong><br/>
+                                        <em>Scalability Index:</em> ${d.data.reactionmetrics[0].scalabilityindex}<br/>
+                                        <em>Confidence Estimate:</em> ${d.data.reactionmetrics[0].confidenceestimate}<br/>
+                                        <em>Closest Literature:</em> ${d.data.reactionmetrics[0].closestliterature}<br/>
+                                        <em>Reaction Conditions:</em><br/>
+                                        <ul style="margin: 5px 0; padding-left: 20px;"> 
+                                            <li><em>Temperature:</em> ${d.data.conditions.temperature}</li>
+                                            <li><em>Pressure:</em> ${d.data.conditions.pressure}</li>
+                                            <li><em>Solvent:</em> ${d.data.conditions.solvent}</li>
+                                            <li><em>Time:</em> ${d.data.conditions.time}</li>
+                                        </ul>
+                                    </div>
+                                `)
+                                .style('left', (event.pageX + 15) + 'px')
+                                .style('top', (event.pageY - 28) + 'px');
+                        }
+                    })
+                    .on('mouseout', function() {
+                        d3.select(this).select('circle')
+                            .attr('stroke-width', 2)
+                            .style('filter', 'drop-shadow(0px 2px 3px rgba(0,0,0,0.1))');
+                            
+                        tooltip.style('opacity', 0);
+                    });
 
-                molGroup.append('g')
-                    .html(svgDoc.documentElement.innerHTML)
-                    .attr('transform', `translate(-${svgSize/2}, -${svgSize/2})`);
+                    // --- OCL Rendering --- 
+                    const mol = OCL.Molecule.fromSmiles(molecule.smiles);
+                    // Check if molecule parsing was successful before generating SVG
+                    if (!mol || mol.getAllAtoms() === 0) { 
+                        throw new Error(`OCL could not parse SMILES: ${molecule.smiles}`);
+                    }
+                    let molSVG = mol.toSVG(svgSize, svgSize, 'molecule', { suppressChiralText: true });
 
-                const infoGroup = molGroup.append('g')
-                    .attr('class', 'mol-info');
+                    const parser = new DOMParser();
+                    const svgDoc = parser.parseFromString(molSVG, 'image/svg+xml');
+                    
+                    // Check if SVG parsing was successful
+                    if (!svgDoc || svgDoc.getElementsByTagName('parsererror').length > 0) {
+                        const parserError = svgDoc.getElementsByTagName('parsererror')[0];
+                        console.error("SVG Parser Error:", parserError ? parserError.textContent : 'Unknown SVG parsing error');
+                        throw new Error(`Could not parse generated SVG for SMILES: ${molecule.smiles}`);
+                    }
+                    // --- End OCL Rendering ---
 
-                if (metadata) {
-                    infoGroup.append('text')
-                        .attr('x', 0)
-                        .attr('y', radius + 10)
-                        .attr('text-anchor', 'middle')
-                        .text(`${metadata.mass.toFixed(1)} g/mol`);
+                    molGroup.append('g')
+                        .html(svgDoc.documentElement.innerHTML)
+                        .attr('transform', `translate(-${svgSize/2}, -${svgSize/2})`);
 
-                    infoGroup.append('text')
-                        .attr('x', 0)
-                        .attr('y', radius + 25)
-                        .attr('text-anchor', 'middle')
-                        .html(formatFormula(metadata.chemical_formula));
+                    const infoGroup = molGroup.append('g')
+                        .attr('class', 'mol-info');
+
+                    if (metadata) {
+                        infoGroup.append('text')
+                            .attr('x', 0)
+                            .attr('y', radius + 10)
+                            .attr('text-anchor', 'middle')
+                            .text(`${metadata.mass.toFixed(1)} g/mol`);
+
+                        infoGroup.append('text')
+                            .attr('x', 0)
+                            .attr('y', radius + 25)
+                            .attr('text-anchor', 'middle')
+                            .html(formatFormula(metadata.chemical_formula));
+                    }
+                } catch (molError) {
+                    console.error(`Error rendering molecule ${i} in Step ${d.data.step} (SMILES: ${molecule ? molecule.smiles : 'N/A'}):`, molError);
+                    
+                    // If molGroup was created before the error, add error text to it
+                    if (molGroup) {
+                        molGroup.append('text')
+                          .attr('x', 0)
+                          .attr('y', 0) // Position roughly in the center of where the molecule would be
+                          .attr('text-anchor', 'middle')
+                          .attr('fill', 'red')
+                          .style('font-size', '10px')
+                          .style('font-weight', 'bold')
+                          .text('[Render Error]');
+                    } else {
+                        // If molGroup wasn't even created, add error text to the main step group
+                        group.append('text') 
+                           .attr('x', 0)
+                           .attr('y', i * spacing.moleculeSpacing) // Position at the molecule's y-offset
+                           .attr('text-anchor', 'middle')
+                           .attr('fill', 'red')
+                           .style('font-size', '10px')
+                           .style('font-weight', 'bold')
+                           .text(`[Error Molecule ${i}]`);
+                    }
                 }
             });
         } catch (error) {
-            console.error('Error rendering molecule:', error);
+            // This outer catch handles errors before the molecule loop (e.g., calculating step size)
+            console.error(`Error processing step ${d.data.step}:`, error);
             group.append('text')
                 .attr('x', 0)
                 .attr('y', 0)
-                .text('Error rendering molecule');
+                .text('Error processing step');
         }
     });
 }
