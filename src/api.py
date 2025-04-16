@@ -331,64 +331,77 @@ def rerun_retrosynthesis():
 def partial_rerun():
     """
     Endpoint to partially rerun retrosynthesis from a specific step.
-    Uses the stored results from the most recent retrosynthesis run in partial.json.
+    Uses the provided pathway_data (potentially edited) for the rerun logic.
+    Saves the result using the original target SMILES string.
     
     When rerunning a step, we remove that step and everything to its right in the synthesis pathway.
     """
     print(
-        "\n===================== STARTING PARTIAL RERUN PROCESS ====================="
+        "\n===================== STARTING PARTIAL RERUN PROCESS (Using Provided Data) ====================="
     )
 
     data = request.get_json()
     print(f"RECEIVED REQUEST DATA: {json.dumps(data, indent=2)}")
 
     try:
-        smiles = data['smiles']
-        print(f"TARGET MOLECULE: {smiles}")
-        from_step = int(data['steps'])
+        # --- Get data from request --- 
+        original_smiles = data['smiles'] # Original target SMILES for saving
+        pathway_data = data['pathway_data'] # Potentially edited pathway data
+        from_step = int(data['steps'])     # Step number to start rerun from
+        print(f"ORIGINAL TARGET MOLECULE (for saving): {original_smiles}")
+        print(f"USING PROVIDED PATHWAY DATA for logic")
         print(f"TARGET STEP FOR RERUN: {from_step}")
+        # -----------------------------
 
-        # Load previous results from partial.json
-        stored_smiles, original_result = load_result()
-        print(f"LOADED FROM STORAGE - SMILES: {stored_smiles}")
+        # --- Remove loading from storage --- 
+        # stored_smiles, original_result = load_result()
+        # print(f"LOADED FROM STORAGE - SMILES: {stored_smiles}")
+        original_result = pathway_data # Use the provided data directly
+        # ---------------------------------
 
-        if not original_result:
-            print("ERROR: No results found in storage")
-            return jsonify({
-                "error":
-                "No previous results found. Run retrosynthesis first."
-            }), 400
-
-        if stored_smiles != smiles:
-            print(
-                f"ERROR: Stored SMILES ({stored_smiles}) doesn't match requested SMILES ({smiles})"
-            )
-            return jsonify({
-                "error":
-                "No results found for this molecule. Run retrosynthesis first."
-            }), 400
-
-        print(f"FOUND STORED RESULT FOR SMILES: {smiles}")
+        # --- Remove checks comparing stored vs requested smiles --- 
+        # if not original_result:
+        #     print("ERROR: No results found in storage")
+        #     return jsonify({
+        #         "error":
+        #         "No previous results found. Run retrosynthesis first."
+        #     }), 400
+        # if stored_smiles != smiles:
+        #     print(
+        #         f"ERROR: Stored SMILES ({stored_smiles}) doesn't match requested SMILES ({smiles})"
+        #     )
+        #     return jsonify({
+        #         "error":
+        #         "No results found for this molecule. Run retrosynthesis first."
+        #     }), 400
+        # ----------------------------------------------------------
+        
+        # Ensure the provided pathway_data has the expected structure
+        if not original_result or 'steps' not in original_result or 'dependencies' not in original_result:
+             print("ERROR: Provided pathway_data is missing 'steps' or 'dependencies'.")
+             return jsonify({"error": "Invalid pathway_data format received."}), 400
+        
+        print(f"USING PROVIDED RESULT DATA")
 
         # Print the original steps for debugging
-        print(f"ORIGINAL STEPS:")
+        print(f"PROVIDED STEPS:")
         for step in original_result.get('steps', []):
             print(f"  Step {step.get('step', 'unknown')}: {json.dumps(step)}")
 
         # Print the original dependency structure for debugging
         print(
-            f"ORIGINAL DEPENDENCIES: {json.dumps(original_result.get('dependencies', {}), indent=2)}"
+            f"PROVIDED DEPENDENCIES: {json.dumps(original_result.get('dependencies', {}), indent=2)}"
         )
 
-        # Get the step we're rerunning from the original result
+        # Get the step we're rerunning from the provided result
         target_step = next((step for step in original_result['steps']
                             if int(step['step']) == from_step), None)
 
         if not target_step:
-            print(f"ERROR: Step {from_step} not found in synthesis pathway")
+            print(f"ERROR: Step {from_step} not found in provided synthesis pathway")
             return jsonify({
                 "error":
-                f"Step {from_step} not found in the synthesis pathway"
+                f"Step {from_step} not found in the provided synthesis pathway"
             }), 404
 
         # Print the target step for debugging
@@ -413,8 +426,9 @@ def partial_rerun():
         start_molecule = target_step['products'][0]['smiles']
         print(f"\nSTARTING NEW SYNTHESIS FROM MOLECULE: {start_molecule}")
 
-        # -----------------
-        # Advanced model - DeepSeek-R1
+        # --- Model/Settings processing (remains the same, uses 'data' from request) --- 
+        # ... (code for processing model_type, advanced_prompt, etc. remains here) ...
+        # -------------------------------------------------------------------------
         model_type = "claude3"  # Default is Claude 3 Opus
         try:
             if 'model_type' in data:
@@ -535,8 +549,9 @@ def partial_rerun():
                 f"Error running retrosynthesis on {start_molecule}: {str(e)}"
             }), 500
 
-        # The steps to remove are the target step and everything it depends on
-        # In other words, the target step and everything to its right in the synthesis pathway
+        # --- Merging logic remains the same, uses 'original_result' (which is now pathway_data) ---
+        # ... (code for identifying steps_to_remove, kept_steps, kept_deps, etc.) ...
+        # -------------------------------------------------------------------------------------
         steps_to_remove = {str(from_step)}
         steps_to_check = [str(from_step)]
 
@@ -688,15 +703,21 @@ def partial_rerun():
                 'dependencies': merged_deps
             }
 
-        # Store the merged result in partial.json
-        save_result(smiles, merged_result)
-        print(f"SAVED MERGED RESULT TO {PARTIAL_JSON_PATH}")
+        # --- Save the result using the original SMILES --- 
+        save_result(original_smiles, merged_result)
+        print(f"SAVED MERGED RESULT TO {PARTIAL_JSON_PATH} using key {original_smiles}")
+        # --------------------------------------------------
 
         print(
             "\n===================== PARTIAL RERUN COMPLETE ====================="
         )
         return jsonify(merged_result), 200
 
+    except KeyError as ke:
+        print(f"\nFATAL ERROR IN PARTIAL RERUN - MISSING KEY:")
+        print(f"  EXCEPTION: {str(ke)}")
+        print(f"  TRACEBACK: {traceback.format_exc()}")
+        return jsonify({"error": f"Missing key in request data: {str(ke)}"}), 400
     except Exception as e:
         print(f"\nFATAL ERROR IN PARTIAL RERUN:")
         print(f"  EXCEPTION: {str(e)}")

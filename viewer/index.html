@@ -952,35 +952,41 @@
                     return;
                 }
 
-                const data = window.results[currentInstance];
-                
-                // Convert the data to CSV format
-                let csvContent = 'Step,Products,Reactants,Conditions,Metrics\n';
-                
-                // Add data for each step
-                data.steps.forEach((step, index) => {
-                    const products = step.products.map(p => p.smiles).join(';');
-                    const reactants = step.reactants.map(r => r.smiles).join(';');
-                    const conditions = `Temperature:${step.conditions.temperature},Pressure:${step.conditions.pressure},Solvent:${step.conditions.solvent},Time:${step.conditions.time}`;
-                    const metrics = `ScalabilityIndex:${step.reactionmetrics[0].scalabilityindex},ConfidenceEstimate:${step.reactionmetrics[0].confidenceestimate}`;
-                    
-                    csvContent += `${index + 1},"${products}","${reactants}","${conditions}","${metrics}"\n`;
-                });
+                let jsonDataString;
+                const jsonResult = document.getElementById('result');
+                const jsonToggle = document.getElementById('json-toggle');
+                const pathwayNum = currentInstance.replace('instance', '');
+
+                // Check if the JSON editor is visible and has content
+                if (jsonResult && jsonResult.style.display !== 'none' && jsonResult.value) {
+                    try {
+                        // Try to parse the editor content to ensure it's valid JSON
+                        JSON.parse(jsonResult.value);
+                        jsonDataString = jsonResult.value; // Use edited JSON
+                    } catch (parseError) {
+                        console.error('Error parsing JSON from editor:', parseError);
+                        alert('The JSON in the editor is invalid. Please correct it before downloading.');
+                        return; // Stop download if JSON is invalid
+                    }
+                } else {
+                    // Use the original data if editor is not visible or empty
+                    const data = window.results[currentInstance];
+                    jsonDataString = JSON.stringify(data, null, 2);
+                }
 
                 // Create and trigger download
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const blob = new Blob([jsonDataString], { type: 'application/json;charset=utf-8;' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                const pathwayNum = currentInstance.replace('instance', '');
                 a.href = url;
-                a.download = `retrosynthesis-pathway-${pathwayNum}.csv`;
+                a.download = `retrosynthesis-pathway-${pathwayNum}.json`; // Changed extension to .json
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
             } catch (error) {
-                console.error('Error downloading CSV:', error);
-                alert('Error creating CSV file. Please try again.');
+                console.error('Error downloading JSON:', error); // Updated error message
+                alert('Error creating JSON file. Please try again.'); // Updated alert message
             }
         }
 
@@ -988,10 +994,11 @@
         window.showResult = (instance) => {
             // Update JSON content
             const jsonResult = document.getElementById('result');
-            if (jsonResult) {
+            const jsonToggle = document.getElementById('json-toggle');
+            if (jsonResult && jsonToggle) {
                 jsonResult.textContent = JSON.stringify(window.results[instance], null, 2);
                 jsonResult.style.display = 'block';
-                document.getElementById('json-toggle').style.display = 'flex';
+                jsonToggle.style.display = 'flex';
                 document.getElementById('json-arrow').className = 'json-toggle-icon arrow-up';
             }
             
@@ -1003,7 +1010,7 @@
             const downloadButton = document.getElementById('download-btn');
             if (downloadButton) {
                 downloadButton.style.display = 'block';
-                downloadButton.textContent = `Download Pathway ${pathwayNumber} CSV`;
+                downloadButton.textContent = `Download Pathway ${pathwayNumber} JSON`; // Update button text
                 downloadButton.onclick = () => {
                     downloadResults(instance);
                 };
@@ -1026,6 +1033,7 @@
             const smilesInput = document.getElementById('smiles');
             const button = document.getElementById('analyzeBtn');
             const status = document.getElementById('status');
+            const jsonToggle = document.getElementById('json-toggle');
             
             // Initialize global results object if it doesn't exist
             if (!window.results) {
@@ -1033,8 +1041,7 @@
             }
             
             // Remove any existing elements
-            const existingJsonToggle = document.getElementById('json-toggle');
-            if (existingJsonToggle) existingJsonToggle.style.display = 'none';
+            if (jsonToggle) jsonToggle.style.display = 'none';
             
             // Create/reset the result area
             let resultDiv = document.getElementById('result');
@@ -1140,34 +1147,39 @@
                 
                 controlsContainer.appendChild(rerunSection);
                 
-                // Add the controls container to the DOM
+                // Add the editor container
+                const editorContainer = document.createElement('div');
+                editorContainer.className = 'editor-container';
+                editorContainer.style.display = 'none'; // Initially hidden
+                editorContainer.innerHTML = `
+                    <h3 class="section-title">Edit Pathway JSON</h3>
+                    <textarea id="json-editor" style="width: 100%; height: 200px; font-family: monospace;"></textarea>
+                `;
+                controlsContainer.appendChild(editorContainer);
+
+                // --- Adjust element insertion order ---
                 const graphDiv = document.getElementById('graph');
-                graphDiv.parentNode.insertBefore(controlsContainer, graphDiv);
+                const pathwayNumElement = document.getElementById('pathway-number');
+                const parentDiv = graphDiv.parentNode;
+
+                // Insert controls container BEFORE the graph
+                parentDiv.insertBefore(controlsContainer, graphDiv);
                 
-                // Add JSON toggle (initially hidden)
-                const jsonToggle = document.createElement('div');
-                jsonToggle.id = 'json-toggle';
-                jsonToggle.className = 'json-toggle';
-                jsonToggle.style.display = 'none';
-                jsonToggle.innerHTML = '<span>JSON Result</span><span class="json-toggle-icon arrow-down" id="json-arrow"></span>';
-                jsonToggle.onclick = toggleJson;
-                graphDiv.parentNode.insertBefore(jsonToggle, graphDiv);
-                
-                // Add download button (initially hidden)
+                // Add download button (initially hidden) BEFORE pathway number display
                 const downloadButton = document.createElement('button');
                 downloadButton.id = 'download-btn';
                 downloadButton.className = 'download-btn';
-                downloadButton.textContent = 'Download Pathway 1 CSV';
+                downloadButton.textContent = 'Download Pathway 1 JSON'; // Update button text
                 downloadButton.onclick = () => downloadResults('instance1');
                 downloadButton.style.display = 'none';
-                graphDiv.parentNode.insertBefore(downloadButton, graphDiv);
-                
-                // Move pathway number after download button
-                const pathwayNumber = document.getElementById('pathway-number');
-                if (pathwayNumber) {
-                    graphDiv.parentNode.insertBefore(pathwayNumber, graphDiv);
+                if (pathwayNumElement) {
+                    parentDiv.insertBefore(downloadButton, pathwayNumElement);
+                } else {
+                    // Fallback if pathway number element isn't found (shouldn't happen)
+                    parentDiv.insertBefore(downloadButton, graphDiv.nextSibling); 
                 }
-                
+                // --- End element insertion order adjustment ---
+
                 // Initialize counter for completed requests
                 let completedCount = 0;
                 let firstCompletedIndex = -1;
@@ -1228,7 +1240,7 @@
                             document.getElementById('rerun-section').style.flexWrap = 'wrap';
                             
                             // Update the JSON toggle and result div
-                            jsonToggle.style.display = 'flex';
+                            if (jsonToggle) jsonToggle.style.display = 'flex';
                             resultDiv.style.display = 'block';
                             resultDiv.textContent = JSON.stringify(data, null, 2);
                             document.getElementById('json-arrow').className = 'json-toggle-icon arrow-up';
@@ -1287,10 +1299,11 @@
                 window.showResult = (instance) => {
                     // Update JSON content
                     const jsonResult = document.getElementById('result');
-                    if (jsonResult) {
+                    const jsonToggle = document.getElementById('json-toggle');
+                    if (jsonResult && jsonToggle) {
                         jsonResult.textContent = JSON.stringify(window.results[instance], null, 2);
                         jsonResult.style.display = 'block';
-                        document.getElementById('json-toggle').style.display = 'flex';
+                        jsonToggle.style.display = 'flex';
                         document.getElementById('json-arrow').className = 'json-toggle-icon arrow-up';
                     }
                     
@@ -1302,7 +1315,7 @@
                     const downloadButton = document.getElementById('download-btn');
                     if (downloadButton) {
                         downloadButton.style.display = 'block';
-                        downloadButton.textContent = `Download Pathway ${pathwayNumber} CSV`;
+                        downloadButton.textContent = `Download Pathway ${pathwayNumber} JSON`; // Update button text
                         downloadButton.onclick = () => {
                             downloadResults(instance);
                         };
@@ -1392,27 +1405,52 @@
 
         // Function to handle partial reruns
         async function startPartialRerun(pathwayNumber, stepNumber, resultsData) {
-            const smilesInput = document.getElementById('smiles');
+            const smilesInput = document.getElementById('smiles'); // Get the input element for original SMILES
+            const originalSmiles = smilesInput.value.trim(); // Get the original SMILES value
             const rerunButton = document.getElementById(`rerun-btn-${pathwayNumber}`);
             const select = document.getElementById(`steps-select-${pathwayNumber}`);
             const status = document.getElementById('status');
-            
+            const instanceKey = `instance${pathwayNumber}`;
+
+            // --- Add check for original SMILES ---
+            if (!originalSmiles) {
+                status.className = 'status error';
+                status.textContent = 'Error: Original target SMILES not found in the input field.';
+                status.style.display = 'block';
+                return; // Stop if SMILES is missing
+            }
+            // ------------------------------------
+
             try {
                 // Disable controls
                 rerunButton.disabled = true;
                 select.disabled = true;
                 rerunButton.innerHTML = `<span class="loading"></span>Rerunning...`;
-                
-                // Get server-specific settings
+
+                // Get server-specific settings (might be needed by backend)
                 const modelSelect = document.getElementById(`modelVersion${pathwayNumber}`);
                 const modelTypeSelect = document.getElementById(`modelType${pathwayNumber}`);
                 const promptToggle = document.getElementById(`promptToggle${pathwayNumber}`);
                 const stabilityToggle = document.getElementById(`stabilityToggle${pathwayNumber}`);
                 const hallucinationToggle = document.getElementById(`hallucinationToggle${pathwayNumber}`);
-                
+
                 // Get endpoint
                 const endpoint = `${config.instances[pathwayNumber-1].url}${config.endpoints.partial_rerun}`;
+
+                // --- Retrieve the potentially edited pathway data from resultsData (or window.results) ---
+                let pathwayData = null;
+                if (resultsData && resultsData[instanceKey]) {
+                    pathwayData = resultsData[instanceKey];
+                } else if (window.results && window.results[instanceKey]) {
+                    // Fallback to global results if resultsData is not sufficient
+                    pathwayData = window.results[instanceKey];
+                }
                 
+                if (!pathwayData) {
+                     throw new Error(`Could not find data for Pathway ${pathwayNumber}.`);
+                }
+                // ------------------------------------------------------------------------------------
+
                 // Make API call
                 const response = await fetch(endpoint, {
                     method: 'POST',
@@ -1420,27 +1458,40 @@
                         'Content-Type': 'application/json',
                         'X-API-KEY': API_KEY
                     },
+                    // --- Construct the body with original smiles, pathway_data, and steps ---
                     body: JSON.stringify({
-                        smiles: smilesInput.value,
-                        steps: parseInt(stepNumber),
-                        pathway_id: pathwayNumber,
+                        smiles: originalSmiles,       // Original target SMILES for saving
+                        pathway_data: pathwayData,    // Send the potentially edited data
+                        steps: parseInt(stepNumber), // Still need the step number
+                        // Optionally include other settings if backend uses them
                         model_type: modelTypeSelect.value,
                         advanced_prompt: promptToggle.checked.toString(),
                         model_version: modelSelect.value,
                         stability_flag: stabilityToggle.checked.toString(),
                         hallucination_check: hallucinationToggle.checked.toString()
                     })
+                    // -------------------------------------------------------
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
-                    // Update the results in the correct object (passed as resultsData)
-                    resultsData[`instance${pathwayNumber}`] = data;
-                    
+                    // --- Update resultsData correctly ---
+                    if (!resultsData) {
+                        console.warn('resultsData object was not available when updating partial rerun result.');
+                    } else {
+                         resultsData[instanceKey] = data; // Update with the rerun result
+                    }
+                    if (window.results) {
+                         window.results[instanceKey] = data;
+                    } else {
+                         console.warn('window.results object not found.');
+                    }
+                    // ------------------------------------
+
                     // Show the updated result
-                    showResult(`instance${pathwayNumber}`);
-                    
+                    showResult(instanceKey);
+
                     // Update status
                     status.className = 'status success';
                     status.textContent = `Partial rerun of Pathway ${pathwayNumber} completed successfully`;
