@@ -1516,29 +1516,31 @@
             config.endpoints.partial_rerun
           }`;
 
-          // Make API call
+          // Make API call - MODIFIED BODY
           const response = await fetch(endpoint, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               "X-API-KEY": API_KEY,
             },
+            // --- Modified request body ---
             body: JSON.stringify({
-              smiles: smilesInput.value,
-              steps: parseInt(stepNumber),
-              pathway_id: pathwayNumber,
-              model_type: modelTypeSelect.value,
+              smiles: smilesInput.value, // Send the original SMILES from the input field
+              steps: stepNumber,         // Send the selected step number as a string
+              model_type: modelTypeSelect.value, // Keep settings
               advanced_prompt: promptToggle.checked.toString(),
               model_version: modelSelect.value,
               stability_flag: stabilityToggle.checked.toString(),
               hallucination_check: hallucinationToggle.checked.toString(),
             }),
+            // --- End modified request body ---
           });
 
           const data = await response.json();
 
           if (response.ok) {
             // Update the results in the correct object (passed as resultsData)
+            // The backend now returns the *new* merged pathway data
             resultsData[`instance${pathwayNumber}`] = data;
 
             // Show the updated result
@@ -1548,18 +1550,27 @@
             status.className = "status success";
             status.textContent = `Partial rerun of Pathway ${pathwayNumber} completed successfully`;
             status.style.display = "block";
+
+            // Reset the select dropdown after successful rerun
+            select.value = "";
+            rerunButton.style.display = "none";
+
           } else {
             throw new Error(data.error || "Partial rerun failed");
           }
         } catch (error) {
           status.className = "status error";
-          status.textContent = `Error: ${error.message}`;
+          status.textContent = `Error during partial rerun: ${error.message}`;
           status.style.display = "block";
         } finally {
           // Re-enable controls
           rerunButton.disabled = false;
           select.disabled = false;
           rerunButton.innerHTML = "Start Partial Rerun";
+          // Keep button hidden if select is reset (or handle visibility based on select value)
+          if (!select.value) {
+             rerunButton.style.display = 'none';
+          }
         }
       }
 
