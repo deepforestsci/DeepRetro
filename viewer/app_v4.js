@@ -57,9 +57,9 @@ function processData(data) {
     // --------------------
 
     // Check if the data already contains an explicit Step 0 (handle string or number)
-    const hasExplicitStep0 = data.steps && data.steps.some(s => String(s.step) === '0');
+    // const hasExplicitStep0 = data.steps && data.steps.some(s => String(s.step) === '0'); // REMOVED CHECK
     // --- Add log here ---
-    console.log(`[processData] Does it have explicit Step 0? ${hasExplicitStep0}`);
+    // console.log(`[processData] Does it have explicit Step 0? ${hasExplicitStep0}`); // REMOVED LOG
     // --------------------
 
     let data_steps;
@@ -81,77 +81,112 @@ function processData(data) {
         return tree;
     }
 
-    if (hasExplicitStep0) {
-        // Data already seems processed or edited, use it directly
-        console.log("[processData] Using existing Step 0.");
-        data_steps = data.steps;
-        // We assume the parent_id fields are correct in the edited/processed data
-        // No need to reconstruct dependencies or parent_id_list if structure is assumed correct
-        return buildTree(data_steps, null); // Build tree directly from provided steps
+    // REMOVED if (hasExplicitStep0) { ... } else { ... } structure
+    // Always run the reconstruction logic:
 
-    } else {
-        // Original data format: Construct Step 0 and process dependencies
-        console.log("[processData] Constructing Step 0.");
-        const step1Data = data.steps[0];
-        const greenProduct = step1Data.products[0];  // Assuming first product is green
-        const step0 = {
-            step: '0',
-            products: [greenProduct],
-            reactants: [],
-            conditions: step1Data.conditions,
-            reactionmetrics: step1Data.reactionmetrics
-        };
-        
-        const step1Modified = {
-            ...step1Data,
-            step: '1',
-            products: step1Data.products.slice(1),  // Take all products except first one
-            parent_id: 0 // Explicitly set parent_id for the modified step 1
-        };
-        // --- Add log here ---
-        console.log('[processData] Constructed step0:', JSON.stringify(step0, null, 2));
-        console.log('[processData] Constructed step1Modified:', JSON.stringify(step1Modified, null, 2));
-        // --------------------
+    // Construct Step 0 and process dependencies
+    console.log("[processData] Constructing Step 0 and processing dependencies.");
 
-        // Create new steps array with step 0
-        const initialSteps = [step0, step1Modified, ...data.steps.slice(1)];
-
-        // Update dependencies to start from step 0
-        newDependencies = {
-            '0': ['1'],
-            ...Object.entries(data.dependencies).reduce((acc, [key, value]) => {
-                acc[key] = value;
-                return acc;
-            }, {})
-        };
-
-        // Calculate parent_id list based on reconstructed dependencies
-        const dependencyLength = initialSteps.length; // Use length of steps array
-        let parent_id_map = {}; // Use a map for easier lookup { childId: parentId }
-        parent_id_map[0] = null; // Step 0 has no parent
-        parent_id_map[1] = 0;    // Step 1's parent is 0
-
-        for (const parentStep in newDependencies) {
-            for (const childStep of newDependencies[parentStep]) {
-                 // Ensure keys are treated as numbers for lookups if necessary
-                 const childNum = parseInt(childStep);
-                 const parentNum = parseInt(parentStep);
-                 parent_id_map[childNum] = parentNum;
-            }
-        }
-
-        // Update steps array with correct parent_id and child_id information
-        data_steps = initialSteps.map(step => {
-            const stepNum = parseInt(step.step);
-            return {
-                ...step,
-                parent_id: parent_id_map[stepNum] !== undefined ? parent_id_map[stepNum] : null, // Assign from map
-                child_id: newDependencies[step.step] || [] // Assign children from dependencies
-            };
-        });
-        
-        return buildTree(data_steps, null); // Build tree from newly processed steps
+    // --- Ensure we handle cases where data.steps might be empty or null ---
+    if (!data || !data.steps || data.steps.length === 0) {
+        console.warn("[processData] Input data has no steps. Returning empty tree.");
+        return {}; // Return an empty object or handle as appropriate
     }
+    // --- End handling empty steps ---
+
+    const step1Data = data.steps[0]; // Assumes at least one step exists after check
+
+    // --- Handle case where step 1 might not have products ---
+    const greenProduct = step1Data.products && step1Data.products.length > 0 ? step1Data.products[0] : null;
+    if (!greenProduct) {
+        console.warn("[processData] Step 1 has no products defined. Step 0 will be empty.");
+        // Decide how to handle this - maybe create a placeholder Step 0?
+        // For now, we'll proceed but Step 0's product will be null.
+    }
+    // --- End handling no products in step 1 ---
+
+    const step0 = {
+        step: '0',
+        products: greenProduct ? [greenProduct] : [], // Use the extracted product or empty array
+        reactants: [],
+        // --- Safely access potentially missing nested properties ---
+        conditions: step1Data.conditions || {},
+        reactionmetrics: step1Data.reactionmetrics || {}
+        // --- End safe access ---
+    };
+
+    const step1Modified = {
+        ...step1Data,
+        step: '1',
+        products: step1Data.products ? step1Data.products.slice(1) : [],  // Take all products except first one
+        parent_id: 0 // Explicitly set parent_id for the modified step 1
+    };
+    // --- Add log here ---
+    console.log('[processData] Constructed step0:', JSON.stringify(step0, null, 2));
+    console.log('[processData] Constructed step1Modified:', JSON.stringify(step1Modified, null, 2));
+    // --------------------
+
+    // Create new steps array with step 0
+    // Filter out the original step 1 before adding the modified one
+    const remainingSteps = data.steps.slice(1).filter(s => String(s.step) !== '1');
+    const initialSteps = [step0, step1Modified, ...remainingSteps];
+
+
+    // Update dependencies to start from step 0
+    // Make sure data.dependencies exists before trying to access it
+    const originalDependencies = data.dependencies || {};
+    newDependencies = {
+        '0': ['1'], // Step 0 always points to step 1
+        ...Object.entries(originalDependencies).reduce((acc, [key, value]) => {
+            // Ensure the original step 1 dependencies are removed or correctly mapped if needed
+            if (key !== '1') { // Example: ignore original step 1's children definition if any
+               acc[key] = value;
+            }
+            return acc;
+        }, {})
+    };
+     // --- Log new dependencies ---
+    console.log('[processData] Constructed newDependencies:', JSON.stringify(newDependencies, null, 2));
+    // --------------------------
+
+    // Calculate parent_id list based on reconstructed dependencies
+    let parent_id_map = {}; // Use a map for easier lookup { childId: parentId }
+    parent_id_map[0] = null; // Step 0 has no parent
+    parent_id_map[1] = 0;    // Step 1's parent is 0
+
+    for (const parentStep in newDependencies) {
+        // Ensure the value is an array before iterating
+        const children = Array.isArray(newDependencies[parentStep]) ? newDependencies[parentStep] : [];
+        for (const childStep of children) {
+             // Ensure keys are treated as numbers for lookups if necessary
+             const childNum = parseInt(childStep);
+             const parentNum = parseInt(parentStep);
+             // Avoid overwriting Step 1's parent if defined elsewhere
+             if (childNum !== 1) {
+                 parent_id_map[childNum] = parentNum;
+             }
+        }
+    }
+     // --- Log parent map ---
+     console.log('[processData] Constructed parent_id_map:', JSON.stringify(parent_id_map, null, 2));
+     // ---------------------
+
+    // Update steps array with correct parent_id and child_id information
+    data_steps = initialSteps.map(step => {
+        const stepNum = parseInt(step.step);
+        const parentId = parent_id_map[stepNum];
+        return {
+            ...step,
+            parent_id: parentId !== undefined ? parentId : null, // Assign from map
+             // Ensure child_id is always an array, even if undefined in newDependencies
+            child_id: newDependencies[String(stepNum)] || []
+        };
+    });
+    // --- Log final data_steps ---
+    console.log('[processData] Final data_steps before buildTree:', JSON.stringify(data_steps, null, 2));
+    // ---------------------------
+
+    return buildTree(data_steps, null); // Build tree from newly processed steps
 }
 
 function calculateMoleculeSize(metadata) {
@@ -595,11 +630,32 @@ function renderGraph(rootStep) {
                         tooltip.style('opacity', 0);
                     });
 
-                    // --- OCL Rendering --- 
-                    const mol = OCL.Molecule.fromSmiles(molecule.smiles);
+                    // --- Add log here to check SMILES before parsing ---
+                    console.log(`[renderGraph] Step ${d.data.step}, Molecule ${i}: Attempting to parse SMILES: '${molecule.smiles}'`);
+                    // --- Log the full object for the problematic case ---
+                    if (String(d.data.step) === '1' && i === 0) {
+                        try {
+                            // Use structured clone for a deep copy independent of original object reference
+                            const moleculeCopy = structuredClone(molecule);
+                            console.log(`[renderGraph] Full molecule object for Step 1, Molecule 0:`, moleculeCopy);
+                            // Also log the direct reference just in case
+                            console.log(`[renderGraph] Direct molecule object reference for Step 1, Molecule 0:`, molecule);
+                        } catch (cloneError) {
+                            console.warn('[renderGraph] Could not structuredClone molecule object, logging directly:', molecule);
+                        }
+                    }
+                    // ---------------------------------------------------
+                    // ----------------------------------------------------
+
+                    // --- Force creation of a new string primitive to isolate from object context ---
+                    const smilesToParse = String(molecule.smiles); // Explicitly create a new string
+                    console.log(`[renderGraph] Step ${d.data.step}, Molecule ${i}: Explicit smilesToParse variable: '${smilesToParse}'`);
+                    // ---------------------------------------------------------------------------
+
+                    const mol = OCL.Molecule.fromSmiles(smilesToParse); // Use the isolated string
                     // Check if molecule parsing was successful before generating SVG
                     if (!mol || mol.getAllAtoms() === 0) { 
-                        throw new Error(`OCL could not parse SMILES: ${molecule.smiles}`);
+                        throw new Error(`OCL could not parse SMILES: ${smilesToParse}`); // Update error message too
                     }
                     let molSVG = mol.toSVG(svgSize, svgSize, 'molecule', { suppressChiralText: true });
 
@@ -610,7 +666,7 @@ function renderGraph(rootStep) {
                     if (!svgDoc || svgDoc.getElementsByTagName('parsererror').length > 0) {
                         const parserError = svgDoc.getElementsByTagName('parsererror')[0];
                         console.error("SVG Parser Error:", parserError ? parserError.textContent : 'Unknown SVG parsing error');
-                        throw new Error(`Could not parse generated SVG for SMILES: ${molecule.smiles}`);
+                        throw new Error(`Could not parse generated SVG for SMILES: ${smilesToParse}`);
                     }
                     // --- End OCL Rendering ---
 
