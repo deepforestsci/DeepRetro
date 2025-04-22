@@ -883,6 +883,9 @@
               // Try to parse the JSON file
               const jsonData = JSON.parse(e.target.result);
 
+              // Store the data globally for reuse
+              window.fileData = jsonData;
+
               // Format and display JSON
               const formattedJson = JSON.stringify(jsonData, null, 2);
               fileResult.textContent = formattedJson;
@@ -906,6 +909,9 @@
                 }
               };
 
+              // Create rerun controls for file view
+              setupFileRerunControls(jsonData);
+
               // Render the graph if the data has the right structure
               if (jsonData.steps) {
                 document.getElementById("graph").innerHTML = "";
@@ -913,6 +919,12 @@
                   const processedTree = processData(jsonData);
                   const rootStep = processedTree["0"];
                   renderGraph(rootStep);
+
+                  // Show current pathway
+                  updatePathwayNumber("File");
+
+                  // Create download button for file data
+                  createFileDownloadButton(jsonData);
                 } catch (graphError) {
                   console.error("Error rendering graph:", graphError);
                   // Show graph error but don't interrupt JSON display
@@ -934,6 +946,500 @@
           reader.readAsText(file);
         });
       }
+
+      // Create download button for file data
+      function createFileDownloadButton(jsonData) {
+        // Remove any existing download button
+        const existingDownloadBtn = document.querySelector(".download-btn");
+        if (existingDownloadBtn) existingDownloadBtn.remove();
+
+        // Create new download button
+        const downloadButton = document.createElement("button");
+        downloadButton.id = "file-download-btn";
+        downloadButton.className = "download-btn";
+        downloadButton.textContent = "Download File JSON";
+        downloadButton.onclick = () => {
+          // Create and trigger download
+          const jsonContent = JSON.stringify(jsonData, null, 2);
+          const blob = new Blob([jsonContent], {
+            type: "application/json;charset=utf-8;",
+          });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "retrosynthesis-file-data.json";
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        };
+
+        // Add the button to the DOM
+        const graphDiv = document.getElementById("graph");
+        graphDiv.parentNode.insertBefore(downloadButton, graphDiv);
+      }
+
+      // Create rerun controls for file view
+      function setupFileRerunControls(jsonData) {
+        // Create or get the rerun section container
+        let fileRerunSection = document.getElementById("file-rerun-section");
+        if (fileRerunSection) {
+          fileRerunSection.innerHTML = ""; // Clear existing controls
+        } else {
+          fileRerunSection = document.createElement("div");
+          fileRerunSection.id = "file-rerun-section";
+          fileRerunSection.className = "controls-container";
+          fileRerunSection.style.display = "flex";
+          fileRerunSection.style.flexDirection = "column";
+          fileRerunSection.style.flexWrap = "wrap";
+
+          // Add section title
+          const rerunTitle = document.createElement("h3");
+          rerunTitle.className = "section-title";
+          rerunTitle.textContent = "Partial Rerun Analysis";
+          rerunTitle.style.width = "100%";
+          fileRerunSection.appendChild(rerunTitle);
+
+          // Add note about partial rerun
+          const rerunNote = document.createElement("div");
+          rerunNote.className = "note-section";
+          rerunNote.style.cssText =
+            "margin-bottom: 15px; font-size: 13px; color: #555; background-color: #f8f8f8; padding: 10px; border-radius: 4px; border-left: 3px solid #222222; width: 100%;";
+          rerunNote.innerHTML =
+            "<strong>Note:</strong> Please use this feature only with steps having a single molecule for an accurate output.";
+          fileRerunSection.appendChild(rerunNote);
+        }
+
+        // Create rerun controls
+        const rerunControls = document.createElement("div");
+        rerunControls.className = "rerun-controls";
+        rerunControls.style.display = "flex";
+        rerunControls.style.alignItems = "center";
+        rerunControls.style.gap = "10px";
+        rerunControls.style.marginBottom = "15px";
+
+        // Create step selector
+        const stepsLabel = document.createElement("label");
+        stepsLabel.htmlFor = "file-steps-select";
+        stepsLabel.textContent = "Select a step:";
+
+        const stepsSelect = document.createElement("select");
+        stepsSelect.id = "file-steps-select";
+        stepsSelect.className = "steps-select";
+        stepsSelect.onchange = toggleFileRerunBtn;
+
+        // Default option
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Select a step";
+        stepsSelect.appendChild(defaultOption);
+
+        // Add step options
+        if (jsonData && jsonData.steps) {
+          const stepsCount = Object.keys(jsonData.steps).length;
+          for (let i = 1; i <= stepsCount; i++) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = `From Step ${i}`;
+            stepsSelect.appendChild(option);
+          }
+        }
+
+        // Create rerun button
+        const rerunBtn = document.createElement("button");
+        rerunBtn.id = "file-rerun-btn";
+        rerunBtn.className = "rerun-btn";
+        rerunBtn.textContent = "Start Partial Rerun";
+        rerunBtn.style.display = "none";
+        rerunBtn.onclick = function () {
+          startFilePartialRerun(stepsSelect.value, window.fileData);
+        };
+
+        // Add controls to the section
+        rerunControls.appendChild(stepsLabel);
+        rerunControls.appendChild(stepsSelect);
+        rerunControls.appendChild(rerunBtn);
+        fileRerunSection.appendChild(rerunControls);
+
+        // Create a container for the edit button
+        const editContainer = document.createElement("div");
+        editContainer.style.marginTop = "15px";
+        editContainer.style.display = "flex";
+        editContainer.style.justifyContent = "flex-start";
+
+        // Add edit data button
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit Data";
+        editButton.className = "rerun-btn"; // Reuse styling
+        editButton.style.background = "#6c757d"; // Different color
+        editButton.style.display = "inline-block";
+        editButton.style.marginRight = "auto";
+        editButton.onclick = () => openFileEditModal();
+
+        editContainer.appendChild(editButton);
+        fileRerunSection.appendChild(editContainer);
+
+        // Add the rerun section to the DOM
+        const graphDiv = document.getElementById("graph");
+        graphDiv.parentNode.insertBefore(fileRerunSection, graphDiv);
+      }
+
+      // Function to toggle file rerun button visibility
+      function toggleFileRerunBtn() {
+        const select = document.getElementById("file-steps-select");
+        const button = document.getElementById("file-rerun-btn");
+        button.style.display = select.value ? "inline-block" : "none";
+      }
+
+      // Function to handle partial reruns for file upload
+      async function startFilePartialRerun(stepNumber, data) {
+        console.log("startFilePartialRerun called with step:", stepNumber);
+
+        const status = document.getElementById("fileStatus");
+        const rerunBtn = document.getElementById("file-rerun-btn");
+        const stepsSelect = document.getElementById("file-steps-select");
+
+        // Disable controls during rerun but keep them visible
+        rerunBtn.disabled = true;
+        stepsSelect.disabled = true;
+        rerunBtn.innerHTML = `<span class="loading"></span>Rerunning...`;
+        status.style.display = "none";
+
+        try {
+          // Verify data exists and has steps
+          if (!data || !data.steps) {
+            throw new Error("Invalid data: Missing steps property");
+          }
+
+          // Get server-specific settings from the first server (we'll use server 1 for file uploads)
+          const serverNum = 1; // Using the first server for file uploads
+          console.log("Using server settings from server:", serverNum);
+
+          // Verify config exists
+          if (
+            !config ||
+            !config.instances ||
+            !config.instances[serverNum - 1]
+          ) {
+            throw new Error(
+              "Configuration error: Server settings not available"
+            );
+          }
+
+          const serverConfig = config.instances[serverNum - 1];
+          console.log("Server config:", serverConfig);
+
+          // Get form controls
+          const modelSelect = document.getElementById(
+            `modelVersion${serverNum}`
+          );
+          const modelTypeSelect = document.getElementById(
+            `modelType${serverNum}`
+          );
+          const promptToggle = document.getElementById(
+            `promptToggle${serverNum}`
+          );
+          const stabilityToggle = document.getElementById(
+            `stabilityToggle${serverNum}`
+          );
+          const hallucinationToggle = document.getElementById(
+            `hallucinationToggle${serverNum}`
+          );
+
+          // Verify endpoint exists
+          if (!config.endpoints || !config.endpoints.partial_rerun) {
+            throw new Error(
+              "Configuration error: Partial rerun endpoint not defined"
+            );
+          }
+
+          // Get endpoint from the first server config
+          const endpoint = `${serverConfig.url}${config.endpoints.partial_rerun}`;
+          console.log("API endpoint:", endpoint);
+
+          // Prepare request body - we need to extract the SMILES from the step data
+          // For a partial rerun, we need the SMILES at the specified step
+          let smilesFromStep = "";
+
+          // Typically, the SMILES is in the step's reactant field, but format may vary
+          const stepIndex = parseInt(stepNumber) - 1;
+          console.log("Looking for SMILES in step index:", stepIndex);
+          console.log("Available steps keys:", Object.keys(data.steps));
+
+          // Get step data - steps could be an array or object with numeric keys
+          let step;
+          if (Array.isArray(data.steps)) {
+            step = data.steps[stepIndex];
+          } else {
+            // Object with numeric keys
+            step = data.steps[stepNumber];
+            if (!step) {
+              // Try with stepIndex
+              step = data.steps[stepIndex];
+            }
+          }
+
+          if (!step) {
+            throw new Error(`Step ${stepNumber} not found in data`);
+          }
+
+          console.log("Step data:", step);
+
+          // Try to extract SMILES from various possible locations
+          if (
+            step.products &&
+            step.products.length > 0 &&
+            step.products[0].smiles
+          ) {
+            smilesFromStep = step.products[0].smiles;
+          } else if (step.reactant) {
+            smilesFromStep = step.reactant;
+          } else if (step.product) {
+            smilesFromStep = step.product;
+          } else if (step.smiles) {
+            smilesFromStep = step.smiles;
+          }
+
+          if (!smilesFromStep) {
+            throw new Error("Could not find SMILES data for the selected step");
+          }
+
+          console.log("Found SMILES for step:", smilesFromStep);
+
+          // Prepare request body - CRITICAL: Match the format used in the API test page
+          const requestBody = {
+            smiles: smilesFromStep, // Use the SMILES from the selected step
+            steps: stepNumber, // Send the selected step number as a string
+            model_type: modelTypeSelect ? modelTypeSelect.value : "claude3",
+            advanced_prompt: promptToggle
+              ? promptToggle.checked.toString()
+              : "false",
+            model_version: modelSelect ? modelSelect.value : "USPTO",
+            stability_flag: stabilityToggle
+              ? stabilityToggle.checked.toString()
+              : "false",
+            hallucination_check: hallucinationToggle
+              ? hallucinationToggle.checked.toString()
+              : "false",
+          };
+
+          console.log("Request body:", JSON.stringify(requestBody));
+
+          // Make the API call
+          console.log(
+            `Making API call to ${endpoint} with step ${stepNumber} and SMILES ${smilesFromStep}`
+          );
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-API-KEY": API_KEY,
+            },
+            body: JSON.stringify(requestBody),
+          });
+
+          console.log("API response status:", response.status);
+          const responseData = await response.json();
+          console.log("API response data:", responseData);
+
+          if (response.ok) {
+            // Update the file data with the new merged pathway data
+            window.fileData = responseData;
+
+            // Update graph view
+            document.getElementById("graph").innerHTML = "";
+            const processedTree = processData(responseData);
+            const rootStep = processedTree["0"];
+            renderGraph(rootStep);
+
+            // Update status
+            status.className = "status success";
+            status.textContent = "Partial rerun completed successfully";
+            status.style.display = "block";
+
+            // Update file JSON view with the new data
+            const fileResult = document.getElementById("file-result");
+            if (fileResult) {
+              fileResult.textContent = JSON.stringify(responseData, null, 2);
+            }
+
+            // Update rerun controls with the new data
+            setupFileRerunControls(responseData);
+
+            console.log("Partial rerun completed successfully");
+          } else {
+            throw new Error(responseData.error || "Partial rerun failed");
+          }
+        } catch (error) {
+          console.error("Error during partial rerun:", error);
+          status.className = "status error";
+          status.textContent = `Error during partial rerun: ${error.message}`;
+          status.style.display = "block";
+        } finally {
+          // Re-enable controls
+          rerunBtn.disabled = false;
+          stepsSelect.disabled = false;
+          rerunBtn.innerHTML = "Start Partial Rerun";
+
+          // Only reset the selection if the rerun was successful
+          if (status.className === "status success") {
+            stepsSelect.value = "";
+            toggleFileRerunBtn();
+          }
+        }
+      }
+
+      // Open edit modal for file data
+      function openFileEditModal() {
+        // First, ensure we have a modal to display
+        if (!document.getElementById("editJsonModal")) {
+          // Create modal if it doesn't exist yet
+          createJsonEditorModal();
+        }
+
+        // Store current step selection before opening modal
+        const stepsSelect = document.getElementById("file-steps-select");
+        window.savedStepSelection = stepsSelect ? stepsSelect.value : "";
+
+        const modal = document.getElementById("editJsonModal");
+        const textarea = document.getElementById("jsonEditorTextarea");
+        const title = document.getElementById("modal-title");
+        const errorDiv = document.getElementById("modal-error");
+
+        if (window.fileData) {
+          title.textContent = "Edit File Data";
+          textarea.value = JSON.stringify(window.fileData, null, 2);
+          errorDiv.style.display = "none";
+          errorDiv.textContent = "";
+          modal.style.display = "block";
+
+          // Store current editing context
+          window.currentEditingContext = "file";
+        } else {
+          console.error("No file data found");
+          alert("Error: Could not load file data for editing.");
+        }
+      }
+
+      // Create JSON Editor Modal if it doesn't exist
+      function createJsonEditorModal() {
+        // Check if modal already exists
+        if (document.getElementById("editJsonModal")) {
+          return;
+        }
+
+        // Create modal container
+        const modal = document.createElement("div");
+        modal.id = "editJsonModal";
+        modal.className = "modal";
+
+        // Create modal content
+        modal.innerHTML = `
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 id="modal-title">Edit Pathway Data</h2>
+              <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+              <textarea id="jsonEditorTextarea" spellcheck="false"></textarea>
+              <div id="modal-error" class="modal-error"></div>
+            </div>
+            <div class="modal-footer">
+              <button class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+              <button onclick="saveJsonChanges()">Apply Changes</button>
+            </div>
+          </div>
+        `;
+
+        // Add to document
+        document.body.appendChild(modal);
+
+        // Add closeEditModal function if it doesn't exist
+        if (typeof window.closeEditModal !== "function") {
+          window.closeEditModal = function () {
+            const modal = document.getElementById("editJsonModal");
+            modal.style.display = "none";
+            window.currentEditingContext = null;
+          };
+        }
+      }
+
+      // Update the saveJsonChanges function to handle file editing
+      const originalSaveJsonChanges =
+        window.saveJsonChanges ||
+        function () {
+          console.error("Original saveJsonChanges function not found");
+        };
+
+      window.saveJsonChanges = function () {
+        // Check if we're editing file data
+        if (window.currentEditingContext === "file") {
+          const textarea = document.getElementById("jsonEditorTextarea");
+          const errorDiv = document.getElementById("modal-error");
+
+          try {
+            const updatedData = JSON.parse(textarea.value);
+
+            // Basic validation
+            if (
+              !updatedData ||
+              typeof updatedData !== "object" ||
+              !updatedData.steps
+            ) {
+              throw new Error(
+                "Invalid JSON structure. Missing required 'steps' property."
+              );
+            }
+
+            // Update file data
+            window.fileData = updatedData;
+
+            // Update JSON display
+            const fileResult = document.getElementById("file-result");
+            if (fileResult) {
+              fileResult.textContent = JSON.stringify(updatedData, null, 2);
+            }
+
+            // Re-render graph
+            document.getElementById("graph").innerHTML = "";
+            const processedTree = processData(updatedData);
+            const rootStep = processedTree["0"];
+            renderGraph(rootStep);
+
+            // Save current step selection
+            const savedSelection = window.savedStepSelection;
+
+            // Update rerun controls with the new data
+            setupFileRerunControls(updatedData);
+
+            // Restore step selection after controls are recreated
+            if (savedSelection) {
+              const stepsSelect = document.getElementById("file-steps-select");
+              if (stepsSelect) {
+                // Only restore if the option still exists
+                const optionExists = Array.from(stepsSelect.options).some(
+                  (opt) => opt.value === savedSelection
+                );
+                if (optionExists) {
+                  stepsSelect.value = savedSelection;
+                  toggleFileRerunBtn(); // Make the rerun button visible again
+                }
+              }
+            }
+
+            // Close modal
+            document.getElementById("editJsonModal").style.display = "none";
+            window.currentEditingContext = null;
+          } catch (error) {
+            console.error("Error parsing or saving JSON:", error);
+            errorDiv.textContent = `Error: ${error.message}`;
+            errorDiv.style.display = "block";
+          }
+        } else {
+          // Handle original pathway editing
+          originalSaveJsonChanges();
+        }
+      };
 
       // New functions for toggling settings and JSON display
       function toggleSettings() {
@@ -1526,7 +2032,7 @@
             // --- Modified request body ---
             body: JSON.stringify({
               smiles: smilesInput.value, // Send the original SMILES from the input field
-              steps: stepNumber,         // Send the selected step number as a string
+              steps: stepNumber, // Send the selected step number as a string
               model_type: modelTypeSelect.value, // Keep settings
               advanced_prompt: promptToggle.checked.toString(),
               model_version: modelSelect.value,
@@ -1554,7 +2060,6 @@
             // Reset the select dropdown after successful rerun
             select.value = "";
             rerunButton.style.display = "none";
-
           } else {
             throw new Error(data.error || "Partial rerun failed");
           }
@@ -1569,7 +2074,7 @@
           rerunButton.innerHTML = "Start Partial Rerun";
           // Keep button hidden if select is reset (or handle visibility based on select value)
           if (!select.value) {
-             rerunButton.style.display = 'none';
+            rerunButton.style.display = "none";
           }
         }
       }
