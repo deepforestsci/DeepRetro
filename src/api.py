@@ -348,30 +348,22 @@ def partial_rerun():
         from_step = int(data['steps'])
         print(f"TARGET STEP FOR RERUN: {from_step}")
 
-        # Load previous results from partial.json
-        stored_smiles, original_result = load_result()
-        print(f"LOADED FROM STORAGE - SMILES: {stored_smiles}")
+        # ---- MODIFIED: Use JSON from request if available ----
+        if 'original_result_json' in data:
+            original_result = data['original_result_json']
+            print("LOADED original_result FROM REQUEST PAYLOAD")
+            # Optional: Validate the SMILES in the provided JSON matches the requested SMILES
+            # if 'smiles' in original_result and original_result['smiles'] != smiles:
+            #    print(f"ERROR: SMILES in provided JSON ({original_result['smiles']}) doesn't match requested SMILES ({smiles})")
+            #    return jsonify({"error": "SMILES mismatch between request and provided JSON"}), 400
+        else:
+            # Fallback or error if JSON not provided (should not happen with frontend change)
+            print("ERROR: original_result_json not found in request payload")
+            return jsonify({"error": "Edited pathway data not found in request."}), 400
+        # ---- END MODIFICATION ----
 
-        if not original_result:
-            print("ERROR: No results found in storage")
-            return jsonify({
-                "error":
-                "No previous results found. Run retrosynthesis first."
-            }), 400
-
-        if stored_smiles != smiles:
-            print(
-                f"ERROR: Stored SMILES ({stored_smiles}) doesn't match requested SMILES ({smiles})"
-            )
-            return jsonify({
-                "error":
-                "No results found for this molecule. Run retrosynthesis first."
-            }), 400
-
-        print(f"FOUND STORED RESULT FOR SMILES: {smiles}")
-
-        # Print the original steps for debugging
-        print(f"ORIGINAL STEPS:")
+        # Print the original steps (now from request payload) for debugging
+        print(f"ORIGINAL STEPS (from payload):")
         for step in original_result.get('steps', []):
             print(f"  Step {step.get('step', 'unknown')}: {json.dumps(step)}")
 

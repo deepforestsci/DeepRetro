@@ -1532,6 +1532,7 @@
               model_version: modelSelect.value,
               stability_flag: stabilityToggle.checked.toString(),
               hallucination_check: hallucinationToggle.checked.toString(),
+              original_result_json: resultsData[`instance${pathwayNumber}`] // Send the potentially edited JSON object
             }),
             // --- End modified request body ---
           });
