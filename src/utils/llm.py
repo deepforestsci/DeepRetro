@@ -356,7 +356,7 @@ def llm_pipeline(
     messages: Optional[list[dict]] = None,
     stability_flag: str = "False",
     hallucination_check: str = "False",
-    feedback_flag: str = "True"
+    feedback_flag: str = "False"
 ) -> tuple[list[list[str]], list[str], list[float]]:
     """Pipeline to call LLM and validate the results
 

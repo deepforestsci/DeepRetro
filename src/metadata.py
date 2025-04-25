@@ -6,7 +6,7 @@ Metadata covers the following:
 
 Each of these will be a separate agent, and will be called by the main agent to get the metadata for the reaction
 """
-
+import os
 import ast
 import litellm
 from typing import Optional
@@ -25,6 +25,9 @@ load_dotenv()
 litellm.success_callback = ["langfuse"]
 litellm.drop_params = True
 
+ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
+                                    "true").lower() == "false" else True
+
 metadata = {
     "generation_name": "prod",  # set langfuse generation name
     "project": "Retrosynthesis",  # set langfuse project name
@@ -34,6 +37,24 @@ metadata = {
     "session_id": "metadata",  # set langfuse Session ID
 }
 
+def log_message(message: str, logger=None):
+    """Log the message
+
+    Parameters
+    ----------
+    message : str
+        The message to be logged
+    logger : _type_, optional
+        The logger object, by default None
+
+    Returns
+    -------
+    None
+    """
+    if logger is not None:
+        logger.info(message)
+    else:
+        print(message)
 
 @cache_results
 def reagent_agent(reactants: list[dict],
@@ -58,12 +79,12 @@ def reagent_agent(reactants: list[dict],
     int, list[str]
         Status code and list of reagents SMILES
     """
-    logger = context_logger.get()
+    logger = context_logger.get() if ENABLE_LOGGING else None
     product_smiles = product[0]['smiles']
     reactants_smiles = [r['smiles'] for r in reactants]
     status, res = reagent_llm_call(reactants_smiles, product_smiles, LLM,
                                    temperature)
-    logger.info(f"Received reagents from LLM: {res}")
+    log_message(f"Received reagents from LLM: {res}", logger)
 
     # Make sure the LLM call was successful
     if status != 200:
@@ -74,14 +95,14 @@ def reagent_agent(reactants: list[dict],
         reagents = res['data']
         reagent_expl = res['explanation']
     except Exception as e:
-        logger.info(f"Error in parsing reagents: {e}")
+        log_message(f"Error in parsing reagents: {e}", logger)
         return 404, ""
 
     # Filter out invalid reagents
     try:
         reagents = [r for r in reagents if is_valid_smiles(r)]
     except Exception as e:
-        logger.info(f"Error in filtering reagents: {e}")
+        log_message(f"Error in filtering reagents: {e}", logger)
         return 404, ""
 
     # Flag if no reagents are found
@@ -101,7 +122,7 @@ def reagent_agent(reactants: list[dict],
                 }
             })
     except Exception as e:
-        logger.info(f"Error in adding metadata to reagents: {e}")
+        log_message(f"Error in adding metadata to reagents: {e}", logger)
         return 404, ""
     return 200, res_final
 
@@ -129,7 +150,7 @@ def reagent_llm_call(reactants: list[str],
     int, list[str]
         Status code and list of reagents SMILES
     """
-    logger = context_logger.get()
+    logger = context_logger.get() if ENABLE_LOGGING else None
     user_prompt = REAGENT_USER_PROMPT.replace('{product}', product)
     user_prompt = user_prompt.replace('{reactants}', ', '.join(reactants))
     messages = [{
@@ -149,8 +170,8 @@ def reagent_llm_call(reactants: list[str],
                               metadata=metadata)
         res_text = response.choices[0].message.content
     except Exception as e:
-        logger.info(f"Error in calling {LLM}: {e}")
-        logger.info(f"Retrying call to {LLM}")
+        log_message(f"Error in calling {LLM}: {e}", logger)
+        log_message(f"Retrying call to {LLM}", logger)
         try:
             response = completion(model=LLM,
                                   messages=messages,
@@ -160,10 +181,10 @@ def reagent_llm_call(reactants: list[str],
                                   top_p=0.9)
             res_text = response.choices[0].message.content
         except Exception as e:
-            logger.info(f"2nd Error in calling {LLM}: {e}")
-            logger.info(f"Exiting call to {LLM}")
+            log_message(f"2nd Error in calling {LLM}: {e}", logger)
+            log_message(f"Exiting call to {LLM}", logger)
             return 404, ""
-    logger.info(f"Received response from LLM (reagent call): {res_text}")
+    log_message(f"Received response from LLM (reagent call): {res_text}", logger)
     json_content = res_text.split("```json")[-1].split("```")[0]
     if "perplexity" in LLM:
         citations = response.citations
@@ -197,7 +218,7 @@ def conditions_agent(reactants: list[dict],
     int, str
         Status code and response text
     """
-    logger = context_logger.get()
+    logger = context_logger.get() if ENABLE_LOGGING else None
     product_smiles = product[0]['smiles']
     reactants_smiles = [r['smiles'] for r in reactants]
     reagents_smiles = [r['smiles'] for r in reagents]
@@ -216,7 +237,7 @@ def conditions_agent(reactants: list[dict],
         solvent = res['solvent']
         time = res['time']
     except Exception as e:
-        logger.info(f"Error in parsing conditions: {e}")
+        log_message(f"Error in parsing conditions: {e}", logger)
         return 404, ""
 
     return 200, res
@@ -248,7 +269,7 @@ def conditions_llm_call(reactants: list[str],
     int, str
         Status code and response text
     """
-    logger = context_logger.get()
+    logger = context_logger.get() if ENABLE_LOGGING else None
     user_prompt = CONDITIONS_USER_PROMPT.replace('{product}', product)
     user_prompt = user_prompt.replace('{reactants}', ', '.join(reactants))
     user_prompt = user_prompt.replace('{reagents}', ', '.join(reagents))
@@ -270,8 +291,8 @@ def conditions_llm_call(reactants: list[str],
         res_text = response.choices[0].message.content
     except Exception as e:
 
-        logger.info(f"Error in calling {LLM}: {e}")
-        logger.info(f"Retrying call to {LLM}")
+        log_message(f"Error in calling {LLM}: {e}", logger)
+        log_message(f"Retrying call to {LLM}", logger)
         try:
             response = completion(model=LLM,
                                   messages=messages,
@@ -281,10 +302,10 @@ def conditions_llm_call(reactants: list[str],
                                   top_p=0.9)
             res_text = response.choices[0].message.content
         except Exception as e:
-            logger.info(f"2nd Error in calling {LLM}: {e}")
-            logger.info(f"Exiting call to {LLM}")
+            log_message(f"2nd Error in calling {LLM}: {e}", logger)
+            log_message(f"Exiting call to {LLM}", logger)
             return 404, ""
-    logger.info(f"Received response from LLM: {res_text}")
+    log_message(f"Received response from LLM: {res_text}", logger)
     json_content = res_text.split("```json")[-1].split("```")[0]
     res = ast.literal_eval(json_content)
     return 200, res
@@ -319,7 +340,7 @@ def literature_agent(reactants: list[str],
     int, str, list
         Status code and response text and citations
     """
-    logger = context_logger.get()
+    logger = context_logger.get() if ENABLE_LOGGING else None
     product_smiles = product[0]['smiles']
     reactants_smiles = [r['smiles'] for r in reactants]
     reagents_smiles = [r['smiles'] for r in reagents]
@@ -345,8 +366,8 @@ def literature_agent(reactants: list[str],
                               metadata=metadata)
         res_text = response.choices[0].message.content
     except Exception as e:
-        logger.info(f"Error in calling {LLM}: {e}")
-        logger.info(f"Retrying call to {LLM}")
+        log_message(f"Error in calling {LLM}: {e}", logger)
+        log_message(f"Retrying call to {LLM}", logger)
         try:
             response = completion(model=LLM,
                                   messages=messages,
@@ -356,17 +377,18 @@ def literature_agent(reactants: list[str],
                                   top_p=0.9)
             res_text = response.choices[0].message.content
         except Exception as e:
-            logger.info(f"2nd Error in calling {LLM}: {e}")
-            logger.info(f"Exiting call to {LLM}")
+            log_message(f"2nd Error in calling {LLM}: {e}", logger)
+            log_message(f"Exiting call to {LLM}", logger)
             return 404, ""
-    logger.info(f"Received response from LLM: {res_text}")
+    log_message(f"Received response from LLM: {res_text}", logger)
     json_content = res_text.split("```json")[-1].split("```")[0]
 
+    citations = []
     try:
         if "perplexity" in LLM:
             citations = response.citations
     except Exception as e:
-        logger.info(f"Error in getting citations: {e}")
+        log_message(f"Error in getting citations: {e}", logger)
         citations = []
 
     # format citations
@@ -375,21 +397,21 @@ def literature_agent(reactants: list[str],
         for i in range(len(citations)):
             citations_text += f"[{i+1}] {citations[i]}\n"
     except Exception as e:
-        logger.info(f"Error in formatting citations: {e}")
+        log_message(f"Error in formatting citations: {e}", logger)
         citations_text = ""
 
     # convert the response to a dictionary
     try:
         res_text = ast.literal_eval(json_content)
     except Exception as e:
-        logger.info(f"Error in parsing literature output: {e}")
+        log_message(f"Error in parsing literature output: {e}", logger)
         return 404, ""
 
     # Parse the literature reaction
     try:
         res_lit = res_text['literature_reaction']
     except Exception as e:
-        logger.info(f"Error in parsing literature reaction: {e}")
+        log_message(f"Error in parsing literature reaction: {e}", logger)
         return 404, ""
 
     # Add citations to the literature
