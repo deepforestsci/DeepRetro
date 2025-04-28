@@ -72,10 +72,21 @@ function processData(data) {
       // Ensure parent_id comparison handles null/undefined/0 correctly
       const stepParentId = step.parent_id === undefined ? null : step.parent_id;
       if (stepParentId === parent_id) {
-        tree[parseInt(step.step)] = {
+        // Process this step and its children
+        const stepId = parseInt(step.step);
+        tree[stepId] = {
           step: step, // Use the whole step object
-          children: buildTree(steps, parseInt(step.step)),
+          children: buildTree(steps, stepId),
         };
+
+        // Log tree building information for debugging
+        if (parent_id === null) {
+          console.log(`[buildTree] Adding root step ${stepId}`);
+        } else {
+          console.log(
+            `[buildTree] Adding step ${stepId} as child of ${parent_id}`
+          );
+        }
       }
     }
     return tree;
@@ -151,15 +162,21 @@ function processData(data) {
   const originalDependencies = data.dependencies || {};
   newDependencies = {
     0: ["1"], // Step 0 always points to step 1
-    ...Object.entries(originalDependencies).reduce((acc, [key, value]) => {
-      // Ensure the original step 1 dependencies are removed or correctly mapped if needed
-      if (key !== "1") {
-        // Example: ignore original step 1's children definition if any
-        acc[key] = value;
-      }
-      return acc;
-    }, {}),
   };
+
+  // Copy all existing dependencies to preserve the tree structure
+  Object.keys(originalDependencies).forEach((key) => {
+    // Keep all dependencies except the original step 1's if any
+    if (key !== "1") {
+      newDependencies[key] = originalDependencies[key];
+    }
+  });
+
+  // If step 1 had dependencies to other steps, preserve them
+  if (originalDependencies["1"] && Array.isArray(originalDependencies["1"])) {
+    newDependencies["1"] = originalDependencies["1"];
+  }
+
   // --- Log new dependencies ---
   console.log(
     "[processData] Constructed newDependencies:",
@@ -198,11 +215,20 @@ function processData(data) {
   data_steps = initialSteps.map((step) => {
     const stepNum = parseInt(step.step);
     const parentId = parent_id_map[stepNum];
+
+    // Calculate child_id based on dependencies
+    const childIds = [];
+    if (
+      newDependencies[String(stepNum)] &&
+      Array.isArray(newDependencies[String(stepNum)])
+    ) {
+      childIds.push(...newDependencies[String(stepNum)]);
+    }
+
     return {
       ...step,
       parent_id: parentId !== undefined ? parentId : null, // Assign from map
-      // Ensure child_id is always an array, even if undefined in newDependencies
-      child_id: newDependencies[String(stepNum)] || [],
+      child_id: childIds, // Use calculated child IDs
     };
   });
   // --- Log final data_steps ---
@@ -300,6 +326,13 @@ function renderGraph(rootStep) {
   document.head.appendChild(containerStyles);
 
   const buildTree = (step) => {
+    // Add diagnostic logging
+    console.log(
+      `[renderGraph.buildTree] Processing step ${step.step.step} with ${
+        Object.keys(step.children).length
+      } children`
+    );
+
     const node = {
       ...step.step,
       children: Object.values(step.children).map((childStep) =>
@@ -310,6 +343,11 @@ function renderGraph(rootStep) {
   };
 
   const root = buildTree(rootStep);
+  console.log(
+    `[renderGraph] Built tree with root step ${root.step}, children count: ${
+      root.children ? root.children.length : 0
+    }`
+  );
 
   const styles = document.createElement("style");
   styles.textContent = `
