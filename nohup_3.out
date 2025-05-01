@@ -1,0 +1,1042 @@
+ * Serving Flask app 'api'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.31.21.188:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 125-682-385
+104.209.35.8 - - [16/Jan/2025 07:43:50] "[33mGET /v2/ HTTP/1.1[0m" 404 -
+96.126.104.20 - - [16/Jan/2025 07:53:14] code 400, message Bad request version ('À\x13À')
+96.126.104.20 - - [16/Jan/2025 07:53:14] "[35m[1m\x16\x03\x01\x00ò\x01\x00\x00î\x03\x03Çuí\x03\x8f\x83\x826D\x8d\x89¹ h^Ü) K¿c\x82£Ç|ûû\x80\x9fåÀÐ öär\x06`~\x8e\x83ñ8ºò\x11öC\x98:0\x16\x8b|W\x02\x10\x9cfN0\x1c«^f\x00&À+À/À,À0Ì©Ì¨À\x09À\x13À[0m" HTTPStatus.BAD_REQUEST -
+96.126.104.20 - - [16/Jan/2025 07:53:14] "[33mGET /signin HTTP/1.1[0m" 404 -
+47.250.54.216 - - [16/Jan/2025 15:16:44] code 400, message Bad request version ('À\x13À')
+47.250.54.216 - - [16/Jan/2025 15:16:44] "[35m[1m\x16\x03\x01\x00î\x01\x00\x00ê\x03\x03I\x06²ù¼\x99iÀYûøºe-\x83Ud]\x0e\x8d·b8´gÆÝ9dZ8f gÁ\x81i³öòË°©\x19NÖ½\x95g|püé<Z¡\x90T·é¥8'O;\x00&À+À/À,À0Ì©Ì¨À\x09À\x13À[0m" HTTPStatus.BAD_REQUEST -
+47.250.54.216 - - [16/Jan/2025 15:16:55] "[33mGET / HTTP/1.1[0m" 404 -
+24.236.253.99 - - [16/Jan/2025 17:08:31] "OPTIONS /api/retrosynthesis HTTP/1.1" 200 -
+2025-01-16 17:08:31 [info     ] -------------------------------------------------- filename=main.py lineno=29
+2025-01-16 17:08:31 [info     ] Application initialization complete filename=main.py lineno=30
+2025-01-16 17:08:31 [info     ] Starting new synthesis job 20250116_170831_2151 for molecule ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43 filename=prithvi.py job_id=20250116_170831_2151 lineno=31
+2025-01-16 17:08:31 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250116_170831_2151 lineno=35
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_model.onnx to uspto
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_templates.csv.gz to uspto
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+Loading filter policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_filter_model.onnx to uspto
+Loading stock from InMemoryInchiKeyQuery to zinc
+Selected as stock: zinc
+Compounds in stock: 17422831
+Selected as expansion policy: uspto
+Selected as filter policy: uspto
+2025-01-16 17:09:22 [info     ] AZ failed for ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43, running LLM filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=31
+2025-01-16 17:09:22 [info     ] Calling LLM with molecule: ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43 and run: 0.0 filename=llm.py job_id=20250116_170831_2151 lineno=154
+[92m17:09:23 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:10:00 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:10:00 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:10:00 [info     ] Received response from LLM: Here is the single-step retrosynthesis analysis for the given molecule ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43:
+
+<cot>
+<thinking>
+The target molecule contains several key functional groups and structural features to consider for retrosynthesis:
+1. An aromatic ring with a chlorine substituent 
+2. A methoxy group on the aromatic ring
+3. A tetrahydroisoquinoline core fused to the chlorinated aromatic ring
+4. A phenyl ring fused to the tetrahydroisoquinoline 
+5. A tertiary amine in the tetrahydroisoquinoline with a methyl substituent
+The aromatic chlorination and methoxy group could potentially be installed late-stage. The tetrahydroisoquinoline core is a key structural feature that could arise from a Pictet-Spengler reaction between a β-arylethylamine and an aldehyde or ketone. The fused phenyl ring could be pre-installed in the β-arylethylamine precursor. Alternatively, the tetrahydroisoquinoline could be formed via a Bischler-Napieralski reaction followed by reduction.
+</thinking>
+
+<thinking>
+Possible precursors and reactions:
+1. Pictet-Spengler reaction between a β-arylethylamine and formaldehyde, with late-stage chlorination and methoxy installation. This seems like a promising approach.
+2. Bischler-Napieralski reaction to form a dihydroisoquinoline, followed by reduction. May be more steps than Pictet-Spengler.
+3. Could consider an alkylation of the tetrahydroisoquinoline core to install the fused phenyl ring, but this seems low-yielding and difficult.
+4. A radical or transition metal-mediated cross-coupling between a pre-formed tetrahydroisoquinoline and a phenyl precursor might be possible but seems complex.
+</thinking>
+
+<thinking>
+The Pictet-Spengler reaction between N-methyl-2-(phenyl)ethylamine and formaldehyde seems like the most direct route, with high confidence. Late-stage chlorination and methoxy installation on the aromatic ring should be straightforward. The Bischler-Napieralski route is also viable but slightly longer. The other considered routes seem much more complex and lower-yielding.
+</thinking>
+</cot>
+
+<json>
+{
+  "data": [
+    ["CNC(C1=CC=CC=C1)C", "C=O", "ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43"],
+    ["CNC(C1=CC=CC=C1)C", "C(C=O)=O", "ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43"],
+    ["O=C(C1=CC(Cl)=C(OC)C2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43)Cl", "CO"]
+  ],
+  "explanation": [
+    "Pictet-Spengler reaction between N-methyl-2-(phenyl)ethylamine and formaldehyde, followed by late-stage chlorination and O-methylation",
+    "Pictet-Spengler reaction between N-methyl-2-(phenyl)ethylamine and glyoxylic acid, with late-stage chlorination (methoxy group already installed)", 
+    "Bischler-Napieralski reaction using a β-chlorocinnamoyl chloride and the tetrahydroisoquinoline, followed by reduction and O-methylation"
+  ],
+  "confidence_scores": [
+    0.9,
+    0.7,
+    0.5
+  ]
+}
+</json> filename=llm.py job_id=20250116_170831_2151 lineno=68
+2025-01-16 17:10:00 [info     ] Molecule : ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43 is same as target molecule filename=utils_molecule.py job_id=20250116_170831_2151 lineno=113
+2025-01-16 17:10:00 [info     ] Obtained 3 valid pathways after validity test: [['CNC(C1=CC=CC=C1)C', 'C=O', 'ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43'], ['CNC(C1=CC=CC=C1)C', 'C(C=O)=O'], ['O=C(C1=CC(Cl)=C(OC)C2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43)Cl', 'CO']] filename=utils_molecule.py job_id=20250116_170831_2151 lineno=144
+2025-01-16 17:10:00 [info     ] Output Pathways: [['CNC(C1=CC=CC=C1)C', 'C=O', 'ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43'], ['CNC(C1=CC=CC=C1)C', 'C(C=O)=O'], ['O=C(C1=CC(Cl)=C(OC)C2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43)Cl', 'CO']],
+                            Output Explanations: ['Pictet-Spengler reaction between N-methyl-2-(phenyl)ethylamine and formaldehyde, followed by late-stage chlorination and O-methylation', 'Pictet-Spengler reaction between N-methyl-2-(phenyl)ethylamine and glyoxylic acid, with late-stage chlorination (methoxy group already installed)', 'Bischler-Napieralski reaction using a β-chlorocinnamoyl chloride and the tetrahydroisoquinoline, followed by reduction and O-methylation'],
+                                Output Confidence: [0.9, 0.7, 0.5] filename=llm.py job_id=20250116_170831_2151 lineno=169
+2025-01-16 17:10:00 [info     ] LLM returned [['CNC(C1=CC=CC=C1)C', 'C=O', 'ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43'], ['CNC(C1=CC=CC=C1)C', 'C(C=O)=O'], ['O=C(C1=CC(Cl)=C(OC)C2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43)Cl', 'CO']] filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=53
+2025-01-16 17:10:00 [info     ] LLM explained ['Pictet-Spengler reaction between N-methyl-2-(phenyl)ethylamine and formaldehyde, followed by late-stage chlorination and O-methylation', 'Pictet-Spengler reaction between N-methyl-2-(phenyl)ethylamine and glyoxylic acid, with late-stage chlorination (methoxy group already installed)', 'Bischler-Napieralski reaction using a β-chlorocinnamoyl chloride and the tetrahydroisoquinoline, followed by reduction and O-methylation'] filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=54
+2025-01-16 17:10:00 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250116_170831_2151 lineno=35
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_model.onnx to uspto
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_templates.csv.gz to uspto
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+Loading filter policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_filter_model.onnx to uspto
+Loading stock from InMemoryInchiKeyQuery to zinc
+Selected as stock: zinc
+Compounds in stock: 17422831
+Selected as expansion policy: uspto
+Selected as filter policy: uspto
+2025-01-16 17:10:53 [info     ] AZ solved CNC(C1=CC=CC=C1)C    filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=73
+2025-01-16 17:10:53 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250116_170831_2151 lineno=35
+2025-01-16 17:10:53 [info     ] AZ solved C=O                  filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=73
+2025-01-16 17:10:53 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250116_170831_2151 lineno=35
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_model.onnx to uspto
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_templates.csv.gz to uspto
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+Loading filter policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_filter_model.onnx to uspto
+Loading stock from InMemoryInchiKeyQuery to zinc
+Selected as stock: zinc
+Compounds in stock: 17422831
+Selected as expansion policy: uspto
+Selected as filter policy: uspto
+2025-01-16 17:11:38 [info     ] AZ failed for ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43, running LLM filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=31
+2025-01-16 17:11:38 [info     ] Calling LLM with molecule: ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43 and run: 0.0 filename=llm.py job_id=20250116_170831_2151 lineno=154
+[92m17:11:38 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:12:13 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:12:13 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:12:13 [info     ] Received response from LLM: Here is the single-step retrosynthesis analysis for the given molecule ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43:
+
+<cot>
+<thinking>
+The target molecule contains a chlorinated phenol ring fused to a tetrahydroisoquinoline core with a methylated amine. Key disconnection points to consider are:
+1) The C-Cl bond to the phenol ring 
+2) The C-O bond of the phenol
+3) The C-N bond of the tetrahydroisoquinoline amine
+4) The C-C bond connecting the two ring systems
+Potential reactions could involve nucleophilic aromatic substitution, reductive amination, or metal-catalyzed cross-coupling.
+</thinking>
+
+<thinking>
+One approach could be nucleophilic aromatic substitution of the chlorine on the phenol ring. This would require a phenol precursor with a suitable leaving group (e.g. fluorine) and a chloride nucleophile under basic conditions. The tetrahydroisoquinoline portion would need to be pre-formed.
+</thinking>
+
+<thinking>
+Alternatively, the phenol could be formed via demethylation of an anisole precursor. This would require the anisole tetrahydroisoquinoline with the chlorine pre-installed. Demethylation could be accomplished with BBr3 or another Lewis acid.
+</thinking>
+
+<thinking>
+The methylated amine could be formed via reductive amination between the secondary amine and formaldehyde or another small aldehyde using a reducing agent like sodium triacetoxyborohydride or sodium cyanoborohydride. This would require the chlorinated phenol-tetrahydroisoquinoline core to be pre-formed.
+</thinking>
+
+<thinking>
+A final approach could involve metal-catalyzed cross-coupling to form the C-C bond between the phenol and tetrahydroisoquinoline portions. This would require pre-functionalized coupling partners, such as a halogenated tetrahydroisoquinoline and a boronic acid or stannane substituted phenol. Typical coupling conditions like Suzuki or Stille could be used.
+</thinking>
+</cot>
+
+<json>
+{
+  "data": [
+    ["Fc1cc2c(c(O)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43", "Cl"],
+    ["COc1cc2c(c(Cl)c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43"],  
+    ["Clc1cc(O)c2c(c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43", "CN"],
+    ["Clc1cc(O)c2c(c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43", "B(OH)2", "I"]
+  ],
+  "explanation": [
+    "Nucleophilic aromatic substitution of the chlorine using chloride anion on a pre-formed phenol with a fluorine leaving group and the tetrahydroisoquinoline core intact.",
+    "Demethylation of an anisole precursor using boron tribromide or another Lewis acid, with the chlorine and tetrahydroisoquinoline pre-installed.", 
+    "Reductive amination of the secondary amine with formaldehyde (or another small aldehyde) and a reducing agent like sodium triacetoxyborohydride, with the chlorinated phenol-tetrahydroisoquinoline core pre-formed.",
+    "Suzuki or Stille cross-coupling between a pre-functionalized halogenated tetrahydroisoquinoline and a boronic acid or stannane substituted phenol using palladium catalysis."
+  ],
+  "confidence_scores": [
+    0.7,
+    0.8,
+    0.9,
+    0.6
+  ]
+}
+</json> filename=llm.py job_id=20250116_170831_2151 lineno=68
+2025-01-16 17:12:13 [info     ] Molecule : ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43 is invalid or cannot be parsed filename=utils_molecule.py job_id=20250116_170831_2151 lineno=123
+2025-01-16 17:12:13 [info     ] Obtained 3 valid pathways after validity test: [['Fc1cc2c(c(O)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'Cl'], ['Clc1cc(O)c2c(c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'CN'], ['Clc1cc(O)c2c(c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'I']] filename=utils_molecule.py job_id=20250116_170831_2151 lineno=144
+2025-01-16 17:12:13 [info     ] Output Pathways: [['Fc1cc2c(c(O)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'Cl'], ['Clc1cc(O)c2c(c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'CN'], ['Clc1cc(O)c2c(c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'I']],
+                            Output Explanations: ['Nucleophilic aromatic substitution of the chlorine using chloride anion on a pre-formed phenol with a fluorine leaving group and the tetrahydroisoquinoline core intact.', 'Reductive amination of the secondary amine with formaldehyde (or another small aldehyde) and a reducing agent like sodium triacetoxyborohydride, with the chlorinated phenol-tetrahydroisoquinoline core pre-formed.', 'Suzuki or Stille cross-coupling between a pre-functionalized halogenated tetrahydroisoquinoline and a boronic acid or stannane substituted phenol using palladium catalysis.'],
+                                Output Confidence: [0.7, 0.9, 0.6] filename=llm.py job_id=20250116_170831_2151 lineno=169
+2025-01-16 17:12:13 [info     ] LLM returned [['Fc1cc2c(c(O)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'Cl'], ['Clc1cc(O)c2c(c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'CN'], ['Clc1cc(O)c2c(c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'I']] filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=53
+2025-01-16 17:12:13 [info     ] LLM explained ['Nucleophilic aromatic substitution of the chlorine using chloride anion on a pre-formed phenol with a fluorine leaving group and the tetrahydroisoquinoline core intact.', 'Reductive amination of the secondary amine with formaldehyde (or another small aldehyde) and a reducing agent like sodium triacetoxyborohydride, with the chlorinated phenol-tetrahydroisoquinoline core pre-formed.', 'Suzuki or Stille cross-coupling between a pre-functionalized halogenated tetrahydroisoquinoline and a boronic acid or stannane substituted phenol using palladium catalysis.'] filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=54
+2025-01-16 17:12:13 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250116_170831_2151 lineno=35
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_model.onnx to uspto
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_templates.csv.gz to uspto
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+Loading filter policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_filter_model.onnx to uspto
+Loading stock from InMemoryInchiKeyQuery to zinc
+Selected as stock: zinc
+Compounds in stock: 17422831
+Selected as expansion policy: uspto
+Selected as filter policy: uspto
+2025-01-16 17:13:01 [info     ] AZ failed for Fc1cc2c(c(O)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43, running LLM filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=31
+2025-01-16 17:13:01 [info     ] Calling LLM with molecule: Fc1cc2c(c(O)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 and run: 0.0 filename=llm.py job_id=20250116_170831_2151 lineno=154
+[92m17:13:01 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:13:32 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:13:32 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+2025-01-16 17:13:32 [info     ] Received response from LLM: Here is the single-step retrosynthesis analysis for the given molecule Fc1cc2c(c(O)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43:
+
+<cot>
+<thinking>
+The target molecule contains a fused tetracyclic ring system with a phenol, chlorine, and ferrocene substituent. Key disconnection points to consider are:
+1. The C-N bond connecting the tetrahydroisoquinoline and cyclohexene rings 
+2. The biaryl C-C bond connecting the ferrocene to the phenol ring
+3. The C-Cl bond on the phenol ring
+4. The phenolic O-H bond
+</thinking>
+
+<thinking>
+Disconnection of the C-N bond would give a tetrahydroisoquinoline with a primary amine and a cyclohexene with an alkyl halide or pseudohalide leaving group. These could be coupled via N-alkylation. The phenol and chlorine substituents would need to be present in the tetrahydroisoquinoline precursor.
+</thinking>
+
+<thinking>
+Disconnection of the biaryl C-C bond would give a halophenol and a ferrocene boronic acid or ester, which could be coupled via Suzuki coupling. The tetrahydroisoquinoline and cyclohexene rings would need to be preformed.
+</thinking>
+
+<thinking>
+Disconnection of the C-Cl bond would give the non-chlorinated phenol. The chlorine could be installed via electrophilic aromatic substitution, likely requiring the phenol to be protected. The rest of the molecule would need to be constructed first.
+</thinking>
+
+<thinking>
+Disconnection of the O-H bond would give the phenoxide anion and a proton. The phenol could be formed via oxidation of a benzyl alcohol or hydrolysis of a phenyl ether. Again, the rest of the molecule would need to be preformed.
+</thinking>
+
+</cot>
+
+<json>
+{
+  "data": [
+    ["Fc1cc2c(c(O)c1)CN[C@@H]3CCC4=CC=CC=C4[C@@H]3C2", "ClC1=CC=CC=C1"],
+    ["OB(O)c1ccc(F)cc1", "Cl.Oc1cc2c(c(Cl)c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43"], 
+    ["Fc1cc2c(c(OC)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43"],
+    ["Fc1cc2c(c(OCc3ccccc3)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43"]
+  ],
+  "explanation": [
+    "Disconnect C-N bond: N-alkylation of tetrahydroisoquinoline with cyclohexene alkyl halide",
+    "Disconnect biaryl C-C bond: Suzuki coupling of halophenol and ferrocene boronic acid", 
+    "Disconnect O-H bond: Oxidation of protected phenol ether to give phenol",
+    "Disconnect O-H bond: Hydrolysis of phenyl benzyl ether to give phenol"
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.6, 
+    0.5
+  ]
+}
+</json> filename=llm.py job_id=20250116_170831_2151 lineno=68
+Langfuse Layer Logging - logging success
+2025-01-16 17:13:32 [info     ] Molecule : Fc1cc2c(c(O)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is substructure of target molecule filename=utils_molecule.py job_id=20250116_170831_2151 lineno=117
+2025-01-16 17:13:32 [info     ] Molecule : Fc1cc2c(c(O)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43 is substructure of target molecule filename=utils_molecule.py job_id=20250116_170831_2151 lineno=117
+2025-01-16 17:13:32 [info     ] Obtained 2 valid pathways after validity test: [['Fc1cc2c(c(O)c1)CN[C@@H]3CCC4=CC=CC=C4[C@@H]3C2', 'ClC1=CC=CC=C1'], ['OB(O)c1ccc(F)cc1', 'Cl.Oc1cc2c(c(Cl)c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43']] filename=utils_molecule.py job_id=20250116_170831_2151 lineno=144
+2025-01-16 17:13:32 [info     ] Output Pathways: [['Fc1cc2c(c(O)c1)CN[C@@H]3CCC4=CC=CC=C4[C@@H]3C2', 'ClC1=CC=CC=C1'], ['OB(O)c1ccc(F)cc1', 'Cl.Oc1cc2c(c(Cl)c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43']],
+                            Output Explanations: ['Disconnect C-N bond: N-alkylation of tetrahydroisoquinoline with cyclohexene alkyl halide', 'Disconnect biaryl C-C bond: Suzuki coupling of halophenol and ferrocene boronic acid'],
+                                Output Confidence: [0.8, 0.7] filename=llm.py job_id=20250116_170831_2151 lineno=169
+2025-01-16 17:13:32 [info     ] LLM returned [['Fc1cc2c(c(O)c1)CN[C@@H]3CCC4=CC=CC=C4[C@@H]3C2', 'ClC1=CC=CC=C1'], ['OB(O)c1ccc(F)cc1', 'Cl.Oc1cc2c(c(Cl)c1)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43']] filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=53
+2025-01-16 17:13:32 [info     ] LLM explained ['Disconnect C-N bond: N-alkylation of tetrahydroisoquinoline with cyclohexene alkyl halide', 'Disconnect biaryl C-C bond: Suzuki coupling of halophenol and ferrocene boronic acid'] filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=54
+2025-01-16 17:13:32 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250116_170831_2151 lineno=35
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_model.onnx to uspto
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_templates.csv.gz to uspto
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+Loading filter policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_filter_model.onnx to uspto
+Loading stock from InMemoryInchiKeyQuery to zinc
+Selected as stock: zinc
+Compounds in stock: 17422831
+Selected as expansion policy: uspto
+Selected as filter policy: uspto
+2025-01-16 17:14:19 [info     ] AZ failed for Fc1cc2c(c(O)c1)CN[C@@H]3CCC4=CC=CC=C4[C@@H]3C2, running LLM filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=31
+2025-01-16 17:14:19 [info     ] Calling LLM with molecule: Fc1cc2c(c(O)c1)CN[C@@H]3CCC4=CC=CC=C4[C@@H]3C2 and run: 0.0 filename=llm.py job_id=20250116_170831_2151 lineno=154
+[92m17:14:19 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:14:49 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:14:49 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+2025-01-16 17:14:49 [info     ] Received response from LLM: Here is the retrosynthetic analysis for the target molecule Fc1cc2c(c(O)c1)CN[C@@H]3CCC4=CC=CC=C4[C@@H]3C2:
+
+<cot>
+<thinking>
+The target molecule contains a phenol, a tetrahydroisoquinoline core, and a fused cyclohexene ring with defined stereochemistry. Key disconnections to consider are:
+1) Disconnection of the C-N bond in the tetrahydroisoquinoline ring via reductive amination 
+2) Disconnection of the phenol O-H bond via phenol alkylation
+3) Disconnection of the cyclohexene ring via Diels-Alder reaction
+4) Disconnection of the benzylic C-C bond via Pictet-Spengler reaction
+</thinking>
+
+<thinking>
+Disconnection 1 via reductive amination could provide an amino-alcohol intermediate and a substituted benzaldehyde. The stereochemistry would need to be set in a subsequent step.
+</thinking>
+
+<thinking>
+Disconnection 2 via phenol alkylation suggests an alkyl halide precursor, likely containing the tetrahydroisoquinoline core, and the phenol precursor. A base would be needed.
+</thinking>
+
+<thinking>
+Disconnection 3 via Diels-Alder reaction implies a dienophile, likely an alkene attached to the tetrahydroisoquinoline, and cyclopentadiene as precursors. This forms the fused cyclohexene in one step with the correct stereochemistry.
+</thinking>
+
+<thinking>
+Disconnection 4 via Pictet-Spengler reaction suggests a phenethylamine precursor and an aldehyde, likely formaldehyde, as precursors. An acid catalyst would cyclize them to form the tetrahydroisoquinoline core. 
+</thinking>
+</cot>
+
+<json>
+{
+  "data": [
+    ["Fc1cc(O)ccc1C=O", "NC[C@@H]1CCC2=CC=CC=C2[C@@H]1O"],
+    ["Fc1cc(O)ccc1", "ClC[C@@H]1CCC2=CC=CC=C2[C@@H]1CN"],
+    ["Fc1cc2c(c(O)c1)CNC=C2", "C1=CC=C2C=CC=CC2=C1"],
+    ["Fc1cc(O)ccc1CCN", "C=O"]
+  ],
+  "explanation": [
+    "Reductive amination of benzaldehyde derivative and amino-alcohol, then cyclization",
+    "Phenol alkylation with alkyl chloride containing tetrahydroisoquinoline core", 
+    "Diels-Alder reaction between tetrahydroisoquinoline derivative and cyclopentadiene",
+    "Pictet-Spengler reaction between phenethylamine derivative and formaldehyde"
+  ],
+  "confidence_scores": [
+    0.8,
+    0.7,
+    0.9,
+    0.6
+  ]
+}
+</json> filename=llm.py job_id=20250116_170831_2151 lineno=68
+Langfuse Layer Logging - logging success
+2025-01-16 17:14:49 [info     ] Obtained 4 valid pathways after validity test: [['Fc1cc(O)ccc1C=O', 'NC[C@@H]1CCC2=CC=CC=C2[C@@H]1O'], ['Fc1cc(O)ccc1', 'ClC[C@@H]1CCC2=CC=CC=C2[C@@H]1CN'], ['Fc1cc2c(c(O)c1)CNC=C2', 'C1=CC=C2C=CC=CC2=C1'], ['Fc1cc(O)ccc1CCN', 'C=O']] filename=utils_molecule.py job_id=20250116_170831_2151 lineno=144
+2025-01-16 17:14:49 [info     ] Output Pathways: [['Fc1cc(O)ccc1C=O', 'NC[C@@H]1CCC2=CC=CC=C2[C@@H]1O'], ['Fc1cc(O)ccc1', 'ClC[C@@H]1CCC2=CC=CC=C2[C@@H]1CN'], ['Fc1cc2c(c(O)c1)CNC=C2', 'C1=CC=C2C=CC=CC2=C1'], ['Fc1cc(O)ccc1CCN', 'C=O']],
+                            Output Explanations: ['Reductive amination of benzaldehyde derivative and amino-alcohol, then cyclization', 'Phenol alkylation with alkyl chloride containing tetrahydroisoquinoline core', 'Diels-Alder reaction between tetrahydroisoquinoline derivative and cyclopentadiene', 'Pictet-Spengler reaction between phenethylamine derivative and formaldehyde'],
+                                Output Confidence: [0.8, 0.7, 0.9, 0.6] filename=llm.py job_id=20250116_170831_2151 lineno=169
+2025-01-16 17:14:49 [info     ] LLM returned [['Fc1cc(O)ccc1C=O', 'NC[C@@H]1CCC2=CC=CC=C2[C@@H]1O'], ['Fc1cc(O)ccc1', 'ClC[C@@H]1CCC2=CC=CC=C2[C@@H]1CN'], ['Fc1cc2c(c(O)c1)CNC=C2', 'C1=CC=C2C=CC=CC2=C1'], ['Fc1cc(O)ccc1CCN', 'C=O']] filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=53
+2025-01-16 17:14:49 [info     ] LLM explained ['Reductive amination of benzaldehyde derivative and amino-alcohol, then cyclization', 'Phenol alkylation with alkyl chloride containing tetrahydroisoquinoline core', 'Diels-Alder reaction between tetrahydroisoquinoline derivative and cyclopentadiene', 'Pictet-Spengler reaction between phenethylamine derivative and formaldehyde'] filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=54
+2025-01-16 17:14:49 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250116_170831_2151 lineno=35
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_model.onnx to uspto
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_templates.csv.gz to uspto
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+Loading filter policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_filter_model.onnx to uspto
+Loading stock from InMemoryInchiKeyQuery to zinc
+Selected as stock: zinc
+Compounds in stock: 17422831
+Selected as expansion policy: uspto
+Selected as filter policy: uspto
+2025-01-16 17:15:20 [info     ] AZ solved Fc1cc(O)ccc1C=O      filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=73
+2025-01-16 17:15:20 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250116_170831_2151 lineno=35
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_model.onnx to uspto
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_templates.csv.gz to uspto
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+Loading filter policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_filter_model.onnx to uspto
+Loading stock from InMemoryInchiKeyQuery to zinc
+Selected as stock: zinc
+Compounds in stock: 17422831
+Selected as expansion policy: uspto
+Selected as filter policy: uspto
+2025-01-16 17:16:07 [info     ] AZ solved NC[C@@H]1CCC2=CC=CC=C2[C@@H]1O filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=73
+2025-01-16 17:16:07 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=63
+2025-01-16 17:16:07 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=70
+2025-01-16 17:16:07 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250116_170831_2151 lineno=35
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_model.onnx to uspto
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_templates.csv.gz to uspto
+Loading template-based expansion policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_model.onnx to ringbreaker
+Loading templates from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_ringbreaker_templates.csv.gz to ringbreaker
+Loading filter policy model from /home/ubuntu/recursiveLLM/aizynthfinder/models/uspto_filter_model.onnx to uspto
+Loading stock from InMemoryInchiKeyQuery to zinc
+Selected as stock: zinc
+Compounds in stock: 17422831
+Selected as expansion policy: uspto
+Selected as filter policy: uspto
+2025-01-16 17:16:29 [info     ] AZ solved ClC1=CC=CC=C1        filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=73
+2025-01-16 17:16:29 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=63
+2025-01-16 17:16:29 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=70
+2025-01-16 17:16:29 [info     ] AZ_MODEL_CONFIG_PATH found: /home/ubuntu/recursiveLLM/aizynthfinder/models/config.yml filename=az.py job_id=20250116_170831_2151 lineno=35
+2025-01-16 17:16:29 [info     ] AZ solved Cl                   filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=73
+2025-01-16 17:16:29 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=63
+2025-01-16 17:16:29 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=70
+2025-01-16 17:16:29 [info     ] temp_stat: [True, True, True]  filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=63
+2025-01-16 17:16:29 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_170831_2151 lineno=70
+[92m17:16:35 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:16:40 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:16:40 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+2025-01-16 17:16:40 [info     ] Received response from LLM: {
+  "data": ["C[O-]"],
+  "explanation": ["The reaction is an O-methylation, converting the phenol to an anisole. The key reagent is a methylating agent like methoxide anion, which can be generated from methanol and a strong base."]
+} filename=metadata.py job_id=20250116_170831_2151 lineno=166
+Langfuse Layer Logging - logging success
+[92m17:16:40 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:16:43 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:16:43 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:16:43 [info     ] Received response from LLM: {
+  "temperature": "Reflux",
+  "pressure": "Atmospheric pressure",
+  "solvent": "Methanol",
+  "time": "2-4 hours"
+} filename=metadata.py job_id=20250116_170831_2151 lineno=284
+[92m17:16:43 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:16:52 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:16:52 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:16:52 [info     ] Received response from LLM: {
+  "literature_reaction": "Williamson ether synthesis",
+  "explanation": "The reaction involves the formation of an ether (R-O-R') by reacting an alkoxide ion (R-O-) with an alkyl halide (R'-X). In this case, the phenolic OH of the starting material is deprotonated by a base (likely the C[O-] listed) to form the alkoxide, which then undergoes SN2 reaction with formaldehyde (C=O) as the alkylating agent to form the aryl methyl ether product. The reaction is performed under reflux in methanol solvent."
+} filename=metadata.py job_id=20250116_170831_2151 lineno=358
+[92m17:16:52 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:16:59 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:16:59 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:16:59 [info     ] Received response from LLM: {
+  "data": ["[H][H]", "[H+]"],
+  "explanation": ["Reductive amination reaction. The ketone (CC(=O)c1ccccc1) is reduced to an imine intermediate using a hydride source like sodium cyanoborohydride or sodium triacetoxyborohydride. The imine then reacts with the amine (CN) to form the final secondary amine product.", "Acid catalyst. The reaction requires mildly acidic conditions, typically using acetic acid or another weak acid, to activate the carbonyl for imine formation and reduction."]
+} filename=metadata.py job_id=20250116_170831_2151 lineno=166
+[92m17:16:59 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:17:04 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:17:04 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:17:04 [info     ] Received response from LLM: {
+  "temperature": "Room temperature (20-25 °C)",
+  "pressure": "Atmospheric pressure",
+  "solvent": "Ethanol",
+  "time": "2-4 hours"
+} filename=metadata.py job_id=20250116_170831_2151 lineno=284
+[92m17:17:04 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:17:11 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:17:11 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:17:11 [info     ] Received response from LLM: {
+  "literature_reaction": "Reductive amination of acetophenone with methylamine using hydrogen gas and an acid catalyst",
+  "explanation": "This is a reductive amination reaction between an aldehyde or ketone (acetophenone) and a primary amine (methylamine) using a reducing agent (hydrogen gas) and an acid catalyst. The reaction likely proceeds via imine formation followed by reduction to the secondary amine product. Key conditions are the use of a protic solvent (ethanol) at room temperature and atmospheric pressure of hydrogen gas. The acid catalyst is important for imine formation."
+} filename=metadata.py job_id=20250116_170831_2151 lineno=358
+[92m17:17:11 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:17:17 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:17:17 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:17:17 [info     ] Received response from LLM: {
+  "data": ["[H][H]"],
+  "explanation": ["The reaction of isocyanide (CN=C=O) to form hydrogen cyanide (CN) is a reduction. It requires a reducing agent such as hydrogen gas (H2). The carbon-oxygen double bonds are reduced, eliminating carbon monoxide (CO) and leaving the C-N triple bond intact."]
+} filename=metadata.py job_id=20250116_170831_2151 lineno=166
+[92m17:17:17 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:17:20 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:17:20 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:17:20 [info     ] Received response from LLM: {
+  "temperature": "200-300 °C",
+  "pressure": "1 atm",
+  "solvent": "No solvent needed, gas phase reaction",
+  "time": "Instantaneous under the given conditions"
+} filename=metadata.py job_id=20250116_170831_2151 lineno=284
+[92m17:17:20 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:17:25 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:17:25 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:17:25 [info     ] Received response from LLM: {
+  "literature_reaction": "Cyanogen (CN)2 formation from cyanogen isocyanate",
+  "explanation": "This is a thermal decomposition reaction of cyanogen isocyanate (CN=C=O) to form cyanogen ((CN)2) and carbon monoxide (CO). The reaction occurs rapidly in the gas phase at high temperatures (200-300 °C). No additional reagents or solvents are required. The driving force is the formation of two stable gas products."
+} filename=metadata.py job_id=20250116_170831_2151 lineno=358
+[92m17:17:25 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:17:30 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:17:30 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:17:30 [info     ] Received response from LLM: {
+  "data": ["C[N+](C)(C)C.[Cl-]"],
+  "explanation": ["Methylation of the secondary amine using methyl chloride or another methylating agent like dimethyl sulfate or trimethyloxonium tetrafluoroborate. This is an N-alkylation reaction that converts the secondary amine to a tertiary methylammonium salt."]
+} filename=metadata.py job_id=20250116_170831_2151 lineno=166
+[92m17:17:30 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:17:35 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:17:35 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:17:35 [info     ] Received response from LLM: {
+  "temperature": "Room temperature (20-25°C)",
+  "pressure": "Atmospheric pressure",
+  "solvent": "Polar aprotic solvent such as DMF, DMSO, or acetonitrile",
+  "time": "1-24 hours, depending on the specific reaction conditions and scale"
+} filename=metadata.py job_id=20250116_170831_2151 lineno=284
+[92m17:17:35 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:17:42 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:17:42 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:17:42 [info     ] Received response from LLM: {
+  "literature_reaction": "Methylation of a phenolic hydroxyl group using trimethylamine and chloromethane (CH3Cl) as the methylating agent, likely via an SN2 mechanism.",
+  "explanation": "This reaction involves the O-methylation of a phenol using a quaternary ammonium salt (trimethylamine hydrochloride) and chloromethane. The phenoxide anion, generated under basic conditions, acts as a nucleophile and displaces the chloride in an SN2 reaction. Key conditions include using a polar aprotic solvent and allowing sufficient reaction time at room temperature for complete conversion."
+} filename=metadata.py job_id=20250116_170831_2151 lineno=358
+[92m17:17:42 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:17:47 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:17:47 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:17:47 [info     ] Received response from LLM: {
+  "data": ["O=C=NCl"],
+  "explanation": ["The reaction is an electrophilic aromatic substitution. The key reagent is phenyl isocyanate dichloride, which provides an electrophilic chlorine to substitute on the activated aromatic ring ortho to the phenol group."]
+} filename=metadata.py job_id=20250116_170831_2151 lineno=166
+[92m17:17:47 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:17:51 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:17:52 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:17:52 [info     ] Received response from LLM: {
+  "temperature": "Room temperature (approximately 20-25°C)",
+  "pressure": "Atmospheric pressure",
+  "solvent": "The reaction likely proceeds without an additional solvent, as the reagent O=C=NCl can act as both the reagent and solvent.",
+  "time": "The reaction time depends on the specific procedure but is likely in the range of 30 minutes to a few hours."
+} filename=metadata.py job_id=20250116_170831_2151 lineno=284
+[92m17:17:52 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:17:59 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:17:59 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:17:59 [info     ] Received response from LLM: {
+  "literature_reaction": "This reaction appears to be an electrophilic aromatic substitution, specifically a chlorination of the phenol ring using chlorocarbonyl isocyanate (O=C=NCl) as the chlorinating agent.",
+  "explanation": "The key transformation is the addition of a chlorine atom to the phenol ring ortho to the hydroxy group. Chlorocarbonyl isocyanate acts as an electrophilic chlorine source. The reaction likely proceeds through the formation of a chlorocarbonyl intermediate, followed by electrophilic aromatic substitution. The hydroxy group directs the chlorination to the ortho position. Room temperature conditions and the absence of additional solvents are typical for this type of transformation."
+} filename=metadata.py job_id=20250116_170831_2151 lineno=358
+[92m17:17:59 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:18:05 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:18:05 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:18:05 [info     ] Received response from LLM: {
+  "data": ["O", "[H+]"],
+  "explanation": [
+    "This is a reductive amination reaction. The aldehyde and amine reactants condense to form an imine intermediate.",
+    "The imine is then reduced to the secondary amine product. A reducing agent such as sodium triacetoxyborohydride or sodium cyanoborohydride is typically used, often under mildly acidic conditions (e.g. with acetic acid)."
+  ]
+} filename=metadata.py job_id=20250116_170831_2151 lineno=166
+[92m17:18:05 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:18:09 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:18:09 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:18:09 [info     ] Received response from LLM: {
+  "temperature": "Room temperature (20-25°C)",
+  "pressure": "Atmospheric pressure",
+  "solvent": "Ethanol or methanol",
+  "time": "2-4 hours"
+} filename=metadata.py job_id=20250116_170831_2151 lineno=284
+[92m17:18:09 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:18:17 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:18:17 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:18:17 [info     ] Received response from LLM: {
+  "literature_reaction": "Pictet-Spengler reaction",
+  "explanation": "The Pictet-Spengler reaction is a condensation between an aldehyde (O=Cc1ccc(O)cc1F) and a β-arylethylamine (NC[C@@H]1CCc2ccccc2[C@@H]1O) to form a tetrahydroisoquinoline product. The reaction is typically carried out in protic solvents like ethanol or methanol at room temperature, catalyzed by acid ([H+]). The hydroxy group on the aldehyde allows for further cyclization to form the fused tricyclic product."
+} filename=metadata.py job_id=20250116_170831_2151 lineno=358
+[92m17:18:17 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:18:21 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:18:21 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:18:21 [info     ] Received response from LLM: {
+  "data": ["BBr3"],
+  "explanation": ["Demethylation of the aryl methyl ether using boron tribromide (BBr3). The Lewis acidic BBr3 cleaves the ether C-O bond to form the phenol product. Anhydrous conditions are typically required."]
+} filename=metadata.py job_id=20250116_170831_2151 lineno=166
+[92m17:18:21 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:18:25 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:18:25 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:18:25 [info     ] Received response from LLM: {
+  "temperature": "Reflux",
+  "pressure": "Atmospheric pressure",
+  "solvent": "Hydrobromic acid (48% in H2O)",
+  "time": "2-4 hours"
+} filename=metadata.py job_id=20250116_170831_2151 lineno=284
+[92m17:18:25 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:18:31 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:18:31 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+2025-01-16 17:18:31 [info     ] Received response from LLM: {
+  "literature_reaction": "Demethylation of aryl methyl ethers using hydrobromic acid",
+  "explanation": "This reaction involves the cleavage of an aryl methyl ether (Ar-OCH3) to form a phenol (Ar-OH) using hydrobromic acid (HBr) under reflux conditions. The electron-withdrawing fluorine substituent on the aromatic ring activates the ether towards demethylation. Aqueous HBr (48%) serves as both the reagent and solvent, providing a strongly acidic environment necessary for the transformation."
+} filename=metadata.py job_id=20250116_170831_2151 lineno=358
+Langfuse Layer Logging - logging success
+[92m17:18:31 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:18:39 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:18:39 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:18:39 [info     ] Received response from LLM: {
+  "data": ["[H][H]"],
+  "explanation": ["The reaction converts a nitrile (C≡N) to a primary amine (CH2-NH2) via a reduction. This is typically accomplished using hydrogen gas (H2) with a metal catalyst like Raney Nickel or Platinum. The reaction is a catalytic hydrogenation that adds two hydrogens to the nitrile carbon, converting the C≡N triple bond to a CH2-NH2 group."]
+} filename=metadata.py job_id=20250116_170831_2151 lineno=166
+[92m17:18:39 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:18:43 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:18:43 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:18:43 [info     ] Received response from LLM: {
+  "temperature": "Room temperature (20-25 °C)",
+  "pressure": "Atmospheric pressure",
+  "solvent": "Methanol or ethanol",
+  "time": "1-2 hours"
+} filename=metadata.py job_id=20250116_170831_2151 lineno=284
+[92m17:18:43 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:18:50 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:18:50 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+2025-01-16 17:18:50 [info     ] Received response from LLM: {
+  "literature_reaction": "Reduction of a nitrile to a primary amine using hydrogen gas (H2) and a metal catalyst such as Raney nickel or palladium on carbon.",
+  "explanation": "This reaction involves the catalytic hydrogenation of a nitrile (N#C) to a primary amine (NH2) using hydrogen gas (H2). The reaction is typically carried out at room temperature and atmospheric pressure in a protic solvent such as methanol or ethanol. A heterogeneous metal catalyst, such as Raney nickel or palladium on carbon, is used to facilitate the hydrogenation process. The stereochemistry of the starting material is retained in the product."
+} filename=metadata.py job_id=20250116_170831_2151 lineno=358
+Langfuse Layer Logging - logging success
+[92m17:18:50 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:18:58 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:18:58 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:18:58 [info     ] Received response from LLM: {
+  "data": ["[H][H]", "[Na+].[BH4-]"],
+  "explanation": [
+    "This is a ketone reduction reaction. Sodium borohydride (NaBH4) is a common reducing agent for converting ketones to alcohols.",
+    "The hydride from NaBH4 will attack the carbonyl carbon, breaking the C=O double bond and forming a new C-H bond. This results in the alcohol product with retention of stereochemistry at the carbonyl carbon."
+  ]
+} filename=metadata.py job_id=20250116_170831_2151 lineno=166
+[92m17:18:58 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:19:03 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:19:03 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:19:03 [info     ] Received response from LLM: {
+  "temperature": "-78°C to room temperature",
+  "pressure": "atmospheric pressure",
+  "solvent": "methanol or ethanol",
+  "time": "30 minutes to 2 hours"
+} filename=metadata.py job_id=20250116_170831_2151 lineno=284
+[92m17:19:03 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:19:11 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:19:11 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:19:11 [info     ] Received response from LLM: {
+  "literature_reaction": "Reduction of a ketone to an alcohol using sodium borohydride",
+  "explanation": "The reaction converts a ketone to an alcohol using sodium borohydride (NaBH4) as the reducing agent. It is typically carried out at low temperature (-78°C) and allowed to slowly warm to room temperature in protic solvents like methanol or ethanol. The hydride from NaBH4 selectively reduces the ketone to the corresponding alcohol, while leaving the nitrile group intact. The stereochemistry at the alcohol carbon is controlled by the existing stereocenter in the molecule."
+} filename=metadata.py job_id=20250116_170831_2151 lineno=358
+[92m17:19:11 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:19:18 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:19:18 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:19:18 [info     ] Received response from LLM: {
+  "data": ["[H]", "[Pd]", "C(=O)([O-])[O-].[Na+].[Na+]"],
+  "explanation": ["The reaction is a palladium-catalyzed hydrodehalogenation of an aryl halide. The aryl chloride is reduced to the corresponding arene using a palladium catalyst and a hydride source, likely from a hydrogen gas atmosphere.", "Sodium formate can also be used as the hydride source and is represented in SMILES notation in the data array. The palladium catalyst is essential for activating the aryl halide and facilitating the reduction."]
+} filename=metadata.py job_id=20250116_170831_2151 lineno=166
+[92m17:19:18 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:19:21 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:19:21 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:19:21 [info     ] Received response from LLM: {
+  "temperature": "25-100 °C",
+  "pressure": "1 atm",
+  "solvent": "H2O",
+  "time": "0.5-24 h"
+} filename=metadata.py job_id=20250116_170831_2151 lineno=284
+[92m17:19:21 - LiteLLM:INFO[0m: utils.py:2740 - 
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+
+LiteLLM completion() model= claude-3-opus-20240229; provider = anthropic
+[92m17:19:27 - LiteLLM:INFO[0m: utils.py:890 - Wrapper: Completed Call, calling success_handler
+Wrapper: Completed Call, calling success_handler
+[92m17:19:27 - LiteLLM:INFO[0m: langfuse.py:294 - Langfuse Layer Logging - logging success
+Langfuse Layer Logging - logging success
+2025-01-16 17:19:27 [info     ] Received response from LLM: {
+  "literature_reaction": "Hydrodehalogenation of aryl halides using sodium formate and palladium catalyst",
+  "explanation": "This is a palladium-catalyzed hydrodehalogenation reaction of an aryl dichloride using sodium formate as the hydrogen source. The reaction selectively removes one chlorine substituent from 1,2-dichlorobenzene to yield chlorobenzene. Key conditions are the palladium catalyst, sodium formate reagent, water solvent, and mild heating (25-100 °C)."
+} filename=metadata.py job_id=20250116_170831_2151 lineno=358
+Retrosynthesis result: {'dependencies': {'1': ['2', '4'], '2': ['3'], '3': [], '4': ['5'], '5': ['6', '10'], '6': ['7', '8'], '7': [], '8': ['9'], '9': [], '10': []}, 'steps': [{'step': '1', 'reactants': [{'smiles': 'CNC(C)c1ccccc1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C9H13N', 'mass': 135.104799416}}, {'smiles': 'ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43', 'reactant_metadata': {'name': '', 'chemical_formula': 'C19H20ClNO', 'mass': 313.12334194}}], 'reagents': [{'smiles': 'C=O', 'reagent_metadata': {'name': '', 'chemical_formula': 'CH2O', 'mass': 30.010564684}}, {'smiles': 'C[O-]', 'reagent_metadata': {'name': '', 'chemical_formula': 'CH3O-', 'mass': 31.018938295909997}}], 'products': [{'smiles': 'ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43', 'product_metadata': {'name': '', 'chemical_formula': 'C20H22ClNO', 'mass': 327.138992004}}], 'conditions': {'temperature': 'Reflux', 'pressure': 'Atmospheric pressure', 'solvent': 'Methanol', 'time': '2-4 hours'}, 'reactionmetrics': [{'scalabilityindex': '3', 'confidenceestimate': 0.9, 'closestliterature': 'Williamson ether synthesis'}]}, {'step': '2', 'reactants': [{'smiles': 'CN', 'reactant_metadata': {'name': '', 'chemical_formula': 'CH5N', 'mass': 31.042199159999996}}, {'smiles': 'CC(=O)c1ccccc1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C8H8O', 'mass': 120.057514876}}], 'reagents': [{'smiles': '[H][H]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2', 'mass': 2.015650064}}, {'smiles': '[H+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H+', 'mass': 1.00727645209}}], 'products': [{'smiles': 'CNC(C)c1ccccc1', 'product_metadata': {'name': '', 'chemical_formula': 'C9H13N', 'mass': 135.104799416}}], 'conditions': {'temperature': 'Room temperature (20-25 °C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Ethanol', 'time': '2-4 hours'}, 'reactionmetrics': [{'scalabilityindex': '10', 'confidenceestimate': 0.83, 'closestliterature': 'Reductive amination of acetophenone with methylamine using hydrogen gas and an acid catalyst'}]}, {'step': '3', 'reactants': [{'smiles': 'CN=C=O', 'reactant_metadata': {'name': '', 'chemical_formula': 'C2H3NO', 'mass': 57.021463716}}], 'reagents': [{'smiles': '[H][H]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2', 'mass': 2.015650064}}], 'products': [{'smiles': 'CN', 'product_metadata': {'name': '', 'chemical_formula': 'CH5N', 'mass': 31.042199159999996}}], 'conditions': {'temperature': '200-300 °C', 'pressure': '1 atm', 'solvent': 'No solvent needed, gas phase reaction', 'time': 'Instantaneous under the given conditions'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.99, 'closestliterature': 'Cyanogen (CN)2 formation from cyanogen isocyanate'}]}, {'step': '4', 'reactants': [{'smiles': 'Fc1cc2c(c(O)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'reactant_metadata': {'name': '', 'chemical_formula': 'C18H17ClFNO', 'mass': 317.098270064}}], 'reagents': [{'smiles': 'Cl', 'reagent_metadata': {'name': '', 'chemical_formula': 'HCl', 'mass': 35.976677712}}, {'smiles': 'C[N+](C)(C)C.[Cl-]', 'reagent_metadata': {'name': '', 'chemical_formula': 'C4H12ClN', 'mass': 109.06582706399999}}], 'products': [{'smiles': 'ClC(C(O)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43', 'product_metadata': {'name': '', 'chemical_formula': 'C19H20ClNO', 'mass': 313.12334194}}], 'conditions': {'temperature': 'Room temperature (20-25°C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Polar aprotic solvent such as DMF, DMSO, or acetonitrile', 'time': '1-24 hours, depending on the specific reaction conditions and scale'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.7, 'closestliterature': 'Methylation of a phenolic hydroxyl group using trimethylamine and chloromethane (CH3Cl) as the methylating agent, likely via an SN2 mechanism.'}]}, {'step': '5', 'reactants': [{'smiles': 'Fc1cc2c(c(O)c1)CN[C@@H]3CCC4=CC=CC=C4[C@@H]3C2', 'reactant_metadata': {'name': '', 'chemical_formula': 'C18H18FNO', 'mass': 283.137242416}}, {'smiles': 'Clc1ccccc1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H5Cl', 'mass': 112.00797784}}], 'reagents': [{'smiles': 'O=C=NCl', 'reagent_metadata': {'name': '', 'chemical_formula': 'CClNO', 'mass': 76.9668413}}], 'products': [{'smiles': 'Fc1cc2c(c(O)c1Cl)[C@@H]3[C@@H](NCC2)CCC4=CC=CC=C43', 'product_metadata': {'name': '', 'chemical_formula': 'C18H17ClFNO', 'mass': 317.098270064}}], 'conditions': {'temperature': 'Room temperature (approximately 20-25°C)', 'pressure': 'Atmospheric pressure', 'solvent': 'The reaction likely proceeds without an additional solvent, as the reagent O=C=NCl can act as both the reagent and solvent.', 'time': 'The reaction time depends on the specific procedure but is likely in the range of 30 minutes to a few hours.'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.8, 'closestliterature': 'This reaction appears to be an electrophilic aromatic substitution, specifically a chlorination of the phenol ring using chlorocarbonyl isocyanate (O=C=NCl) as the chlorinating agent.'}]}, {'step': '6', 'reactants': [{'smiles': 'O=Cc1ccc(O)cc1F', 'reactant_metadata': {'name': '', 'chemical_formula': 'C7H5FO2', 'mass': 140.02735762}}, {'smiles': 'NC[C@@H]1CCc2ccccc2[C@@H]1O', 'reactant_metadata': {'name': '', 'chemical_formula': 'C11H15NO', 'mass': 177.1153641}}], 'reagents': [{'smiles': 'O', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2O', 'mass': 18.010564684}}, {'smiles': '[H+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H+', 'mass': 1.00727645209}}], 'products': [{'smiles': 'Fc1cc2c(c(O)c1)CN[C@@H]3CCC4=CC=CC=C4[C@@H]3C2', 'product_metadata': {'name': '', 'chemical_formula': 'C18H18FNO', 'mass': 283.137242416}}], 'conditions': {'temperature': 'Room temperature (20-25°C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Ethanol or methanol', 'time': '2-4 hours'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.8, 'closestliterature': 'Pictet-Spengler reaction'}]}, {'step': '7', 'reactants': [{'smiles': 'COc1ccc(C=O)c(F)c1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C8H7FO2', 'mass': 154.043007684}}], 'reagents': [], 'products': [{'smiles': 'O=Cc1ccc(O)cc1F', 'product_metadata': {'name': '', 'chemical_formula': 'C7H5FO2', 'mass': 140.02735762}}], 'conditions': {'temperature': 'Reflux', 'pressure': 'Atmospheric pressure', 'solvent': 'Hydrobromic acid (48% in H2O)', 'time': '2-4 hours'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.86, 'closestliterature': 'Demethylation of aryl methyl ethers using hydrobromic acid'}]}, {'step': '8', 'reactants': [{'smiles': 'N#C[C@@H]1CCc2ccccc2[C@@H]1O', 'reactant_metadata': {'name': '', 'chemical_formula': 'C11H11NO', 'mass': 173.084063972}}], 'reagents': [{'smiles': '[H][H]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2', 'mass': 2.015650064}}], 'products': [{'smiles': 'NC[C@@H]1CCc2ccccc2[C@@H]1O', 'product_metadata': {'name': '', 'chemical_formula': 'C11H15NO', 'mass': 177.1153641}}], 'conditions': {'temperature': 'Room temperature (20-25 °C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Methanol or ethanol', 'time': '1-2 hours'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.9, 'closestliterature': 'Reduction of a nitrile to a primary amine using hydrogen gas (H2) and a metal catalyst such as Raney nickel or palladium on carbon.'}]}, {'step': '9', 'reactants': [{'smiles': 'N#C[C@@H]1CCc2ccccc2C1=O', 'reactant_metadata': {'name': '', 'chemical_formula': 'C11H9NO', 'mass': 171.068413908}}], 'reagents': [{'smiles': '[H][H]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2', 'mass': 2.015650064}}, {'smiles': '[Na+].[BH4-]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H4BNa', 'mass': 38.030374808000005}}], 'products': [{'smiles': 'N#C[C@@H]1CCc2ccccc2[C@@H]1O', 'product_metadata': {'name': '', 'chemical_formula': 'C11H11NO', 'mass': 173.084063972}}], 'conditions': {'temperature': '-78°C to room temperature', 'pressure': 'atmospheric pressure', 'solvent': 'methanol or ethanol', 'time': '30 minutes to 2 hours'}, 'reactionmetrics': [{'scalabilityindex': '10', 'confidenceestimate': 0.93, 'closestliterature': 'Reduction of a ketone to an alcohol using sodium borohydride'}]}, {'step': '10', 'reactants': [{'smiles': 'Clc1ccccc1Cl', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H4Cl2', 'mass': 145.969005488}}], 'reagents': [{'smiles': '[H]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H', 'mass': 1.007825032}}, {'smiles': '[Pd]', 'reagent_metadata': {'name': '', 'chemical_formula': 'Pd', 'mass': 105.903486}}, {'smiles': 'C(=O)([O-])[O-].[Na+].[Na+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'CNa2O3', 'mass': 105.96428242}}], 'products': [{'smiles': 'Clc1ccccc1', 'product_metadata': {'name': '', 'chemical_formula': 'C6H5Cl', 'mass': 112.00797784}}], 'conditions': {'temperature': '25-100 °C', 'pressure': '1 atm', 'solvent': 'H2O', 'time': '0.5-24 h'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.98, 'closestliterature': 'Hydrodehalogenation of aryl halides using sodium formate and palladium catalyst'}]}]}
+24.236.253.99 - - [16/Jan/2025 17:19:27] "POST /api/retrosynthesis HTTP/1.1" 200 -
+24.236.253.99 - - [16/Jan/2025 17:19:27] "POST /api/retrosynthesis HTTP/1.1" 200 -
+165.22.213.96 - - [16/Jan/2025 17:27:34] code 400, message Bad request version ('À\x14À')
+165.22.213.96 - - [16/Jan/2025 17:27:34] code 400, message Bad request version ('À\x14À')
+165.22.213.96 - - [16/Jan/2025 17:27:34] "[35m[1m\x16\x03\x01\x00{\x01\x00\x00w\x03\x03¡æö\x84A\x97\x950Ùú?wu"ùwæ»\x0eØ\x0b^¨h\x9d\x13l\x01:Û.s\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À[0m" HTTPStatus.BAD_REQUEST -
+165.22.213.96 - - [16/Jan/2025 17:27:34] "[35m[1m\x16\x03\x01\x00{\x01\x00\x00w\x03\x03¡æö\x84A\x97\x950Ùú?wu"ùwæ»\x0eØ\x0b^¨h\x9d\x13l\x01:Û.s\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À[0m" HTTPStatus.BAD_REQUEST -
+165.22.213.96 - - [16/Jan/2025 17:27:35] code 400, message Bad request version ('À\x14À')
+165.22.213.96 - - [16/Jan/2025 17:27:35] code 400, message Bad request version ('À\x14À')
+165.22.213.96 - - [16/Jan/2025 17:27:35] "[35m[1m\x16\x03\x01\x00{\x01\x00\x00w\x03\x03\x1f\x0d¡~5U\x16uMJ\x0f`ýØ*\x970Ö\x11\\\x9bðoI¯\x07÷¶\x95\x07Ðy\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À[0m" HTTPStatus.BAD_REQUEST -
+165.22.213.96 - - [16/Jan/2025 17:27:35] "[35m[1m\x16\x03\x01\x00{\x01\x00\x00w\x03\x03\x1f\x0d¡~5U\x16uMJ\x0f`ýØ*\x970Ö\x11\\\x9bðoI¯\x07÷¶\x95\x07Ðy\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À[0m" HTTPStatus.BAD_REQUEST -
+165.22.213.96 - - [16/Jan/2025 17:27:35] "[33mGET / HTTP/1.1[0m" 404 -
+165.22.213.96 - - [16/Jan/2025 17:27:35] "[33mGET / HTTP/1.1[0m" 404 -
+24.236.253.99 - - [16/Jan/2025 17:34:39] "OPTIONS /api/retrosynthesis HTTP/1.1" 200 -
+24.236.253.99 - - [16/Jan/2025 17:34:39] "OPTIONS /api/retrosynthesis HTTP/1.1" 200 -
+2025-01-16 17:34:39 [info     ] -------------------------------------------------- filename=main.py lineno=29
+2025-01-16 17:34:39 [info     ] Application initialization complete filename=main.py lineno=30
+2025-01-16 17:34:39 [info     ] Starting new synthesis job 20250116_173439_2151 for molecule O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O filename=prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] AZ failed for O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O and run: 0.1 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O and run: 0.2 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O and run: 0.30000000000000004 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O and run: 0.4 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(O)C(O)=CC5C4C3[C@@H]1O', 'CC(=O)Cl']],
+                            Output Explanations: ['Esterification of free alcohol with acetyl chloride'],
+                                Output Confidence: [0.9] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(O)C(O)=CC5C4C3[C@@H]1O', 'CC(=O)Cl']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['Esterification of free alcohol with acetyl chloride'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ failed for O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(O)C(O)=CC5C4C3[C@@H]1O, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(O)C(O)=CC5C4C3[C@@H]1O and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['OC1=CC=C2C3C1CC4N(CC3)C[C@H](O)[C@@]4(O)CCC2', 'OC1=CC=C(CCN)C=C1'], ['COC1=CC(CCN)=CC=C1O', 'O=C1C=C2C3N(CC2)CC4=CC5=C(OC)C(OC)=CC5C4C13'], ['OC1=CC=C(CCN2CC3=C(C=CC4=C3C(O)=CC=C4)C2)C=C1', 'BrC1CCC2=C(C=CC3=C2C(O)=CC=C3)C1']],
+                            Output Explanations: ['Dehydration of a tertiary alcohol, cleavage of the amine bridge back to a primary amine, aromatic ring from a tyramine precursor', 'Intramolecular electrophilic aromatic substitution of a tetrahydroisoquinoline intermediate to form the aryl-alkyl C-C bond', 'Intramolecular SN2 reaction to form the amine bridge from an alkyl halide and secondary amine, unfunctionalized cyclohexane precursor from a Diels-Alder reaction'],
+                                Output Confidence: [0.6, 0.7, 0.5] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['OC1=CC=C2C3C1CC4N(CC3)C[C@H](O)[C@@]4(O)CCC2', 'OC1=CC=C(CCN)C=C1'], ['COC1=CC(CCN)=CC=C1O', 'O=C1C=C2C3N(CC2)CC4=CC5=C(OC)C(OC)=CC5C4C13'], ['OC1=CC=C(CCN2CC3=C(C=CC4=C3C(O)=CC=C4)C2)C=C1', 'BrC1CCC2=C(C=CC3=C2C(O)=CC=C3)C1']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['Dehydration of a tertiary alcohol, cleavage of the amine bridge back to a primary amine, aromatic ring from a tyramine precursor', 'Intramolecular electrophilic aromatic substitution of a tetrahydroisoquinoline intermediate to form the aryl-alkyl C-C bond', 'Intramolecular SN2 reaction to form the amine bridge from an alkyl halide and secondary amine, unfunctionalized cyclohexane precursor from a Diels-Alder reaction'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ failed for OC1=CC=C2C3C1CC4N(CC3)C[C@H](O)[C@@]4(O)CCC2, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: OC1=CC=C2C3C1CC4N(CC3)C[C@H](O)[C@@]4(O)CCC2 and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['OC1=CC=C2C3C1CC(N)C3CCC2', 'OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN'], ['OC1=CC=C(C=O)C=C1', 'OC(CCN1CCC2(O)C[C@H](O)CN2CC1)=O']],
+                            Output Explanations: ['Amide coupling of amine OC1=CC=C2C3C1CC(N)C3CCC2 and acid OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN, followed by reduction', 'Aldol condensation of ketone OC1=CC=C(C=O)C=C1 and enolate OC(CCN1CCC2(O)C[C@H](O)CN2CC1)=O, then dehydration'],
+                                Output Confidence: [0.6, 0.5] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['OC1=CC=C2C3C1CC(N)C3CCC2', 'OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN'], ['OC1=CC=C(C=O)C=C1', 'OC(CCN1CCC2(O)C[C@H](O)CN2CC1)=O']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['Amide coupling of amine OC1=CC=C2C3C1CC(N)C3CCC2 and acid OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN, followed by reduction', 'Aldol condensation of ketone OC1=CC=C(C=O)C=C1 and enolate OC(CCN1CCC2(O)C[C@H](O)CN2CC1)=O, then dehydration'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ failed for OC1=CC=C2C3C1CC(N)C3CCC2, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: OC1=CC=C2C3C1CC(N)C3CCC2 and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['OC1=CC=C2C=CC=C12', 'C1CC(N)C2CCC1C2']],
+                            Output Explanations: ['Diels-Alder reaction between the corresponding diene and dienophile precursors, using heat'],
+                                Output Confidence: [0.7] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['OC1=CC=C2C=CC=C12', 'C1CC(N)C2CCC1C2']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['Diels-Alder reaction between the corresponding diene and dienophile precursors, using heat'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ failed for OC1=CC=C2C=CC=C12, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: OC1=CC=C2C=CC=C12 and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: OC1=CC=C2C=CC=C12 and run: 0.1 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['OCc1ccccc1', 'Oc1ccccc1'], ['Oc1ccccc1Br', 'OC(c1ccccc1)B(O)O']],
+                            Output Explanations: ['Friedel-Crafts alkylation of phenol with 2-phenylethanol, then oxidation of the alkyl chain', 'Suzuki coupling of 2-bromophenol and 2-formylphenylboronic acid, then base-promoted etherification'],
+                                Output Confidence: [0.5, 0.8] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['OCc1ccccc1', 'Oc1ccccc1'], ['Oc1ccccc1Br', 'OC(c1ccccc1)B(O)O']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['Friedel-Crafts alkylation of phenol with 2-phenylethanol, then oxidation of the alkyl chain', 'Suzuki coupling of 2-bromophenol and 2-formylphenylboronic acid, then base-promoted etherification'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ solved OCc1ccccc1           filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=73
+2025-01-16 17:34:39 [info     ] AZ solved Oc1ccccc1            filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=73
+2025-01-16 17:34:39 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+2025-01-16 17:34:39 [info     ] AZ failed for C1CC(N)C2CCC1C2, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: C1CC(N)C2CCC1C2 and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: C1CC(N)C2CCC1C2 and run: 0.1 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['C1CC=CC=C1', 'C#CC#C']],
+                            Output Explanations: ['[2+2+2] cycloaddition of cyclopentadiene and butadiyne, catalyzed by transition metal complex like Co or Rh'],
+                                Output Confidence: [0.3] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['C1CC=CC=C1', 'C#CC#C']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['[2+2+2] cycloaddition of cyclopentadiene and butadiyne, catalyzed by transition metal complex like Co or Rh'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ solved C1CC=CC=C1           filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=73
+2025-01-16 17:34:39 [info     ] AZ solved C#CC#C               filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=73
+2025-01-16 17:34:39 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+2025-01-16 17:34:39 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+2025-01-16 17:34:39 [info     ] AZ failed for OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)C', 'N#CC[C@](O)(CCCc1ccccc1O)[C@H](O)CC(=O)O'], ['Oc1ccccc1', 'OC(=O)C[C@@H](O)[C@@H](O)CN'], ['c1ccc(O)cc1', 'CC(=O)CC[C@@](O)(CN)[C@@H](O)CC(=O)O']],
+                            Output Explanations: ['Disconnection at C-N bond. Reductive amination of carboxylic acid and nitrile precursors.', 'Disconnection at benzylic C-C bond. Alkylation of phenol and multiple steps to form amino alcohol.', 'Disconnection at benzylic C-O bond. Grignard addition of phenyl group to ketone precursor.'],
+                                Output Confidence: [0.8, 0.7, 0.6] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)C', 'N#CC[C@](O)(CCCc1ccccc1O)[C@H](O)CC(=O)O'], ['Oc1ccccc1', 'OC(=O)C[C@@H](O)[C@@H](O)CN'], ['c1ccc(O)cc1', 'CC(=O)CC[C@@](O)(CN)[C@@H](O)CC(=O)O']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['Disconnection at C-N bond. Reductive amination of carboxylic acid and nitrile precursors.', 'Disconnection at benzylic C-C bond. Alkylation of phenol and multiple steps to form amino alcohol.', 'Disconnection at benzylic C-O bond. Grignard addition of phenyl group to ketone precursor.'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ failed for OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)C, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)C and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['OC(=O)C[C@@H](O)C(=O)O', 'OC[C@H]1O[C@@H]1CCCc1ccccc1O'], ['OC(=O)C[C@@H](O)C(=O)O', 'OC[C@@H](CCCc1ccccc1O)C'], ['OC1CCCC(O)C1C(=O)O', 'OCCCc1ccccc1O']],
+                            Output Explanations: ['Ester disconnection. Diol could be formed by chiral epoxide opening.', 'Alcohol disconnection. Secondary alcohol could come from ketone reduction. Alpha-hydroxy acid by oxidation.', 'Alkyl-aryl disconnection. Gamma-hydroxy acid could come from lactone hydrolysis or alcohol oxidation.'],
+                                Output Confidence: [0.8, 0.7, 0.6] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['OC(=O)C[C@@H](O)C(=O)O', 'OC[C@H]1O[C@@H]1CCCc1ccccc1O'], ['OC(=O)C[C@@H](O)C(=O)O', 'OC[C@@H](CCCc1ccccc1O)C'], ['OC1CCCC(O)C1C(=O)O', 'OCCCc1ccccc1O']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['Ester disconnection. Diol could be formed by chiral epoxide opening.', 'Alcohol disconnection. Secondary alcohol could come from ketone reduction. Alpha-hydroxy acid by oxidation.', 'Alkyl-aryl disconnection. Gamma-hydroxy acid could come from lactone hydrolysis or alcohol oxidation.'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ solved OC(=O)C[C@@H](O)C(=O)O filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=73
+2025-01-16 17:34:39 [info     ] AZ solved OC[C@H]1O[C@@H]1CCCc1ccccc1O filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=73
+2025-01-16 17:34:39 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+2025-01-16 17:34:39 [info     ] AZ failed for N#CC[C@](O)(CCCc1ccccc1O)[C@H](O)CC(=O)O, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: N#CC[C@](O)(CCCc1ccccc1O)[C@H](O)CC(=O)O and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['N#CC[C@@H](O)C(=O)N', 'OCC[C@@](O)(CCCc1ccccc1O)CO'], ['N#CC1CO1', 'O=Cc1ccccc1O', 'O=C(O)[C@@H](O)CC(=O)O'], ['N#CC[C@@H](O)C=O', 'Oc1ccccc1CCC[C@@H](O)CC(=O)O']],
+                            Output Explanations: ['Disconnection of cyano and carboxyl groups: cyano from dehydration of amide (from aminolysis of ester), carboxyl from oxidation of 1° alcohol', 'Disconnection of central C-C bond: left half from opening of chiral epoxide with CN-, right half from aldol reaction + oxidation', 'Disconnection of Ar-alkyl C-C bond: alkyl chain from nucleophilic addition of organometallic to aldehyde + oxidation, Ar portion from protected phenol'],
+                                Output Confidence: [0.8, 0.7, 0.6] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['N#CC[C@@H](O)C(=O)N', 'OCC[C@@](O)(CCCc1ccccc1O)CO'], ['N#CC1CO1', 'O=Cc1ccccc1O', 'O=C(O)[C@@H](O)CC(=O)O'], ['N#CC[C@@H](O)C=O', 'Oc1ccccc1CCC[C@@H](O)CC(=O)O']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['Disconnection of cyano and carboxyl groups: cyano from dehydration of amide (from aminolysis of ester), carboxyl from oxidation of 1° alcohol', 'Disconnection of central C-C bond: left half from opening of chiral epoxide with CN-, right half from aldol reaction + oxidation', 'Disconnection of Ar-alkyl C-C bond: alkyl chain from nucleophilic addition of organometallic to aldehyde + oxidation, Ar portion from protected phenol'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ failed for N#CC[C@@H](O)C(=O)N, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: N#CC[C@@H](O)C(=O)N and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['N#CC1OC1C#N', 'N#CC=CC#N']],
+                            Output Explanations: ['Cyanide opening of a chiral epoxide, formed by asymmetric epoxidation of dinitrilo-alkene'],
+                                Output Confidence: [0.6] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['N#CC1OC1C#N', 'N#CC=CC#N']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['Cyanide opening of a chiral epoxide, formed by asymmetric epoxidation of dinitrilo-alkene'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ solved N#CC1OC1C#N          filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=73
+2025-01-16 17:34:39 [info     ] AZ solved N#CC=CC#N            filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=73
+2025-01-16 17:34:39 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+2025-01-16 17:34:39 [info     ] AZ failed for OCC[C@@](O)(CCCc1ccccc1O)CO, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: OCC[C@@](O)(CCCc1ccccc1O)CO and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: OCC[C@@](O)(CCCc1ccccc1O)CO and run: 0.1 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['OCC[C@@](O)(CCCCI)CO', 'Oc1ccccc1'], ['OCC[C@@](O)(Br)CO', 'OCCCc1ccccc1']],
+                            Output Explanations: ['Williamson ether synthesis of phenol with alkyl halide using K2CO3 in acetone', 'Alkylation of alkyl halide with phenol derivative using strong base like NaH or LDA'],
+                                Output Confidence: [0.7, 0.6] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['OCC[C@@](O)(CCCCI)CO', 'Oc1ccccc1'], ['OCC[C@@](O)(Br)CO', 'OCCCc1ccccc1']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['Williamson ether synthesis of phenol with alkyl halide using K2CO3 in acetone', 'Alkylation of alkyl halide with phenol derivative using strong base like NaH or LDA'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ failed for OCC[C@@](O)(CCCCI)CO, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: OCC[C@@](O)(CCCCI)CO and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: OCC[C@@](O)(CCCCI)CO and run: 0.1 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['OCC(=O)CCCCI', 'C[Mg]Br']],
+                            Output Explanations: ['Grignard addition of methylmagnesium bromide to the ketone OCC(=O)CCCCI'],
+                                Output Confidence: [0.8] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['OCC(=O)CCCCI', 'C[Mg]Br']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['Grignard addition of methylmagnesium bromide to the ketone OCC(=O)CCCCI'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ solved OCC(=O)CCCCI         filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=73
+2025-01-16 17:34:39 [info     ] AZ failed for C[Mg]Br, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: C[Mg]Br and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [['CBr', '[Mg]']],
+                            Output Explanations: ['The Grignard reagent C[Mg]Br can be formed by the direct reaction of methyl bromide (CH3Br) with magnesium metal under anhydrous conditions in dry ether solvent. The magnesium surface should be activated.'],
+                                Output Confidence: [1.0] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned [['CBr', '[Mg]']] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained ['The Grignard reagent C[Mg]Br can be formed by the direct reaction of methyl bromide (CH3Br) with magnesium metal under anhydrous conditions in dry ether solvent. The magnesium surface should be activated.'] filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ failed for CBr, running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: CBr and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: CBr and run: 0.1 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: CBr and run: 0.2 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: CBr and run: 0.30000000000000004 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: CBr and run: 0.4 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: CBr and run: 0.5 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned []                filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained []               filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] AZ failed for [Mg], running LLM filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=31
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: [Mg] and run: 0.0 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: [Mg] and run: 0.1 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: [Mg] and run: 0.2 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: [Mg] and run: 0.30000000000000004 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: [Mg] and run: 0.4 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] Calling LLM with molecule: [Mg] and run: 0.5 filename=llm.py job_id=20250116_173439_2151 lineno=154
+2025-01-16 17:34:39 [info     ] Output Pathways: [],
+                            Output Explanations: [],
+                                Output Confidence: [] filename=llm.py job_id=20250116_173439_2151 lineno=169
+2025-01-16 17:34:39 [info     ] LLM returned []                filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=53
+2025-01-16 17:34:39 [info     ] LLM explained []               filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=54
+2025-01-16 17:34:39 [info     ] temp_stat: []                  filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+2025-01-16 17:34:39 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+2025-01-16 17:34:39 [info     ] AZ solved Oc1ccccc1            filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=73
+2025-01-16 17:34:39 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+2025-01-16 17:34:39 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+2025-01-16 17:34:39 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+2025-01-16 17:34:39 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+2025-01-16 17:34:39 [info     ] AZ solved OC1=CC=C(CCN)C=C1    filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=73
+2025-01-16 17:34:39 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+2025-01-16 17:34:39 [info     ] AZ solved CC(=O)Cl             filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=73
+2025-01-16 17:34:39 [info     ] temp_stat: [True, True]        filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=63
+2025-01-16 17:34:39 [info     ] breaking                       filename=rec_prithvi.py job_id=20250116_173439_2151 lineno=70
+Retrosynthesis result: {'dependencies': {'1': ['2'], '2': ['3', '28'], '3': ['4', '11'], '4': ['5', '8'], '5': ['6', '27'], '6': [], '7': [], '8': ['9', '10'], '9': [], '10': [], '11': ['12', '17'], '12': ['13', '14'], '13': [], '14': ['15'], '15': ['16'], '16': [], '17': ['18', '22'], '18': ['19', '20'], '19': ['20'], '20': ['21'], '21': [], '22': ['23', '27'], '23': ['24', '26'], '24': ['25'], '25': [], '26': [], '27': [], '28': []}, 'steps': [{'step': '1', 'reactants': [{'smiles': 'O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(O)C(O)=CC5C4C3[C@@H]1O', 'reactant_metadata': {'name': '', 'chemical_formula': 'C18H21NO5', 'mass': 331.141972772}}], 'reagents': [{'smiles': 'CC(=O)Cl', 'reagent_metadata': {'name': '', 'chemical_formula': 'C2H3ClO', 'mass': 77.987242396}}, {'smiles': 'CC(=O)Cl', 'reagent_metadata': {'name': '', 'chemical_formula': 'C2H3ClO', 'mass': 77.987242396}}, {'smiles': 'Cl[Si](Cl)(Cl)Cl', 'reagent_metadata': {'name': '', 'chemical_formula': 'Cl4Si', 'mass': 167.85233725}}], 'products': [{'smiles': 'O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(OCO5)C=C4C3[C@@H]1OC(C)=O', 'product_metadata': {'name': '', 'chemical_formula': 'C19H21NO6', 'mass': 359.13688739199995}}], 'conditions': {'temperature': 'Room temperature (20-25°C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Anhydrous dichloromethane (CH2Cl2) or 1,2-dichloroethane (DCE)', 'time': '2-4 hours'}, 'reactionmetrics': [{'scalabilityindex': '3', 'confidenceestimate': 0.9, 'closestliterature': 'Acetylation of catechol moiety using acetyl chloride and silyl protection of alcohols using silicon tetrachloride'}]}, {'step': '2', 'reactants': [{'smiles': 'OC1=CC=C2C3C1CC4N(CC3)C[C@H](O)[C@@]4(O)CCC2', 'reactant_metadata': {'name': '', 'chemical_formula': 'C16H23NO3', 'mass': 277.167793596}}, {'smiles': 'NCCc1ccc(O)cc1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C8H11NO', 'mass': 137.084063972}}], 'reagents': [{'smiles': 'O', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2O', 'mass': 18.010564684}}, {'smiles': '[H+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H+', 'mass': 1.00727645209}}], 'products': [{'smiles': 'O[C@H]1C=C2C3N(C[C@H]2OC)CC4=CC5=C(O)C(O)=CC5C4C3[C@@H]1O', 'product_metadata': {'name': '', 'chemical_formula': 'C18H21NO5', 'mass': 331.141972772}}], 'conditions': {'temperature': 'Room temperature (20-25°C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Acidic aqueous solution', 'time': 'Several hours to overnight, depending on the specific reaction conditions and scale'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.6, 'closestliterature': 'Pictet-Spengler reaction'}]}, {'step': '3', 'reactants': [{'smiles': 'OC1=CC=C2C3C1CC(N)C3CCC2', 'reactant_metadata': {'name': '', 'chemical_formula': 'C12H17NO', 'mass': 191.131014164}}, {'smiles': 'OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN', 'reactant_metadata': {'name': '', 'chemical_formula': 'C14H21NO5', 'mass': 283.14197277200003}}], 'reagents': [], 'products': [{'smiles': 'OC1=CC=C2C3C1CC4N(CC3)C[C@H](O)[C@@]4(O)CCC2', 'product_metadata': {'name': '', 'chemical_formula': 'C16H23NO3', 'mass': 277.167793596}}], 'conditions': {'temperature': 'Room temperature (20-25°C)', 'pressure': 'Atmospheric pressure', 'solvent': 'The reaction likely proceeds in an aqueous solvent system, such as water or a water/alcohol mixture, to facilitate the condensation reaction between the amine and carboxylic acid groups.', 'time': 'The reaction time can vary depending on the specific conditions and reactivity of the substrates, but it typically ranges from a few hours to overnight (12-24 hours) for this type of condensation reaction.'}, 'reactionmetrics': [{'scalabilityindex': '3', 'confidenceestimate': 0.6, 'closestliterature': 'Pictet-Spengler reaction'}]}, {'step': '4', 'reactants': [{'smiles': 'OC1=CC=C2C=CC=C12', 'reactant_metadata': {'name': '', 'chemical_formula': 'C8H6O', 'mass': 118.041864812}}, {'smiles': 'C1CC(N)C2CCC1C2', 'reactant_metadata': {'name': '', 'chemical_formula': 'C8H15N', 'mass': 125.12044947999999}}], 'reagents': [{'smiles': '[H+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H+', 'mass': 1.00727645209}}], 'products': [{'smiles': 'OC1=CC=C2C3C1CC(N)C3CCC2', 'product_metadata': {'name': '', 'chemical_formula': 'C12H17NO', 'mass': 191.131014164}}], 'conditions': {'temperature': 'Room temperature (20-25°C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Acidic solvent (e.g., acetic acid, trifluoroacetic acid, or hydrochloric acid in a suitable organic solvent like dichloromethane or ethanol)', 'time': '1-24 hours, depending on the specific reagents and conditions used'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.7, 'closestliterature': 'Pictet-Spengler reaction'}]}, {'step': '5', 'reactants': [{'smiles': 'OCc1ccccc1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C7H8O', 'mass': 108.057514876}}, {'smiles': 'Oc1ccccc1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H6O', 'mass': 94.041864812}}], 'reagents': [{'smiles': 'O=S(=O)(O)O', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2O4S', 'mass': 97.96737954400001}}, {'smiles': '[H+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H+', 'mass': 1.00727645209}}], 'products': [{'smiles': 'OC1=CC=C2C=CC=C12', 'product_metadata': {'name': '', 'chemical_formula': 'C8H6O', 'mass': 118.041864812}}], 'conditions': {'temperature': '0°C to room temperature', 'pressure': 'Atmospheric pressure', 'solvent': 'Concentrated sulfuric acid (H2SO4)', 'time': 'Several minutes to a few hours, depending on the scale'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.8, 'closestliterature': 'Benzyl alcohol and phenol condensation to form 9H-xanthen-9-ol under acidic conditions'}]}, {'step': '6', 'reactants': [{'smiles': 'CC(=O)OCc1ccccc1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C9H10O2', 'mass': 150.06807956}}], 'reagents': [{'smiles': 'O', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2O', 'mass': 18.010564684}}], 'products': [{'smiles': 'OCc1ccccc1', 'product_metadata': {'name': '', 'chemical_formula': 'C7H8O', 'mass': 108.057514876}}], 'conditions': {'temperature': 'reflux', 'pressure': 'atmospheric pressure', 'solvent': 'methanol', 'time': '2-4 hours'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.99, 'closestliterature': 'Hydrolysis of benzyl acetate to benzyl alcohol'}]}, {'step': '7', 'reactants': [{'smiles': 'Oc1ccc(O)cc1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H6O2', 'mass': 110.036779432}}], 'reagents': [], 'products': [{'smiles': 'Oc1ccccc1', 'product_metadata': {'name': '', 'chemical_formula': 'C6H6O', 'mass': 94.041864812}}], 'conditions': {'temperature': '200-300 °C', 'pressure': 'atmospheric pressure', 'solvent': 'no solvent needed', 'time': '0.5-2 hours'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.97, 'closestliterature': 'Hydroquinone dehydrogenation to phenol'}]}, {'step': '8', 'reactants': [{'smiles': 'C1=CCCC=C1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H8', 'mass': 80.062600256}}, {'smiles': 'C#CC#C', 'reactant_metadata': {'name': '', 'chemical_formula': 'C4H2', 'mass': 50.015650064}}], 'reagents': [], 'products': [{'smiles': 'C1CC(N)C2CCC1C2', 'product_metadata': {'name': '', 'chemical_formula': 'C8H15N', 'mass': 125.12044947999999}}], 'conditions': {'temperature': 'Elevated temperature (80-120°C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Polar aprotic solvent like DMF, DMSO, or acetonitrile', 'time': 'Several hours to overnight'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.8, 'closestliterature': 'Diels-Alder cycloaddition of 1,3-cyclohexadiene and 1,4-dicyanobutyne'}]}, {'step': '9', 'reactants': [{'smiles': 'C1=CCCCC1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H10', 'mass': 82.07825032}}], 'reagents': [{'smiles': '[Pt]', 'reagent_metadata': {'name': '', 'chemical_formula': 'Pt', 'mass': 194.9647911}}, {'smiles': '[Pd]', 'reagent_metadata': {'name': '', 'chemical_formula': 'Pd', 'mass': 105.903486}}, {'smiles': 'Br', 'reagent_metadata': {'name': '', 'chemical_formula': 'HBr', 'mass': 79.926162132}}], 'products': [{'smiles': 'C1=CCCC=C1', 'product_metadata': {'name': '', 'chemical_formula': 'C6H8', 'mass': 80.062600256}}], 'conditions': {'temperature': '100-200 °C', 'pressure': '1 atm', 'solvent': 'Not applicable. This reaction is typically carried out in the gas phase without solvent.', 'time': '0.1-1 hour'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.96, 'closestliterature': 'Cyclohexene to cyclohexadiene via metal-catalyzed dehydrogenation'}]}, {'step': '10', 'reactants': [{'smiles': 'C#CC#C[Si](C)(C)C', 'reactant_metadata': {'name': '', 'chemical_formula': 'C7H10Si', 'mass': 122.05517685}}], 'reagents': [{'smiles': '[F-]', 'reagent_metadata': {'name': '', 'chemical_formula': 'F-', 'mass': 18.99895179991}}, {'smiles': '[K+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'K+', 'mass': 38.96315810009}}], 'products': [{'smiles': 'C#CC#C', 'product_metadata': {'name': '', 'chemical_formula': 'C4H2', 'mass': 50.015650064}}], 'conditions': {'temperature': 'Room temperature (approximately 20-25 °C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Polar aprotic solvent such as DMF, DMSO, or acetonitrile', 'time': 'The reaction is typically fast and should be complete within 30 minutes to 2 hours'}, 'reactionmetrics': [{'scalabilityindex': '2', 'confidenceestimate': 0.81, 'closestliterature': 'Desilylation of a trimethylsilyl-protected alkyne using a fluoride source such as potassium fluoride (KF).'}]}, {'step': '11', 'reactants': [{'smiles': 'OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)C', 'reactant_metadata': {'name': '', 'chemical_formula': 'C14H20O5', 'mass': 268.13107374000003}}, {'smiles': 'N#CC[C@](O)(CCCc1ccccc1O)[C@H](O)CC(=O)O', 'reactant_metadata': {'name': '', 'chemical_formula': 'C15H19NO5', 'mass': 293.126322708}}], 'reagents': [{'smiles': 'O', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2O', 'mass': 18.010564684}}, {'smiles': '[H+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H+', 'mass': 1.00727645209}}], 'products': [{'smiles': 'OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)CN', 'product_metadata': {'name': '', 'chemical_formula': 'C14H21NO5', 'mass': 283.14197277200003}}], 'conditions': {'temperature': 'Room temperature (20-25°C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Aqueous solvent system, likely water or water/alcohol mixture', 'time': 'Reaction likely complete within 1-4 hours'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.8, 'closestliterature': 'Reductive amination of a ketone or aldehyde using sodium cyanoborohydride (NaBH3CN) as the reducing agent'}]}, {'step': '12', 'reactants': [{'smiles': 'O=C(O)C[C@@H](O)C(=O)O', 'reactant_metadata': {'name': '', 'chemical_formula': 'C4H6O5', 'mass': 134.021523292}}, {'smiles': 'OC[C@H]1O[C@@H]1CCCc1ccccc1O', 'reactant_metadata': {'name': '', 'chemical_formula': 'C12H16O3', 'mass': 208.109944372}}], 'reagents': [{'smiles': 'O', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2O', 'mass': 18.010564684}}, {'smiles': '[H+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H+', 'mass': 1.00727645209}}], 'products': [{'smiles': 'OC(=O)C[C@@H](O)[C@@](O)(CCCc1ccccc1O)C', 'product_metadata': {'name': '', 'chemical_formula': 'C14H20O5', 'mass': 268.13107374000003}}], 'conditions': {'temperature': 'Room temperature (20-25 °C)', 'pressure': 'Atmospheric pressure', 'solvent': 'The reaction likely proceeds in an aqueous solvent system, as the reactants and product contain polar functional groups (carboxylic acids and alcohols).', 'time': 'The reaction time depends on the specific conditions and scale, but it likely requires several hours to reach completion.'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.8, 'closestliterature': 'The closest literature reaction is the aldol addition of an enolizable aldehyde or ketone (in this case, the keto acid O=C(O)C[C@@H](O)C(=O)O) to another carbonyl compound (the aldehyde OC[C@H]1O[C@@H]1CCCc1ccccc1O) under acidic conditions.'}]}, {'step': '13', 'reactants': [{'smiles': 'COC(=O)C[C@@H](O)C(=O)OC', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H10O5', 'mass': 162.05282342}}], 'reagents': [{'smiles': 'O', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2O', 'mass': 18.010564684}}], 'products': [{'smiles': 'O=C(O)C[C@@H](O)C(=O)O', 'product_metadata': {'name': '', 'chemical_formula': 'C4H6O5', 'mass': 134.021523292}}], 'conditions': {'temperature': 'Room temperature (20-25°C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Water', 'time': '1-2 hours'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.82, 'closestliterature': 'Methyl (R)-3-hydroxy-4-methoxy-4-oxobutanoate + H2O → (R)-3,4-Dihydroxy-4-oxobutanoic acid + CH3OH'}]}, {'step': '14', 'reactants': [{'smiles': 'CC(C)(C)OO', 'reactant_metadata': {'name': '', 'chemical_formula': 'C4H10O2', 'mass': 90.06807956}}, {'smiles': 'OCC=CCCCc1ccccc1O', 'reactant_metadata': {'name': '', 'chemical_formula': 'C12H16O2', 'mass': 192.115029752}}], 'reagents': [{'smiles': '[Ti]', 'reagent_metadata': {'name': '', 'chemical_formula': 'Ti', 'mass': 47.9479463}}, {'smiles': '[H+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H+', 'mass': 1.00727645209}}], 'products': [{'smiles': 'OC[C@H]1O[C@@H]1CCCc1ccccc1O', 'product_metadata': {'name': '', 'chemical_formula': 'C12H16O3', 'mass': 208.109944372}}], 'conditions': {'temperature': '0 °C to room temperature', 'pressure': 'Ambient pressure (1 atm)', 'solvent': 'Dichloromethane (CH2Cl2) or chloroform (CHCl3)', 'time': '1-3 hours'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.98, 'closestliterature': 'Sharpless asymmetric epoxidation of allylic alcohols using titanium tetraisopropoxide, tert-butyl hydroperoxide, and a chiral diethyl tartrate ligand'}]}, {'step': '15', 'reactants': [{'smiles': 'OC/C=C\\CO', 'reactant_metadata': {'name': '', 'chemical_formula': 'C4H8O2', 'mass': 88.052429496}}, {'smiles': 'C=CCCCc1ccccc1O', 'reactant_metadata': {'name': '', 'chemical_formula': 'C11H14O', 'mass': 162.104465068}}], 'reagents': [{'smiles': '[H+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H+', 'mass': 1.00727645209}}], 'products': [{'smiles': 'OCC=CCCCc1ccccc1O', 'product_metadata': {'name': '', 'chemical_formula': 'C12H16O2', 'mass': 192.115029752}}], 'conditions': {'temperature': '0-25 °C', 'pressure': '1 atm', 'solvent': 'Protic solvent (e.g., methanol, ethanol, or water)', 'time': '1-24 hours'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.84, 'closestliterature': 'Acid-catalyzed addition of an alcohol to an alkene (e.g., Markovnikov addition)'}]}, {'step': '16', 'reactants': [{'smiles': 'C=CCCCc1ccccc1OC', 'reactant_metadata': {'name': '', 'chemical_formula': 'C12H16O', 'mass': 176.120115132}}], 'reagents': [{'smiles': '[H+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H+', 'mass': 1.00727645209}}], 'products': [{'smiles': 'C=CCCCc1ccccc1O', 'product_metadata': {'name': '', 'chemical_formula': 'C11H14O', 'mass': 162.104465068}}], 'conditions': {'temperature': 'Room temperature (20-25 °C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Methanol (MeOH) or Ethanol (EtOH)', 'time': '1-2 hours'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.7, 'closestliterature': 'Acid-catalyzed deprotection of aryl methyl ethers'}]}, {'step': '17', 'reactants': [{'smiles': 'N#CC[C@@H](O)C(=O)N', 'reactant_metadata': {'name': '', 'chemical_formula': 'C4H6N2O2', 'mass': 114.042927432}}, {'smiles': 'OCC[C@@](O)(CCCc1ccccc1O)CO', 'reactant_metadata': {'name': '', 'chemical_formula': 'C13H20O4', 'mass': 240.13615912}}], 'reagents': [{'smiles': 'O', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2O', 'mass': 18.010564684}}], 'products': [{'smiles': 'N#CC[C@](O)(CCCc1ccccc1O)[C@H](O)CC(=O)O', 'product_metadata': {'name': '', 'chemical_formula': 'C15H19NO5', 'mass': 293.126322708}}], 'conditions': {'temperature': 'Room temperature (20-25 °C)', 'pressure': 'Atmospheric pressure (1 atm)', 'solvent': 'The reaction likely proceeds in an aqueous solvent system, such as water or a water/organic solvent mixture, to facilitate the oxidation.', 'time': 'The reaction time depends on the specific oxidizing agent used and its concentration. Typically, such oxidations can take anywhere from 30 minutes to several hours to reach completion.'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.8, 'closestliterature': 'Oxidation of a primary alcohol to a carboxylic acid using molecular oxygen (O2) as the oxidant, similar to the oxidation of 5-hydroxypentanal to 5-hydroxyvaleric acid.'}]}, {'step': '18', 'reactants': [{'smiles': 'N#CC1OC1C#N', 'reactant_metadata': {'name': '', 'chemical_formula': 'C4H2N2O', 'mass': 94.016712684}}, {'smiles': 'N#CC=CC#N', 'reactant_metadata': {'name': '', 'chemical_formula': 'C4H2N2', 'mass': 78.021798064}}], 'reagents': [{'smiles': 'O', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2O', 'mass': 18.010564684}}], 'products': [{'smiles': 'N#CC[C@@H](O)C(=O)N', 'product_metadata': {'name': '', 'chemical_formula': 'C4H6N2O2', 'mass': 114.042927432}}], 'conditions': {'temperature': 'Room temperature (20-25 °C)', 'pressure': 'Atmospheric pressure (1 atm)', 'solvent': 'Water (H2O)', 'time': 'The reaction is likely rapid, completing within minutes to a few hours.'}, 'reactionmetrics': [{'scalabilityindex': '10', 'confidenceestimate': 0.6, 'closestliterature': 'Oxidation of a furan with singlet oxygen to form a 4-hydroxy-2-butenolide (oxidative furan ring opening).'}]}, {'step': '19', 'reactants': [{'smiles': 'N#CC=CC#N', 'reactant_metadata': {'name': '', 'chemical_formula': 'C4H2N2', 'mass': 78.021798064}}, {'smiles': 'O=C(OO)c1cccc(Cl)c1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C7H5ClO3', 'mass': 171.99272169999998}}], 'reagents': [{'smiles': '[Cu]', 'reagent_metadata': {'name': '', 'chemical_formula': 'Cu', 'mass': 62.9295975}}, {'smiles': 'Cl[Cu]', 'reagent_metadata': {'name': '', 'chemical_formula': 'ClCu', 'mass': 97.89845018}}], 'products': [{'smiles': 'N#CC1OC1C#N', 'product_metadata': {'name': '', 'chemical_formula': 'C4H2N2O', 'mass': 94.016712684}}], 'conditions': {'temperature': 'room temperature (approximately 20-25 °C)', 'pressure': 'atmospheric pressure (1 atm)', 'solvent': 'the reaction likely proceeds without additional solvent, as the reactants can serve as the reaction medium', 'time': 'the reaction time is not provided, but based on typical [3+2] cycloadditions catalyzed by copper, it likely reaches completion within 1-24 hours'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.96, 'closestliterature': 'Copper-catalyzed [3+2] cycloaddition of a nitrile oxide (generated in situ from the chlorooxime) with a nitrile to form a 3,4-disubstituted isoxazole'}]}, {'step': '20', 'reactants': [{'smiles': 'N#CC=O', 'reactant_metadata': {'name': '', 'chemical_formula': 'C2HNO', 'mass': 55.005813652}}, {'smiles': 'CCOP(=O)(CC#N)OCC', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H12NO3P', 'mass': 177.05547987399999}}], 'reagents': [{'smiles': '[H+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H+', 'mass': 1.00727645209}}], 'products': [{'smiles': 'N#CC=CC#N', 'product_metadata': {'name': '', 'chemical_formula': 'C4H2N2', 'mass': 78.021798064}}], 'conditions': {'temperature': 'Room temperature (20-25 °C)', 'pressure': 'Atmospheric pressure', 'solvent': 'The reaction likely proceeds without solvent, as both reactants are liquids and the product is formed via condensation with elimination of diethyl phosphate ((EtO)2P(O)OH).', 'time': 'The reaction is expected to proceed rapidly upon mixing the reactants in presence of acid catalyst, likely completing within minutes to an hour.'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.72, 'closestliterature': 'Knoevenagel condensation of cyanoacetaldehyde with malononitrile'}]}, {'step': '21', 'reactants': [{'smiles': 'N#CCO', 'reactant_metadata': {'name': '', 'chemical_formula': 'C2H3NO', 'mass': 57.021463716}}], 'reagents': [{'smiles': '[O]', 'reagent_metadata': {'name': '', 'chemical_formula': 'O', 'mass': 15.99491462}}, {'smiles': '[Cr](=O)(=O)O', 'reagent_metadata': {'name': '', 'chemical_formula': 'HCrO3', 'mass': 100.933076392}}, {'smiles': 'C(=O)(C(=O)Cl)Cl', 'reagent_metadata': {'name': '', 'chemical_formula': 'C2Cl2O2', 'mass': 125.9275346}}], 'products': [{'smiles': 'N#CC=O', 'product_metadata': {'name': '', 'chemical_formula': 'C2HNO', 'mass': 55.005813652}}], 'conditions': {'temperature': '0-25 °C', 'pressure': '1 atm', 'solvent': 'CH2Cl2 or similar aprotic solvent', 'time': '1-3 hours'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.93, 'closestliterature': 'Oxidation of a primary alcohol to an aldehyde using chromium trioxide and a chlorinating agent like oxalyl chloride (Swern oxidation)'}]}, {'step': '22', 'reactants': [{'smiles': 'OCC[C@@](O)(CCCCI)CO', 'reactant_metadata': {'name': '', 'chemical_formula': 'C8H17IO3', 'mass': 288.022242404}}, {'smiles': 'Oc1ccccc1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H6O', 'mass': 94.041864812}}], 'reagents': [{'smiles': '[Pd]', 'reagent_metadata': {'name': '', 'chemical_formula': 'Pd', 'mass': 105.903486}}, {'smiles': 'Br', 'reagent_metadata': {'name': '', 'chemical_formula': 'HBr', 'mass': 79.926162132}}, {'smiles': '[H][H]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2', 'mass': 2.015650064}}], 'products': [{'smiles': 'OCC[C@@](O)(CCCc1ccccc1O)CO', 'product_metadata': {'name': '', 'chemical_formula': 'C13H20O4', 'mass': 240.13615912}}], 'conditions': {'temperature': '80-100 °C', 'pressure': '1 atm', 'solvent': 'Ethanol, water, or ethanol/water mixture', 'time': '2-12 hours'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.7, 'closestliterature': 'Heck reaction'}]}, {'step': '23', 'reactants': [{'smiles': 'O=C(CO)CCCCI', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H11IO2', 'mass': 241.980377592}}, {'smiles': 'C[Mg]Br', 'reactant_metadata': {'name': '', 'chemical_formula': 'CH3BrMg', 'mass': 117.926853896}}], 'reagents': [{'smiles': 'O', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2O', 'mass': 18.010564684}}, {'smiles': '[H+]', 'reagent_metadata': {'name': '', 'chemical_formula': 'H+', 'mass': 1.00727645209}}], 'products': [{'smiles': 'OCC[C@@](O)(CCCCI)CO', 'product_metadata': {'name': '', 'chemical_formula': 'C8H17IO3', 'mass': 288.022242404}}], 'conditions': {'temperature': '0°C to room temperature', 'pressure': 'Atmospheric pressure (1 atm)', 'solvent': 'Anhydrous diethyl ether or tetrahydrofuran (THF)', 'time': '1-2 hours for Grignard addition, followed by aqueous workup'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.8, 'closestliterature': 'Grignard addition of methylmagnesium bromide to methyl 6-oxohexanoate, followed by aqueous workup'}]}, {'step': '24', 'reactants': [{'smiles': 'OCC(O)CCCCI', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H13IO2', 'mass': 243.996027656}}], 'reagents': [{'smiles': '[O-][Cr](=O)(=O)=O', 'reagent_metadata': {'name': '', 'chemical_formula': 'CrO4-', 'mass': 115.92071455991001}}, {'smiles': '[O][O]', 'reagent_metadata': {'name': '', 'chemical_formula': 'O2', 'mass': 31.98982924}}], 'products': [{'smiles': 'O=C(CO)CCCCI', 'product_metadata': {'name': '', 'chemical_formula': 'C6H11IO2', 'mass': 241.980377592}}], 'conditions': {'temperature': '0-5 °C', 'pressure': '1 atm', 'solvent': 'acetone', 'time': '2-4 hours'}, 'reactionmetrics': [{'scalabilityindex': '9', 'confidenceestimate': 0.99, 'closestliterature': 'Oxidation of a primary alcohol to an aldehyde using chromic acid (H2CrO4)'}]}, {'step': '25', 'reactants': [{'smiles': 'O=CCO', 'reactant_metadata': {'name': '', 'chemical_formula': 'C2H4O2', 'mass': 60.021129368000004}}, {'smiles': 'ClCCCCI', 'reactant_metadata': {'name': '', 'chemical_formula': 'C4H8ClI', 'mass': 217.935925936}}], 'reagents': [{'smiles': 'CC(=O)OOC(C)=O', 'reagent_metadata': {'name': '', 'chemical_formula': 'C4H6O4', 'mass': 118.02660867200001}}], 'products': [{'smiles': 'OCC(O)CCCCI', 'product_metadata': {'name': '', 'chemical_formula': 'C6H13IO2', 'mass': 243.996027656}}], 'conditions': {'temperature': '0°C to room temperature', 'pressure': 'Ambient pressure (1 atm)', 'solvent': 'Acetone or other polar aprotic solvent', 'time': '1-2 hours'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.99, 'closestliterature': 'Williamson ether synthesis'}]}, {'step': '26', 'reactants': [], 'reagents': [{'smiles': 'CC', 'reagent_metadata': {'name': '', 'chemical_formula': 'C2H6', 'mass': 30.046950192}}, {'smiles': '[Mg]', 'reagent_metadata': {'name': '', 'chemical_formula': 'Mg', 'mass': 23.9850417}}, {'smiles': 'BrBr', 'reagent_metadata': {'name': '', 'chemical_formula': 'Br2', 'mass': 157.8366742}}], 'products': [{'smiles': 'C[Mg]Br', 'product_metadata': {'name': '', 'chemical_formula': 'CH3BrMg', 'mass': 117.926853896}}], 'conditions': {'temperature': 'Room temperature (20-25°C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Anhydrous diethyl ether or tetrahydrofuran (THF)', 'time': 'Typically 1-2 hours for complete formation of the Grignard reagent'}, 'reactionmetrics': [{'scalabilityindex': '', 'confidenceestimate': 0.99, 'closestliterature': 'Formation of a Grignard reagent from an alkyl halide and magnesium metal'}]}, {'step': '27', 'reactants': [{'smiles': 'Oc1ccc(O)cc1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C6H6O2', 'mass': 110.036779432}}], 'reagents': [], 'products': [{'smiles': 'Oc1ccccc1', 'product_metadata': {'name': '', 'chemical_formula': 'C6H6O', 'mass': 94.041864812}}], 'conditions': {'temperature': '200-300 °C', 'pressure': 'atmospheric pressure', 'solvent': 'no solvent needed', 'time': '0.5-2 hours'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.97, 'closestliterature': 'Hydroquinone dehydrogenation to phenol'}]}, {'step': '28', 'reactants': [{'smiles': 'CC(C)(C)OC(=O)NCCc1ccc(O)cc1', 'reactant_metadata': {'name': '', 'chemical_formula': 'C13H19NO3', 'mass': 237.136493468}}], 'reagents': [{'smiles': 'O', 'reagent_metadata': {'name': '', 'chemical_formula': 'H2O', 'mass': 18.010564684}}], 'products': [{'smiles': 'NCCc1ccc(O)cc1', 'product_metadata': {'name': '', 'chemical_formula': 'C8H11NO', 'mass': 137.084063972}}], 'conditions': {'temperature': 'Room temperature (20-25 °C)', 'pressure': 'Atmospheric pressure', 'solvent': 'Methanol or ethanol', 'time': '1-2 hours'}, 'reactionmetrics': [{'scalabilityindex': '8', 'confidenceestimate': 0.89, 'closestliterature': 'Boc deprotection of an amine using oxygen gas'}]}]}
+24.236.253.99 - - [16/Jan/2025 17:34:49] "POST /api/retrosynthesis HTTP/1.1" 200 -
+24.236.253.99 - - [16/Jan/2025 17:34:49] "POST /api/retrosynthesis HTTP/1.1" 200 -
+205.210.31.17 - - [16/Jan/2025 20:56:15] "[33mGET / HTTP/1.1[0m" 404 -
+205.210.31.17 - - [16/Jan/2025 20:56:15] "[33mGET / HTTP/1.1[0m" 404 -
+198.235.24.59 - - [16/Jan/2025 21:48:51] "[33mGET / HTTP/1.1[0m" 404 -
+198.235.24.59 - - [16/Jan/2025 21:48:51] "[33mGET / HTTP/1.1[0m" 404 -
+193.142.146.175 - - [17/Jan/2025 02:50:38] code 400, message Bad request version ('}')
+193.142.146.175 - - [17/Jan/2025 02:50:38] code 400, message Bad request version ('}')
+193.142.146.175 - - [17/Jan/2025 02:50:38] "[35m[1mÿ\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00ñ\x03%\x00\x00\x00{ "Ret" : 100, "SessionID" : "0x0" }[0m" HTTPStatus.BAD_REQUEST -
+193.142.146.175 - - [17/Jan/2025 02:50:38] "[35m[1mÿ\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00ñ\x03%\x00\x00\x00{ "Ret" : 100, "SessionID" : "0x0" }[0m" HTTPStatus.BAD_REQUEST -
+45.79.114.128 - - [17/Jan/2025 04:45:47] "[33mGET / HTTP/1.0[0m" 404 -
+45.79.114.128 - - [17/Jan/2025 04:45:47] "[33mGET / HTTP/1.0[0m" 404 -
+167.94.138.48 - - [17/Jan/2025 05:31:24] "[33mGET / HTTP/1.1[0m" 404 -
+167.94.138.48 - - [17/Jan/2025 05:31:24] "[33mGET / HTTP/1.1[0m" 404 -
+167.94.138.48 - - [17/Jan/2025 05:31:28] code 505, message Invalid HTTP version (2.0)
+167.94.138.48 - - [17/Jan/2025 05:31:28] code 505, message Invalid HTTP version (2.0)
+167.94.138.48 - - [17/Jan/2025 05:31:28] "[35m[1mPRI * HTTP/2.0[0m" HTTPStatus.HTTP_VERSION_NOT_SUPPORTED -
+167.94.138.48 - - [17/Jan/2025 05:31:28] "[35m[1mPRI * HTTP/2.0[0m" HTTPStatus.HTTP_VERSION_NOT_SUPPORTED -
+96.126.104.20 - - [17/Jan/2025 07:55:52] code 400, message Bad request version ('À\x13À')
+96.126.104.20 - - [17/Jan/2025 07:55:52] code 400, message Bad request version ('À\x13À')
+96.126.104.20 - - [17/Jan/2025 07:55:52] "[35m[1m\x16\x03\x01\x00ò\x01\x00\x00î\x03\x03AÝÀtö£\x14©\\Ï_\x17\x06}ç<,f\x12\x01nT¨\x8f´\x8c\x91\x8e¡§\x0b¨ \x96\x04Ígs;\x0fL\x19^Ï\x8b1Îø*î\x17Kj·\x0fR¨2Oô\x9bÙ²\x8fÄ\x00&À+À/À,À0Ì©Ì¨À\x09À\x13À[0m" HTTPStatus.BAD_REQUEST -
+96.126.104.20 - - [17/Jan/2025 07:55:52] "[35m[1m\x16\x03\x01\x00ò\x01\x00\x00î\x03\x03AÝÀtö£\x14©\\Ï_\x17\x06}ç<,f\x12\x01nT¨\x8f´\x8c\x91\x8e¡§\x0b¨ \x96\x04Ígs;\x0fL\x19^Ï\x8b1Îø*î\x17Kj·\x0fR¨2Oô\x9bÙ²\x8fÄ\x00&À+À/À,À0Ì©Ì¨À\x09À\x13À[0m" HTTPStatus.BAD_REQUEST -
+96.126.104.20 - - [17/Jan/2025 07:55:52] "[33mGET /signin HTTP/1.1[0m" 404 -
+96.126.104.20 - - [17/Jan/2025 07:55:52] "[33mGET /signin HTTP/1.1[0m" 404 -
+184.105.247.254 - - [17/Jan/2025 08:32:00] "[33mGET / HTTP/1.1[0m" 404 -
+184.105.247.254 - - [17/Jan/2025 08:32:00] "[33mGET / HTTP/1.1[0m" 404 -
+184.105.247.254 - - [17/Jan/2025 08:32:09] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+184.105.247.254 - - [17/Jan/2025 08:32:09] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+198.235.24.96 - - [17/Jan/2025 08:45:54] "[33mGET / HTTP/1.0[0m" 404 -
+198.235.24.96 - - [17/Jan/2025 08:45:54] "[33mGET / HTTP/1.0[0m" 404 -
+111.7.106.106 - - [17/Jan/2025 10:46:02] "[33mGET / HTTP/1.1[0m" 404 -
+111.7.106.106 - - [17/Jan/2025 10:46:02] "[33mGET / HTTP/1.1[0m" 404 -

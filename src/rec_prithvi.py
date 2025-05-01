@@ -1,9 +1,30 @@
 """ Recursive function to run Prithvi on a molecule """
-
+import os
 from src.utils.llm import llm_pipeline
 from src.utils.az import run_az
 from src.utils.job_context import logger as context_logger
 
+ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
+                                    "true").lower() == "false" else True
+
+def log_message(message: str, logger=None):
+    """Log the message
+
+    Parameters
+    ----------
+    message : str
+        The message to be logged
+    logger : _type_, optional
+        The logger object, by default None
+
+    Returns
+    -------
+    None
+    """
+    if logger is not None:
+        logger.info(message)
+    else:
+        print(message)
 
 def rec_run_prithvi(molecule: str,
                     job_id: str,
@@ -30,9 +51,9 @@ def rec_run_prithvi(molecule: str,
     """
     solved, result_dict = run_az(smiles=molecule, az_model=az_model)
     result_dict = result_dict[0]
-    logger = context_logger.get()
+    logger = context_logger.get() if ENABLE_LOGGING else None
     if not solved:
-        logger.info(f"AZ failed for {molecule}, running LLM")
+        log_message(f"AZ failed for {molecule}, running LLM", logger)
         out_pathways, out_explained, out_confidence = llm_pipeline(
             molecule=molecule,
             LLM=llm,
@@ -57,8 +78,8 @@ def rec_run_prithvi(molecule: str,
                 "children": []
             }]
         }
-        logger.info(f"LLM returned {out_pathways}")
-        logger.info(f"LLM explained {out_explained}")
+        log_message(f"LLM returned {out_pathways}", logger)
+        log_message(f"LLM explained {out_explained}", logger)
         for pathway in out_pathways:
             if isinstance(pathway, list):
                 temp_stat = []
@@ -73,7 +94,7 @@ def rec_run_prithvi(molecule: str,
                     if stat:
                         temp_stat.append(True)
                         result_dict['children'][0]['children'].append(res)
-                logger.info(f"temp_stat: {temp_stat}")
+                log_message(f"temp_stat: {temp_stat}", logger)
                 if all(temp_stat):
                     solved = True
             else:
@@ -86,9 +107,9 @@ def rec_run_prithvi(molecule: str,
                     hallucination_check=hallucination_check)
                 result_dict['children'][0]['children'].append(res)
             if solved:
-                logger.info('breaking')
+                log_message('breaking', logger)
                 break
     else:
-        logger.info(f"AZ solved {molecule}")
+        log_message(f"AZ solved {molecule}", logger)
     # print(f"Solved : {solved}, Returning {result_dict}")
     return result_dict, solved

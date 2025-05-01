@@ -1,0 +1,11 @@
+smiles
+Cl[C@@H]4[C@@]1(NC(=N/[C@H]1O)\N)[C@H]3[C@@]26/N=C(\N[C@H]6n5C(C(=O)N2C[C@@H]3[C@H]4CN)CCC5)N
+O[C@H]1N=C(N)N[C@@]2([C@@H]3O)[C@H](O)[C@]([C@@]4(CO)O)([H])O[C@@]3(O)O[C@]4([H])[C@]12[H]
+OCC(O)CC(O)[C@@H]1C[C@@H]2O[C@@]3(C[C@H](C)[C@@H]2O1)C[C@H](C)[C@@H]4O[C@]%10(C[C@@H]4O3)C[C@H]%11O[C@H]%12[C@H](C)[C@H]%13OC(=O)C[C@H]8CC[C@@H]9O[C@H]7[C@H]6O[C@]5(O[C@H]([C@@H]7O[C@@H]6C5)[C@H]9O8)CC[C@H]%15C/C(=C)[C@H](CC[C@H]%14C[C@@H](C)\C(=C)[C@@H](C[C@@H]%13O[C@H]%12C[C@H]%11O%10)O%14)O%15
+O=C(/C=C1C[C@@](/C=C/C(C)(C)[C@](O[C@](C/C2=C\C(OC)=O)([H])C[C@H]([C@@H](C)O)OC(C3)=O)([C@H]2OC(/C=C/C=C/CCC)=O)O)([H])O[C@@](C[C@@]4(O[C@@](C[C@H]3O)([H])C[C@H](OC(C)=O)C(C)4C)O)([H])C\1)OC
+CC1(C)[C@]2(O)[C@@H](OC(C3=CC=CC=C3)=O)C4[C@@](C([C@H](OC(C)=O)C1=C(C)[C@@H](OC([C@H](O)[C@@H](NC(C5=CC=CC=C5)=O)C6=CC=CC=C6)=O)C2)=O)(C)[C@@H](O)C[C@@H]7[C@@]4(OC(C)=O)CO7
+O=C1C2=C(C=C(O)C=C2O)OC(C3=CC=C(OC)C=C3)=C1O
+OC1=C2O[C@@H]3[C@]45C2=C(C=C1)C[C@@H](N(CC5)C)[C@]4([H])C=C[C@@H]3O
+[H][C@@]12C[C@@H]([C@]3(C([C@@H](C4=C([C@@H](OC([C@@H]([C@H](C5=CC=CC=C5)NC(OC(C)(C)C)=O)O)=O)C[C@@]([C@H]([C@@]3([C@]1(OC(C)=O)CO2)[H])OC(C6=CC=CC=C6)=O)(C4(C)C)O)C)O)=O)C)O
+[H][C@]12COC([C@@]1([C@@H](C3=CC4=C(C=C3[C@H]2O[C@@H]5O[C@@]6(CO[C@H](O[C@]6([C@@H]([C@H]5O)O)[H])C)[H])OCO4)C7=CC(OC)=C(C(OC)=C7)O)[H])=O
+CN[C@@H](C(N[C@@H]1[C@@H](C2=CC=C(C(Cl)=C2)OC3=C(C4=CC([C@H](C(N[C@@H]5C6=CC(C7=C(C=C(C=C7[C@@H](C(O)=O)NC([C@H]([C@@H](C8=CC(Cl)=C(C=C8)O4)O)NC5=O)=O)O)O)=C(C=C6)O)=O)NC([C@@H](NC1=O)CC(N)=O)=O)=C3)O[C@@H]9O[C@@H]([C@H]([C@@H]([C@H]9O[C@H]%10C[C@](N)([C@@H]([C@@H](O%10)C)O)C)O)O)CO)O)=O)CC(C)C

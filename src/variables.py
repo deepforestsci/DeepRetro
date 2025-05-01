@@ -895,6 +895,8 @@ REAGENT_USER_PROMPT = """Predict the reagents used in the following reaction:
 Reactants: {reactants}
 Product: {product}
 
+Make sure to include any protecting groups that might be needed to achieve the desired transformation.
+
 Present your analysis in the following JSON format:
 
 {
@@ -1382,6 +1384,12 @@ ERROR_MAP = {
     },
     505: {
         "description": "split_json_master() failed.",
+    },
+    601: {
+        "description": "Hallucination Check failed.",
+    },
+    602: {
+        "description": "Stability Check failed.",
     },
 }
 
