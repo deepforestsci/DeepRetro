@@ -82,23 +82,23 @@ def add_metadata(output_data: dict) -> dict:
     """
     for idx, step in enumerate(output_data['steps']):
         status, reagents = reagent_agent(reactants=step['reactants'],
-                                         product=step['products'],
-                                         LLM="perplexity/sonar-deep-research")
+                                         product=step['products'],)
+                                        #  LLM="perplexity/sonar-deep-research")
         output_data['steps'][idx]['reagents'].extend(reagents)
 
         status, conditions = conditions_agent(
             step['reactants'],
             step['products'],
-            step['reagents'],
-            LLM="perplexity/sonar-deep-research")
+            step['reagents'],)
+            # LLM="perplexity/sonar-deep-research")
         output_data['steps'][idx]['conditions'] = conditions
 
         status, literature, citations = literature_agent(
             step['reactants'],
             step['products'],
             step['reagents'],
-            step['conditions'],
-            LLM="perplexity/sonar-deep-research")
+            step['conditions'],)
+            # LLM="perplexity/sonar-deep-research")
         output_data['steps'][idx]['reactionmetrics'][0][
             'closestliterature'] = literature
         output_data['steps'][idx]['reactionmetrics'][0][

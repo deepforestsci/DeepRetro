@@ -13,17 +13,21 @@ root_dir = rootutils.setup_root(".",
 from src.main import main
 from src.cache import clear_cache_for_molecule
 
-df = pd.read_csv(f"{root_dir}/results/SICIC/dataset.csv")
-mols_dfs = df['smiles'].to_list()
+# df = pd.read_csv(f"{root_dir}/data/challenge_mols.csv")
+df = pd.read_csv(f"{root_dir}/data/USPTO_190_sample.csv")
+column = "smiles"
+if column not in df.columns:
+    column = "input"
+mols_dfs = df[column].to_list()
 mapper = {
     'm0p0': 'claude-3-opus-20240229', 'm0p1': 'anthropic/claude-3-7-sonnet-20250219:adv',
     'm1p0': 'fireworks_ai/accounts/fireworks/models/deepseek-r1', 'm1p1': 'fireworks_ai/accounts/fireworks/models/deepseek-r1:adv',
 }
 
-folder_list = ["m0p1:Pistachio_100+", "m1p0:Pistachio_100+"]
-MAX_CONCURRENT_TASKS = 3  # Process 3 molecules in parallel
+folder_list = ["m0p1:Pistachio_100+", "m1p0:Pistachio_100+","m0p1:USPTO", "m1p0:USPTO", ]
+MAX_CONCURRENT_TASKS = 4  # Process 3 molecules in parallel
 
-async def process_molecule(mol, folder, run_no):
+async def process_molecule(mol, folder, run_no, mol_no):
     """Process a single molecule asynchronously."""
     molecule = mol
     llm = mapper[folder.split(":")[0]]
@@ -42,7 +46,7 @@ async def process_molecule(mol, folder, run_no):
                 functools.partial(main, molecule, llm=llm, az_model=az_model, hallucination_check="True", stability_flag="True")
             )
             
-        output_path = f"{root_dir}/results/SICIC/{folder}/run_{run_no}/{mol}.json"
+        output_path = f"{root_dir}/results/USPTO_190_sample/{folder}/run_{run_no}/{mol_no}.json"
         with open(output_path, "w") as f:
             json.dump(res_dict, f, indent=4)
             
@@ -55,24 +59,24 @@ async def process_molecule(mol, folder, run_no):
     return mol
 
 async def main_async():
-    for run_no in range(0, 3):
+    for run_no in range(0, 1):
         for folder in folder_list:
             # Create directories if they don't exist
-            if not os.path.exists(f"{root_dir}/results/SICIC/{folder}"):
-                os.makedirs(f"{root_dir}/results/SICIC/{folder}")
-            if not os.path.exists(f"{root_dir}/results/SICIC/{folder}/run_{run_no}"):
-                os.makedirs(f"{root_dir}/results/SICIC/{folder}/run_{run_no}")
+            if not os.path.exists(f"{root_dir}/results/USPTO_190_sample/{folder}"):
+                os.makedirs(f"{root_dir}/results/USPTO_190_sample/{folder}")
+            if not os.path.exists(f"{root_dir}/results/USPTO_190_sample/{folder}/run_{run_no}"):
+                os.makedirs(f"{root_dir}/results/USPTO_190_sample/{folder}/run_{run_no}")
             
             # Process molecules in batches to limit concurrency
             tasks = []
-            for mol in mols_dfs:
+            for mol_no,mol in enumerate(mols_dfs):
                 if len(tasks) >= MAX_CONCURRENT_TASKS:
                     # Wait for one task to complete when we reach the limit
                     done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
                     tasks = list(pending)  # Keep only the pending tasks
                 
                 # Add a new task to the list
-                task = asyncio.create_task(process_molecule(mol, folder, run_no))
+                task = asyncio.create_task(process_molecule(mol, folder, run_no, mol_no))
                 tasks.append(task)
             
             # Wait for all remaining tasks to complete

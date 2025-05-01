@@ -16,6 +16,28 @@ root_dir = rootutils.setup_root(__file__,
 AZ_MODEL_CONFIG_PATH = f"{root_dir}/{os.getenv('AZ_MODEL_CONFIG_PATH')}"
 AZ_MODELS_PATH = f"{root_dir}/{os.getenv('AZ_MODELS_PATH')}"
 
+ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
+                                    "true").lower() == "false" else True
+
+def log_message(message: str, logger=None):
+    """Log the message
+
+    Parameters
+    ----------
+    message : str
+        The message to be logged
+    logger : _type_, optional
+        The logger object, by default None
+
+    Returns
+    -------
+    None
+    """
+    if logger is not None:
+        log_message(message)
+    else:
+        print(message)
+
 
 @cache_results
 def run_az(smiles: str,
@@ -36,16 +58,16 @@ def run_az(smiles: str,
     try:
         config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
         with open(config_path, "r") as file:
-            logger = context_logger.get()
-            logger.info(f"AZ_MODEL_CONFIG_PATH found: {config_path}")
+            logger = context_logger.get() if ENABLE_LOGGING else None
+            log_message(f"AZ_MODEL_CONFIG_PATH found: {config_path}", logger)
             config_filename = config_path
     except FileNotFoundError:
         logger.error(f"AZ_MODEL_CONFIG_PATH not found at {config_path}")
         try:
             with open(AZ_MODEL_CONFIG_PATH, "r") as file:
-                logger = context_logger.get()
-                logger.info(
-                    f"AZ_MODEL_CONFIG_PATH found: {AZ_MODEL_CONFIG_PATH}")
+                logger = context_logger.get() if ENABLE_LOGGING else None
+                log_message(
+                    f"AZ_MODEL_CONFIG_PATH found: {AZ_MODEL_CONFIG_PATH}", logger)
                 config_filename = AZ_MODEL_CONFIG_PATH
         except FileNotFoundError:
             logger.error(
@@ -95,15 +117,15 @@ def run_az_with_img(smiles: str, az_model: str = "USPTO") -> tuple[Any, Sequence
     try:
         config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
         with open(config_path, "r") as file:
-            # logger = context_logger.get()
-            # logger.info(f"AZ_MODEL_CONFIG_PATH found: {config_path}")
+            # logger = context_logger.get() if ENABLE_LOGGING else None
+            # log_message(f"AZ_MODEL_CONFIG_PATH found: {config_path}")
             config_filename = config_path
     except FileNotFoundError:
         logger.error(f"AZ_MODEL_CONFIG_PATH not found at {config_path}")
         try:
             with open(AZ_MODEL_CONFIG_PATH, "r") as file:
-                logger = context_logger.get()
-                logger.info(
+                logger = context_logger.get() if ENABLE_LOGGING else None
+                log_message(
                     f"AZ_MODEL_CONFIG_PATH found: {AZ_MODEL_CONFIG_PATH}")
                 config_filename = AZ_MODEL_CONFIG_PATH
         except FileNotFoundError:

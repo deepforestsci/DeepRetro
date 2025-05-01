@@ -1,0 +1,498 @@
+122.186.149.102 - - [27/Jan/2025 17:46:17] code 400, message Bad request version ('\\x00\\x02\\x01\\x00\\x00')
+122.186.149.102 - - [27/Jan/2025 17:46:17] "\x16\x03\x01\x06ù\x01\x00\x06õ\x03\x03\x1b®"Ï\x18U6ï\x1bûxæ!\x85ÈØZÔ±à]Ø1é·b¬»\x93Ex\x0f 9Ï«N3¸Ú\x00¡\x1e4u/fPlÞ{7=m`|¼ÜÖà\x1bªêE\x9e\x00 jj\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06\x8cÚÚ\x00\x00\x00\x05\x00\x05\x01\x00\x00\x00\x00\x00-\x00\x02\x01\x01\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1ÿ\x01\x00\x01\x00\x00\x17\x00\x00\x00\x0b\x00\x02\x01\x00\x00" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:17] code 400, message Bad request version ('´à>Ü\\x03@Ôú´Ì\\x99¶È')
+122.186.149.102 - - [27/Jan/2025 17:46:17] "\x16\x03\x01\x079\x01\x00\x075\x03\x03¤ã[V\x98 ! ´à>Ü\x03@Ôú´Ì\x99¶È" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:17] code 400, message Bad HTTP/0.9 request type ('\\x16\\x03\\x01\\x06Ù\\x01\\x00\\x06Õ\\x03\\x03q')
+122.186.149.102 - - [27/Jan/2025 17:46:17] "\x16\x03\x01\x06Ù\x01\x00\x06Õ\x03\x03q ü\x15\x14"<üÆîÅä\x84LÀD\x8dz¯á\x83" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:19] code 400, message Bad request version ('úú\\x13\\x01\\x13\\x02\\x13\\x03À+À/À,À0Ì©Ì¨À\\x13À\\x14\\x00\\x9c\\x00\\x9d\\x00/\\x005\\x01\\x00\\x06Ì')
+122.186.149.102 - - [27/Jan/2025 17:46:19] "\x16\x03\x01\x079\x01\x00\x075\x03\x03\x8f¦C~bA]Á$íëWõO\x8dö® ±ã/Êj®ú\x96\x9e\x8a\x9eøY´ \x9cíéXÞØ±¼?Ä\x0b8\x00ÅXAõ\x92\x11èö\x03CH$\x81G\x9bÇÀ³Â\x00 úú\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06Ì" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:21] code 400, message Bad request version ('ÑÝºÖ\\x0fc)+«4R\\x9d\\x83D\\x18«oBùÑÛÛSÏÈÆì')
+122.186.149.102 - - [27/Jan/2025 17:46:21] "\x16\x03\x01\x06ù\x01\x00\x06õ\x03\x03\x095Ãgu\x7fÆ\x85Ö\x8d×Â\x8fa·mrþ"F1ö\x883±\x05ÑPqßªú ¯\x92¾B\\Æ\x98»\x8eR¥\x17\x976Y6)­Z\x1f-É\x83Ú\x8e·_PLÍÈy\x00 ZZ\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06\x8cÚÚ\x00\x00þ\x0d\x00Ú\x00\x00\x01\x00\x01\x9a\x00 \x10\x02ð­\x14ªmÂÒ\x02¿-Q«?\x8dEôK\x1d\x9aóò¸%ñlùp óX\x00°(2\x0cqT\x9e\x84w\x02Ï{ FqOS\x94y\x08ä,È\x8bï\x08\x1f\x9858ã\x8b£ï_\x17îv\x18bQp\x9eV\x17\x13)K\\üH\x86DXÂ\x85FE\x8e\x10j]v\x1f\x10N\x01¼yhnÖô\x8bÕCæ\x1fÇ\x84\x1a\x8f\x9f\x1dè·O !a\x82ÔÛh}\x1f\x09ÑÝºÖ\x0fc)+«4R\x9d\x83D\x18«oBùÑÛÛSÏÈÆì" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:21] code 400, message Bad request version ('®\\x95\\x02[Å\\x90Âü\\x80×Ïf3Ë!')
+122.186.149.102 - - [27/Jan/2025 17:46:21] "\x16\x03\x01\x079\x01\x00\x075\x03\x03\x9cî\x00«)È\x8b«~¨\x13\x0c\x9a³"6\x91\x10P`JÒ]õX[JbÊ \x06\x1a \x07\x99\x82\x06â\x16ÇFÞ\x03aZ\\ïºIÎ\x1cê÷c\x84³e?\x85\x81*]H\x81^\x00 úú\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06Ìêê\x00\x00\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1\x00+\x00\x07\x06ªª\x03\x04\x03\x03þ\x0d\x01\x1a\x00\x00\x01\x00\x01_\x00 ®\x95\x02[Å\x90Âü\x80×Ïf3Ë!" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:22] code 400, message Bad request version ('\\x1b\\x02I\\x7f\\x16\\x05Í\\x91É')
+122.186.149.102 - - [27/Jan/2025 17:46:22] "\x16\x03\x01\x07\x19\x01\x00\x07\x15\x03\x03üMa×È±å¢þ\x8fQ¨Û²<n,ð>×O©\x87[ÈäU\x1e\x8awWé \x16F#Ûd²Û\x911¥cfÔ§ÚËN¬Ñ\x10â¬~ é'úÛ¼+\x05õ\x00 zz\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06¬ÚÚ\x00\x00\x00\x12\x00\x00\x00\x00\x005\x003\x00\x000ec2-3-142-141-95.us-east-2.compute.amazonaws.comÿ\x01\x00\x01\x00\x00\x0b\x00\x02\x01\x00\x00\x17\x00\x00Di\x00\x05\x00\x03\x02h2þ\x0d\x00ú\x00\x00\x01\x00\x01"\x00 û3\x13 \x0c\x8cH\x8aL\x97æ\x8fÑ\x82éª¾\x0b,\x00$e0|:tÅhìØ¶x\x00Ð^$\x07åV­­ÊS\x8c£A@'ÀZÃ¯ô\x9f\x18jÄ/[¹}ÙÌæÕ\x8e\x03Fr\x97\x83ç\x95nµØØ\x80\x99^\x19\x0fiAI|ëð\x9aÓ\x85®\x1eK¢ëº\x06Ý\x8dÍ³jiÀ8\x87<9Câ\x0c\x1b\x02I\x7f\x16\x05Í\x91É" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:22] code 400, message Bad request version ('\\x83)')
+122.186.149.102 - - [27/Jan/2025 17:46:22] "\x16\x03\x01\x06Ù\x01\x00\x06Õ\x03\x03ûdD8å\x0c3ðeÈÏ}¶2h\x9c_\x09\x1d\x83)" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:23] code 400, message Bad HTTP/0.9 request type ('\\x16\\x03\\x01\\x06Ù\\x01\\x00\\x06Õ\\x03\\x03G9\\x86}\\x1bÞ÷\\x07!yp*§')
+122.186.149.102 - - [27/Jan/2025 17:46:23] "\x16\x03\x01\x06Ù\x01\x00\x06Õ\x03\x03G9\x86}\x1bÞ÷\x07!yp*§\x1c¥J\x11\x19C" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:23] code 400, message Bad request version ('::\\x13\\x01\\x13\\x02\\x13\\x03À+À/À,À0Ì©Ì¨À\\x13À\\x14\\x00\\x9c\\x00\\x9d\\x00/\\x005\\x01\\x00\\x06lúú\\x00\\x00\\x00')
+122.186.149.102 - - [27/Jan/2025 17:46:23] "\x16\x03\x01\x06Ù\x01\x00\x06Õ\x03\x03\x8f\x0bu¿\x88À+\x82ºRw:X\x88\x1c&OYù¥©ç£'_\x8dDè\x8ftÁ\x86 D`ÑIÓ=\x11±òù\x9e«P\x07Â«M>\x1e\x80Pï5\x0e\x1dº¾3µE²K\x00 ::\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06lúú\x00\x00\x00" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:24] code 400, message Bad request version ('4Úõ@ß5\\x7f\\x90\\x8aÚ')
+122.186.149.102 - - [27/Jan/2025 17:46:24] "\x16\x03\x01\x06Ù\x01\x00\x06Õ\x03\x03351z¦SÃSoÑ\x02{TäJb \x81\x84¶M\x19qA\x06P<\x0eÔ{÷o 4Úõ@ß5\x7f\x90\x8aÚ" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:24] code 400, message Bad request syntax ("\\x16\\x03\\x01\\x06ù\\x01\\x00\\x06õ\\x03\\x03\\x11½á\\x81H\\x17%\\x1a¨\\x95~\\x06\\x80ù'")
+122.186.149.102 - - [27/Jan/2025 17:46:24] "\x16\x03\x01\x06ù\x01\x00\x06õ\x03\x03\x11½á\x81H\x17%\x1a¨\x95~\x06\x80ù'" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:24] code 400, message Bad request version ('zz\\x13\\x01\\x13\\x02\\x13\\x03À+À/À,À0Ì©Ì¨À\\x13À\\x14\\x00\\x9c\\x00\\x9d\\x00/\\x005\\x01\\x00\\x06¬')
+122.186.149.102 - - [27/Jan/2025 17:46:24] "\x16\x03\x01\x07\x19\x01\x00\x07\x15\x03\x03^°RÈCe\x1b\x88mþjµö\x8c\x0bp´­·n\x09ïEÉñYþß\x9b\x1f¯· l×\x99Åp©È\x80ñv\x87\x92wYßÁ\x024H7GÎb¤\x896G±\x88¶9Í\x00 zz\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06¬" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:25] code 400, message Bad request version ('i\\x1bÏ8jOOÉ')
+122.186.149.102 - - [27/Jan/2025 17:46:25] "\x16\x03\x01\x06Ù\x01\x00\x06Õ\x03\x03°/kÐí\x89\x0fÔÀ\x02rQ\x8a\x16¬\x81\x126Ì3c8\x97ãö|¾\x85A[£ë ð'\x7f95\x11\x18öñ\x8d§\x1ci\x1bÏ8jOOÉ" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:25] code 400, message Bad request version ('\\x00\\x12\\x00\\x10\\x04\\x03\\x08\\x04\\x04\\x01\\x05\\x03\\x08\\x05\\x05\\x01\\x08\\x06\\x06\\x01\\x00')
+122.186.149.102 - - [27/Jan/2025 17:46:25] "\x16\x03\x01\x06Ù\x01\x00\x06Õ\x03\x03\x90Éý÷\x1bx^dÎ\\\x87\x91Wé&LñÌ\x1a^#6p\x11\x8bÓí\x94\x1cLæ¶ >_ý\x06´a|]\x83\x0d\x996\x07o\x80ján\x8aí\x10°I&\x0eÜ#¥¤\x19dH\x00 \x8a\x8a\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06lÚÚ\x00\x00\x00\x0b\x00\x02\x01\x00\x00\x12\x00\x00\x00\x0d\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:26] code 400, message Bad request version ('\\x1a\\x1a\\x13\\x01\\x13\\x02\\x13\\x03À+À/À,À0Ì©Ì¨À\\x13À\\x14\\x00\\x9c\\x00\\x9d\\x00/\\x005\\x01\\x00\\x06\\x8c\\x8a\\x8a\\x00\\x00Di\\x00\\x05\\x00\\x03\\x02h2\\x00\\x17\\x00\\x00\\x00')
+122.186.149.102 - - [27/Jan/2025 17:46:26] "\x16\x03\x01\x06ù\x01\x00\x06õ\x03\x03PÂö>¼\x13×J[äÉw§ö?·ü\x14òA!1\x98¶±6 ùr\x85\x16û \x1eñ\x07Â\x83s1åì9\x10£?,Ëë¤lQ3þé¿úÊ>\x13¬Þ\x91q¶\x00 \x1a\x1a\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06\x8c\x8a\x8a\x00\x00Di\x00\x05\x00\x03\x02h2\x00\x17\x00\x00\x00" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:26] code 400, message Bad request version ('\\x8d\\x87')
+122.186.149.102 - - [27/Jan/2025 17:46:26] "\x16\x03\x01\x07\x19\x01\x00\x07\x15\x03\x03o±a\x053ú*ÖPVuK\x1aL·\x1f3jÉ\x8dQ\x85åe\x87æ)\x0f\x14Äé/ _±\x8cH7ñ\x99¥+YÓ¾|\x84H&ç\x9eñ9¦yA-²\x8b9R:Õ¿Ç\x00 \x8a\x8a\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06¬ªª\x00\x00\x00\x05\x00\x05\x01\x00\x00\x00\x00\x00\x1b\x00\x03\x02\x00\x02ÿ\x01\x00\x01\x00\x00\x00\x005\x003\x00\x000ec2-3-142-141-95.us-east-2.compute.amazonaws.com\x00\x0d\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00+\x00\x07\x06ÚÚ\x03\x04\x03\x03\x00\x0b\x00\x02\x01\x00\x003\x04ï\x04íjj\x00\x01\x00\x11ì\x04ÀcjY\x06Ã\x85\x8d\x87" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:26] code 400, message Bad request version (';Ì\\x81¯í[cº(a\\x0f\\x8b')
+122.186.149.102 - - [27/Jan/2025 17:46:26] "\x16\x03\x01\x07\x19\x01\x00\x07\x15\x03\x03à]\x8c\x8c\x11«ëT\x16B\x9a\x18\x8d<¯«\x96C~î\x97_Ó¾é¦hOÎhpp æÉ¤pzçdºa\x9eØj(/3\x92\x114½\x08Ð\x92gtÍõz\x1eæ9\x8cA\x00 ÚÚ\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06¬\x1a\x1a\x00\x00\x00\x00\x005\x003\x00\x000ec2-3-142-141-95.us-east-2.compute.amazonaws.com\x003\x04ï\x04íúú\x00\x01\x00\x11ì\x04Àk\x01·\x1dÃª8d\x1cÁ\x91>\x13È\x8c\x09æ¨Úì¡ÖÓ\x82\x18\x12Z\\Åº\x01"w\x84#=\x9d\x12¿v\x01\x8aëU"Dg©t\x95\x09ä\x16sêÚ¶\x1b6U\x8d|$O»\x99ï%aJv«\x08àG\x98\x88\x95Ó\x1aWí×Pzä\x83+2F_\x01V=Õ\\\x175\x04¹éÃtÌ\x94\x1axe\x95P\x18\x81¹$ó¥FìÒ\x92\x96×$<Gi®âÊÇp}\x81â!âÁ`¾ ;Ì\x81¯í[cº(a\x0f\x8b" 400 -
+24.236.253.99 - - [27/Jan/2025 17:46:27] "GET / HTTP/1.1" 200 -
+24.236.253.99 - - [27/Jan/2025 17:46:27] "GET /app_v4.js HTTP/1.1" 304 -
+24.236.253.99 - - [27/Jan/2025 17:46:28] code 404, message File not found
+24.236.253.99 - - [27/Jan/2025 17:46:28] "GET /favicon.ico HTTP/1.1" 404 -
+122.186.149.102 - - [27/Jan/2025 17:46:50] code 400, message Bad request version ('ÆªñE')
+122.186.149.102 - - [27/Jan/2025 17:46:50] "\x16\x03\x01\x079\x01\x00\x075\x03\x03\x1ao4³/\x1d¹l\x00­\x81\x91\x9añÀ\x88\x11©\x9f\x8fg\x934À¹\x98\x07ÒwM\x96\x86 Ô\x11\x9dl½>êI¸Kh\x9b­\x0cÆªñE" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:50] code 400, message Bad request version ('×R¬Z\\x86')
+122.186.149.102 - - [27/Jan/2025 17:46:50] "\x16\x03\x01\x06Ù\x01\x00\x06Õ\x03\x03\x03_Bþ\x9fÑ­¢qu)¨\x94\x1eéfSËµÉÜâ_Q\x0d%[S²¼Wg ½,q8-qg¯ë\x1bwØcecâT@ð²ÿ_\x8bãgv\x87\x0d\x11Ð\x9db\x00 ::\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06l\x9a\x9a\x00\x00\x003\x04ï\x04í**\x00\x01\x00\x11ì\x04À÷\x935¸õ»F¶\x90\x8f\x18\x17)¨o,QJ×¨\x9eõÁti\x95\x9cv&\x05Ýf.«øP\x92ùL\x85\x05É\x0b\x1bR¢Ôk½ñ/\x94¹\x05à\x81=¹,[~\x85Nõ\x06\x8f\x1b³VoUs¶æ\x0bn"zeZ@[©Î¢Hvù\x10\x1e×R¬Z\x86" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:51] code 400, message Bad request version ('ZZ\\x13\\x01\\x13\\x02\\x13\\x03À+À/À,À0Ì©Ì¨À\\x13À\\x14\\x00\\x9c\\x00\\x9d\\x00/\\x005\\x01\\x00\\x06lÚÚ\\x00\\x00\\x00-\\x00\\x02\\x01\\x01\\x003\\x04ï\\x04í')
+122.186.149.102 - - [27/Jan/2025 17:46:51] "\x16\x03\x01\x06Ù\x01\x00\x06Õ\x03\x03AñâÔJ$\x95\x93\x04RÏB¸\x8a\x06\x04Ð\x834n\x90\x8fa3\\Ût\x87ª{Ô\x8e 0ëD<\x0bVHûñÙ°Ã\x97êÎ¡"ióÈ1ÖÝVWWë¤Ä¹\x85©\x00 ZZ\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06lÚÚ\x00\x00\x00-\x00\x02\x01\x01\x003\x04ï\x04í" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:51] code 400, message Bad request version ('\\x00\\x12\\x00\\x10\\x04\\x03\\x08\\x04\\x04\\x01\\x05\\x03\\x08\\x05\\x05\\x01\\x08\\x06\\x06\\x01\\x00\\x05\\x00\\x05\\x01\\x00\\x00\\x00\\x00\\x00')
+122.186.149.102 - - [27/Jan/2025 17:46:51] "\x16\x03\x01\x07\x19\x01\x00\x07\x15\x03\x03§Ù\x7f\x9b\x05ªgàÙt\x98üe,M\x1aÕ1§¨à·úGÚ¦¦h'½Ë\x16 \x88Û>_ôÇª¥^Ôýë\x7f'fÁ)im\x83\x04\x81\x9bÍr\x91ã\x12\x16Ï\x9fJ\x00 úú\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06¬úú\x00\x00\x00\x12\x00\x00\x00#\x00\x00ÿ\x01\x00\x01\x00Di\x00\x05\x00\x03\x02h2\x00\x00\x005\x003\x00\x000ec2-3-142-141-95.us-east-2.compute.amazonaws.com\x00\x1b\x00\x03\x02\x00\x02\x00\x0d\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00\x05\x00\x05\x01\x00\x00\x00\x00\x00" 400 -
+122.186.149.102 - - [27/Jan/2025 17:46:58] "GET / HTTP/1.1" 304 -
+122.186.149.102 - - [27/Jan/2025 17:46:58] "GET /app_v4.js HTTP/1.1" 304 -
+122.186.149.102 - - [27/Jan/2025 17:47:01] code 404, message File not found
+122.186.149.102 - - [27/Jan/2025 17:47:01] "GET /favicon.ico HTTP/1.1" 404 -
+152.58.176.49 - - [27/Jan/2025 17:53:09] "GET / HTTP/1.1" 200 -
+152.58.176.49 - - [27/Jan/2025 17:53:09] "GET /app_v4.js HTTP/1.1" 200 -
+152.58.176.49 - - [27/Jan/2025 17:53:12] code 404, message File not found
+152.58.176.49 - - [27/Jan/2025 17:53:12] "GET /favicon.ico HTTP/1.1" 404 -
+172.225.218.36 - - [27/Jan/2025 18:12:40] code 400, message Bad request version ('Æxº£þÜ¸')
+172.225.218.36 - - [27/Jan/2025 18:12:40] "\x16\x03\x01\x02\x00\x01\x00\x01ü\x03\x03£z\\°¹;\x86\x16ä¯CÌJ#9p;gE¾ñÎ\x01²I'\x16~á\x01%( º\x1eÆxº£þÜ¸" 400 -
+172.225.218.36 - - [27/Jan/2025 18:12:41] code 400, message Bad request version ('®Ì\\x18BheM£\\x00*ÚÚ\\x13\\x01\\x13\\x02\\x13\\x03À,À+Ì©À0À/Ì¨À')
+172.225.218.36 - - [27/Jan/2025 18:12:41] "\x16\x03\x01\x02\x00\x01\x00\x01ü\x03\x03OíRRJ¹.|MÒÉ\x1e¼\x7f\x15ê\x149l4\x1c5×Mv\x09|£ª¶·à \x13,\x19´\x9d\x9c\x07\x80\x10\x08ÎÝ~b\x1dµë\x8a\x95\x97+±½\x85®Ì\x18BheM£\x00*ÚÚ\x13\x01\x13\x02\x13\x03À,À+Ì©À0À/Ì¨À" 400 -
+172.225.218.36 - - [27/Jan/2025 18:12:42] code 400, message Bad request version ('ðÊ\\x84\\x98\\x00*ÊÊ\\x13\\x01\\x13\\x02\\x13\\x03À,À+Ì©À0À/Ì¨À')
+172.225.218.36 - - [27/Jan/2025 18:12:42] "\x16\x03\x01\x02\x00\x01\x00\x01ü\x03\x034\x09ép¢üì\x05v\x0f\x12­\x08\x9c¬a¹\x04dþßq"²ÈÉ\x85H²«\x1bp _\x89ãL*\x0d/\x84AßÑ²µ×Bñ\x80t0\x85\x7fÅsnA\x1e&\x0cðÊ\x84\x98\x00*ÊÊ\x13\x01\x13\x02\x13\x03À,À+Ì©À0À/Ì¨À" 400 -
+172.225.218.36 - - [27/Jan/2025 18:12:42] code 400, message Bad request version ('ÿ\\x8fzô\\x02\\x19P´õ\\x83')
+172.225.218.36 - - [27/Jan/2025 18:12:42] "\x16\x03\x01\x02\x00\x01\x00\x01ü\x03\x03{"mo\x8f\x98"I\x92íM\x0bª°\x1fÿ­Ù\x89¶XÜðã4>âöì\x07;P ÿ\x8fzô\x02\x19P´õ\x83" 400 -
+172.225.218.36 - - [27/Jan/2025 18:12:43] "GET / HTTP/1.1" 200 -
+172.225.218.36 - - [27/Jan/2025 18:12:43] "GET /app_v4.js HTTP/1.1" 200 -
+172.225.218.36 - - [27/Jan/2025 18:12:46] code 404, message File not found
+172.225.218.36 - - [27/Jan/2025 18:12:46] "GET /favicon.ico HTTP/1.1" 404 -
+24.236.253.99 - - [27/Jan/2025 18:48:37] "GET / HTTP/1.1" 304 -
+75.145.233.181 - - [27/Jan/2025 19:24:55] "GET / HTTP/1.1" 304 -
+75.145.233.181 - - [27/Jan/2025 19:24:56] "GET /app_v4.js HTTP/1.1" 304 -
+75.145.233.181 - - [27/Jan/2025 19:24:56] code 404, message File not found
+75.145.233.181 - - [27/Jan/2025 19:24:56] "GET /favicon.ico HTTP/1.1" 404 -
+198.235.24.152 - - [27/Jan/2025 19:31:56] "GET / HTTP/1.1" 200 -
+45.55.151.3 - - [27/Jan/2025 19:49:13] "GET / HTTP/1.1" 200 -
+138.68.183.38 - - [27/Jan/2025 21:00:57] code 400, message Bad request version ('À\\x14À')
+138.68.183.38 - - [27/Jan/2025 21:00:57] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03cIÍÒ¿Ïë4x|h¸´\x9fVÜé\x0dÊéÑë\x13F¼ÉêkÈ\x98/1\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+138.68.183.38 - - [27/Jan/2025 21:00:57] code 400, message Bad request version ('À\\x14À')
+138.68.183.38 - - [27/Jan/2025 21:00:57] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03\x99Bf6\x90ï9/L\x92{\x0d8n­\x9bå53[ß¨Ê? D\x87Ý\x87h_t\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+138.68.183.38 - - [27/Jan/2025 21:00:57] "GET / HTTP/1.1" 200 -
+138.68.183.38 - - [27/Jan/2025 21:00:57] code 404, message File not found
+138.68.183.38 - - [27/Jan/2025 21:00:57] "GET /login HTTP/1.1" 404 -
+24.236.253.99 - - [27/Jan/2025 21:52:15] "GET / HTTP/1.1" 304 -
+106.75.157.47 - - [28/Jan/2025 00:01:04] code 400, message Bad request syntax ('\\x02')
+106.75.157.47 - - [28/Jan/2025 00:01:04] "\x02" 400 -
+45.248.168.17 - - [28/Jan/2025 00:31:28] "GET / HTTP/1.0" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('198.98.56.152', 61000)
+Traceback (most recent call last):
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 1305, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 668, in __init__
+    super().__init__(*args, **kwargs)
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 433, in handle
+    self.handle_one_request()
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 401, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/socket.py", line 716, in readinto
+    return self._sock.recv_into(b)
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+143.244.169.39 - - [28/Jan/2025 02:24:22] "GET / HTTP/1.1" 200 -
+143.244.169.39 - - [28/Jan/2025 02:24:22] code 404, message File not found
+143.244.169.39 - - [28/Jan/2025 02:24:22] "GET /favicon.ico HTTP/1.1" 404 -
+198.235.24.214 - - [28/Jan/2025 02:32:09] "GET / HTTP/1.1" 200 -
+154.212.141.173 - - [28/Jan/2025 03:35:49] "GET / HTTP/1.1" 200 -
+106.75.190.150 - - [28/Jan/2025 03:52:31] code 400, message Bad request version ('*¿KÀ\\x10ôp2\\x8czô%\\x03¼P\\x99î\\x80\\x9eþÇc5\\x8a*¹?Äæ¥+¤')
+106.75.190.150 - - [28/Jan/2025 03:52:31] "+.\x85L¾\x85\x8dR,\x9d\x08úÁ"Á\x09»xÌ\x91öù \x0e{;¡ÇÇ\x16¹\x93\x84\x11\x9dV\x99ç~8|uB|ó·sÿ\x07ñú±\x0f47\x9e§Ô\x0dd¡7²x\x93j\x8c\x8cØþ\x05xÉJ\x93¸X~Æt\x02\x0fÈËþ2ÌoÒ\x17 *¿KÀ\x10ôp2\x8czô%\x03¼P\x99î\x80\x9eþÇc5\x8a*¹?Äæ¥+¤" 400 -
+----------------------------------------
+Exception occurred during processing of request from ('106.75.190.150', 35260)
+Traceback (most recent call last):
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 293, in parse_request
+    raise ValueError
+ValueError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 1305, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 668, in __init__
+    super().__init__(*args, **kwargs)
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 433, in handle
+    self.handle_one_request()
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 411, in handle_one_request
+    if not self.parse_request():
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 306, in parse_request
+    self.send_error(
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 488, in send_error
+    self.wfile.write(body)
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+172.168.155.62 - - [28/Jan/2025 04:29:09] code 400, message Bad request syntax ('MGLNDD_3.142.141.95_8000')
+172.168.155.62 - - [28/Jan/2025 04:29:09] "MGLNDD_3.142.141.95_8000" 400 -
+172.225.218.37 - - [28/Jan/2025 04:39:07] code 404, message File not found
+172.225.218.37 - - [28/Jan/2025 04:39:07] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+172.225.218.37 - - [28/Jan/2025 04:39:07] code 404, message File not found
+172.225.218.37 - - [28/Jan/2025 04:39:07] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+172.225.218.37 - - [28/Jan/2025 04:39:07] "GET / HTTP/1.1" 200 -
+172.225.218.37 - - [28/Jan/2025 04:39:08] code 404, message File not found
+172.225.218.37 - - [28/Jan/2025 04:39:08] "GET /favicon.ico HTTP/1.1" 404 -
+----------------------------------------
+Exception occurred during processing of request from ('199.45.154.146', 46974)
+Traceback (most recent call last):
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 1305, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 668, in __init__
+    super().__init__(*args, **kwargs)
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 433, in handle
+    self.handle_one_request()
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/http/server.py", line 401, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+  File "/home/ubuntu/miniforge3/envs/dfs_si_challenge/lib/python3.9/socket.py", line 716, in readinto
+    return self._sock.recv_into(b)
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+199.45.154.146 - - [28/Jan/2025 07:08:20] "GET / HTTP/1.1" 200 -
+199.45.154.146 - - [28/Jan/2025 07:08:24] "GET / HTTP/1.1" 200 -
+199.45.154.146 - - [28/Jan/2025 07:08:25] code 404, message File not found
+199.45.154.146 - - [28/Jan/2025 07:08:25] "GET /favicon.ico HTTP/1.1" 404 -
+199.45.154.146 - - [28/Jan/2025 07:08:25] code 505, message Invalid HTTP version (2.0)
+199.45.154.146 - - [28/Jan/2025 07:08:25] "PRI * HTTP/2.0" 505 -
+139.99.35.40 - - [28/Jan/2025 08:27:03] "GET / HTTP/1.1" 200 -
+15.235.189.147 - - [28/Jan/2025 08:34:28] code 404, message File not found
+15.235.189.147 - - [28/Jan/2025 08:34:28] "GET /favicon.ico HTTP/1.1" 404 -
+185.167.96.150 - - [28/Jan/2025 08:38:10] code 400, message Bad request version ('À\\x14À')
+185.167.96.150 - - [28/Jan/2025 08:38:10] "\x16\x03\x01\x00u\x01\x00\x00q\x03\x03\x1dÙzMÆ±\x81\\¶@ êø\x03ÿ\x02©¬nïDÑ¡JHm2á\x88\x97\x19ü\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+104.133.187.96 - - [28/Jan/2025 08:58:56] code 404, message File not found
+104.133.187.96 - - [28/Jan/2025 08:58:56] "GET /favicon.ico HTTP/1.1" 404 -
+96.4.76.152 - - [28/Jan/2025 11:47:50] "GET / HTTP/1.0" 200 -
+185.242.226.48 - - [28/Jan/2025 11:59:25] "GET / HTTP/1.1" 200 -
+20.225.3.88 - - [28/Jan/2025 12:11:12] code 400, message Bad request version ('À\\x14À')
+20.225.3.88 - - [28/Jan/2025 12:11:12] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03\x1aÊ\x8a(¬\x8c4tô§áXOd\x02°½ÍÊ\x1cå\x0d\x12ÿwC\x0f¯¶µ è\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+198.235.24.28 - - [28/Jan/2025 13:29:18] "GET / HTTP/1.1" 200 -
+198.235.24.33 - - [28/Jan/2025 14:05:43] "GET / HTTP/1.1" 200 -
+152.58.176.0 - - [28/Jan/2025 14:08:36] "GET / HTTP/1.1" 304 -
+152.58.176.0 - - [28/Jan/2025 14:08:42] code 404, message File not found
+152.58.176.0 - - [28/Jan/2025 14:08:42] "GET /favicon.ico HTTP/1.1" 404 -
+152.58.176.0 - - [28/Jan/2025 14:57:17] "GET / HTTP/1.1" 304 -
+75.145.233.181 - - [28/Jan/2025 15:16:13] "GET / HTTP/1.1" 304 -
+75.145.233.181 - - [28/Jan/2025 15:16:14] code 404, message File not found
+75.145.233.181 - - [28/Jan/2025 15:16:14] "GET /favicon.ico HTTP/1.1" 404 -
+75.145.233.181 - - [28/Jan/2025 15:17:25] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-126:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-126, started daemon 138522923108032)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [28/Jan/2025 15:17:26] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-127:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-127, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [28/Jan/2025 15:17:26] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-128:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-128, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [28/Jan/2025 15:17:26] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-129:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-129, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [28/Jan/2025 15:17:26] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-130:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-130, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [28/Jan/2025 15:17:28] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-131:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-131, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [28/Jan/2025 15:17:28] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-132:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-132, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [28/Jan/2025 15:17:28] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-133:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-133, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [28/Jan/2025 15:17:33] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-134:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-134, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [28/Jan/2025 15:18:03] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-135:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-135, started daemon 138522923108032)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [28/Jan/2025 15:18:03] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-136:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-136, started daemon 138522923108032)>>
+205.210.31.159 - - [29/Jan/2025 02:36:00] "GET / HTTP/1.1" 200 -
+35.203.210.150 - - [29/Jan/2025 04:00:25] code 400, message Bad request version ('À\\x13À')
+35.203.210.150 - - [29/Jan/2025 04:00:25] "\x16\x03\x01\x00î\x01\x00\x00ê\x03\x03\x8c\x9f\x01ÖLêNgM\x06W\x8bç:=\x8f{úÌ@xmÑ\x07b©\x06:«Nßò ÜÐw\x0cN´º\x06Dg&"\x8aïÇÍ\x94Ú_\x81\x98$\x84âwû\x035dzò@\x00&À+À/À,À0Ì©Ì¨À\x09À\x13À" 400 -
+35.203.210.150 - - [29/Jan/2025 04:00:25] code 400, message Bad request version ('À(À$À\\x14À')
+35.203.210.150 - - [29/Jan/2025 04:00:25] "\x16\x03\x01\x00Ê\x01\x00\x00Æ\x03\x03\x16åK\x90o\x0ffA×³\x16h\x1dÓ\x83fÄ\x07\x9ccãþ,ÿ\x0b\x99õÚÈ\x9eÝÔ\x00\x00hÌ\x14Ì\x13À/À+À0À,À\x11À\x07À'À#À\x13À\x09À(À$À\x14À" 400 -
+147.185.132.108 - - [29/Jan/2025 04:06:32] "GET / HTTP/1.1" 200 -
+67.80.239.203 - - [29/Jan/2025 05:36:28] "GET / HTTP/1.0" 200 -
+64.62.197.185 - - [29/Jan/2025 06:14:44] "GET / HTTP/1.1" 200 -
+64.62.197.188 - - [29/Jan/2025 06:14:57] code 404, message File not found
+64.62.197.188 - - [29/Jan/2025 06:14:57] "GET /favicon.ico HTTP/1.1" 404 -
+64.62.197.193 - - [29/Jan/2025 06:14:59] code 404, message File not found
+64.62.197.193 - - [29/Jan/2025 06:14:59] "GET http://api.ipify.org/?format=json HTTP/1.1" 404 -
+64.62.197.191 - - [29/Jan/2025 06:15:02] code 501, message Unsupported method ('CONNECT')
+64.62.197.191 - - [29/Jan/2025 06:15:02] "CONNECT www.shadowserver.org:443 HTTP/1.1" 501 -
+186.96.211.154 - - [29/Jan/2025 06:42:42] "GET / HTTP/1.0" 200 -
+200.105.7.132 - - [29/Jan/2025 10:11:27] "GET / HTTP/1.0" 200 -
+87.251.67.233 - - [29/Jan/2025 12:50:00] code 400, message Bad request syntax ('\\x16\\x03\\x01\\x00á\\x01\\x00\\x00Ý\\x03\\x03\\x15x:³zx¦ÂB)ÙmÂ³:ÞZLÁ\\x06\\xadæ\\x05\\x1a¹Qí\\x8e-\\x7f')
+87.251.67.233 - - [29/Jan/2025 12:50:00] "\x16\x03\x01\x00á\x01\x00\x00Ý\x03\x03\x15x:³zx¦ÂB)ÙmÂ³:ÞZLÁ\x06­æ\x05\x1a¹Qí\x8e-\x7f" 400 -
+87.251.67.233 - - [29/Jan/2025 12:50:02] code 400, message Bad request version ('ÈÐS¢\\x81\\x10$\\x19DÒ')
+87.251.67.233 - - [29/Jan/2025 12:50:02] "\x16\x03\x01\x00á\x01\x00\x00Ý\x03\x03i!Í¿\x0bjä\x12\x00»V\x1b*¢P\x17¿\x14Ò\x9b0ú\x92Ý \x174\x8eà\x13\x85ª ÈÐS¢\x81\x10$\x19DÒ" 400 -
+80.66.83.47 - - [29/Jan/2025 13:22:19] code 400, message Bad HTTP/0.9 request type ('\\x04\\x01\\x00\\x19^d´')
+80.66.83.47 - - [29/Jan/2025 13:22:19] "\x04\x01\x00\x19^d´\x1f\x00" 400 -
+80.66.83.47 - - [29/Jan/2025 13:23:19] code 400, message Bad request syntax ('\\x05\\x01\\x00')
+80.66.83.47 - - [29/Jan/2025 13:23:19] "\x05\x01\x00" 400 -
+80.66.83.47 - - [29/Jan/2025 13:23:19] code 501, message Unsupported method ('CONNECT')
+80.66.83.47 - - [29/Jan/2025 13:23:19] "CONNECT mxs.mail.ru:25 HTTP/1.1" 501 -
+204.188.228.107 - - [29/Jan/2025 13:38:22] code 400, message Bad HTTP/0.9 request type ('\\x16\\x03\\x01\\x00{\\x01\\x00\\x00w\\x03\\x03»ØTÞ?P\\x03\\x8eHÏ%\\x10\\x94TZØ\\x04%Ù\\x00&5®\\x11\\x04¬B\\x88PL\\x9dÁ\\x00\\x00\\x1aÀ/À+À\\x11À\\x07À\\x13À')
+204.188.228.107 - - [29/Jan/2025 13:38:22] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03»ØTÞ?P\x03\x8eHÏ%\x10\x94TZØ\x04%Ù\x00&5®\x11\x04¬B\x88PL\x9dÁ\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+204.188.228.107 - - [29/Jan/2025 13:38:22] code 400, message Bad request version ('À\\x14À')
+204.188.228.107 - - [29/Jan/2025 13:38:22] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03\x17\x00Ø"C îCeö-ÏwIP7\x13CvÝ-ð!»j\x97²J4\x94\x1b_\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+204.188.228.107 - - [29/Jan/2025 13:38:22] "GET / HTTP/1.1" 200 -
+204.188.228.107 - - [29/Jan/2025 13:38:22] code 404, message File not found
+204.188.228.107 - - [29/Jan/2025 13:38:22] "GET /login HTTP/1.1" 404 -
+147.185.132.69 - - [29/Jan/2025 13:44:57] "GET / HTTP/1.1" 200 -
+45.147.250.208 - - [29/Jan/2025 13:58:18] code 400, message Bad request version ('À\\x14À')
+45.147.250.208 - - [29/Jan/2025 13:58:18] "\x16\x03\x01\x00u\x01\x00\x00q\x03\x03ÕW\x89\x12 J\x06ÂôY´»Yô6\x0e\x06j¤\x1aØj\x0exx\x85ã©dé3\x93\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+75.145.233.181 - - [29/Jan/2025 15:04:57] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-261:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-261, started daemon 138522923108032)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [29/Jan/2025 15:04:58] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-262:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-262, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [29/Jan/2025 15:04:58] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-263:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-263, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [29/Jan/2025 15:05:00] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-264:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-264, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [29/Jan/2025 15:05:01] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-265:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-265, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [29/Jan/2025 15:05:01] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-266:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-266, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [29/Jan/2025 15:05:01] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-267:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-267, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [29/Jan/2025 15:05:02] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-268:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-268, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [29/Jan/2025 15:05:02] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-269:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-269, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [29/Jan/2025 15:05:02] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-270:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-270, started daemon 138522912622272)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+75.145.233.181 - - [29/Jan/2025 15:05:08] "GET / HTTP/1.1" 304 -
+----------------------------------------
+Exception in thread Thread-271:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-271, started daemon 138522912622272)>>
+80.66.83.47 - - [29/Jan/2025 15:49:37] code 400, message Bad request syntax ('\\x04\\x01\\x00PUÎ§\\x87\\x00')
+80.66.83.47 - - [29/Jan/2025 15:49:37] "\x04\x01\x00PUÎ§\x87\x00" 400 -
+80.66.83.47 - - [29/Jan/2025 15:50:37] code 400, message Bad request syntax ('\\x05\\x01\\x00')
+80.66.83.47 - - [29/Jan/2025 15:50:37] "\x05\x01\x00" 400 -
+80.66.83.47 - - [29/Jan/2025 15:50:38] code 501, message Unsupported method ('CONNECT')
+80.66.83.47 - - [29/Jan/2025 15:50:38] "CONNECT 85.206.167.135:80 HTTP/1.1" 501 -
+172.225.219.54 - - [29/Jan/2025 15:54:10] code 400, message Bad HTTP/0.9 request type ('\\x16\\x03\\x01\\x02\\x00\\x01\\x00\\x01ü\\x03\\x03eÂ\\x8a=\\x96ÿZÔ®wD¹\\x17¦Ã°yâ°\\x94\\x14ÎÒE\\\\M\\x10\\x8eþ\\x11Ì\\x1a')
+172.225.219.54 - - [29/Jan/2025 15:54:10] "\x16\x03\x01\x02\x00\x01\x00\x01ü\x03\x03eÂ\x8a=\x96ÿZÔ®wD¹\x17¦Ã°yâ°\x94\x14ÎÒE\\M\x10\x8eþ\x11Ì\x1a j&" 400 -
+172.225.219.54 - - [29/Jan/2025 15:54:11] code 400, message Bad request version ('ïJC#¤¦uã9¥\\x9b¥À6\\x97\\x94\\x99l3²\\x84\\x8fO[¯üR\\x97ô¡áÈ\\x00*ªª\\x13\\x01\\x13\\x02\\x13\\x03À,À+Ì©À0À/Ì¨À')
+172.225.219.54 - - [29/Jan/2025 15:54:11] "\x16\x03\x01\x02\x00\x01\x00\x01ü\x03\x03jæá©W-¤¤Æ\x8cL%°»\x1eà\x00è6Bàþ\x13à\x87\x08\x99\x11\x97\x07\x0c\x92 ïJC#¤¦uã9¥\x9b¥À6\x97\x94\x99l3²\x84\x8fO[¯üR\x97ô¡áÈ\x00*ªª\x13\x01\x13\x02\x13\x03À,À+Ì©À0À/Ì¨À" 400 -
+172.225.219.54 - - [29/Jan/2025 15:54:11] code 400, message Bad request version ('3]4Báa\\x00*::\\x13\\x01\\x13\\x02\\x13\\x03À,À+Ì©À0À/Ì¨À')
+172.225.219.54 - - [29/Jan/2025 15:54:11] "\x16\x03\x01\x02\x00\x01\x00\x01ü\x03\x03y\x8d9yÜ\x92D\x1a²\x0f\x89 å\x93àQCJ\x86\x8c\x1d?õ\x03ï9ÓØ¹@\x03È \x18Òì\x90$r\x83s\x01\x0b\x93C\x94xM\x0eµ¤\x82^\x00g¬ÕÀ 3]4Báa\x00*::\x13\x01\x13\x02\x13\x03À,À+Ì©À0À/Ì¨À" 400 -
+172.225.219.54 - - [29/Jan/2025 15:54:12] code 400, message Bad HTTP/0.9 request type ('\\x16\\x03\\x01\\x02\\x00\\x01\\x00\\x01ü\\x03\\x03L\\x92ú¸Ë»&v\\x0fÛ\\x0fTõº\\x8e^')
+172.225.219.54 - - [29/Jan/2025 15:54:12] "\x16\x03\x01\x02\x00\x01\x00\x01ü\x03\x03L\x92ú¸Ë»&v\x0fÛ\x0fTõº\x8e^\x0c§&K\x1f" 400 -
+172.225.219.54 - - [29/Jan/2025 15:54:12] "GET / HTTP/1.1" 200 -
+172.225.219.54 - - [29/Jan/2025 15:54:13] "GET /app_v4.js HTTP/1.1" 304 -
+172.225.219.54 - - [29/Jan/2025 15:58:34] "GET / HTTP/1.1" 200 -
+75.145.233.181 - - [29/Jan/2025 15:59:53] "GET / HTTP/1.1" 304 -
+75.145.233.181 - - [29/Jan/2025 15:59:53] "GET /app_v4.js HTTP/1.1" 304 -
+75.145.233.181 - - [29/Jan/2025 15:59:54] code 404, message File not found
+75.145.233.181 - - [29/Jan/2025 15:59:54] "GET /favicon.ico HTTP/1.1" 404 -
+75.145.233.181 - - [29/Jan/2025 17:00:16] code 404, message File not found
+75.145.233.181 - - [29/Jan/2025 17:00:16] "GET /favicon.ico HTTP/1.1" 404 -
+75.145.233.181 - - [29/Jan/2025 17:00:39] "GET / HTTP/1.1" 304 -
+75.145.233.181 - - [29/Jan/2025 17:00:39] "GET / HTTP/1.1" 304 -
+172.225.218.39 - - [29/Jan/2025 17:36:21] "GET / HTTP/1.1" 200 -
+167.94.138.168 - - [29/Jan/2025 18:31:16] "GET / HTTP/1.1" 200 -
+167.94.138.168 - - [29/Jan/2025 18:31:18] code 404, message File not found
+167.94.138.168 - - [29/Jan/2025 18:31:18] "GET /favicon.ico HTTP/1.1" 404 -
+167.94.138.168 - - [29/Jan/2025 18:31:20] code 505, message Invalid HTTP version (2.0)
+167.94.138.168 - - [29/Jan/2025 18:31:20] "PRI * HTTP/2.0" 505 -
+75.145.233.181 - - [29/Jan/2025 18:56:47] code 404, message File not found
+75.145.233.181 - - [29/Jan/2025 18:56:47] "GET /favicon.ico HTTP/1.1" 404 -
+75.145.233.181 - - [29/Jan/2025 18:59:18] "GET / HTTP/1.1" 304 -
+75.145.233.181 - - [29/Jan/2025 18:59:20] "GET / HTTP/1.1" 304 -
+75.145.233.181 - - [29/Jan/2025 19:17:23] "GET / HTTP/1.1" 304 -
+75.145.233.181 - - [29/Jan/2025 19:17:25] "GET / HTTP/1.1" 304 -
+172.169.111.177 - - [29/Jan/2025 19:39:06] code 400, message Bad request syntax ('MGLNDD_3.142.141.95_8000')
+172.169.111.177 - - [29/Jan/2025 19:39:06] "MGLNDD_3.142.141.95_8000" 400 -
+75.145.233.181 - - [29/Jan/2025 20:04:36] "GET / HTTP/1.1" 304 -
+18.222.54.172 - - [29/Jan/2025 21:43:18] "GET / HTTP/1.1" 200 -
+18.222.54.172 - - [29/Jan/2025 21:43:19] "GET / HTTP/1.1" 200 -
+----------------------------------------
+Exception in thread Thread-434:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-434, started daemon 138522923108032)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+18.222.54.172 - - [29/Jan/2025 21:43:22] code 400, message Bad request version ('À\\x14À')
+----------------------------------------
+Exception in thread Thread-435:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-435, started daemon 138522923108032)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+205.210.31.65 - - [29/Jan/2025 21:54:47] "GET / HTTP/1.1" 200 -
+----------------------------------------
+Exception in thread Thread-436:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-436, started daemon 138522923108032)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+44.220.185.135 - - [29/Jan/2025 22:25:13] "GET / HTTP/1.1" 200 -
+----------------------------------------
+Exception in thread Thread-437:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-437, started daemon 138522923108032)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+44.220.185.135 - - [29/Jan/2025 22:25:13] "GET / HTTP/1.1" 200 -
+----------------------------------------
+Exception in thread Thread-438:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-438, started daemon 138522923108032)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+44.220.185.135 - - [29/Jan/2025 22:25:13] code 400, message Bad request version ("Ö·\\x10«(|²ÚÍ]¥Ë(\\x07ñÂxO\\x0fº´îì\\x06È*\\x19\\x86\\x00V\\x13\\x02\\x13\\x03\\x13\\x01À,À0À+À/Ì©Ì¨\\x00\\x9f\\x00\\x9eÌªÀ¯À\\xadÀ®À¬À$À(À#À'À")
+----------------------------------------
+Exception in thread Thread-439:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-439, started daemon 138522923108032)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+135.148.57.176 - - [29/Jan/2025 23:02:00] "GET / HTTP/1.1" 200 -
+----------------------------------------
+Exception in thread Thread-441:
+Exception in threading.excepthook:
+Exception ignored in thread started by: <bound method Thread._bootstrap of <Thread(Thread-441, started daemon 138522923108032)>>
+Exception ignored in sys.unraisablehook: <built-in function unraisablehook>
+5.196.113.1 - - [30/Jan/2025 01:26:01] code 400, message Bad request version ('À#À¬À®À+À')
+5.196.113.1 - - [30/Jan/2025 01:26:01] "\x16\x03\x03\x01¥\x01\x00\x01¡\x03\x03\x9fë\x1b6fÆ'&\x08\x16ª\x11Ó"ÿ³#ns\x97\x16\x1bÐï\x0cQã+6<l\x09 ²¸\x9bíßçc(b\x9fgDj\x01\x96\x16ñ:#ß'ÿÖÞ"f.+Í2rß\x00\x8a\x00\x16\x003\x00gÀ\x9eÀ¢\x00\x9e\x009\x00kÀ\x9fÀ£\x00\x9f\x00E\x00¾\x00\x88\x00Ä\x00\x9aÀ\x08À\x09À#À¬À®À+À" 400 -
+5.196.113.12 - - [30/Jan/2025 01:26:04] "GET / HTTP/1.1" 200 -
+54.38.100.144 - - [30/Jan/2025 01:32:09] code 400, message Bad request version ('À#À¬À®À+À')
+54.38.100.144 - - [30/Jan/2025 01:32:09] "\x16\x03\x03\x01¥\x01\x00\x01¡\x03\x03«­\x94\x017ðÿ¿>\x10ûÓ\x1dÖ«Ñt\x0dÛï1\x83Ïô\x14ú\x89ó$¸3\x10 \x88>Ù7cÉcÞüJ¢JÛqÿ&!®Ê\x01;\x0f\x0f\x01³\x16&:Ãj\x83í\x00\x8a\x00\x16\x003\x00gÀ\x9eÀ¢\x00\x9e\x009\x00kÀ\x9fÀ£\x00\x9f\x00E\x00¾\x00\x88\x00Ä\x00\x9aÀ\x08À\x09À#À¬À®À+À" 400 -
+54.38.100.157 - - [30/Jan/2025 01:32:10] code 404, message File not found
+54.38.100.157 - - [30/Jan/2025 01:32:10] "GET /favicon.ico HTTP/1.1" 404 -
+51.8.222.211 - - [30/Jan/2025 01:54:46] code 400, message Bad request version ('À\\x14À')
+51.8.222.211 - - [30/Jan/2025 01:54:46] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03â¦Oj\x8bðÃÛS\x8f7d\x9b¼c\x1ao\x1c\x89½Ãò#½Åk\x04\x92 .]³\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+198.235.24.127 - - [30/Jan/2025 02:37:37] "GET / HTTP/1.1" 200 -
+47.237.113.59 - - [30/Jan/2025 02:38:04] code 404, message File not found
+47.237.113.59 - - [30/Jan/2025 02:38:04] "GET /.env HTTP/1.1" 404 -
+204.188.228.45 - - [30/Jan/2025 05:06:48] code 400, message Bad request version ('À\\x14À')
+204.188.228.45 - - [30/Jan/2025 05:06:48] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03\x85l6vÍö\x1aõ\\\x87ø²Oþ·hèmeÌK#\x11÷n\x0d&9 =\x10ë\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+204.188.228.45 - - [30/Jan/2025 05:06:48] code 400, message Bad request version ('À\\x14À')
+204.188.228.45 - - [30/Jan/2025 05:06:48] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03Õ\x1dtÒc\x1d"r\x0d\x9b%%^ã\x8e-\x0c:\x900Z\x0flÇÙ;óM:8²\x90\x00\x00\x1aÀ/À+À\x11À\x07À\x13À\x09À\x14À" 400 -
+204.188.228.45 - - [30/Jan/2025 05:06:48] "GET / HTTP/1.1" 200 -
+204.188.228.45 - - [30/Jan/2025 05:06:48] code 404, message File not found
+204.188.228.45 - - [30/Jan/2025 05:06:48] "GET /login HTTP/1.1" 404 -
+172.225.186.53 - - [30/Jan/2025 05:43:10] "GET / HTTP/1.1" 200 -
+172.225.186.53 - - [30/Jan/2025 05:43:10] code 404, message File not found
+172.225.186.53 - - [30/Jan/2025 05:43:10] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+172.225.186.53 - - [30/Jan/2025 05:43:10] code 404, message File not found
+172.225.186.53 - - [30/Jan/2025 05:43:10] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+172.225.186.53 - - [30/Jan/2025 05:43:10] code 404, message File not found
+172.225.186.53 - - [30/Jan/2025 05:43:10] "GET /favicon.ico HTTP/1.1" 404 -
+85.175.92.130 - - [30/Jan/2025 07:24:03] code 400, message Bad HTTP/0.9 request type ('\\x00\\x00\\x00')
+85.175.92.130 - - [30/Jan/2025 07:24:03] "\x00\x00\x00 c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" 400 -
+159.138.98.197 - - [30/Jan/2025 08:01:56] code 404, message File not found
+159.138.98.197 - - [30/Jan/2025 08:01:56] "GET http://www.qq.com/404/search_children.js HTTP/1.1" 404 -
+159.138.98.197 - - [30/Jan/2025 08:02:05] code 400, message Bad request syntax ('\\x04\\x01\\x00PpTi4\\x00')
+159.138.98.197 - - [30/Jan/2025 08:02:05] "\x04\x01\x00PpTi4\x00" 400 -
+159.138.98.197 - - [30/Jan/2025 08:02:05] code 400, message Bad request syntax ('\\x05\\x01\\x00')
+159.138.98.197 - - [30/Jan/2025 08:02:05] "\x05\x01\x00" 400 -
+48.216.197.125 - - [30/Jan/2025 10:07:17] code 400, message Bad request syntax ('MGLNDD_3.142.141.95_8000')
+48.216.197.125 - - [30/Jan/2025 10:07:17] "MGLNDD_3.142.141.95_8000" 400 -
+165.85.173.41 - - [30/Jan/2025 13:05:08] "GET / HTTP/1.1" 200 -
+165.85.173.41 - - [30/Jan/2025 13:05:10] "GET / HTTP/1.1" 200 -
+165.85.173.41 - - [30/Jan/2025 13:05:10] code 404, message File not found
+165.85.173.41 - - [30/Jan/2025 13:05:10] "GET /login/css/latofonts.css HTTP/1.1" 404 -
+165.85.173.41 - - [30/Jan/2025 13:05:10] code 404, message File not found
+165.85.173.41 - - [30/Jan/2025 13:05:10] "GET /favicon.ico HTTP/1.1" 404 -
+38.200.4.181 - - [30/Jan/2025 13:05:40] "GET / HTTP/1.1" 200 -
+38.200.4.181 - - [30/Jan/2025 13:05:40] "GET /app_v4.js HTTP/1.1" 200 -
+198.235.24.165 - - [30/Jan/2025 13:31:57] "GET / HTTP/1.1" 200 -
+172.225.137.193 - - [30/Jan/2025 13:51:58] code 404, message File not found
+172.225.137.193 - - [30/Jan/2025 13:51:58] code 404, message File not found
+172.225.137.193 - - [30/Jan/2025 13:51:58] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+172.225.137.193 - - [30/Jan/2025 13:51:58] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+172.225.137.193 - - [30/Jan/2025 13:51:58] "GET / HTTP/1.1" 200 -
+172.225.137.193 - - [30/Jan/2025 13:51:58] code 404, message File not found
+172.225.137.193 - - [30/Jan/2025 13:51:58] "GET /favicon.ico HTTP/1.1" 404 -
+172.225.137.193 - - [30/Jan/2025 14:34:30] "GET / HTTP/1.1" 200 -
