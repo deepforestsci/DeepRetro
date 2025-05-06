@@ -915,3 +915,16 @@ function renderGraph(rootStep) {
     }
   });
 }
+
+// Export main functions for testing and coverage
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    updatePathwayNumber,
+    handleFileSelect,
+    processData,
+    calculateMoleculeSize,
+    calculateStepSize,
+    formatFormula,
+    renderGraph,
+  };
+}
