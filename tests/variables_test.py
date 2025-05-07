@@ -682,7 +682,8 @@ MOLS_SMALL = {
 }
 
 
-BASE_URL = "http://ec2-3-17-191-215.us-east-2.compute.amazonaws.com:5000"
+# "http://ec2-3-17-191-215.us-east-2.compute.amazonaws.com:5000"
+BASE_URL = "http://ec2-18-220-15-234.us-east-2.compute.amazonaws.com:5000"
 
 ENDPOINTS = {
     "retrosynthesis": "/api/retrosynthesis",
