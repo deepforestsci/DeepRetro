@@ -7,3 +7,5 @@ aizynthfinder/
 pistachio/
 .idea/
 .vscode/
+node_modules/
+coverage/

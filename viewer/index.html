@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DeepRetro</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/openchemlib@^7.0.3/dist/openchemlib-full.js"></script>
+    <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+    <script src="config.js"></script>
+    <link rel="icon" href="assests/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="styles/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="header-left">
+          <div class="logo">
+            <img
+              id="logo-img"
+              src="assests/dfs.png"
+              alt="Retrosynthesis Logo"
+            />
+          </div>
+          <h1>DeepRetro</h1>
+        </div>
+        <div class="toggle-view">
+          <button onclick="toggleView('api')">Smart Retrosynthesis</button>
+          <button onclick="toggleView('file')">View Pathway</button>
+        </div>
+      </div>
+
+      <div class="advanced-settings">
+        <div class="settings-toggle" onclick="toggleSettings()">
+          <span>Advanced Settings</span>
+          <span class="arrow-down" id="settings-arrow"></span>
+        </div>
+        <div class="settings-content" id="settings-content">
+          <div id="server-settings-container">
+            <!-- Server settings will be dynamically generated here -->
+          </div>
+        </div>
+      </div>
+
+      <div id="apiView">
+        <div class="input-group">
+          <input
+            type="text"
+            id="smiles"
+            placeholder="Enter SMILES string"
+            aria-label="SMILES input"
+          />
+          <button onclick="analyze()" id="analyzeBtn">Analyze</button>
+        </div>
+        <div
+          class="note-section"
+          style="
+            margin-top: 8px;
+            font-size: 13px;
+            color: #555;
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #222222;
+          "
+        >
+          <strong>Note:</strong> You are using our recommended settings.
+          Advanced settings can be modified above if needed.
+        </div>
+        <div id="status" class="status"></div>
+
+        <div
+          class="json-toggle"
+          onclick="toggleJson()"
+          id="json-toggle"
+          style="display: none"
+        >
+          <span>JSON Result</span>
+          <span class="json-toggle-icon arrow-down" id="json-arrow"></span>
+        </div>
+        <div id="result" class="result" style="display: none"></div>
+      </div>
+
+      <div id="fileView" style="display: none">
+        <div class="test-controls">
+          <h3>Test with JSON File</h3>
+          <input type="file" id="fileInput" accept=".json" />
+        </div>
+
+        <div id="fileStatus" class="status" style="display: none"></div>
+
+        <div class="json-toggle" id="file-json-toggle" style="display: none">
+          <span>JSON Result</span>
+          <span class="json-toggle-icon arrow-down" id="file-json-arrow"></span>
+        </div>
+        <div id="file-result" class="result" style="display: none"></div>
+      </div>
+
+      <div id="graph"></div>
+
+      <!-- Pathway number display - always present in DOM -->
+      <div id="pathway-number" class="pathway-number">
+        <strong>Current Pathway:</strong> <span id="current-pathway">-</span>
+      </div>
+    </div>
+
+    <script>
+      const API_KEY = "your-secure-api-key";
+
+      // Function to initialize server settings
+      function initializeServerSettings() {
+        const container = document.getElementById("server-settings-container");
+
+        // Clear any existing content
+        container.innerHTML = "";
+
+        // Generate settings for each server in the config
+        config.instances.forEach((instance, index) => {
+          const serverNum = index + 1;
+          const defaults = instance.defaults || {
+            model_type: "claude3",
+            advanced_prompt: false,
+            model_version: "USPTO",
+            stability_flag: false,
+            hallucination_check: false,
+          };
+
+          // Create a div for this server's settings
+          const serverDiv = document.createElement("div");
+          serverDiv.className = "server-settings";
+
+          // Create the server header
+          const serverHeader = document.createElement("h4");
+          serverHeader.textContent = `Server ${serverNum} Settings`;
+          serverDiv.appendChild(serverHeader);
+
+          // Create the model version selection
+          const modelRow = document.createElement("div");
+          modelRow.className = "toggle-row";
+          modelRow.innerHTML = `
+                    <label for="modelVersion${serverNum}" class="toggle-label" style="margin-right: 10px;">Model Version:</label>
+                    <select id="modelVersion${serverNum}" class="model-select" data-server="${serverNum}">
+                        <option value="USPTO" ${
+                          defaults.model_version === "USPTO" ? "selected" : ""
+                        }>USPTO</option>
+                        <option value="Pistachio_25" ${
+                          defaults.model_version === "Pistachio_25"
+                            ? "selected"
+                            : ""
+                        }>Pistachio (25)</option>
+                        <option value="Pistachio_50" ${
+                          defaults.model_version === "Pistachio_50"
+                            ? "selected"
+                            : ""
+                        }>Pistachio (50)</option>
+                        <option value="Pistachio_100" ${
+                          defaults.model_version === "Pistachio_100"
+                            ? "selected"
+                            : ""
+                        }>Pistachio (100)</option>
+                        <option value="Pistachio_100+" ${
+                          defaults.model_version === "Pistachio_100+"
+                            ? "selected"
+                            : ""
+                        }>Pistachio (100+)</option>
+                    </select>
+                `;
+          serverDiv.appendChild(modelRow);
+
+          // Create the model type dropdown
+          const modelTypeRow = document.createElement("div");
+          modelTypeRow.className = "toggle-row";
+          modelTypeRow.innerHTML = `
+                    <label for="modelType${serverNum}" class="toggle-label" style="margin-right: 10px;">LLM Model:</label>
+                    <select id="modelType${serverNum}" class="model-select" data-server="${serverNum}">
+                        <option value="claude3" ${
+                          defaults.model_type === "claude3" ? "selected" : ""
+                        }>Claude 3 Opus</option>
+                        <option value="claude37" ${
+                          defaults.model_type === "claude37" ? "selected" : ""
+                        }>Claude 3.7 Sonnet</option>
+                        <option value="deepseek" ${
+                          defaults.model_type === "deepseek" ? "selected" : ""
+                        }>DeepSeek</option>
+                    </select>
+                `;
+          serverDiv.appendChild(modelTypeRow);
+
+          // Create the advanced prompt toggle
+          const promptRow = document.createElement("div");
+          promptRow.className = "toggle-row";
+          promptRow.innerHTML = `
+                    <div class="toggle-switch">
+                        <label class="switch">
+                            <input type="checkbox" id="promptToggle${serverNum}" ${
+            defaults.advanced_prompt ? "checked" : ""
+          } data-server="${serverNum}">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label">Advanced Prompt</span>
+                    </div>
+                `;
+          serverDiv.appendChild(promptRow);
+
+          // Create stability checker toggle
+          const stabilityRow = document.createElement("div");
+          stabilityRow.className = "toggle-row";
+          stabilityRow.innerHTML = `
+                    <div class="toggle-switch">  
+                        <label class="switch">
+                            <input type="checkbox" id="stabilityToggle${serverNum}" ${
+            defaults.stability_flag ? "checked" : ""
+          } data-server="${serverNum}">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label">Stability Checker</span>  
+                    </div>
+                `;
+          serverDiv.appendChild(stabilityRow);
+
+          // Create hallucination checker toggle
+          const hallucinationRow = document.createElement("div");
+          hallucinationRow.className = "toggle-row";
+          hallucinationRow.innerHTML = `
+                    <div class="toggle-switch">
+                        <label class="switch">
+                            <input type="checkbox" id="hallucinationToggle${serverNum}" ${
+            defaults.hallucination_check ? "checked" : ""
+          } data-server="${serverNum}">  
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label">Hallucination Checker</span>
+                    </div>
+                `;
+          serverDiv.appendChild(hallucinationRow);
+
+          // Add a horizontal line after each server except the last one
+          if (index < config.instances.length - 1) {
+            const separator = document.createElement("hr");
+            separator.style.margin = "15px 0";
+            separator.style.border = "0";
+            separator.style.borderTop = "1px solid var(--border)";
+            serverDiv.appendChild(separator);
+          }
+
+          // Add this server's settings to the container
+          container.appendChild(serverDiv);
+        });
+      }
+
+      // Setup file upload handler
+      function setupFileUploadHandler() {
+        const fileInput = document.getElementById("fileInput");
+        const fileStatus = document.getElementById("fileStatus");
+        const fileJsonToggle = document.getElementById("file-json-toggle");
+        const fileResult = document.getElementById("file-result");
+
+        fileInput.addEventListener("change", function (event) {
+          const file = event.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            try {
+              // Try to parse the JSON file
+              const jsonData = JSON.parse(e.target.result);
+
+              // Store the data globally for reuse
+              window.fileData = jsonData;
+
+              // Format and display JSON
+              const formattedJson = JSON.stringify(jsonData, null, 2);
+              fileResult.textContent = formattedJson;
+
+              // Show JSON toggle and make it visible
+              fileJsonToggle.style.display = "flex";
+              fileResult.style.display = "block";
+              document.getElementById("file-json-arrow").className =
+                "json-toggle-icon arrow-up";
+
+              // Add click handler to toggle
+              fileJsonToggle.onclick = function () {
+                if (fileResult.style.display === "block") {
+                  fileResult.style.display = "none";
+                  document.getElementById("file-json-arrow").className =
+                    "json-toggle-icon arrow-down";
+                } else {
+                  fileResult.style.display = "block";
+                  document.getElementById("file-json-arrow").className =
+                    "json-toggle-icon arrow-up";
+                }
+              };
+
+              // Create rerun controls for file view
+              setupFileRerunControls(jsonData);
+
+              // Render the graph if the data has the right structure
+              if (jsonData.steps) {
+                document.getElementById("graph").innerHTML = "";
+                try {
+                  const processedTree = processData(jsonData);
+                  const rootStep = processedTree["0"];
+                  renderGraph(rootStep);
+
+                  // Show current pathway
+                  updatePathwayNumber("File");
+
+                  // Create download button for file data
+                  createFileDownloadButton(jsonData);
+                } catch (graphError) {
+                  console.error("Error rendering graph:", graphError);
+                  // Show graph error but don't interrupt JSON display
+                }
+              }
+            } catch (error) {
+              console.error("Error parsing JSON:", error);
+              // Show error in the JSON result area
+              fileResult.textContent =
+                "Error parsing JSON file: " + error.message;
+              fileResult.style.display = "block";
+              fileJsonToggle.style.display = "flex";
+              fileStatus.className = "status error";
+              fileStatus.textContent = "Error: " + error.message;
+              fileStatus.style.display = "block";
+            }
+          };
+
+          reader.readAsText(file);
+        });
+      }
+
+      // Create download button for file data
+      function createFileDownloadButton(jsonData) {
+        // Remove any existing download button
+        const existingDownloadBtn = document.querySelector(".download-btn");
+        if (existingDownloadBtn) existingDownloadBtn.remove();
+
+        // Create new download button
+        const downloadButton = document.createElement("button");
+        downloadButton.id = "file-download-btn";
+        downloadButton.className = "download-btn";
+        downloadButton.textContent = "Download File JSON";
+        downloadButton.onclick = () => {
+          // Create and trigger download
+          const jsonContent = JSON.stringify(jsonData, null, 2);
+          const blob = new Blob([jsonContent], {
+            type: "application/json;charset=utf-8;",
+          });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "retrosynthesis-file-data.json";
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        };
+
+        // Add the button to the DOM
+        const graphDiv = document.getElementById("graph");
+        graphDiv.parentNode.insertBefore(downloadButton, graphDiv);
+      }
+
+      // Create rerun controls for file view
+      function setupFileRerunControls(jsonData) {
+        // Create or get the rerun section container
+        let fileRerunSection = document.getElementById("file-rerun-section");
+        if (fileRerunSection) {
+          fileRerunSection.innerHTML = ""; // Clear existing controls
+        } else {
+          fileRerunSection = document.createElement("div");
+          fileRerunSection.id = "file-rerun-section";
+          fileRerunSection.className = "controls-container";
+          fileRerunSection.style.display = "flex";
+          fileRerunSection.style.flexDirection = "column";
+          fileRerunSection.style.flexWrap = "wrap";
+
+          // Add section title
+          const rerunTitle = document.createElement("h3");
+          rerunTitle.className = "section-title";
+          rerunTitle.textContent = "Partial Rerun Analysis";
+          rerunTitle.style.width = "100%";
+          fileRerunSection.appendChild(rerunTitle);
+
+          // Add note about partial rerun
+          const rerunNote = document.createElement("div");
+          rerunNote.className = "note-section";
+          rerunNote.style.cssText =
+            "margin-bottom: 15px; font-size: 13px; color: #555; background-color: #f8f8f8; padding: 10px; border-radius: 4px; border-left: 3px solid #222222; width: 100%;";
+          rerunNote.innerHTML =
+            "<strong>Note:</strong> Please use this feature only with steps having a single molecule for an accurate output.";
+          fileRerunSection.appendChild(rerunNote);
+        }
+
+        // Create rerun controls
+        const rerunControls = document.createElement("div");
+        rerunControls.className = "rerun-controls";
+        rerunControls.style.display = "flex";
+        rerunControls.style.alignItems = "center";
+        rerunControls.style.gap = "10px";
+        rerunControls.style.marginBottom = "15px";
+
+        // Create step selector
+        const stepsLabel = document.createElement("label");
+        stepsLabel.htmlFor = "file-steps-select";
+        stepsLabel.textContent = "Select a step:";
+
+        const stepsSelect = document.createElement("select");
+        stepsSelect.id = "file-steps-select";
+        stepsSelect.className = "steps-select";
+        stepsSelect.onchange = toggleFileRerunBtn;
+
+        // Default option
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Select a step";
+        stepsSelect.appendChild(defaultOption);
+
+        // Add step options
+        if (jsonData && jsonData.steps) {
+          const stepsCount = Object.keys(jsonData.steps).length;
+          for (let i = 1; i <= stepsCount; i++) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = `From Step ${i}`;
+            stepsSelect.appendChild(option);
+          }
+        }
+
+        // Create rerun button
+        const rerunBtn = document.createElement("button");
+        rerunBtn.id = "file-rerun-btn";
+        rerunBtn.className = "rerun-btn";
+        rerunBtn.textContent = "Start Partial Rerun";
+        rerunBtn.style.display = "none";
+        rerunBtn.onclick = function () {
+          startFilePartialRerun(stepsSelect.value, window.fileData);
+        };
+
+        // Add controls to the section
+        rerunControls.appendChild(stepsLabel);
+        rerunControls.appendChild(stepsSelect);
+        rerunControls.appendChild(rerunBtn);
+        fileRerunSection.appendChild(rerunControls);
+
+        // Create a container for the edit button
+        const editContainer = document.createElement("div");
+        editContainer.style.marginTop = "15px";
+        editContainer.style.display = "flex";
+        editContainer.style.justifyContent = "flex-start";
+
+        // Add edit data button
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit Data";
+        editButton.className = "rerun-btn"; // Reuse styling
+        editButton.style.background = "#6c757d"; // Different color
+        editButton.style.display = "inline-block";
+        editButton.style.marginRight = "auto";
+        editButton.onclick = () => openFileEditModal();
+
+        editContainer.appendChild(editButton);
+        fileRerunSection.appendChild(editContainer);
+
+        // Add the rerun section to the DOM
+        const graphDiv = document.getElementById("graph");
+        graphDiv.parentNode.insertBefore(fileRerunSection, graphDiv);
+      }
+
+      // Function to toggle file rerun button visibility
+      function toggleFileRerunBtn() {
+        const select = document.getElementById("file-steps-select");
+        const button = document.getElementById("file-rerun-btn");
+        button.style.display = select.value ? "inline-block" : "none";
+      }
+
+      // Function to handle partial reruns for file upload
+      async function startFilePartialRerun(stepNumber, data) {
+        console.log("startFilePartialRerun called with step:", stepNumber);
+
+        const status = document.getElementById("fileStatus");
+        const rerunBtn = document.getElementById("file-rerun-btn");
+        const stepsSelect = document.getElementById("file-steps-select");
+
+        // Disable controls during rerun but keep them visible
+        rerunBtn.disabled = true;
+        stepsSelect.disabled = true;
+        rerunBtn.innerHTML = `<span class="loading"></span>Rerunning...`;
+        status.style.display = "none";
+
+        try {
+          // Verify data exists and has steps
+          if (!data || !data.steps) {
+            throw new Error("Invalid data: Missing steps property");
+          }
+
+          // Get server-specific settings from the first server (we'll use server 1 for file uploads)
+          const serverNum = 1; // Using the first server for file uploads
+          console.log("Using server settings from server:", serverNum);
+
+          // Verify config exists
+          if (
+            !config ||
+            !config.instances ||
+            !config.instances[serverNum - 1]
+          ) {
+            throw new Error(
+              "Configuration error: Server settings not available"
+            );
+          }
+
+          const serverConfig = config.instances[serverNum - 1];
+          console.log("Server config:", serverConfig);
+
+          // Get form controls
+          const modelSelect = document.getElementById(
+            `modelVersion${serverNum}`
+          );
+          const modelTypeSelect = document.getElementById(
+            `modelType${serverNum}`
+          );
+          const promptToggle = document.getElementById(
+            `promptToggle${serverNum}`
+          );
+          const stabilityToggle = document.getElementById(
+            `stabilityToggle${serverNum}`
+          );
+          const hallucinationToggle = document.getElementById(
+            `hallucinationToggle${serverNum}`
+          );
+
+          // Verify endpoint exists
+          if (!config.endpoints || !config.endpoints.partial_rerun) {
+            throw new Error(
+              "Configuration error: Partial rerun endpoint not defined"
+            );
+          }
+
+          // Get endpoint from the first server config
+          const endpoint = `${serverConfig.url}${config.endpoints.partial_rerun}`;
+          console.log("API endpoint:", endpoint);
+
+          // Prepare request body - we need to extract the SMILES from the step data
+          // For a partial rerun, we need the SMILES at the specified step
+          let smilesFromStep = "";
+
+          // Typically, the SMILES is in the step's reactant field, but format may vary
+          const stepIndex = parseInt(stepNumber) - 1;
+          console.log("Looking for SMILES in step index:", stepIndex);
+          console.log("Available steps keys:", Object.keys(data.steps));
+
+          // Get step data - steps could be an array or object with numeric keys
+          let step;
+          if (Array.isArray(data.steps)) {
+            step = data.steps[stepIndex];
+          } else {
+            // Object with numeric keys
+            step = data.steps[stepNumber];
+            if (!step) {
+              // Try with stepIndex
+              step = data.steps[stepIndex];
+            }
+          }
+
+          if (!step) {
+            throw new Error(`Step ${stepNumber} not found in data`);
+          }
+
+          console.log("Step data:", step);
+
+          // Try to extract SMILES from various possible locations
+          if (
+            step.products &&
+            step.products.length > 0 &&
+            step.products[0].smiles
+          ) {
+            smilesFromStep = step.products[0].smiles;
+          } else if (step.reactant) {
+            smilesFromStep = step.reactant;
+          } else if (step.product) {
+            smilesFromStep = step.product;
+          } else if (step.smiles) {
+            smilesFromStep = step.smiles;
+          }
+
+          if (!smilesFromStep) {
+            throw new Error("Could not find SMILES data for the selected step");
+          }
+
+          console.log("Found SMILES for step:", smilesFromStep);
+
+          // Prepare request body - CRITICAL: Match the format used in the API test page
+          const requestBody = {
+            smiles: smilesFromStep, // Use the SMILES from the selected step
+            steps: stepNumber, // Send the selected step number as a string
+            model_type: modelTypeSelect ? modelTypeSelect.value : "claude3",
+            advanced_prompt: promptToggle
+              ? promptToggle.checked.toString()
+              : "false",
+            model_version: modelSelect ? modelSelect.value : "USPTO",
+            stability_flag: stabilityToggle
+              ? stabilityToggle.checked.toString()
+              : "false",
+            hallucination_check: hallucinationToggle
+              ? hallucinationToggle.checked.toString()
+              : "false",
+          };
+
+          console.log("Request body:", JSON.stringify(requestBody));
+
+          // Make the API call
+          console.log(
+            `Making API call to ${endpoint} with step ${stepNumber} and SMILES ${smilesFromStep}`
+          );
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-API-KEY": API_KEY,
+            },
+            body: JSON.stringify(requestBody),
+          });
+
+          console.log("API response status:", response.status);
+          const responseData = await response.json();
+          console.log("API response data:", responseData);
+
+          if (response.ok) {
+            // Update the file data with the new merged pathway data
+            window.fileData = responseData;
+
+            // Update graph view
+            document.getElementById("graph").innerHTML = "";
+            const processedTree = processData(responseData);
+            const rootStep = processedTree["0"];
+            renderGraph(rootStep);
+
+            // Update status
+            status.className = "status success";
+            status.textContent = "Partial rerun completed successfully";
+            status.style.display = "block";
+
+            // Update file JSON view with the new data
+            const fileResult = document.getElementById("file-result");
+            if (fileResult) {
+              fileResult.textContent = JSON.stringify(responseData, null, 2);
+            }
+
+            // Update rerun controls with the new data
+            setupFileRerunControls(responseData);
+
+            console.log("Partial rerun completed successfully");
+          } else {
+            throw new Error(responseData.error || "Partial rerun failed");
+          }
+        } catch (error) {
+          console.error("Error during partial rerun:", error);
+          status.className = "status error";
+          status.textContent = `Error during partial rerun: ${error.message}`;
+          status.style.display = "block";
+        } finally {
+          // Re-enable controls
+          rerunBtn.disabled = false;
+          stepsSelect.disabled = false;
+          rerunBtn.innerHTML = "Start Partial Rerun";
+
+          // Only reset the selection if the rerun was successful
+          if (status.className === "status success") {
+            stepsSelect.value = "";
+            toggleFileRerunBtn();
+          }
+        }
+      }
+
+      // Open edit modal for file data
+      function openFileEditModal() {
+        // First, ensure we have a modal to display
+        if (!document.getElementById("editJsonModal")) {
+          // Create modal if it doesn't exist yet
+          createJsonEditorModal();
+        }
+
+        // Store current step selection before opening modal
+        const stepsSelect = document.getElementById("file-steps-select");
+        window.savedStepSelection = stepsSelect ? stepsSelect.value : "";
+
+        const modal = document.getElementById("editJsonModal");
+        const textarea = document.getElementById("jsonEditorTextarea");
+        const title = document.getElementById("modal-title");
+        const errorDiv = document.getElementById("modal-error");
+
+        if (window.fileData) {
+          title.textContent = "Edit File Data";
+          textarea.value = JSON.stringify(window.fileData, null, 2);
+          errorDiv.style.display = "none";
+          errorDiv.textContent = "";
+          modal.style.display = "block";
+
+          // Store current editing context
+          window.currentEditingContext = "file";
+        } else {
+          console.error("No file data found");
+          alert("Error: Could not load file data for editing.");
+        }
+      }
+
+      // Create JSON Editor Modal if it doesn't exist
+      function createJsonEditorModal() {
+        // Check if modal already exists
+        if (document.getElementById("editJsonModal")) {
+          return;
+        }
+
+        // Create modal container
+        const modal = document.createElement("div");
+        modal.id = "editJsonModal";
+        modal.className = "modal";
+
+        // Create modal content
+        modal.innerHTML = `
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 id="modal-title">Edit Pathway Data</h2>
+              <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+              <textarea id="jsonEditorTextarea" spellcheck="false"></textarea>
+              <div id="modal-error" class="modal-error"></div>
+            </div>
+            <div class="modal-footer">
+              <button class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+              <button onclick="saveJsonChanges()">Apply Changes</button>
+            </div>
+          </div>
+        `;
+
+        // Add to document
+        document.body.appendChild(modal);
+
+        // Add closeEditModal function if it doesn't exist
+        if (typeof window.closeEditModal !== "function") {
+          window.closeEditModal = function () {
+            const modal = document.getElementById("editJsonModal");
+            modal.style.display = "none";
+            window.currentEditingContext = null;
+          };
+        }
+      }
+
+      // Update the saveJsonChanges function to handle file editing
+      const originalSaveJsonChanges =
+        window.saveJsonChanges ||
+        function () {
+          console.error("Original saveJsonChanges function not found");
+        };
+
+      window.saveJsonChanges = function () {
+        // Check if we're editing file data
+        if (window.currentEditingContext === "file") {
+          const textarea = document.getElementById("jsonEditorTextarea");
+          const errorDiv = document.getElementById("modal-error");
+
+          try {
+            const updatedData = JSON.parse(textarea.value);
+
+            // Basic validation
+            if (
+              !updatedData ||
+              typeof updatedData !== "object" ||
+              !updatedData.steps
+            ) {
+              throw new Error(
+                "Invalid JSON structure. Missing required 'steps' property."
+              );
+            }
+
+            // Update file data
+            window.fileData = updatedData;
+
+            // Update JSON display
+            const fileResult = document.getElementById("file-result");
+            if (fileResult) {
+              fileResult.textContent = JSON.stringify(updatedData, null, 2);
+            }
+
+            // Re-render graph
+            document.getElementById("graph").innerHTML = "";
+            const processedTree = processData(updatedData);
+            const rootStep = processedTree["0"];
+            renderGraph(rootStep);
+
+            // Save current step selection
+            const savedSelection = window.savedStepSelection;
+
+            // Update rerun controls with the new data
+            setupFileRerunControls(updatedData);
+
+            // Restore step selection after controls are recreated
+            if (savedSelection) {
+              const stepsSelect = document.getElementById("file-steps-select");
+              if (stepsSelect) {
+                // Only restore if the option still exists
+                const optionExists = Array.from(stepsSelect.options).some(
+                  (opt) => opt.value === savedSelection
+                );
+                if (optionExists) {
+                  stepsSelect.value = savedSelection;
+                  toggleFileRerunBtn(); // Make the rerun button visible again
+                }
+              }
+            }
+
+            // Close modal
+            document.getElementById("editJsonModal").style.display = "none";
+            window.currentEditingContext = null;
+          } catch (error) {
+            console.error("Error parsing or saving JSON:", error);
+            errorDiv.textContent = `Error: ${error.message}`;
+            errorDiv.style.display = "block";
+          }
+        } else {
+          // Handle original pathway editing
+          originalSaveJsonChanges();
+        }
+      };
+
+      // New functions for toggling settings and JSON display
+      function toggleSettings() {
+        const content = document.getElementById("settings-content");
+        const arrow = document.getElementById("settings-arrow");
+
+        if (content.style.display === "block") {
+          content.style.display = "none";
+          arrow.className = "arrow-down";
+        } else {
+          content.style.display = "block";
+          arrow.className = "arrow-up";
+        }
+      }
+
+      function toggleJson() {
+        const result = document.getElementById("result");
+        const arrow = document.getElementById("json-arrow");
+
+        if (result.style.display === "block") {
+          result.style.display = "none";
+          arrow.className = "json-toggle-icon arrow-down";
+        } else {
+          result.style.display = "block";
+          arrow.className = "json-toggle-icon arrow-up";
+        }
+      }
+
+      function toggleView(view) {
+        document.getElementById("apiView").style.display =
+          view === "api" ? "block" : "none";
+        document.getElementById("fileView").style.display =
+          view === "file" ? "block" : "none";
+
+        // Clear the graph when switching views
+        document.getElementById("graph").innerHTML = "";
+
+        // Reset status
+        document.getElementById("status").style.display = "none";
+
+        // Clear any existing elements from API view
+        const existingJsonToggle = document.getElementById("json-toggle");
+        if (existingJsonToggle) existingJsonToggle.style.display = "none";
+
+        const existingResult = document.getElementById("result");
+        if (existingResult) existingResult.style.display = "none";
+
+        const existingDownloadBtn = document.querySelector(".download-btn");
+        if (existingDownloadBtn) existingDownloadBtn.remove();
+
+        const existingControlsContainer = document.querySelector(
+          ".controls-container"
+        );
+        if (existingControlsContainer) existingControlsContainer.remove();
+
+        // Display or hide advanced settings based on the view
+        const advancedSettings = document.querySelector(".advanced-settings");
+        if (advancedSettings) {
+          advancedSettings.style.display = view === "api" ? "block" : "none";
+        }
+
+        // If we're switching to file view, set up the file upload handler if it hasn't been already
+        if (view === "file" && !window.fileHandlerInitialized) {
+          setupFileUploadHandler();
+          window.fileHandlerInitialized = true;
+        }
+      }
+
+      function downloadResults(currentInstance) {
+        try {
+          // Get the current instance data from the global results object
+          if (!window.results || !window.results[currentInstance]) {
+            console.error(
+              "No data found for current instance:",
+              currentInstance
+            );
+            alert("Error: No data found for the current pathway");
+            return;
+          }
+
+          const data = window.results[currentInstance];
+
+          // Convert the data to JSON format
+          const jsonContent = JSON.stringify(data, null, 2);
+
+          // Create and trigger download
+          const blob = new Blob([jsonContent], {
+            type: "application/json;charset=utf-8;",
+          });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          const pathwayNum = currentInstance.replace("instance", "");
+          a.href = url;
+          a.download = `retrosynthesis-pathway-${pathwayNum}.json`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        } catch (error) {
+          console.error("Error downloading JSON:", error);
+          alert("Error creating JSON file. Please try again.");
+        }
+      }
+
+      // Update showResult function to handle download button
+      window.showResult = (instance) => {
+        // Update JSON content
+        const jsonResult = document.getElementById("result");
+        if (jsonResult) {
+          jsonResult.textContent = JSON.stringify(
+            window.results[instance],
+            null,
+            2
+          );
+          jsonResult.style.display = "block";
+          document.getElementById("json-toggle").style.display = "flex";
+          document.getElementById("json-arrow").className =
+            "json-toggle-icon arrow-up";
+        }
+
+        // Update pathway number using the new function
+        const pathwayNumber = instance.replace("instance", "");
+        updatePathwayNumber(pathwayNumber);
+
+        // Update download button text and onclick handler
+        const downloadButton = document.getElementById("download-btn");
+        if (downloadButton) {
+          downloadButton.style.display = "block";
+          downloadButton.textContent = `Download Pathway ${pathwayNumber} JSON`;
+          downloadButton.onclick = () => {
+            downloadResults(instance);
+          };
+        }
+
+        // Clear existing graph
+        document.getElementById("graph").innerHTML = "";
+
+        // Process and render new pathway
+        try {
+          const processedTree = processData(window.results[instance]);
+          const rootStep = processedTree["0"];
+          renderGraph(rootStep);
+        } catch (graphError) {
+          console.error("Error rendering graph:", graphError);
+        }
+      };
+
+      async function analyze(isRerun = false) {
+        const smilesInput = document.getElementById("smiles");
+        const button = document.getElementById("analyzeBtn");
+        const status = document.getElementById("status");
+
+        // Initialize global results object if it doesn't exist
+        if (!window.results) {
+          window.results = {};
+        }
+        // Remove any existing elements
+        const existingJsonToggle = document.getElementById("json-toggle");
+        if (existingJsonToggle) existingJsonToggle.style.display = "none";
+
+        // Create/reset the result area
+        let resultDiv = document.getElementById("result");
+        if (resultDiv) {
+          resultDiv.style.display = "none";
+        } else {
+          resultDiv = document.createElement("div");
+          resultDiv.id = "result";
+          resultDiv.className = "result";
+          document.getElementById("status").after(resultDiv);
+        }
+
+        const existingDownloadBtn = document.querySelector(".download-btn");
+        if (existingDownloadBtn) existingDownloadBtn.remove();
+
+        const existingControlsContainer = document.querySelector(
+          ".controls-container"
+        );
+        if (existingControlsContainer) existingControlsContainer.remove();
+
+        const smiles = smilesInput.value.trim();
+        if (!smiles) return;
+
+        try {
+          button.disabled = true;
+          button.innerHTML = `<span class="loading"></span>${
+            isRerun ? "Rerunning..." : "Analyzing..."
+          }`;
+          status.style.display = "none";
+
+          // Create the main controls container
+          const controlsContainer = document.createElement("div");
+          controlsContainer.className = "controls-container";
+
+          // Initialize results object
+          const results = {};
+
+          // Create pathway viewing section
+          const pathwaySection = document.createElement("div");
+          pathwaySection.className = "pathway-section";
+
+          const sectionTitle = document.createElement("h3");
+          sectionTitle.className = "section-title";
+          sectionTitle.textContent = "View Pathways";
+          sectionTitle.style.width = "100%";
+          pathwaySection.appendChild(sectionTitle);
+
+          // Create status indicators for each instance
+          const instanceStatusContainer = document.createElement("div");
+          instanceStatusContainer.className = "instance-status-container";
+          instanceStatusContainer.style.cssText =
+            "display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; width: 100%;";
+          pathwaySection.appendChild(instanceStatusContainer);
+
+          // Create endpoints and status indicators for each instance
+          const endpoints = [];
+          const statusIndicators = [];
+          const pathwayButtons = [];
+
+          config.instances.forEach((instance, index) => {
+            const endpointPath = isRerun
+              ? config.endpoints.rerun
+              : config.endpoints.retrosynthesis;
+            endpoints.push(`${instance.url}${endpointPath}`);
+
+            // Create status indicator
+            const statusIndicator = document.createElement("div");
+            statusIndicator.id = `status-instance-${index + 1}`;
+            statusIndicator.className = "instance-status";
+            statusIndicator.style.cssText =
+              "background-color: #f8f8f8; border-radius: 4px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;";
+            statusIndicator.innerHTML = `
+                        <span class="loading" style="width: 16px; height: 16px; border: 2px solid var(--primary); border-top-color: transparent;"></span>
+                        <span>Pathway ${index + 1}: Processing...</span>
+                    `;
+            instanceStatusContainer.appendChild(statusIndicator);
+            statusIndicators.push(statusIndicator);
+
+            // Create button (initially disabled)
+            const button = document.createElement("button");
+            button.id = `show-pathway-${index + 1}`;
+            button.textContent = `Show Pathway ${index + 1}`;
+            button.disabled = true;
+            button.style.opacity = "0.5";
+            button.dataset.instance = `instance${index + 1}`;
+            button.onclick = () => showResult(`instance${index + 1}`);
+            pathwaySection.appendChild(button);
+            pathwayButtons.push(button);
+          });
+
+          controlsContainer.appendChild(pathwaySection);
+
+          // Create rerun section (initially empty, will be populated later)
+          const rerunSection = document.createElement("div");
+          rerunSection.className = "rerun-section";
+          rerunSection.id = "rerun-section";
+          rerunSection.style.display = "none"; // Hide until at least one result is available
+
+          const rerunTitle = document.createElement("h3");
+          rerunTitle.className = "section-title";
+          rerunTitle.textContent = "Partial Rerun Analysis";
+          rerunTitle.style.width = "100%";
+          rerunSection.appendChild(rerunTitle);
+
+          // Add note about partial rerun
+          const rerunNote = document.createElement("div");
+          rerunNote.className = "note-section";
+          rerunNote.style.cssText =
+            "margin-bottom: 15px; font-size: 13px; color: #555; background-color: #f8f8f8; padding: 10px; border-radius: 4px; border-left: 3px solid #222222; width: 100%;";
+          rerunNote.innerHTML =
+            "<strong>Note:</strong> Please use this feature only with steps having a single molecule for an accurate output.";
+          rerunSection.appendChild(rerunNote);
+
+          controlsContainer.appendChild(rerunSection);
+
+          // Add the controls container to the DOM
+          const graphDiv = document.getElementById("graph");
+          graphDiv.parentNode.insertBefore(controlsContainer, graphDiv);
+
+          // Add JSON toggle (initially hidden)
+          const jsonToggle = document.createElement("div");
+          jsonToggle.id = "json-toggle";
+          jsonToggle.className = "json-toggle";
+          jsonToggle.style.display = "none";
+          jsonToggle.innerHTML =
+            '<span>JSON Result</span><span class="json-toggle-icon arrow-down" id="json-arrow"></span>';
+          jsonToggle.onclick = toggleJson;
+          graphDiv.parentNode.insertBefore(jsonToggle, graphDiv);
+
+          // Add download button (initially hidden)
+          const downloadButton = document.createElement("button");
+          downloadButton.id = "download-btn";
+          downloadButton.className = "download-btn";
+          downloadButton.textContent = "Download Pathway 1 JSON";
+          downloadButton.onclick = () => downloadResults("instance1");
+          downloadButton.style.display = "none";
+          graphDiv.parentNode.insertBefore(downloadButton, graphDiv);
+
+          // Move pathway number after download button
+          const pathwayNumber = document.getElementById("pathway-number");
+          if (pathwayNumber) {
+            graphDiv.parentNode.insertBefore(pathwayNumber, graphDiv);
+          }
+
+          // Initialize counter for completed requests
+          let completedCount = 0;
+          let firstCompletedIndex = -1;
+
+          // Make API calls for each instance asynchronously
+          endpoints.forEach(async (endpoint, index) => {
+            try {
+              const serverNum = index + 1;
+
+              // Get the server-specific settings
+              const modelSelect = document.getElementById(
+                `modelVersion${serverNum}`
+              );
+              const modelTypeSelect = document.getElementById(
+                `modelType${serverNum}`
+              );
+              const promptToggle = document.getElementById(
+                `promptToggle${serverNum}`
+              );
+              const stabilityToggle = document.getElementById(
+                `stabilityToggle${serverNum}`
+              );
+              const hallucinationToggle = document.getElementById(
+                `hallucinationToggle${serverNum}`
+              );
+
+              const requestBody = {
+                smiles,
+                model_type: modelTypeSelect.value,
+                advanced_prompt: promptToggle.checked.toString(),
+                model_version: modelSelect.value,
+                stability_flag: stabilityToggle.checked.toString(),
+                hallucination_check: hallucinationToggle.checked.toString(),
+              };
+
+              // Make API call
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-API-KEY": API_KEY,
+                },
+                body: JSON.stringify(requestBody),
+              });
+
+              const data = await response.json();
+
+              // Handle success
+              if (response.ok) {
+                // Store the result in the global object
+                window.results[`instance${serverNum}`] = data;
+
+                // Update status indicator
+                statusIndicators[index].innerHTML = `
+                                <span style="background-color: #28a745; width: 16px; height: 16px; border-radius: 50%; display: inline-block;"></span>
+                                <span>Pathway ${serverNum}: Complete</span>
+                            `;
+
+                // Enable the corresponding button
+                pathwayButtons[index].disabled = false;
+                pathwayButtons[index].style.opacity = "1";
+
+                // Create rerun control for this instance
+                createRerunControl(serverNum, data, results, rerunSection);
+
+                // Show the rerun section if it was hidden
+                document.getElementById("rerun-section").style.display = "flex";
+                document.getElementById("rerun-section").style.flexWrap =
+                  "wrap";
+
+                // Update the JSON toggle and result div
+                jsonToggle.style.display = "flex";
+                resultDiv.style.display = "block";
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                document.getElementById("json-arrow").className =
+                  "json-toggle-icon arrow-up";
+
+                // Enable the download button
+                downloadButton.style.display = "block";
+
+                // If this is the first result, render it
+                if (firstCompletedIndex === -1) {
+                  firstCompletedIndex = index;
+                  // Clear the graph and render this result
+                  document.getElementById("graph").innerHTML = "";
+                  try {
+                    const processedTree = processData(data);
+                    const rootStep = processedTree["0"];
+                    renderGraph(rootStep);
+                  } catch (graphError) {
+                    console.error("Error rendering graph:", graphError);
+                  }
+                }
+              } else {
+                // Handle error
+                statusIndicators[index].innerHTML = `
+                                <span style="background-color: #dc3545; width: 16px; height: 16px; border-radius: 50%; display: inline-block;"></span>
+                                <span>Pathway ${serverNum}: Error - ${
+                  data.error || "Unknown error"
+                }</span>
+                            `;
+              }
+            } catch (error) {
+              // Handle network or other errors
+              statusIndicators[index].innerHTML = `
+                            <span style="background-color: #dc3545; width: 16px; height: 16px; border-radius: 50%; display: inline-block;"></span>
+                            <span>Pathway ${index + 1}: Error - ${
+                error.message
+              }</span>
+                        `;
+            } finally {
+              // Increment completed count
+              completedCount++;
+
+              // If all requests are completed, update the button
+              if (completedCount === endpoints.length) {
+                button.disabled = false;
+                button.textContent = isRerun ? "Rerun Analysis" : "Analyze";
+                if (!isRerun) {
+                  button.textContent = "Rerun Analysis";
+                  button.onclick = () => analyze(true);
+                }
+
+                // Update the status
+                status.className = "status success";
+                status.textContent = "Analysis completed";
+                status.style.display = "block";
+              }
+            }
+          });
+
+          // Define the function to show a specific result
+          window.showResult = (instance) => {
+            // Update JSON content
+            const jsonResult = document.getElementById("result");
+            if (jsonResult) {
+              jsonResult.textContent = JSON.stringify(
+                window.results[instance],
+                null,
+                2
+              );
+              jsonResult.style.display = "block";
+              document.getElementById("json-toggle").style.display = "flex";
+              document.getElementById("json-arrow").className =
+                "json-toggle-icon arrow-up";
+            }
+
+            // Update pathway number using the new function
+            const pathwayNumber = instance.replace("instance", "");
+            updatePathwayNumber(pathwayNumber);
+
+            // Update download button text and onclick handler
+            const downloadButton = document.getElementById("download-btn");
+            if (downloadButton) {
+              downloadButton.style.display = "block";
+              downloadButton.textContent = `Download Pathway ${pathwayNumber} JSON`;
+              downloadButton.onclick = () => {
+                downloadResults(instance);
+              };
+            }
+
+            // Clear existing graph
+            document.getElementById("graph").innerHTML = "";
+
+            // Process and render new pathway
+            try {
+              const processedTree = processData(window.results[instance]);
+              const rootStep = processedTree["0"];
+              renderGraph(rootStep);
+            } catch (graphError) {
+              console.error("Error rendering graph:", graphError);
+            }
+          };
+        } catch (error) {
+          status.className = "status error";
+          status.textContent = `Error: ${error.message}`;
+          status.style.display = "block";
+
+          // Enable the button and set it to "Rerun Analysis" on error
+          button.disabled = false;
+          button.textContent = "Rerun Analysis";
+          button.onclick = () => analyze(true);
+        }
+      }
+
+      // Helper function to create rerun controls
+      function createRerunControl(pathwayNumber, data, results, rerunSection) {
+        const rerunControl = document.createElement("div");
+        rerunControl.className = "rerun-control";
+        rerunControl.style.width = "calc(50% - 8px)";
+
+        const label = document.createElement("span");
+        label.className = "rerun-label";
+        label.textContent = `Pathway ${pathwayNumber}:`;
+
+        const select = document.createElement("select");
+        select.className = "steps-select";
+        select.id = `steps-select-${pathwayNumber}`;
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Select number of steps";
+        defaultOption.selected = true;
+        defaultOption.disabled = true;
+        select.appendChild(defaultOption);
+
+        const stepsCount = Object.keys(data.steps).length;
+        for (let i = 1; i <= stepsCount; i++) {
+          const option = document.createElement("option");
+          option.value = i;
+          option.textContent = `From Step ${i}`;
+          select.appendChild(option);
+        }
+
+        const rerunButton = document.createElement("button");
+        rerunButton.textContent = "Start Partial Rerun";
+        rerunButton.className = "rerun-btn";
+        rerunButton.id = `rerun-btn-${pathwayNumber}`;
+        rerunButton.style.display = "none"; // Hidden until a step is selected
+
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit Data";
+        editButton.className = "rerun-btn"; // Reuse styling
+        editButton.style.background = "#6c757d"; // Different color
+        editButton.style.display = "inline-flex"; // Always visible
+        editButton.onclick = () => openEditModal(pathwayNumber);
+
+        select.onchange = () => {
+          rerunButton.style.display = "inline-flex";
+        };
+
+        rerunButton.onclick = () => {
+          startPartialRerun(pathwayNumber, select.value, window.results);
+        };
+
+        rerunControl.appendChild(label);
+        rerunControl.appendChild(select);
+        rerunControl.appendChild(rerunButton);
+        rerunControl.appendChild(editButton);
+        rerunSection.appendChild(rerunControl);
+      }
+
+      // Function to handle partial reruns
+      async function startPartialRerun(pathwayNumber, stepNumber, resultsData) {
+        const smilesInput = document.getElementById("smiles");
+        const rerunButton = document.getElementById(
+          `rerun-btn-${pathwayNumber}`
+        );
+        const select = document.getElementById(`steps-select-${pathwayNumber}`);
+        const status = document.getElementById("status");
+
+        try {
+          // Disable controls
+          rerunButton.disabled = true;
+          select.disabled = true;
+          rerunButton.innerHTML = `<span class="loading"></span>Rerunning...`;
+
+          // Get server-specific settings
+          const modelSelect = document.getElementById(
+            `modelVersion${pathwayNumber}`
+          );
+          const modelTypeSelect = document.getElementById(
+            `modelType${pathwayNumber}`
+          );
+          const promptToggle = document.getElementById(
+            `promptToggle${pathwayNumber}`
+          );
+          const stabilityToggle = document.getElementById(
+            `stabilityToggle${pathwayNumber}`
+          );
+          const hallucinationToggle = document.getElementById(
+            `hallucinationToggle${pathwayNumber}`
+          );
+
+          // Get endpoint
+          const endpoint = `${config.instances[pathwayNumber - 1].url}${
+            config.endpoints.partial_rerun
+          }`;
+
+          // Make API call - MODIFIED BODY
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-API-KEY": API_KEY,
+            },
+            // --- Modified request body ---
+            body: JSON.stringify({
+              smiles: smilesInput.value, // Send the original SMILES from the input field
+              steps: stepNumber, // Send the selected step number as a string
+              model_type: modelTypeSelect.value, // Keep settings
+              advanced_prompt: promptToggle.checked.toString(),
+              model_version: modelSelect.value,
+              stability_flag: stabilityToggle.checked.toString(),
+              hallucination_check: hallucinationToggle.checked.toString(),
+            }),
+            // --- End modified request body ---
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            // Update the results in the correct object (passed as resultsData)
+            // The backend now returns the *new* merged pathway data
+            resultsData[`instance${pathwayNumber}`] = data;
+
+            // Show the updated result
+            showResult(`instance${pathwayNumber}`);
+
+            // Update status
+            status.className = "status success";
+            status.textContent = `Partial rerun of Pathway ${pathwayNumber} completed successfully`;
+            status.style.display = "block";
+
+            // Reset the select dropdown after successful rerun
+            select.value = "";
+            rerunButton.style.display = "none";
+          } else {
+            throw new Error(data.error || "Partial rerun failed");
+          }
+        } catch (error) {
+          status.className = "status error";
+          status.textContent = `Error during partial rerun: ${error.message}`;
+          status.style.display = "block";
+        } finally {
+          // Re-enable controls
+          rerunButton.disabled = false;
+          select.disabled = false;
+          rerunButton.innerHTML = "Start Partial Rerun";
+          // Keep button hidden if select is reset (or handle visibility based on select value)
+          if (!select.value) {
+            rerunButton.style.display = "none";
+          }
+        }
+      }
+
+      // --- JSON Editor Modal Functions ---
+
+      // Store the current pathway number being edited
+      let currentEditingPathway = null;
+
+      function openEditModal(pathwayNumber) {
+        const modal = document.getElementById("editJsonModal");
+        const textarea = document.getElementById("jsonEditorTextarea");
+        const title = document.getElementById("modal-title");
+        const errorDiv = document.getElementById("modal-error");
+
+        currentEditingPathway = pathwayNumber;
+        const instanceKey = `instance${pathwayNumber}`;
+
+        if (window.results && window.results[instanceKey]) {
+          title.textContent = `Edit Pathway ${pathwayNumber} Data`;
+          textarea.value = JSON.stringify(window.results[instanceKey], null, 2);
+          errorDiv.style.display = "none"; // Hide previous errors
+          errorDiv.textContent = "";
+          modal.style.display = "block";
+        } else {
+          console.error("No data found for pathway:", pathwayNumber);
+          alert("Error: Could not load data for this pathway.");
+        }
+      }
+
+      function closeEditModal() {
+        const modal = document.getElementById("editJsonModal");
+        modal.style.display = "none";
+        currentEditingPathway = null; // Reset pathway number
+      }
+
+      function saveJsonChanges() {
+        if (currentEditingPathway === null) return;
+
+        const textarea = document.getElementById("jsonEditorTextarea");
+        const errorDiv = document.getElementById("modal-error");
+        const instanceKey = `instance${currentEditingPathway}`;
+
+        try {
+          const updatedData = JSON.parse(textarea.value);
+
+          // Basic validation (check if it has a 'steps' property)
+          if (
+            !updatedData ||
+            typeof updatedData !== "object" ||
+            !updatedData.steps
+          ) {
+            throw new Error(
+              "Invalid JSON structure. Missing required 'steps' property."
+            );
+          }
+
+          // Update the global results object
+          window.results[instanceKey] = updatedData;
+          console.log(
+            "[saveJsonChanges] Updated window.results[" + instanceKey + "]:",
+            JSON.stringify(window.results[instanceKey], null, 2)
+          );
+
+          // Re-render the graph and update UI for this pathway
+          showResult(instanceKey);
+
+          // Close the modal
+          closeEditModal();
+        } catch (error) {
+          console.error("Error parsing or saving JSON:", error);
+          errorDiv.textContent = `Error: ${error.message}`;
+          errorDiv.style.display = "block";
+        }
+      }
+      // --- End JSON Editor Modal Functions ---
+
+      // Allow Enter key to trigger analysis
+      document
+        .getElementById("smiles")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") analyze();
+        });
+
+      // Initialize UI by hiding advanced settings by default
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("settings-content").style.display = "none";
+
+        // Initialize server settings once the config is loaded
+        if (typeof config !== "undefined" && config.instances) {
+          initializeServerSettings();
+        } else {
+          // If config isn't loaded yet, set up an event listener
+          window.addEventListener("configLoaded", initializeServerSettings);
+        }
+      });
+    </script>
+    <script src="app_v4.js"></script>
+
+    <!-- JSON Edit Modal -->
+    <div id="editJsonModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-title">Edit Pathway Data</h2>
+          <button class="close-btn" onclick="closeEditModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <textarea id="jsonEditorTextarea" spellcheck="false"></textarea>
+          <div id="modal-error" class="modal-error"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+          <button onclick="saveJsonChanges()">Apply Changes</button>
+        </div>
+      </div>
+    </div>
+    <!-- End JSON Edit Modal -->
+  </body>
+</html>
