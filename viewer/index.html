@@ -3,12 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Retrosynthesis Analysis</title>
+    <title>DeepRetro</title>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="https://unpkg.com/openchemlib@^7.0.3/dist/openchemlib-full.js"></script>
     <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
     <script src="config.js"></script>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="assests/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="styles/style.css" />
   </head>
 
   <body>
@@ -16,13 +17,17 @@
       <div class="header">
         <div class="header-left">
           <div class="logo">
-            <img id="logo-img" src="./dfs.png" alt="Retrosynthesis Logo" />
+            <img
+              id="logo-img"
+              src="assests/dfs.png"
+              alt="Retrosynthesis Logo"
+            />
           </div>
-          <h1>Retrosynthesis Analysis</h1>
+          <h1>DeepRetro</h1>
         </div>
         <div class="toggle-view">
-          <button onclick="toggleView('api')">API Test</button>
-          <button onclick="toggleView('file')">File Upload</button>
+          <button onclick="toggleView('api')">Smart Retrosynthesis</button>
+          <button onclick="toggleView('file')">View Pathway</button>
         </div>
       </div>
 
