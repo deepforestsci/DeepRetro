@@ -1,0 +1,55 @@
+name: unit tests
+
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        environment: testing
+        env:
+            ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+            OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+            LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+            LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+            LANGFUSE_HOST: ${{ secrets.LANGFUSE_HOST }}
+            RXN_CLASSIFICATION_MODEL_PATH: ${{ secrets.RXN_CLASSIFICATION_MODEL_PATH }}
+            AZ_MODEL_CONFIG_PATH: ${{ secrets.AZ_MODEL_CONFIG_PATH }}
+            AZ_MODELS_PATH: ${{ secrets.AZ_MODELS_PATH }}
+            AZURE_AI_API_KEY: ${{ secrets.AZURE_AI_API_KEY }}
+            AZURE_AI_API_BASE: ${{ secrets.AZURE_AI_API_BASE }}
+            DEEPINFRA_API_KEY: ${{ secrets.DEEPINFRA_API_KEY }}
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+            FIREWORKS_AI_API_KEY: ${{ secrets.FIREWORKS_AI_API_KEY }}
+            ENABLE_LOGGING: False
+        defaults:
+            run:
+                working-directory: ./tests/
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+                python-version: [3.9]
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Python 3.9
+              uses: actions/setup-python@v5
+              with:
+                python-version: ${{ matrix.python-version }}
+
+            - name: Install dependencies
+              run: |
+                python -m pip install --upgrade pip
+                pip install -r requirements_tests.txt
+                
+            - name: Run LLM tests
+              run: |
+                pytest ./llm-tests/ -v
