@@ -69,11 +69,18 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
-          cache-dependency-path: ./viewer/package-lock.json
 
-      - name: Install dependencies
-        run: npm install --no-fund --no-audit --no-save
+      - name: Create npmrc
+        run: |
+          echo "//registry.npmjs.org/:_authToken=" > .npmrc
+          echo "registry=https://registry.npmjs.org/" >> .npmrc
+          echo "always-auth=false" >> .npmrc
+
+      - name: Install Jest directly
+        run: |
+          npm install --no-package-lock jest@29.7.0 jest-environment-jsdom@29.7.0
 
       - name: Run tests
-        run: npm test
+        env:
+          NODE_AUTH_TOKEN: ""
+        run: npx jest
