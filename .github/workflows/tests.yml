@@ -71,12 +71,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
           cache-dependency-path: ./viewer/package-lock.json
-          registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
-        run: |
-          npm config set registry https://registry.npmjs.org/
-          npm install
+        run: npm install --no-fund --no-audit --no-save
 
       - name: Run tests
         run: npm test
