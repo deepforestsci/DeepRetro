@@ -56,7 +56,7 @@ jobs:
               run: |
                 pytest ./api-tests/test_api_pistachio_rerun_retro.py::test_rerun_retro_pistachio_deepseek_m0p1_success -v
 
-            - name: Run all LLM tests
+            - name: Run all API tests
               if: github.event_name != 'workflow_dispatch'
               run: |
-                pytest ./llm-tests/ -v --ignore=./api-tests/test_api_pistachio_rerun_retro.py::test_rerun_retro_pistachio_deepseek_m0p1_success
+                pytest ./api-tests/ -v --ignore=./api-tests/test_api_pistachio_rerun_retro.py::test_rerun_retro_pistachio_deepseek_m0p1_success

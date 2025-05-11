@@ -29,14 +29,11 @@ jobs:
       - name: Check type hints
         continue-on-error: false 
         run: |
-          cd backend
           mypy -p chiron \
             --follow-imports skip \
             --ignore-missing-imports \
-            --exclude /grover/ \
-            --exclude /dqc/ \
-            --exclude /HierVAE/ \
-            --exclude /aizynthfinder/
+            --exclude **.log \
+            --exclude **.md \
 
   yapf:
     runs-on: ubuntu-latest
