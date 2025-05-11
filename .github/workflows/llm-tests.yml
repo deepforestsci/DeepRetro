@@ -8,7 +8,6 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch: # Allows manual triggering of the workflow
 
 jobs:
     llm-tests:
@@ -50,13 +49,7 @@ jobs:
               run: |
                 python -m pip install --upgrade pip
                 pip install -r requirements_tests.txt
-
-            - name: Run specific test manually
-              if: github.event_name == 'workflow_dispatch'
+            
+            - name: Run LLM tests
               run: |
-                pytest ./api-tests/test_api_pistachio_rerun_retro.py::test_rerun_retro_pistachio_deepseek_m0p1_success -v
-
-            - name: Run all LLM tests
-              if: github.event_name != 'workflow_dispatch'
-              run: |
-                pytest ./llm-tests/ -v --ignore=./api-tests/test_api_pistachio_rerun_retro.py::test_rerun_retro_pistachio_deepseek_m0p1_success
+                pytest ./llm-tests/ -v
