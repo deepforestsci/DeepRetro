@@ -1,0 +1,102 @@
+name: Python Code Formatting 
+
+on:
+  push: # ci work when pushing master branch
+    branches:
+      - main
+    paths:
+      - '**.py'
+  pull_request: # ci work when creating a PR to master branch
+    branches:
+      - main
+    paths:
+      - '**.py'
+
+jobs:
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: pip install mypy
+
+      - name: Check type hints
+        continue-on-error: false 
+        run: |
+          cd backend
+          mypy -p chiron \
+            --follow-imports skip \
+            --ignore-missing-imports \
+            --exclude /grover/ \
+            --exclude /dqc/ \
+            --exclude /HierVAE/ \
+            --exclude /aizynthfinder/
+
+  yapf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      # https://github.com/galaxyproject/tools-iuc/blob/master/.github/workflows/pr.yaml
+      # The range of commits to check for changes is:
+      # - for events on the master branch we compare against the sha before the event
+      #   (note that this does not work for feature branch events since we want all
+      #   commits on the feature branch and not just the commits of the last event)
+      # - for pull requests we compare against the 1st ancestor, given the current
+      #   HEAD is the merge between the PR branch and the base branch
+      - name: Set commit range (push to the main branch, e.g. merge)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          echo "COMMIT_RANGE=${{ github.event.before }}.." >> $GITHUB_ENV
+          echo $GITHUB_ENV
+
+      - name: Set commit range (pull request)
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin main
+          echo "COMMIT_RANGE=origin/main..." >> $GITHUB_ENV
+          echo $GITHUB_ENV
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: pip install yapf toml
+
+      - name: Check yapf formatting
+        continue-on-error: false 
+        run: |
+          yapf --version
+          CHANGED_FILES=`git diff --name-only $COMMIT_RANGE ':(exclude)backend/chiron/core/models/grover/' ':(exclude)backend/chiron/core/models/xcnn/xcnn/dqc/' ':(exclude)backend/chiron/core/models/HierVAE/' ':(exclude)backend/chiron/core/models/retro/aizynthfinder/' ':(exclude)backend/chiron/core/tests/assets/feat_test.partial/' ':(exclude)backend/chiron/core/tests/assets/feat_test_sdf.partial/' | grep .py$ | grep -v contrib/ || true`
+          if [ -n "$CHANGED_FILES" ]; then
+            yapf -d $CHANGED_FILES
+          fi
+
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: pip install flake8 
+
+      - name: Check flake8 
+        continue-on-error: false 
+        run: |
+          flake8 --count . \
+            --exclude grover,dqc,HierVAE,aizynthfinder
+    

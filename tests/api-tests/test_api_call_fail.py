@@ -13,7 +13,7 @@ def test_retrosynthesis_fail():
     """Tests retrosynthesis endpoint with empty input("")
 
     Expected output:
-        status_code: 500
+        status_code: 400
         error message: status code and error message
     """
     url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
@@ -39,7 +39,7 @@ def test_rerun_retro_fail():
     """Tests rerun_retrosynthesis endpoint with empty input("")
 
     Expected output:
-        status_code: 500
+        status_code: 400
         error message: status code and error message
     """
     url = f"{BASE_URL}{ENDPOINTS['rerun_retro']}"
