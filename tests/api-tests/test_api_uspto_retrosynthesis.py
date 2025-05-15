@@ -3,21 +3,22 @@ import json
 import pytest
 
 import rootutils
-root_dir = rootutils.setup_root("..",
+root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
 
-from tests.variables_test import MOLECULE_1, BASE_URL, ENDPOINTS, X_API_KEY, DEEPSEEK_FIREWORKS_MODEL, USPTO_MODEL, CLAUDE_ADV_MODEL
+from tests.variables_test import MOLECULE_1, BASE_URL, ENDPOINTS, X_API_KEY, USPTO_MODEL, CLAUDE_MODEL
 
 
-def test_retrosynthesis_uspto_claude_m0p1_success():
+def test_retrosynthesis_uspto_claude_p1_success():
     url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
 
     payload = json.dumps({
         "smiles": MOLECULE_1,
-        "advanced_model": "False",
+        "stability_flag": "False",
+        "hallucination_check": "False",
         "advanced_prompt": "True",
-        "llm": CLAUDE_ADV_MODEL,
+        "llm": CLAUDE_MODEL,
         "model_version": USPTO_MODEL})
 
     headers = {
@@ -32,14 +33,15 @@ def test_retrosynthesis_uspto_claude_m0p1_success():
     assert ['dependencies', 'steps'] == list(response.json().keys())
 
 
-def test_retrosynthesis_uspto_claude_m0p0_success():
+def test_retrosynthesis_uspto_claude_p0_success():
     url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
 
     payload = json.dumps({
         "smiles": MOLECULE_1,
-        "advanced_model": "False",
+        "stability_flag": "False",
+        "hallucination_check": "False",
         "advanced_prompt": "False",
-        "llm": CLAUDE_ADV_MODEL,
+        "llm": CLAUDE_MODEL,
         "model_version": USPTO_MODEL})
 
     headers = {

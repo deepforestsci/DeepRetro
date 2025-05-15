@@ -4,19 +4,15 @@ VALID_SMILE_STRING = 'CC(=O)CC'
 # Claude model
 CLAUDE_MODEL = "claude-3-opus-20240229"
 
-CLAUDE_ADV_MODEL = "claude-3-opus-20240229:adv"
-
 # OpenAI model
 OPENAI_MODEL = "gpt-4o"
 
-OPENAI_ADV_MODEL = "gpt-4o:adv"
+OPENAI_ADV_MODEL = "gpt-4o"
 
 # Deepseek model
-DEEPSEEK_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1"
+DEEPSEEK_DEEPINFRA_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1"
 
-DEEPSEEK_ADV_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1:adv"
-
-DEEPSEEK_FIREWORKS_MODEL = "fireworks_ai/accounts/fireworks/models/deepseek-r1:adv"
+DEEPSEEK_FIREWORKS_MODEL = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
 
 # AZ Model
 USPTO_MODEL = "USPTO"
