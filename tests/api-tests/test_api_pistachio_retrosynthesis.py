@@ -3,11 +3,11 @@ import json
 import pytest
 
 import rootutils
-root_dir = rootutils.setup_root("..",
+root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
 
-from tests.variables_test import MOLECULE_1, BASE_URL, ENDPOINTS, X_API_KEY, DEEPSEEK_FIREWORKS_MODEL, PISTACHIO_MODEL, CLAUDE_ADV_MODEL
+from tests.variables_test import MOLECULE_1, BASE_URL, ENDPOINTS, X_API_KEY, PISTACHIO_MODEL, CLAUDE_MODEL
 
 
 def test_retrosynthesis_pistachio_claude_m1p1_success():
@@ -15,9 +15,10 @@ def test_retrosynthesis_pistachio_claude_m1p1_success():
 
     payload = json.dumps({
         "smiles": MOLECULE_1,
-        "advanced_model": "True",
+        "stability_flag": "False",
+        "hallucination_check": "False",
         "advanced_prompt": "True",
-        "llm": CLAUDE_ADV_MODEL,
+        "llm": CLAUDE_MODEL,
         "model_version": PISTACHIO_MODEL})
 
     headers = {
@@ -37,9 +38,10 @@ def test_retrosynthesis_pistachio_claude_m1p0_success():
 
     payload = json.dumps({
         "smiles": MOLECULE_1,
-        "advanced_model": "True",
+        "stability_flag": "False",
+        "hallucination_check": "False",
         "advanced_prompt": "False",
-        "llm": CLAUDE_ADV_MODEL,
+        "llm": CLAUDE_MODEL,
         "model_version": PISTACHIO_MODEL})
 
     headers = {
