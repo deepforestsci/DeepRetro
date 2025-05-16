@@ -7,7 +7,8 @@ root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
 
-from tests.variables_test import MOLECULE_1, BASE_URL, ENDPOINTS, X_API_KEY, PISTACHIO_MODEL, CLAUDE_MODEL
+from tests.variables_test import MOLECULE_1, BASE_URL, ENDPOINTS, X_API_KEY, \
+    PISTACHIO_MODEL, CLAUDE_MODEL
 
 
 def test_retrosynthesis_pistachio_claude_m1p1_success():
