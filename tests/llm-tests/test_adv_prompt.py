@@ -9,14 +9,14 @@ root_dir = rootutils.setup_root(".",
 
 
 from src.utils.llm import call_LLM
-from tests.variables_test import VALID_SMILE_STRING, DEEPSEEK_FIREWORKS_MODEL, CLAUDE_ADV_MODEL
+from tests.variables_test import VALID_SMILE_STRING, DEEPSEEK_FIREWORKS_MODEL, CLAUDE_MODEL
 
 
 def test_claude_adv_success():
     """Tests call_LLM function with advance claude model.
     """
     status_code, res_text = call_LLM(molecule=VALID_SMILE_STRING,
-                                     LLM=CLAUDE_ADV_MODEL)
+                                     LLM=CLAUDE_MODEL)
     if not res_text:
         print("res_text is empty")
         status_code = 400

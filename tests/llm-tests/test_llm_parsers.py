@@ -3,7 +3,7 @@ import ast
 import pytest
 
 import rootutils
-root_dir = rootutils.setup_root(".", indicator=".project-root", pythonpath=True)
+root_dir = rootutils.setup_root("..", indicator=".project-root", pythonpath=True)
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -41,10 +41,10 @@ def test_split_json_master_fail():
         thinking_step: []
         json_content: ""
     """
-    from tests.variables_test import EMPTY_RESPONSE, CLAUDE_ADV_MODEL
+    from tests.variables_test import EMPTY_RESPONSE, CLAUDE_MODEL
     from src.utils.llm import split_json_master
 
-    status_code, thinking_steps, json_content = split_json_master(EMPTY_RESPONSE, model=CLAUDE_ADV_MODEL)
+    status_code, thinking_steps, json_content = split_json_master(EMPTY_RESPONSE, model=CLAUDE_MODEL)
     assert status_code == 501
     assert thinking_steps == []
     assert json_content == ""
@@ -59,11 +59,11 @@ def test_validate_json_success_200():
         res_explanations: list containing items.
         res_confidence: list containing items.
     """
-    from tests.variables_test import VALID_CLAUDE_RESPONSE, CLAUDE_ADV_MODEL
+    from tests.variables_test import VALID_CLAUDE_RESPONSE, CLAUDE_MODEL
     from src.utils.llm import validate_split_json, split_json_master
 
     status_code, _, json_content = split_json_master(
-        VALID_CLAUDE_RESPONSE, CLAUDE_ADV_MODEL)
+        VALID_CLAUDE_RESPONSE, CLAUDE_MODEL)
 
     status_code, res_molecules, res_explanations, res_confidence = validate_split_json(
         json_content)
