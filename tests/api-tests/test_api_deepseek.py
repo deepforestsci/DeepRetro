@@ -7,7 +7,9 @@ root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
 
-from tests.variables_test import MOLECULE_1, BASE_URL, ENDPOINTS, X_API_KEY, DEEPSEEK_FIREWORKS_MODEL, PISTACHIO_MODEL, USPTO_MODEL
+from tests.variables_test import MOLECULE_1, BASE_URL, ENDPOINTS, X_API_KEY, \
+    DEEPSEEK_FIREWORKS_MODEL, PISTACHIO_MODEL, USPTO_MODEL
+
 
 def test_retrosynthesis_deepseek_pistachio_p1_success():
     """Test retrosynthesis endpoint with
@@ -20,7 +22,8 @@ def test_retrosynthesis_deepseek_pistachio_p1_success():
     status_code : int
         200 for a successful request.
     response : dict
-        The response should be a dictionary with keys ['dependencies', 'steps'].
+        The response should be a dictionary with keys
+        ['dependencies', 'steps'].
     """
     url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
 
@@ -55,7 +58,8 @@ def test_retrosynthesis_deepseek_pistachio_p0_success():
     status_code : int
         200 for a successful request.
     response : dict
-        The response should be a dictionary with keys ['dependencies', 'steps'].
+        The response should be a dictionary with keys
+        ['dependencies', 'steps'].
     """
     url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
 
@@ -90,7 +94,8 @@ def test_rerun_retro_deepseek_pistachio_p1_success():
     status_code : int
         200 for a successful request.
     response : dict
-        The response should be a dictionary with keys ['dependencies', 'steps'].
+        The response should be a dictionary with keys
+        ['dependencies', 'steps'].
     """
     url = f"{BASE_URL}{ENDPOINTS['rerun_retro']}"
 
@@ -125,7 +130,8 @@ def test_rerun_retro_deepseek_pistachio_p0_success():
     status_code : int
         200 for a successful request.
     response : dict
-        The response should be a dictionary with keys ['dependencies', 'steps'].
+        The response should be a dictionary with keys
+        ['dependencies', 'steps'].
     """
     url = f"{BASE_URL}{ENDPOINTS['rerun_retro']}"
 
@@ -160,7 +166,8 @@ def test_rerun_retro_deepseek_uspto_p1_success():
     status_code : int
         200 for a successful request.
     response : dict
-        The response should be a dictionary with keys ['dependencies', 'steps'].
+        The response should be a dictionary with keys
+        ['dependencies', 'steps'].
     """
     url = f"{BASE_URL}{ENDPOINTS['rerun_retro']}"
 
@@ -195,7 +202,8 @@ def test_rerun_retro_deepseek_uspto_p0_success():
     status_code : int
         200 for a successful request.
     response : dict
-        The response should be a dictionary with keys ['dependencies', 'steps'].
+        The response should be a dictionary with keys
+        ['dependencies', 'steps'].
     """
     url = f"{BASE_URL}{ENDPOINTS['rerun_retro']}"
 
@@ -230,7 +238,8 @@ def test_retrosynthesis_deepseek_uspto_p1_success():
     status_code : int
         200 for a successful request.
     response : dict
-        The response should be a dictionary with keys ['dependencies', 'steps'].
+        The response should be a dictionary with keys
+        ['dependencies', 'steps'].
     """
     url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
 
@@ -265,7 +274,8 @@ def test_retrosynthesis_deepseek_uspto_p0_success():
     status_code : int
         200 for a successful request.
     response : dict
-        The response should be a dictionary with keys ['dependencies', 'steps'].
+        The response should be a dictionary with keys
+        ['dependencies', 'steps'].
     """
     url = f"{BASE_URL}{ENDPOINTS['retrosynthesis']}"
 

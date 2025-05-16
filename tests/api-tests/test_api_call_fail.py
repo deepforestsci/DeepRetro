@@ -7,7 +7,9 @@ root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
 
-from tests.variables_test import BASE_URL, ENDPOINTS, X_API_KEY, DEEPSEEK_FIREWORKS_MODEL, USPTO_MODEL, CLAUDE_MODEL, PISTACHIO_MODEL
+from tests.variables_test import BASE_URL, ENDPOINTS, X_API_KEY, \
+    DEEPSEEK_FIREWORKS_MODEL, USPTO_MODEL, CLAUDE_MODEL, PISTACHIO_MODEL
+
 
 def test_retrosynthesis_fail():
     """Tests retrosynthesis endpoint with empty input("")
@@ -36,7 +38,8 @@ def test_retrosynthesis_fail():
     response = requests.request("POST", url, headers=headers, data=payload)
 
     assert response.status_code == 400
-    assert response.json() == {"error": "SMILES string is required. Please include a 'smiles' field"}
+    assert response.json() == {
+        "error": "SMILES string is required. Please include a 'smiles' field"}
 
 
 def test_rerun_retro_fail():
@@ -64,7 +67,10 @@ def test_rerun_retro_fail():
     response = requests.request("POST", url, headers=headers, data=payload)
 
     assert response.status_code == 400
-    assert response.json() == {"error": "Molecule string is required, Please include a 'smiles' field"}
+    assert response.json() == {
+        "error":
+        "Molecule string is required, Please include a 'smiles' field"}
+
 
 if __name__ == '__main__':
     pytest.main()
