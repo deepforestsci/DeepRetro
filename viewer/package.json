@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "jest",
-    "test:no-watchman": "jest --no-watchman"
+    "test": "jest --config jest.config.js",
+    "test:no-watchman": "jest --config jest.config.js --no-watchman"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +20,8 @@
       "./jest.setup.js"
     ],
     "testMatch": [
-      "**/*.test.js"
+      "**/__tests__/**/*.test.js",
+      "**/?(*.)+(spec|test).js"
     ],
     "verbose": true,
     "collectCoverage": true,
