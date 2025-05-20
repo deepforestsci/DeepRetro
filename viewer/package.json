@@ -13,25 +13,5 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0"
-  },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "setupFilesAfterEnv": [
-      "./jest.setup.js"
-    ],
-    "testMatch": [
-      "**/__tests__/**/*.test.js",
-      "**/?(*.)+(spec|test).js"
-    ],
-    "verbose": true,
-    "collectCoverage": true,
-    "coverageReporters": [
-      "text",
-      "html"
-    ],
-    "collectCoverageFrom": [
-      "app*.js",
-      "!**/node_modules/**"
-    ]
   }
 }
