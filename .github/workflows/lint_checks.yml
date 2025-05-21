@@ -1,0 +1,91 @@
+name: Python Code Formatting 
+
+on:
+  push: # ci work when pushing master branch
+    branches:
+      - main
+    paths:
+      - '**.py'
+  pull_request: # ci work when creating a PR to master branch
+    branches:
+      - main
+    paths:
+      - '**.py'
+
+jobs:
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: pip install mypy
+
+      - name: Check type hints
+        continue-on-error: false 
+        run: |
+          mypy -p . \
+            --follow-imports skip \
+            --ignore-missing-imports
+
+  yapf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set commit range (push to the main branch, e.g. merge)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          echo "COMMIT_RANGE=${{ github.event.before }}.." >> $GITHUB_ENV
+          echo $GITHUB_ENV
+
+      - name: Set commit range (pull request)
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin main
+          echo "COMMIT_RANGE=origin/main..." >> $GITHUB_ENV
+          echo $GITHUB_ENV
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: pip install yapf toml
+
+      - name: Check yapf formatting
+        continue-on-error: false 
+        run: |
+          yapf --version
+          CHANGED_FILES=`git diff --name-only $COMMIT_RANGE ':(exclude)src/variables.py' ':(exclude)tests/variables_test.py' | grep .py$ | grep -v contrib/ || true`
+          if [ -n "$CHANGED_FILES" ]; then
+            yapf -d $CHANGED_FILES
+          fi
+
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: pip install flake8 
+
+      - name: Check flake8 
+        continue-on-error: false 
+        run: |
+          flake8 --count . \
+          --ignore=E402 \
+          --exclude variables_test.py \
+          --exclude variables.py    
