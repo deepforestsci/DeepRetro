@@ -10,13 +10,12 @@ from src.variables import REACTION_ENCODING_NAMES, ENCODING_SCALABILITY
 from src.cache import cache_results
 from src.utils.job_context import logger as context_logger
 
-root_dir = rootutils.setup_root(__file__,
-                                indicator=".project-root",
-                                pythonpath=True)
+root_dir = rootutils.setup_root(
+    __file__, indicator=".project-root", pythonpath=True)
 
 RXN_CLASSIFICATION_MODEL_PATH = f"{root_dir}/{os.getenv('RXN_CLASSIFICATION_MODEL_PATH')}"
-ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
-                                    "true").lower() == "false" else True
+ENABLE_LOGGING = False if os.getenv(
+    "ENABLE_LOGGING", "true").lower() == "false" else True
 
 
 def log_message(message: str, logger=None):
@@ -42,7 +41,7 @@ def is_valid_smiles(smiles: str) -> bool:
     """
     try:
         mol = Chem.MolFromSmiles(smiles)
-    except:
+    except Exception:
         return False
     if mol is None:
         return False
@@ -69,14 +68,16 @@ def substructure_matching(target_smiles: str, query_smiles: str) -> int:
     # Convert SMILES to RDKit molecule objects
     try:
         target_molecule = Chem.MolFromSmiles(target_smiles)
-    except:
-        log_message(f"Error in parsing target molecule: {target_smiles}",
-                    logger)
+    except Exception:
+        log_message(
+            f"Error in parsing target molecule: {target_smiles}", logger)
+        return 0
 
     try:
         query_molecule = Chem.MolFromSmiles(query_smiles)
-    except:
+    except Exception:
         log_message(f"Error in parsing query molecule: {query_smiles}", logger)
+        return 0
 
     # Check if the query substructure is present in the target molecule
     try:
@@ -84,7 +85,7 @@ def substructure_matching(target_smiles: str, query_smiles: str) -> int:
             return 1
         else:
             return 0
-    except:
+    except Exception:
         return 0
 
 
@@ -175,7 +176,7 @@ def calc_mol_wt(mol: str) -> float:
     logger = context_logger.get() if ENABLE_LOGGING else None
     try:
         mol_wt = ExactMolWt(Chem.MolFromSmiles(mol))
-    except:
+    except Exception:
         mol_wt = 0.0
         log_message(f"Error in calculating molecular weight: {mol}", logger)
     return mol_wt
@@ -197,7 +198,7 @@ def calc_chemical_formula(mol: str):
     logger = context_logger.get() if ENABLE_LOGGING else None
     try:
         formula = CalcMolFormula(Chem.MolFromSmiles(mol))
-    except:
+    except Exception:
         formula = "N/A"
         log_message(f"Error in calculating formula: {mol}", logger)
     return formula

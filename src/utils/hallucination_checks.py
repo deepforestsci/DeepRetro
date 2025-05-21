@@ -1,10 +1,10 @@
+from src.utils.utils_molecule import is_valid_smiles
+from src.utils.job_context import logger as context_logger
 import os
-import rdkit
 from rdkit import Chem
 from rdkit.Chem import rdmolops
 from collections import Counter
 from dotenv import load_dotenv
-import numpy as np
 import rootutils
 
 root_dir = rootutils.setup_root(__file__,
@@ -12,8 +12,6 @@ root_dir = rootutils.setup_root(__file__,
                                 pythonpath=True)
 
 load_dotenv()
-from src.utils.job_context import logger as context_logger
-from src.utils.utils_molecule import is_valid_smiles
 
 ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
                                     "true").lower() == "false" else True
@@ -42,14 +40,14 @@ def log_message(message: str, logger=None):
 def hallucination_compare_molecules(reactant_smiles, product_smiles):
     """
     Compare reactant and product molecules to detect potential hallucinations or inconsistencies.
-    
+
     Parameters:
     -----------
     reactant_smiles : str
         SMILES string of the reactant molecule
     product_smiles : str
         SMILES string of the product molecule
-        
+
     Returns:
     --------
     dict
@@ -165,7 +163,7 @@ def hallucination_compare_molecules(reactant_smiles, product_smiles):
 def check_ring_substituent_positions(reactant_mol, product_mol, results):
     """
     Detect changes in the position of substituents on aromatic rings.
-    
+
     Parameters:
     -----------
     reactant_mol : RDKit Mol
@@ -190,8 +188,8 @@ def check_ring_substituent_positions(reactant_mol, product_mol, results):
 
         # Find a matching aromatic ring in the product
         matching_rings = [
-            p for p in product_ring_info if p['is_aromatic']
-            and p['size'] == reactant_ring['size'] and not p['matched']
+            p for p in product_ring_info if p['is_aromatic'] and
+            p['size'] == reactant_ring['size'] and not p['matched']
         ]
 
         if not matching_rings:
@@ -251,12 +249,12 @@ def check_ring_substituent_positions(reactant_mol, product_mol, results):
 def identify_ring_systems(mol):
     """
     Identify all ring systems in a molecule and their properties.
-    
+
     Parameters:
     -----------
     mol : RDKit Mol
         RDKit molecule object
-        
+
     Returns:
     --------
     list
@@ -286,14 +284,14 @@ def identify_ring_systems(mol):
 def identify_substituents(mol, ring_info):
     """
     Identify all substituents attached to a ring and their positions.
-    
+
     Parameters:
     -----------
     mol : RDKit Mol
         RDKit molecule object
     ring_info : dict
         Dictionary containing ring information
-        
+
     Returns:
     --------
     list
@@ -333,7 +331,7 @@ def identify_substituents(mol, ring_info):
 def determine_ring_position(mol, atom_idx, ring_atoms, ring_size):
     """
     Determine the position of a substituent on a ring (ortho, meta, para, etc.).
-    
+
     Parameters:
     -----------
     mol : RDKit Mol
@@ -341,10 +339,10 @@ def determine_ring_position(mol, atom_idx, ring_atoms, ring_size):
     atom_idx : int
         Index of the ring atom where the substituent is attached
     ring_atoms : set
-        Set of atom indices that form the ring
+        Set of atom indices to form the ring
     ring_size : int
         Size of the ring
-        
+
     Returns:
     --------
     str
@@ -410,7 +408,7 @@ def determine_ring_position(mol, atom_idx, ring_atoms, ring_size):
 def get_connected_atoms(mol, start_idx, exclude_atoms):
     """
     Get all atoms connected to a starting atom, excluding a set of atoms.
-    
+
     Parameters:
     -----------
     mol : RDKit Mol
@@ -419,7 +417,7 @@ def get_connected_atoms(mol, start_idx, exclude_atoms):
         Index of the starting atom
     exclude_atoms : set
         Set of atom indices to exclude
-        
+
     Returns:
     --------
     list
@@ -445,14 +443,14 @@ def get_connected_atoms(mol, start_idx, exclude_atoms):
 def get_substituent_signature(mol, substituent):
     """
     Generate a signature for a substituent to identify similar groups.
-    
+
     Parameters:
     -----------
     mol : RDKit Mol
         RDKit molecule object
     substituent : dict
         Dictionary containing substituent information
-        
+
     Returns:
     --------
     str
@@ -484,12 +482,12 @@ def get_substituent_signature(mol, substituent):
 def get_friendly_substituent_name(signature):
     """
     Convert a substituent signature to a friendly name when possible.
-    
+
     Parameters:
     -----------
     signature : str
         Signature string for the substituent
-        
+
     Returns:
     --------
     str
@@ -536,14 +534,14 @@ pos_map = {
 def calculate_hallucination_score(reactant_smiles: str, product_smiles: str):
     """
     Calculate a hallucination score for a chemical transformation from reactant to product.
-    
+
     Parameters:
     -----------
     reactant_smiles : str
         SMILES string of the reactant molecule
     product_smiles : str
         SMILES string of the product molecule
-        
+
     Returns:
     --------
     dict
@@ -671,12 +669,12 @@ def calculate_hallucination_score(reactant_smiles: str, product_smiles: str):
 def interpret_score(score):
     """
     Provide a human-readable interpretation of the hallucination score.
-    
+
     Parameters:
     -----------
     score : int
         Hallucination score (0-100)
-        
+
     Returns:
     --------
     str
@@ -700,7 +698,6 @@ def interpret_score(score):
 
 def hallucination_checker(product: str, res_smiles: list):
     """Wrapper function to run the hallucination checks on the incoming product and reactant smiles list.
-    
 
     Parameters
     ----------
@@ -712,35 +709,23 @@ def hallucination_checker(product: str, res_smiles: list):
     logger = context_logger.get() if ENABLE_LOGGING else None
     valid_pathways = []
     for idx, smile_list in enumerate(res_smiles):
-        valid = []
         if isinstance(smile_list, list):
             smiles_combined = ".".join(smile_list)
             if not is_valid_smiles(smiles_combined):
-                log_message(f"Invalid SMILES string: {smiles_combined}", logger)
-            
-            hallucination_report = calculate_hallucination_score(smiles_combined, product)
-            log_message(f"Hallucination report: {hallucination_report}", logger)
-            
+                log_message(
+                    f"Invalid SMILES string: {smiles_combined}", logger)
+            hallucination_report = calculate_hallucination_score(
+                smiles_combined, product)
+            log_message(
+                f"Hallucination report: {hallucination_report}", logger)
             if hallucination_report['severity'] in ['low', 'medium']:
                 valid_pathways.append(smile_list)
-            # for smiles in smile_list:
-            #     if not is_valid_smiles(smiles):
-            #         log_message("Invalid SMILES string", logger)
-            #     hallucination_report = calculate_hallucination_score(smiles, product)
-            #     log_message(f"Hallucination report: {hallucination_report}",
-            #                 logger)
-
-            #     if hallucination_report['severity'] in ['low', 'medium']:
-            #         valid.append(smiles)
-            # if len(valid) == len(smile_list):
-            #     valid_pathways.append(valid)
         else:
             if is_valid_smiles(smile_list):
                 hallucination_report = calculate_hallucination_score(
                     smile_list)
                 log_message(f"Hallucination report: {hallucination_report}",
                             logger)
-
                 if hallucination_report['severity'] in ['low', 'medium']:
                     valid_pathways.append([smile_list])
     log_message(f"Valid pathways: {valid_pathways}", logger)

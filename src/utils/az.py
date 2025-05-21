@@ -1,8 +1,8 @@
 """Utils for AiZynthFinder"""
 import os
 from aizynthfinder.aizynthfinder import AiZynthFinder
-from typing import Any, Dict, List, Optional, Sequence
-from src.variables import BASIC_MOLECULES, ENCODING_SCALABILITY
+from typing import Any, Dict, Sequence
+from src.variables import BASIC_MOLECULES
 from src.cache import cache_results
 from src.utils.job_context import logger as context_logger
 import rootutils
@@ -30,19 +30,19 @@ def run_az(smiles: str,
     Returns
     -------
     tuple[Any, Sequence[Dict[str, Any]]]
-        A tuple containing the status of the retrosynthesis, 
+        A tuple containing the status of the retrosynthesis,
         the results dictionary
     """
     try:
         config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
-        with open(config_path, "r") as file:
+        with open(config_path, "r"):
             logger = context_logger.get()
             logger.info(f"AZ_MODEL_CONFIG_PATH found: {config_path}")
             config_filename = config_path
     except FileNotFoundError:
         logger.error(f"AZ_MODEL_CONFIG_PATH not found at {config_path}")
         try:
-            with open(AZ_MODEL_CONFIG_PATH, "r") as file:
+            with open(AZ_MODEL_CONFIG_PATH, "r"):
                 logger = context_logger.get()
                 logger.info(
                     f"AZ_MODEL_CONFIG_PATH found: {AZ_MODEL_CONFIG_PATH}")
@@ -87,9 +87,9 @@ def run_az_with_img(smiles: str) -> tuple[Any, Sequence[Dict[str, Any]]]:
     Returns
     -------
     tuple[Any, Sequence[Dict[str, Any]]]
-        A tuple containing the status of the retrosynthesis, 
+        A tuple containing the status of the retrosynthesis,
         the results dictionary
-        
+
     """
     # if simple molecule, skip the retrosynthesis
     if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
@@ -132,7 +132,7 @@ def is_basic_molecule(smiles: str) -> bool:
     #
     try:
         mol = Chem.MolFromSmiles(smiles)
-    except:
+    except Exception:
         return False
 
     q = rdqueries.AtomNumEqualsQueryAtom(6)

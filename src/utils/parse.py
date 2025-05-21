@@ -1,8 +1,8 @@
 """ This module contains functions to parse the input data to extract steps and their dependencies. """
 from typing import Dict, List, Optional
-from src.utils.utils_molecule import validity_check, calc_chemical_formula, calc_mol_wt
+from src.utils.utils_molecule import calc_chemical_formula, calc_mol_wt
 from src.utils.utils_molecule import calc_confidence_estimate, calc_scalability_index
-from src.variables import BASIC_MOLECULES, ENCODING_SCALABILITY
+from src.variables import BASIC_MOLECULES
 
 
 def parse_step(data,
@@ -22,7 +22,7 @@ def parse_step(data,
     step_list: List, Optional
         A list of steps extracted so far. Defaults to None, which initializes an empty list.
     dependency_list: Dict, Optional
-        A dictionary mapping parent step IDs to their child step IDs. Defaults to None, which 
+        A dictionary mapping parent step IDs to their child step IDs. Defaults to None, which
         initializes an empty dictionary.
     parent_id: int, Optional
         The ID of the parent step. Defaults to None for the root node.

@@ -11,7 +11,6 @@ from aizynthfinder.aizynthfinder import AiZynthFinder
 import diskcache as dc
 import logging
 from variables import BASIC_MOLECULES, SYS_PROMPT, USER_PROMPT, ENCODING_SCALABILITY, REACTION_ENCODING_NAMES
-from variables import bcolors
 import joblib
 
 # Set up logging
@@ -26,9 +25,7 @@ logging.basicConfig(
 cache = dc.Cache('cache_dir_submit_alt')
 
 client = Anthropic(
-    api_key=
-    "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",
-)
+    api_key="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",)
 
 config_filename = "../aizynthfinder/models/config_alt.yml"
 
@@ -72,7 +69,7 @@ def is_valid_smiles(smiles: str) -> bool:
     """
     try:
         mol = Chem.MolFromSmiles(smiles)
-    except:
+    except Exception:
         return False
     if mol is None:
         return False
@@ -84,12 +81,12 @@ def substructure_matching(target_smiles: str, query_smiles: str):
     # Convert SMILES to RDKit molecule objects
     try:
         target_molecule = Chem.MolFromSmiles(target_smiles)
-    except:
+    except Exception:
         logging.info(f"Error in parsing target molecule: {target_smiles}")
 
     try:
         query_molecule = Chem.MolFromSmiles(query_smiles)
-    except:
+    except Exception:
         logging.info(f"Error in parsing query molecule: {query_smiles}")
 
     # Check if the query substructure is present in the target molecule
@@ -98,7 +95,7 @@ def substructure_matching(target_smiles: str, query_smiles: str):
             return 1
         else:
             return 0
-    except:
+    except Exception:
         return 0
 
 
@@ -256,9 +253,9 @@ def run_az(smiles: str) -> tuple[Any, Sequence[Dict[str, Any]]]:
     Returns
     -------
     tuple[Any, Sequence[Dict[str, Any]]]
-        A tuple containing the status of the retrosynthesis, 
+        A tuple containing the status of the retrosynthesis,
         the results dictionary
-        
+
     """
     # if simple molecule, skip the retrosynthesis
     if smiles in BASIC_MOLECULES:
@@ -296,9 +293,9 @@ def run_az_with_img(smiles: str) -> tuple[Any, Sequence[Dict[str, Any]]]:
     Returns
     -------
     tuple[Any, Sequence[Dict[str, Any]]]
-        A tuple containing the status of the retrosynthesis, 
+        A tuple containing the status of the retrosynthesis,
         the results dictionary
-        
+
     """
     # if simple molecule, skip the retrosynthesis
     if smiles in BASIC_MOLECULES:
@@ -341,7 +338,7 @@ def parse_step(data,
     step_list: List, Optional
         A list of steps extracted so far. Defaults to None, which initializes an empty list.
     dependency_list: Dict, Optional
-        A dictionary mapping parent step IDs to their child step IDs. Defaults to None, which 
+        A dictionary mapping parent step IDs to their child step IDs. Defaults to None, which
         initializes an empty dictionary.
     parent_id: int, Optional
         The ID of the parent step. Defaults to None for the root node.
@@ -540,7 +537,7 @@ def calc_chemical_formula(mol: str):
     """
     try:
         formula = CalcMolFormula(Chem.MolFromSmiles(mol))
-    except:
+    except Exception:
         formula = "N/A"
         logging.info(f"Error in calculating formula: {mol}")
     return formula
@@ -561,7 +558,7 @@ def calc_mol_wt(mol: str) -> float:
     """
     try:
         mol_wt = ExactMolWt(Chem.MolFromSmiles(mol))
-    except:
+    except Exception:
         mol_wt = 0.0
         logging.info(f"Error in calculating molecular weight: {mol}")
     return mol_wt

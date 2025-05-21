@@ -1,11 +1,9 @@
+from src.utils.utils_molecule import is_valid_smiles
+from src.utils.job_context import logger as context_logger
 import os
-import ast
 from dotenv import load_dotenv
 from rdkit import Chem
-from litellm import completion
-import rdkit
-from rdkit import Chem
-from rdkit.Chem import AllChem, Descriptors, Lipinski
+from rdkit.Chem import Descriptors
 from rdkit.Chem.rdMolDescriptors import CalcNumAliphaticCarbocycles, CalcNumAliphaticHeterocycles
 from rdkit.Chem.rdMolDescriptors import CalcNumAliphaticRings, CalcNumAromaticCarbocycles
 from rdkit.Chem.rdMolDescriptors import CalcNumAromaticHeterocycles, CalcNumAromaticRings
@@ -18,8 +16,6 @@ root_dir = rootutils.setup_root(__file__,
                                 pythonpath=True)
 
 load_dotenv()
-from src.utils.job_context import logger as context_logger
-from src.utils.utils_molecule import is_valid_smiles
 
 ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
                                     "true").lower() == "false" else True
@@ -85,20 +81,20 @@ def stability_checker(res_smiles: list):
                         "Likely stable", "Moderately stable"
                 ]:
                     valid_pathways.append([smile_list])
-    log_message(f"Valid pathways: {valid_pathways} after stability check",
-                logger)
+    log_message(
+        f"Valid pathways: {valid_pathways} after stability check", logger)
     return 200, valid_pathways
 
 
 def check_molecule_stability(smiles):
     """
     Performs heuristic checks on a molecule given its SMILES string to estimate stability.
-    
+
     Parameters
     ----------
     smiles : str
         SMILES string of the molecule
-        
+
     Returns
     -------
     results : dict
@@ -233,17 +229,15 @@ def check_molecule_stability(smiles):
                 for bond in atom.GetBonds():
                     # Check if bond is in this ring and is a double bond
                     other_atom_idx = bond.GetOtherAtomIdx(atom.GetIdx())
-                    if other_atom_idx in ring and bond.GetBondType(
-                    ) == Chem.BondType.DOUBLE:
+                    if other_atom_idx in ring and bond.GetBondType() == Chem.BondType.DOUBLE:
                         double_bond_count += 0.5  # Count each end of double bond once
 
             # If number of π electrons is 4n (where n is positive integer)
-            pi_electrons = int(double_bond_count *
-                               2)  # Each double bond contributes 2 π electrons
+            # Each double bond contributes 2 π electrons
+            pi_electrons = int(double_bond_count * 2)
             if pi_electrons > 0 and pi_electrons % 4 == 0:
                 results["issues"].append(
-                    f"{len(ring)}-membered ring with {pi_electrons} π electrons (potential anti-aromatic)"
-                )
+                    f"{len(ring)}-membered ring with {pi_electrons} π electrons (potential anti-aromatic)")
 
     # ----------------- DETECT FUSED 3-4 MEMBERED RINGS -----------------
     # Look for fused small rings (which create highly strained systems)
@@ -292,7 +286,7 @@ def check_molecule_stability(smiles):
                 # More severe warning for very large heterocycles (>10 members)
                 if len(ring) > 10 and len(heteroatoms) >= 3:
                     results["issues"].append(
-                        f"Very large heterocycle with multiple heteroatoms (significant stability concern)"
+                        "Very large heterocycle with multiple heteroatoms (significant stability concern)"
                     )
 
     # Assess complex ring systems
@@ -324,7 +318,7 @@ def check_molecule_stability(smiles):
     # Secondary carbocation (moderately stable)
     secondary_carbocation_pattern = Chem.MolFromSmarts("[CH+]([#6])[#6]")
     # Tertiary carbocation (more stable but still reactive)
-    tertiary_carbocation_pattern = Chem.MolFromSmarts("[C+]([#6])([#6])[#6]")
+    # tertiary_carbocation_pattern = Chem.MolFromSmarts("[C+]([#6])([#6])[#6]")
     # Allylic carbocation (stabilized by resonance)
     allylic_carbocation_pattern = Chem.MolFromSmarts("[C+]-[C]=[C]")
     # Benzylic carbocation (stabilized by resonance)
@@ -417,7 +411,7 @@ def check_molecule_stability(smiles):
             results["issues"].append(
                 "Contains carbene in 4-membered ring (highly unstable)")
             stability_score -= 10  # Additional penalty
-    
+
     # ----------------- DETECT STRAINED 5-MEMBER RINGS WITH SMALL FUSED RINGS -----------------
     # Find 5-membered carbon rings with attached 3/4-membered rings containing heteroatoms
     cyclopentane_pattern = Chem.MolFromSmarts("C1CCCC1")
@@ -425,32 +419,34 @@ def check_molecule_stability(smiles):
         # Find all 5-membered carbon rings
         five_mem_rings = [ring for ring in atom_rings if len(ring) == 5 and all(
             mol.GetAtomWithIdx(i).GetSymbol() == 'C' for i in ring)]
-        
+
         # Find all 3/4-membered rings with heteroatoms
         small_hetero_rings = [ring for ring in atom_rings if len(ring) in [3, 4] and any(
             mol.GetAtomWithIdx(i).GetSymbol() != 'C' for i in ring)]
-        
+
         # Check for fusion between these rings
         for five_ring in five_mem_rings:
             five_ring_set = set(five_ring)
             for small_ring in small_hetero_rings:
                 small_ring_set = set(small_ring)
                 shared_atoms = five_ring_set.intersection(small_ring_set)
-                
+
                 if len(shared_atoms) >= 1:
                     # Get heteroatom types in the small ring
-                    heteroatoms = [mol.GetAtomWithIdx(i).GetSymbol() 
-                                for i in small_ring if mol.GetAtomWithIdx(i).GetSymbol() != 'C']
+                    heteroatoms = [mol.GetAtomWithIdx(i).GetSymbol()
+                                   for i in small_ring if mol.GetAtomWithIdx(i).GetSymbol() != 'C']
                     unique_hetero = set(heteroatoms)
-                    
+
                     results["issues"].append(
                         f"5-membered carbon ring fused with {len(small_ring)}-membered ring containing {', '.join(unique_hetero)} (strained system)"
                     )
                     stability_score -= 40  # Significant penalty for this strained system
 
     # Penalize for extreme values of properties
-    if abs(logp) > 10: stability_score -= 10
-    if rotatable_bonds > 15: stability_score -= 10
+    if abs(logp) > 10:
+        stability_score -= 10
+    if rotatable_bonds > 15:
+        stability_score -= 10
 
     # Assess stability based on ring structure
     if num_aromatic_rings > 0:

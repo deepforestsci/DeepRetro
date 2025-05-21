@@ -318,7 +318,7 @@ def split_json_master(res_text: str, model: str) -> tuple[int, list[str], str]:
         else:
             status_code, thinking_steps, json_content = split_cot_json(
                 res_text)
-    except Exception as e:
+    except Exception:
         return 505, [], ""
 
     return status_code, thinking_steps, json_content
