@@ -3,6 +3,7 @@ import json
 import pytest
 
 import rootutils
+
 root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
@@ -28,18 +29,17 @@ def test_retrosynthesis_fail():
         "stability_flag": "False",
         "hallucination_check": "False",
         "llm": CLAUDE_MODEL,
-        "model_version": PISTACHIO_MODEL})
+        "model_version": PISTACHIO_MODEL
+    })
 
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
+    headers = {'x-api-key': X_API_KEY, 'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
     assert response.status_code == 400
     assert response.json() == {
-        "error": "SMILES string is required. Please include a 'smiles' field"}
+        "error": "SMILES string is required. Please include a 'smiles' field"
+    }
 
 
 def test_rerun_retro_fail():
@@ -57,19 +57,17 @@ def test_rerun_retro_fail():
         "stability_flag": "False",
         "hallucination_check": "False",
         "llm": DEEPSEEK_FIREWORKS_MODEL,
-        "model_version": USPTO_MODEL})
+        "model_version": USPTO_MODEL
+    })
 
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
+    headers = {'x-api-key': X_API_KEY, 'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
     assert response.status_code == 400
     assert response.json() == {
-        "error":
-        "Molecule string is required, Please include a 'smiles' field"}
+        "error": "Molecule string is required, Please include a 'smiles' field"
+    }
 
 
 if __name__ == '__main__':

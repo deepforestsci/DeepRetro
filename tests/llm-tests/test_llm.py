@@ -3,12 +3,12 @@ from dotenv import load_dotenv
 import pytest
 
 import rootutils
+
 root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
 
 load_dotenv()
-
 
 SMALL_SMILE_STRING = "CC(=O)O"
 LARGE_SMILE_STRING = "CC(N)C(=O)NC1=C(C)C=CC=C1C"
@@ -59,8 +59,7 @@ def test_split_cot_json_fail_501():
     """
     from tests.variables_test import EMPTY_RESPONSE
 
-    status_code, thinking_steps, json_content = split_cot_json(
-        EMPTY_RESPONSE)
+    status_code, thinking_steps, json_content = split_cot_json(EMPTY_RESPONSE)
 
     assert status_code == 501
     assert thinking_steps == []
@@ -76,8 +75,8 @@ def test_call_llm_deepseek_success():
     '''
     from tests.variables_test import DEEPSEEK_FIREWORKS_MODEL
 
-    status_code, res_text = call_LLM(
-        molecule=LARGE_SMILE_STRING, LLM=DEEPSEEK_FIREWORKS_MODEL)
+    status_code, res_text = call_LLM(molecule=LARGE_SMILE_STRING,
+                                     LLM=DEEPSEEK_FIREWORKS_MODEL)
 
     assert status_code == 200
     assert isinstance(res_text, str)

@@ -3,6 +3,7 @@ import json
 import requests
 
 import rootutils
+
 root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
@@ -33,12 +34,10 @@ def test_retrosynthesis_deepseek_pistachio_p1_success():
         "hallucination_check": "False",
         "advanced_prompt": "True",
         "llm": DEEPSEEK_FIREWORKS_MODEL,
-        "model_version": PISTACHIO_MODEL})
+        "model_version": PISTACHIO_MODEL
+    })
 
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
+    headers = {'x-api-key': X_API_KEY, 'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
@@ -69,12 +68,10 @@ def test_retrosynthesis_deepseek_pistachio_p0_success():
         "hallucination_check": "False",
         "advanced_prompt": "False",
         "llm": DEEPSEEK_FIREWORKS_MODEL,
-        "model_version": PISTACHIO_MODEL})
+        "model_version": PISTACHIO_MODEL
+    })
 
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
+    headers = {'x-api-key': X_API_KEY, 'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
@@ -105,12 +102,10 @@ def test_rerun_retro_deepseek_pistachio_p1_success():
         "hallucination_check": "False",
         "advanced_prompt": "True",
         "llm": DEEPSEEK_FIREWORKS_MODEL,
-        "model_version": PISTACHIO_MODEL})
+        "model_version": PISTACHIO_MODEL
+    })
 
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
+    headers = {'x-api-key': X_API_KEY, 'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
@@ -141,12 +136,10 @@ def test_rerun_retro_deepseek_pistachio_p0_success():
         "hallucination_check": "False",
         "advanced_prompt": "False",
         "llm": DEEPSEEK_FIREWORKS_MODEL,
-        "model_version": PISTACHIO_MODEL})
+        "model_version": PISTACHIO_MODEL
+    })
 
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
+    headers = {'x-api-key': X_API_KEY, 'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
@@ -177,12 +170,10 @@ def test_rerun_retro_deepseek_uspto_p1_success():
         "hallucination_check": "False",
         "advanced_prompt": "True",
         "llm": DEEPSEEK_FIREWORKS_MODEL,
-        "model_version": USPTO_MODEL})
+        "model_version": USPTO_MODEL
+    })
 
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
+    headers = {'x-api-key': X_API_KEY, 'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
@@ -213,12 +204,10 @@ def test_rerun_retro_deepseek_uspto_p0_success():
         "hallucination_check": "False",
         "advanced_prompt": "False",
         "llm": DEEPSEEK_FIREWORKS_MODEL,
-        "model_version": USPTO_MODEL})
+        "model_version": USPTO_MODEL
+    })
 
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
+    headers = {'x-api-key': X_API_KEY, 'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
@@ -249,12 +238,10 @@ def test_retrosynthesis_deepseek_uspto_p1_success():
         "hallucination_check": "False",
         "advanced_prompt": "True",
         "llm": DEEPSEEK_FIREWORKS_MODEL,
-        "model_version": USPTO_MODEL})
+        "model_version": USPTO_MODEL
+    })
 
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
+    headers = {'x-api-key': X_API_KEY, 'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
@@ -285,12 +272,10 @@ def test_retrosynthesis_deepseek_uspto_p0_success():
         "hallucination_check": "False",
         "advanced_prompt": "False",
         "llm": DEEPSEEK_FIREWORKS_MODEL,
-        "model_version": USPTO_MODEL})
+        "model_version": USPTO_MODEL
+    })
 
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
+    headers = {'x-api-key': X_API_KEY, 'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
 

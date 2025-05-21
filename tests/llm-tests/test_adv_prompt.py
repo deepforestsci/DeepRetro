@@ -1,10 +1,10 @@
 import pytest
 
 import rootutils
+
 root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
-
 
 from src.utils.llm import call_LLM
 from tests.variables_test import VALID_SMILE_STRING, \
