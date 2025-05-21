@@ -3,6 +3,7 @@ import json
 import pytest
 
 import rootutils
+
 root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
@@ -20,12 +21,10 @@ def test_rerun_retro_claude_uspto_p1_success():
         "hallucination_check": "False",
         "advanced_prompt": "True",
         "llm": CLAUDE_MODEL,
-        "model_version": USPTO_MODEL})
+        "model_version": USPTO_MODEL
+    })
 
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
+    headers = {'x-api-key': X_API_KEY, 'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
@@ -43,12 +42,10 @@ def test_rerun_retro_claude_uspto_p0_success():
         "hallucination_check": "False",
         "advanced_prompt": "False",
         "llm": CLAUDE_MODEL,
-        "model_version": USPTO_MODEL})
+        "model_version": USPTO_MODEL
+    })
 
-    headers = {
-        'x-api-key': X_API_KEY,
-        'Content-Type': 'application/json'
-    }
+    headers = {'x-api-key': X_API_KEY, 'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
 

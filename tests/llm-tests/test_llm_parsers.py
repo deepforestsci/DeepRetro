@@ -2,8 +2,10 @@ from dotenv import load_dotenv
 import pytest
 
 import rootutils
-root_dir = rootutils.setup_root(
-    ".", indicator=".project-root", pythonpath=True)
+
+root_dir = rootutils.setup_root(".",
+                                indicator=".project-root",
+                                pythonpath=True)
 
 load_dotenv()
 
@@ -12,7 +14,9 @@ LARGE_SMILE_STRING = "CC(N)C(=O)NC1=C(C)C=CC=C1C"
 
 
 def test_split_json_master_success():
-    """Tests split_json_master function with valid response. split_json_master call the split_cot_json, split_json_deepseek and split_json_openAI functions, based on the model passed as argument.
+    """Tests split_json_master function with valid response.
+    split_json_master call the split_cot_json, split_json_deepseek and
+    split_json_openAI functions, based on the model passed as argument.
 
     Expected output:
         status_code: 200.
@@ -51,7 +55,9 @@ def test_split_json_master_fail():
 
 
 def test_validate_json_success_200():
-    """Tests validate_split_json function with valid response from call_LLM. validate_split_json() extracts res_molecules, res_explanations, res_confidence from the json_content of the response.
+    """Tests validate_split_json function with valid response from call_LLM.
+    validate_split_json() extracts res_molecules, res_explanations,
+    res_confidence from the json_content of the response.
 
     Expected output:
         status_code: 200
@@ -62,8 +68,8 @@ def test_validate_json_success_200():
     from tests.variables_test import VALID_CLAUDE_RESPONSE, CLAUDE_MODEL
     from src.utils.llm import validate_split_json, split_json_master
 
-    status_code, _, json_content = split_json_master(
-        VALID_CLAUDE_RESPONSE, CLAUDE_MODEL)
+    status_code, _, json_content = split_json_master(VALID_CLAUDE_RESPONSE,
+                                                     CLAUDE_MODEL)
 
     status_code, res_molecules, res_explanations, res_confidence = \
         validate_split_json(json_content)
@@ -86,11 +92,11 @@ def test_validate_json_fail():
         res_explanations: []
         res_confidence: []
     """
-    from tests.variables_test import VALID_CLAUDE_RESPONSE, CLAUDE_MODEL, EMPTY_RESPONSE
+    from tests.variables_test import CLAUDE_MODEL, EMPTY_RESPONSE
     from src.utils.llm import validate_split_json, split_json_master
 
-    status_code, _, json_content = split_json_master(
-        EMPTY_RESPONSE, CLAUDE_MODEL)
+    status_code, _, json_content = split_json_master(EMPTY_RESPONSE,
+                                                     CLAUDE_MODEL)
 
     status_code, res_molecules, res_explanations, res_confidence = \
         validate_split_json(json_content)
@@ -115,8 +121,7 @@ def test_validity_check_success():
     from src.utils.llm import validate_split_json, split_json_master, \
         validity_check
 
-    _, _, json_content = split_json_master(
-        VALID_CLAUDE_RESPONSE, CLAUDE_MODEL)
+    _, _, json_content = split_json_master(VALID_CLAUDE_RESPONSE, CLAUDE_MODEL)
 
     _, res_molecules, res_explanations, res_confidence = \
         validate_split_json(json_content)
@@ -144,8 +149,7 @@ def test_validity_check_fail():
     from src.utils.llm import validate_split_json, split_json_master, \
         validity_check
 
-    _, _, json_content = split_json_master(
-        EMPTY_RESPONSE, CLAUDE_MODEL)
+    _, _, json_content = split_json_master(EMPTY_RESPONSE, CLAUDE_MODEL)
 
     _, res_molecules, res_explanations, res_confidence = \
         validate_split_json(json_content)
