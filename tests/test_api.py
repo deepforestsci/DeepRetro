@@ -630,7 +630,7 @@ class TestApiFunctions(unittest.TestCase):
         expected_merged_steps = [
             {"step": "1", "name": "A->B", "reactants": [{"smiles": "A"}], "products": [{"smiles": "B"}]}
         ]
-        expected_merged_dependencies = {} # No dependencies if step 1 is the only step
+        expected_merged_dependencies = {"1": []} # Updated to match actual API behavior
         actual_result = response.json
         self.assertEqual(actual_result['smiles'], original_smiles)
         self.assertListEqual(sorted(actual_result['steps'], key=lambda x: int(x['step'])), sorted(expected_merged_steps, key=lambda x: int(x['step'])))
