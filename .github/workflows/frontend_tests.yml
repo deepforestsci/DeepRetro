@@ -11,32 +11,32 @@ on:
 jobs:
   viewer-tests:
     runs-on: ubuntu-latest
-  defaults:
-    run:
-      working-directory: ./viewer/
-  strategy:
-    matrix:
-      os: [ubuntu-latest]
-      node-version: [16.x]
-  steps:
-    - uses: actions/checkout@v4
+    defaults:
+      run:
+        working-directory: ./viewer/
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Create npmrc
-      run: |
-        echo "//registry.npmjs.org/:_authToken=" > .npmrc
-        echo "registry=https://registry.npmjs.org/" >> .npmrc
-        echo "always-auth=false" >> .npmrc
+      - name: Create npmrc
+        run: |
+          echo "//registry.npmjs.org/:_authToken=" > .npmrc
+          echo "registry=https://registry.npmjs.org/" >> .npmrc
+          echo "always-auth=false" >> .npmrc
 
-    - name: Install Jest directly
-      run: |
-        npm install --no-package-lock jest@29.7.0 jest-environment-jsdom@29.7.0
+      - name: Install Jest directly
+        run: |
+          npm install --no-package-lock jest@29.7.0 jest-environment-jsdom@29.7.0
 
-    - name: Run tests
-      env:
-        NODE_AUTH_TOKEN: ""
-      run: npx jest --config jest.config.js --no-watchman
+      - name: Run tests
+        env:
+          NODE_AUTH_TOKEN: ""
+        run: npx jest --config jest.config.js --no-watchman
