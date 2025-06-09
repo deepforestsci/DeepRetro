@@ -1,46 +1,76 @@
 /**
- * Common setup for tests
+ * Test Setup Configuration
+ *
+ * This module provides mock implementations of external dependencies used in tests.
+ * It includes mocks for:
+ * - D3.js visualization library
+ * - OpenChemLib (OCL) molecular structure library
+ * - DOM Parser and manipulation
+ * - Console and alert functions
  */
 
-// Mock D3
+/**
+ * Creates mock implementations of D3.js functionality
+ * @returns {Object} Object containing all D3 mock objects
+ */
 function setupD3Mocks() {
-  // Create basic D3 mock with methods that return the same object
+  // Basic D3 selection mock that chains all methods
   const mockD3Element = {
+    // Visualization methods
     append: jest.fn(() => mockD3Element),
     attr: jest.fn(() => mockD3Element),
     style: jest.fn(() => mockD3Element),
     html: jest.fn(() => mockD3Element),
     text: jest.fn(() => mockD3Element),
+
+    // Selection methods
     selectAll: jest.fn(() => mockD3Element),
     select: jest.fn(() => mockD3Element),
     data: jest.fn(() => mockD3Element),
     enter: jest.fn(() => mockD3Element),
+
+    // Event and animation methods
     on: jest.fn(() => mockD3Element),
     call: jest.fn(() => mockD3Element),
     transition: jest.fn(() => mockD3Element),
     duration: jest.fn(() => mockD3Element),
     remove: jest.fn(() => mockD3Element),
+
+    // Data iteration
     each: jest.fn((callback) => {
       callback({ data: {}, x: 0, y: 0 });
       return mockD3Element;
     }),
   };
 
-  // Create hierarchy node with needed methods
+  // Hierarchy node mock with test data
   const mockHierarchyNode = {
+    // Node position
     x: 0,
     y: 0,
+
+    // Test molecule data
     data: {
       step: "0",
-      products: [{ product_metadata: { chemical_formula: "C6H12O6" } }],
+      products: [
+        {
+          product_metadata: {
+            chemical_formula: "C6H12O6",
+          },
+        },
+      ],
     },
     children: [],
+
+    // Tree traversal methods
     each: jest.fn((callback) => {
+      // Mock root node
       callback({
         x: 0,
         y: 0,
         data: { step: "0", products: [] },
       });
+      // Mock child node
       callback({
         x: 10,
         y: 10,
@@ -48,6 +78,8 @@ function setupD3Mocks() {
       });
       return mockHierarchyNode;
     }),
+
+    // Tree structure methods
     links: jest.fn(() => []),
     descendants: jest.fn(() => [
       {
@@ -56,10 +88,16 @@ function setupD3Mocks() {
           products: [
             {
               smiles: "CCO",
-              product_metadata: { chemical_formula: "C2H6O" },
+              product_metadata: {
+                chemical_formula: "C2H6O",
+              },
             },
           ],
-          reactionmetrics: [{ scalabilityindex: "10" }],
+          reactionmetrics: [
+            {
+              scalabilityindex: "10",
+            },
+          ],
           conditions: {},
         },
         x: 0,
@@ -68,15 +106,12 @@ function setupD3Mocks() {
     ]),
   };
 
-  // Mock the tree layout function
-  const mockTreeLayout = jest.fn((node) => {
-    // Just return the node as-is, since we're mocking the layout behavior
-    return node;
-  });
+  // Tree layout mock that preserves node structure
+  const mockTreeLayout = jest.fn((node) => node);
   mockTreeLayout.nodeSize = jest.fn(() => mockTreeLayout);
   mockTreeLayout.separation = jest.fn(() => mockTreeLayout);
 
-  // Mock zoom
+  // Zoom behavior mock
   const mockZoom = {
     scaleExtent: jest.fn(() => mockZoom),
     on: jest.fn(() => mockZoom),
@@ -84,7 +119,7 @@ function setupD3Mocks() {
     scaleBy: jest.fn(),
   };
 
-  // Setup D3 mock
+  // Global D3 object with all mock functionality
   global.d3 = {
     select: jest.fn(() => mockD3Element),
     hierarchy: jest.fn(() => mockHierarchyNode),
@@ -101,7 +136,10 @@ function setupD3Mocks() {
   };
 }
 
-// Mock OCL
+/**
+ * Creates mock implementation of OpenChemLib functionality
+ * Provides basic molecule parsing and SVG generation capabilities
+ */
 function setupOCLMocks() {
   global.OCL = {
     Molecule: {
@@ -113,7 +151,10 @@ function setupOCLMocks() {
   };
 }
 
-// Mock DOMParser
+/**
+ * Creates mock implementation of DOMParser
+ * Returns a simple SVG structure for molecule rendering
+ */
 function setupDOMParserMocks() {
   global.DOMParser = class {
     parseFromString() {
@@ -127,25 +168,31 @@ function setupDOMParserMocks() {
   };
 }
 
-// Reset DOM and console
+/**
+ * Sets up DOM elements and console mocks
+ * Creates necessary HTML structure and replaces console methods with Jest spies
+ */
 function setupDOMAndConsole() {
-  // Reset DOM elements for each test
+  // Create minimal DOM structure needed for tests
   document.body.innerHTML = `
     <div id="graph"></div>
-    <div id="pathway-number" style="display: none;"><span id="current-pathway">-</span></div>
+    <div id="pathway-number" style="display: none;">
+      <span id="current-pathway">-</span>
+    </div>
   `;
 
-  // Reset console methods
+  // Replace console methods with Jest spies
   global.console = {
     log: jest.fn(),
     error: jest.fn(),
     warn: jest.fn(),
   };
 
-  // Mock alert
+  // Replace alert with Jest spy
   global.alert = jest.fn();
 }
 
+// Export setup functions for use in tests
 module.exports = {
   setupD3Mocks,
   setupOCLMocks,

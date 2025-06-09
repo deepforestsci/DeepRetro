@@ -54,6 +54,12 @@ function updatePathwayNumber(pathwayNum) {
  * @param {Event} event - The file input change event
  */
 function handleFileSelect(event) {
+  // Validate event and files
+  if (!event || !event.target || !event.target.files) {
+    console.error("[handleFileSelect] Invalid event or missing files list");
+    return;
+  }
+
   const file = event.target.files[0];
   if (file) {
     const reader = new FileReader();
@@ -76,6 +82,8 @@ function handleFileSelect(event) {
       }
     };
     reader.readAsText(file);
+  } else {
+    console.error("[handleFileSelect] No file selected");
   }
 }
 
@@ -127,6 +135,11 @@ function processData(data) {
   // Extract data from first step to construct Step 0
   const step1Data = data.steps[0];
 
+  // Validate Step 1 has products
+  if (!step1Data.products || step1Data.products.length === 0) {
+    console.warn("[processData] Step 1 has no products defined");
+  }
+
   // Get first product from Step 1 to use as Step 0's product
   const greenProduct =
     step1Data.products && step1Data.products.length > 0
@@ -164,9 +177,7 @@ function processData(data) {
 
   // Preserve existing dependencies
   Object.keys(originalDependencies).forEach((key) => {
-    if (key !== "1") {
-      newDependencies[key] = originalDependencies[key];
-    }
+    newDependencies[key] = originalDependencies[key] || [];
   });
 
   // Calculate parent-child relationships
@@ -330,7 +341,7 @@ function renderGraph(rootStep) {
 
   // Create D3 hierarchy from data
   const root = buildTree(rootStep);
-  const hierarchyRoot = d3.hierarchy(root);
+  let hierarchyRoot = d3.hierarchy(root);
 
   // Calculate spacing based on molecule sizes
   function calculateSpacingParams(hierarchyRoot) {

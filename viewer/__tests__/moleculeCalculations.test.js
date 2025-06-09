@@ -1,243 +1,230 @@
 /**
  * @jest-environment jsdom
+ *
+ * Test Suite for Molecule Calculation Functions
+ *
+ * These tests verify the functionality of molecule-related calculations:
+ * 1. calculateMoleculeSize: Determines display size based on chemical formula
+ * 2. calculateStepSize: Finds the largest molecule in a reaction step
+ * 3. formatFormula: Formats chemical formulas with subscript numbers
  */
 
-// Import the functions to test
 const {
   calculateMoleculeSize,
   calculateStepSize,
   formatFormula,
 } = require("../app_v4");
 
+// Common test data
+const SAMPLE_FORMULAS = {
+  SMALL: "H2",
+  MEDIUM: "C6H12O6",
+  LARGE: "C60H120O60",
+  COMPLEX: "C60H120O60N20P10S5",
+  INVALID: "C-H-O-N",
+  SPECIAL: "C(CH3)3",
+  NON_STANDARD: "$$C6H12O6$$",
+};
+
+const SAMPLE_METADATA = {
+  SMALL: { chemical_formula: SAMPLE_FORMULAS.SMALL },
+  MEDIUM: { chemical_formula: SAMPLE_FORMULAS.MEDIUM },
+  LARGE: { chemical_formula: SAMPLE_FORMULAS.LARGE },
+  COMPLEX: { chemical_formula: SAMPLE_FORMULAS.COMPLEX },
+};
+
+const DEFAULT_SIZE = { radius: 35, svgSize: 60 };
+const MIN_RADIUS = 45;
+
 describe("Molecule Calculation Functions", () => {
   describe("calculateMoleculeSize", () => {
-    test("calculates size based on chemical formula", () => {
-      const result = calculateMoleculeSize({ chemical_formula: "C6H12O6" });
-      expect(result).toHaveProperty("radius");
-      expect(result).toHaveProperty("svgSize");
-    });
-
-    test("handles undefined or missing metadata", () => {
-      const result = calculateMoleculeSize(undefined);
-      expect(result).toEqual({ radius: 35, svgSize: 60 });
-    });
-
-    test("handles large molecules", () => {
-      const result = calculateMoleculeSize({ chemical_formula: "C60H120O60" });
-      expect(result.radius).toBeGreaterThan(45);
-
-      // Check different scaling for large molecules
-      const complexResult = calculateMoleculeSize({
-        chemical_formula: "C60H120O60N20P10",
-      });
-      expect(complexResult.svgSize).toBeGreaterThan(result.svgSize);
-    });
-
-    test("handles complex formulas", () => {
-      const result = calculateMoleculeSize({
-        chemical_formula: "C60H120O60N20P10",
-      });
-      expect(result.radius).toBeGreaterThan(45);
-      expect(result.svgSize).toBeGreaterThan(90);
-    });
-
-    test("handles invalid inputs", () => {
-      // Just test for default values to be returned
-      expect(calculateMoleculeSize(null)).toEqual({
-        radius: 35,
-        svgSize: 60,
+    // Basic Functionality Tests
+    describe("Basic Size Calculations", () => {
+      test("calculates size based on chemical formula", () => {
+        const result = calculateMoleculeSize(SAMPLE_METADATA.MEDIUM);
+        expect(result).toHaveProperty("radius");
+        expect(result).toHaveProperty("svgSize");
       });
 
-      expect(calculateMoleculeSize({ chemical_formula: null })).toEqual({
-        radius: 35,
-        svgSize: 60,
+      test("handles undefined or missing metadata", () => {
+        const result = calculateMoleculeSize(undefined);
+        expect(result).toEqual(DEFAULT_SIZE);
+      });
+
+      test("scales correctly with molecule complexity", () => {
+        const small = calculateMoleculeSize(SAMPLE_METADATA.SMALL);
+        const medium = calculateMoleculeSize(SAMPLE_METADATA.MEDIUM);
+        const large = calculateMoleculeSize(SAMPLE_METADATA.COMPLEX);
+
+        // Verify size scaling
+        expect(small.radius).toBeLessThan(medium.radius);
+        expect(medium.radius).toBeLessThan(large.radius);
+        expect(small.svgSize).toBeLessThan(medium.svgSize);
+        expect(medium.svgSize).toBeLessThan(large.svgSize);
       });
     });
 
-    test("with different atom types", () => {
-      // Test with single atom type
-      const singleAtom = calculateMoleculeSize({ chemical_formula: "H10" });
-
-      // Test with multiple atom types
-      const multipleAtoms = calculateMoleculeSize({
-        chemical_formula: "C10H10",
+    // Edge Cases and Special Inputs
+    describe("Edge Cases", () => {
+      test("handles invalid inputs", () => {
+        expect(calculateMoleculeSize(null)).toEqual(DEFAULT_SIZE);
+        expect(calculateMoleculeSize({ chemical_formula: null })).toEqual(
+          DEFAULT_SIZE
+        );
       });
 
-      // Test with many atom types
-      const manyAtoms = calculateMoleculeSize({
-        chemical_formula: "C10H20N5O10",
+      test("handles special formula patterns", () => {
+        const specialChars = calculateMoleculeSize({
+          chemical_formula: SAMPLE_FORMULAS.INVALID,
+        });
+        const irregularFormat = calculateMoleculeSize({
+          chemical_formula: SAMPLE_FORMULAS.SPECIAL,
+        });
+        const nonStandard = calculateMoleculeSize({
+          chemical_formula: SAMPLE_FORMULAS.NON_STANDARD,
+        });
+
+        // Verify all return valid sizes
+        expect(specialChars.radius).toBeGreaterThan(0);
+        expect(irregularFormat.radius).toBeGreaterThan(0);
+        expect(nonStandard.radius).toBeGreaterThan(0);
       });
 
-      // More atom types should generally lead to larger radius
-      // This is a flexible test since the exact calculation might vary
-      expect(multipleAtoms.radius).toBeGreaterThanOrEqual(singleAtom.radius);
-      expect(manyAtoms.radius).toBeGreaterThanOrEqual(multipleAtoms.radius);
+      test("handles empty and null formulas", () => {
+        expect(calculateMoleculeSize({ chemical_formula: "" })).toEqual(
+          DEFAULT_SIZE
+        );
+        expect(calculateMoleculeSize({ chemical_formula: null })).toEqual(
+          DEFAULT_SIZE
+        );
+        expect(calculateMoleculeSize({ chemical_formula: "H" }).radius).toBe(
+          MIN_RADIUS
+        );
+        expect(
+          calculateMoleculeSize({ chemical_formula: "CHON" }).radius
+        ).toBeGreaterThan(DEFAULT_SIZE.radius);
+      });
     });
 
-    test("handles extremely large molecules", () => {
-      // Create a very complex formula
-      const hugeFormula = "C100H200O50N30P10S5";
-      const result = calculateMoleculeSize({ chemical_formula: hugeFormula });
+    // Complex Molecule Tests
+    describe("Complex Molecules", () => {
+      test("handles large molecules", () => {
+        const result = calculateMoleculeSize(SAMPLE_METADATA.LARGE);
+        expect(result.radius).toBeGreaterThan(MIN_RADIUS);
 
-      // Should have large radius and svgSize for very complex molecules
-      expect(result.radius).toBeGreaterThan(60);
-      expect(result.svgSize).toBeGreaterThan(100);
-    });
-
-    test("formula parsing edge cases", () => {
-      // Test with formulas that might have tricky regex patterns
-      const specialChars = calculateMoleculeSize({
-        chemical_formula: "C-H-O-N",
-      }); // Hyphens
-      const irregularFormat = calculateMoleculeSize({
-        chemical_formula: "C(CH3)3",
-      }); // Parentheses
-      const nonStandard = calculateMoleculeSize({
-        chemical_formula: "$$C6H12O6$$",
-      }); // Special chars
-
-      // All should return valid sizes
-      expect(specialChars.radius).toBeGreaterThan(0);
-      expect(irregularFormat.radius).toBeGreaterThan(0);
-      expect(nonStandard.radius).toBeGreaterThan(0);
-    });
-
-    test("scales correctly with molecule complexity", () => {
-      // Very small molecule
-      const small = calculateMoleculeSize({ chemical_formula: "H2" });
-
-      // Medium molecule
-      const medium = calculateMoleculeSize({ chemical_formula: "C6H12O6" });
-
-      // Large complex molecule
-      const large = calculateMoleculeSize({
-        chemical_formula: "C60H120O60N20P10S5",
+        const complexResult = calculateMoleculeSize(SAMPLE_METADATA.COMPLEX);
+        expect(complexResult.svgSize).toBeGreaterThan(result.svgSize);
       });
 
-      // Ensure sizes scale up with complexity
-      expect(small.radius).toBeLessThan(medium.radius);
-      expect(medium.radius).toBeLessThan(large.radius);
-      expect(small.svgSize).toBeLessThan(medium.svgSize);
-      expect(medium.svgSize).toBeLessThan(large.svgSize);
-    });
+      test("with different atom types", () => {
+        const singleAtom = calculateMoleculeSize({ chemical_formula: "H10" });
+        const multipleAtoms = calculateMoleculeSize({
+          chemical_formula: "C10H10",
+        });
+        const manyAtoms = calculateMoleculeSize({
+          chemical_formula: "C10H20N5O10",
+        });
 
-    test("handles edge cases and special formulas", () => {
-      // Test with empty string
-      const empty = calculateMoleculeSize({ chemical_formula: "" });
-      expect(empty.radius).toBe(35); // Should use default values
-
-      // Test with null
-      const nullFormula = calculateMoleculeSize({ chemical_formula: null });
-      expect(nullFormula.radius).toBe(35);
-
-      // Test with simple single atom
-      const singleAtom = calculateMoleculeSize({ chemical_formula: "H" });
-      expect(singleAtom.radius).toBe(45); // Should use base radius for small molecules
-
-      // Test with formula that has no numbers
-      const noNumbers = calculateMoleculeSize({ chemical_formula: "CHON" });
-      expect(noNumbers.radius).toBeGreaterThan(35); // Should calculate based on unique elements
+        expect(multipleAtoms.radius).toBeGreaterThanOrEqual(singleAtom.radius);
+        expect(manyAtoms.radius).toBeGreaterThanOrEqual(multipleAtoms.radius);
+      });
     });
   });
 
   describe("calculateStepSize", () => {
-    test("finds largest molecule in step", () => {
-      const molecules = [
-        { type: "reactant", reactant_metadata: { chemical_formula: "C2H6" } },
-        {
-          type: "reactant",
-          reactant_metadata: { chemical_formula: "C6H12O6" },
-        },
-      ];
+    // Test Data
+    const SAMPLE_MOLECULES = {
+      SMALL: {
+        type: "reactant",
+        reactant_metadata: { chemical_formula: "H2" },
+      },
+      MEDIUM: {
+        type: "reactant",
+        reactant_metadata: { chemical_formula: "C6H12O6" },
+      },
+      LARGE: {
+        type: "step0",
+        product_metadata: { chemical_formula: "C60H120O60" },
+      },
+    };
 
-      const result = calculateStepSize(molecules);
-      expect(result).toBeGreaterThan(0);
+    // Basic Functionality Tests
+    describe("Basic Size Calculations", () => {
+      test("finds largest molecule in step", () => {
+        const molecules = [SAMPLE_MOLECULES.SMALL, SAMPLE_MOLECULES.MEDIUM];
+
+        const result = calculateStepSize(molecules);
+        expect(result).toBeGreaterThan(0);
+      });
+
+      test("handles step0 type molecules", () => {
+        const molecules = [SAMPLE_MOLECULES.LARGE];
+        const result = calculateStepSize(molecules);
+        expect(result).toBeGreaterThan(MIN_RADIUS);
+      });
     });
 
-    test("handles step0 type molecules", () => {
-      const molecules = [
-        { type: "step0", product_metadata: { chemical_formula: "C60H120O60" } },
-      ];
+    // Edge Cases
+    describe("Edge Cases", () => {
+      test("handles mixed molecule types", () => {
+        const molecules = [
+          SAMPLE_MOLECULES.SMALL,
+          SAMPLE_MOLECULES.LARGE,
+          SAMPLE_MOLECULES.MEDIUM,
+        ];
 
-      const result = calculateStepSize(molecules);
-      expect(result).toBeGreaterThan(45);
-    });
+        const size = calculateStepSize(molecules);
+        expect(size).toBeGreaterThan(MIN_RADIUS);
+      });
 
-    test("handles mixed molecule types", () => {
-      const molecules = [
-        { type: "reactant", reactant_metadata: { chemical_formula: "H2" } },
-        { type: "step0", product_metadata: { chemical_formula: "C60H120O60" } },
-        { type: "reactant", reactant_metadata: { chemical_formula: "CH4" } },
-      ];
-
-      const size = calculateStepSize(molecules);
-
-      // The size should be determined by the largest molecule (the C60H120O60)
-      expect(size).toBeGreaterThan(45);
-    });
-
-    test("handles edge cases", () => {
-      // Empty array should return smallest radius
-      const emptyResult = calculateStepSize([]);
-      // Test for a number, not specifically 0
-      expect(typeof emptyResult).toBe("number");
-
-      // Test with molecules that have no metadata - should still return a number
-      const noMetadataResult = calculateStepSize([{}, {}]);
-      expect(typeof noMetadataResult).toBe("number");
+      test("handles empty and invalid inputs", () => {
+        expect(typeof calculateStepSize([])).toBe("number");
+        expect(typeof calculateStepSize([{}, {}])).toBe("number");
+      });
     });
   });
 
   describe("formatFormula", () => {
-    test("formats chemical formulas with subscripts", () => {
-      const result = formatFormula("C6H12O6");
-      expect(result).toContain("<tspan");
-      expect(result).toContain("baseline-shift");
+    // Test Data
+    const SAMPLE_FORMULAS_WITH_NUMBERS = {
+      SIMPLE: "H2O",
+      MEDIUM: "C6H12O6",
+      COMPLEX: "C12H22O11N5",
+    };
+
+    // Basic Functionality Tests
+    describe("Basic Formatting", () => {
+      test("formats chemical formulas with subscripts", () => {
+        const result = formatFormula(SAMPLE_FORMULAS_WITH_NUMBERS.MEDIUM);
+        expect(result).toContain("<tspan");
+        expect(result).toContain("baseline-shift");
+      });
+
+      test("handles complex formulas", () => {
+        const result = formatFormula(SAMPLE_FORMULAS_WITH_NUMBERS.COMPLEX);
+        expect(result.match(/<tspan/g).length).toBe(4); // One for each number: 12, 22, 11, 5
+      });
     });
 
-    test("handles complex formulas", () => {
-      const complexFormula = "C12H22O11";
-      const result = formatFormula(complexFormula);
+    // Edge Cases
+    describe("Edge Cases", () => {
+      test("handles various input types", () => {
+        expect(formatFormula(SAMPLE_FORMULAS_WITH_NUMBERS.SIMPLE)).toContain(
+          "<tspan"
+        );
+        expect(formatFormula("CHNO")).not.toContain("<tspan");
+        expect(formatFormula(SAMPLE_FORMULAS_WITH_NUMBERS.COMPLEX)).toContain(
+          "<tspan"
+        );
+      });
 
-      // Should have multiple subscript tspans
-      expect(result.match(/<tspan/g).length).toBe(3); // One for each number: 12, 22, 11
-    });
-
-    test("handles various input types", () => {
-      // Test with simple formula
-      expect(formatFormula("H2O")).toContain("<tspan");
-
-      // Test with no numbers
-      expect(formatFormula("CHNO")).not.toContain("<tspan");
-
-      // Test with complex formula
-      expect(formatFormula("C12H22O11N5")).toContain("<tspan");
-      expect(formatFormula("C12H22O11N5").match(/<tspan/g).length).toBe(4);
-    });
-
-    test("handles edge case inputs", () => {
-      // Empty string
-      expect(formatFormula("")).toBe("");
-
-      // No digits
-      expect(formatFormula("CHO")).toBe("CHO");
-
-      // Just digits
-      expect(formatFormula("123")).toContain("<tspan");
-
-      // Large numbers
-      expect(formatFormula("C123H456O789")).toContain("<tspan");
-    });
-
-    test("handles edge case formula patterns", () => {
-      // Test empty string
-      expect(formatFormula("")).toBe("");
-
-      // Test with no numbers
-      expect(formatFormula("CHON")).toBe("CHON");
-
-      // Test with unusual character sequences
-      expect(formatFormula("C-12-H-24")).toContain("<tspan");
+      test("handles special cases", () => {
+        expect(formatFormula("")).toBe("");
+        expect(formatFormula("CHO")).toBe("CHO");
+        expect(formatFormula("123")).toContain("<tspan");
+        expect(formatFormula("C123H456O789")).toContain("<tspan");
+        expect(formatFormula("C-12-H-24")).toContain("<tspan");
+      });
     });
   });
 });
