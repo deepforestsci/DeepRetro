@@ -1,3 +1,17 @@
+/**
+ * DeepRetro Viewer
+ *
+ * This application provides an interactive visualization of chemical reaction pathways.
+ * It allows users to:
+ * 1. Upload JSON files containing reaction pathway data
+ * 2. View molecular structures and reaction steps in a tree layout
+ * 3. Interact with molecules to see detailed information
+ * 4. Navigate through different reaction pathways
+ *
+ * The visualization uses D3.js for rendering the reaction tree and OpenChemLib for
+ * molecular structure visualization.
+ */
+
 // app.js
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -5,21 +19,27 @@ document.addEventListener("DOMContentLoaded", () => {
   fileInput.addEventListener("change", handleFileSelect, false);
 });
 
+/**
+ * Updates the pathway number display in the UI
+ * @param {number} pathwayNum - The pathway number to display
+ */
 function updatePathwayNumber(pathwayNum) {
   try {
+    // Get DOM elements for pathway display
     const pathwayDisplay = document.getElementById("pathway-number");
     const currentPathway = document.getElementById("current-pathway");
 
+    // Validate DOM elements exist
     if (!pathwayDisplay || !currentPathway) {
       console.error("Pathway display elements not found");
       return;
     }
 
-    // Always show the pathway number
+    // Show pathway number and ensure it's visible
     pathwayDisplay.style.display = "block";
     currentPathway.textContent = pathwayNum;
 
-    // Make sure it's visible by bringing it to front
+    // Ensure display is on top of other elements
     pathwayDisplay.style.position = "relative";
     pathwayDisplay.style.zIndex = "1000";
 
@@ -29,57 +49,77 @@ function updatePathwayNumber(pathwayNum) {
   }
 }
 
+/**
+ * Handles file selection and initiates visualization
+ * @param {Event} event - The file input change event
+ */
 function handleFileSelect(event) {
+  // Validate event and files
+  if (!event || !event.target || !event.target.files) {
+    console.error("[handleFileSelect] Invalid event or missing files list");
+    return;
+  }
+
   const file = event.target.files[0];
   if (file) {
     const reader = new FileReader();
     reader.onload = function (e) {
       try {
+        // Parse uploaded JSON file
         const data = JSON.parse(e.target.result);
+
+        // Process data into hierarchical structure
         const processedTree = processData(data);
         const rootStep = processedTree["0"];
 
-        // Always show pathway 1 for new file
+        // Always start with pathway 1 for new files
         updatePathwayNumber(1);
 
+        // Render the reaction pathway graph
         renderGraph(rootStep);
       } catch (error) {
         alert("Error parsing JSON: " + error.message);
       }
     };
     reader.readAsText(file);
+  } else {
+    console.error("[handleFileSelect] No file selected");
   }
 }
 
+/**
+ * Processes raw reaction data into a hierarchical structure
+ * Adds Step 0 as root node and establishes parent-child relationships
+ * @param {Object} data - Raw reaction pathway data
+ * @returns {Object} Processed hierarchical data structure
+ */
 function processData(data) {
-  // --- Add log here ---
+  // Log incoming data for debugging
   console.log("[processData] Received data:", JSON.stringify(data, null, 2));
-  // --------------------
 
-  // Check if the data already contains an explicit Step 0 (handle string or number)
-  // const hasExplicitStep0 = data.steps && data.steps.some(s => String(s.step) === '0'); // REMOVED CHECK
-  // --- Add log here ---
-  // console.log(`[processData] Does it have explicit Step 0? ${hasExplicitStep0}`); // REMOVED LOG
-  // --------------------
+  // Validate input data
+  if (!data || !data.steps || data.steps.length === 0) {
+    console.warn(
+      "[processData] Input data has no steps. Returning empty tree."
+    );
+    return {};
+  }
 
-  let data_steps;
-  let newDependencies;
-
-  // Define buildTree helper function (can be used by both branches)
+  // Helper function to build tree structure from steps
   function buildTree(steps, parent_id) {
     let tree = {};
     for (const step of steps) {
-      // Ensure parent_id comparison handles null/undefined/0 correctly
+      // Handle null/undefined parent_id cases
       const stepParentId = step.parent_id === undefined ? null : step.parent_id;
       if (stepParentId === parent_id) {
-        // Process this step and its children
+        // Create tree node for this step and recursively process children
         const stepId = parseInt(step.step);
         tree[stepId] = {
-          step: step, // Use the whole step object
+          step: step,
           children: buildTree(steps, stepId),
         };
 
-        // Log tree building information for debugging
+        // Log tree construction progress
         if (parent_id === null) {
           console.log(`[buildTree] Adding root step ${stepId}`);
         } else {
@@ -92,156 +132,97 @@ function processData(data) {
     return tree;
   }
 
-  // REMOVED if (hasExplicitStep0) { ... } else { ... } structure
-  // Always run the reconstruction logic:
+  // Extract data from first step to construct Step 0
+  const step1Data = data.steps[0];
 
-  // Construct Step 0 and process dependencies
-  console.log("[processData] Constructing Step 0 and processing dependencies.");
-
-  // --- Ensure we handle cases where data.steps might be empty or null ---
-  if (!data || !data.steps || data.steps.length === 0) {
-    console.warn(
-      "[processData] Input data has no steps. Returning empty tree."
-    );
-    return {}; // Return an empty object or handle as appropriate
+  // Validate Step 1 has products
+  if (!step1Data.products || step1Data.products.length === 0) {
+    console.warn("[processData] Step 1 has no products defined");
   }
-  // --- End handling empty steps ---
 
-  const step1Data = data.steps[0]; // Assumes at least one step exists after check
-
-  // --- Handle case where step 1 might not have products ---
+  // Get first product from Step 1 to use as Step 0's product
   const greenProduct =
     step1Data.products && step1Data.products.length > 0
       ? step1Data.products[0]
       : null;
-  if (!greenProduct) {
-    console.warn(
-      "[processData] Step 1 has no products defined. Step 0 will be empty."
-    );
-    // Decide how to handle this - maybe create a placeholder Step 0?
-    // For now, we'll proceed but Step 0's product will be null.
-  }
-  // --- End handling no products in step 1 ---
 
+  // Construct Step 0 as root node
   const step0 = {
     step: "0",
-    products: greenProduct ? [greenProduct] : [], // Use the extracted product or empty array
+    products: greenProduct ? [greenProduct] : [],
     reactants: [],
-    // --- Safely access potentially missing nested properties ---
     conditions: step1Data.conditions || {},
     reactionmetrics: step1Data.reactionmetrics || {},
-    // --- End safe access ---
   };
 
+  // Modify Step 1 to connect with Step 0
   const step1Modified = {
     ...step1Data,
     step: "1",
-    products: step1Data.products ? step1Data.products.slice(1) : [], // Take all products except first one
-    parent_id: 0, // Explicitly set parent_id for the modified step 1
+    products: step1Data.products ? step1Data.products.slice(1) : [],
+    parent_id: 0,
   };
-  // --- Add log here ---
-  console.log(
-    "[processData] Constructed step0:",
-    JSON.stringify(step0, null, 2)
-  );
-  console.log(
-    "[processData] Constructed step1Modified:",
-    JSON.stringify(step1Modified, null, 2)
-  );
-  // --------------------
 
-  // Create new steps array with step 0
-  // Filter out the original step 1 before adding the modified one
+  // Create new steps array with Step 0 and modified Step 1
   const remainingSteps = data.steps
     .slice(1)
     .filter((s) => String(s.step) !== "1");
   const initialSteps = [step0, step1Modified, ...remainingSteps];
 
-  // Update dependencies to start from step 0
-  // Make sure data.dependencies exists before trying to access it
+  // Update dependencies to include Step 0
   const originalDependencies = data.dependencies || {};
-  newDependencies = {
-    0: ["1"], // Step 0 always points to step 1
+  const newDependencies = {
+    0: ["1"], // Step 0 always points to Step 1
   };
 
-  // Copy all existing dependencies to preserve the tree structure
+  // Preserve existing dependencies
   Object.keys(originalDependencies).forEach((key) => {
-    // Keep all dependencies except the original step 1's if any
-    if (key !== "1") {
-      newDependencies[key] = originalDependencies[key];
-    }
+    newDependencies[key] = originalDependencies[key] || [];
   });
 
-  // If step 1 had dependencies to other steps, preserve them
-  if (originalDependencies["1"] && Array.isArray(originalDependencies["1"])) {
-    newDependencies["1"] = originalDependencies["1"];
-  }
+  // Calculate parent-child relationships
+  let parent_id_map = {};
+  parent_id_map[0] = null;
+  parent_id_map[1] = 0;
 
-  // --- Log new dependencies ---
-  console.log(
-    "[processData] Constructed newDependencies:",
-    JSON.stringify(newDependencies, null, 2)
-  );
-  // --------------------------
-
-  // Calculate parent_id list based on reconstructed dependencies
-  let parent_id_map = {}; // Use a map for easier lookup { childId: parentId }
-  parent_id_map[0] = null; // Step 0 has no parent
-  parent_id_map[1] = 0; // Step 1's parent is 0
-
+  // Build parent-child map from dependencies
   for (const parentStep in newDependencies) {
-    // Ensure the value is an array before iterating
     const children = Array.isArray(newDependencies[parentStep])
       ? newDependencies[parentStep]
       : [];
     for (const childStep of children) {
-      // Ensure keys are treated as numbers for lookups if necessary
       const childNum = parseInt(childStep);
       const parentNum = parseInt(parentStep);
-      // Avoid overwriting Step 1's parent if defined elsewhere
       if (childNum !== 1) {
         parent_id_map[childNum] = parentNum;
       }
     }
   }
-  // --- Log parent map ---
-  console.log(
-    "[processData] Constructed parent_id_map:",
-    JSON.stringify(parent_id_map, null, 2)
-  );
-  // ---------------------
 
-  // Update steps array with correct parent_id and child_id information
-  data_steps = initialSteps.map((step) => {
+  // Update steps with parent-child information
+  const data_steps = initialSteps.map((step) => {
     const stepNum = parseInt(step.step);
     const parentId = parent_id_map[stepNum];
-
-    // Calculate child_id based on dependencies
-    const childIds = [];
-    if (
-      newDependencies[String(stepNum)] &&
-      Array.isArray(newDependencies[String(stepNum)])
-    ) {
-      childIds.push(...newDependencies[String(stepNum)]);
-    }
+    const childIds = newDependencies[String(stepNum)] || [];
 
     return {
       ...step,
-      parent_id: parentId !== undefined ? parentId : null, // Assign from map
-      child_id: childIds, // Use calculated child IDs
+      parent_id: parentId !== undefined ? parentId : null,
+      child_id: childIds,
     };
   });
-  // --- Log final data_steps ---
-  console.log(
-    "[processData] Final data_steps before buildTree:",
-    JSON.stringify(data_steps, null, 2)
-  );
-  // ---------------------------
 
-  return buildTree(data_steps, null); // Build tree from newly processed steps
+  // Build and return final tree structure
+  return buildTree(data_steps, null);
 }
 
+/**
+ * Calculates appropriate size for molecule visualization based on complexity
+ * @param {Object} metadata - Molecule metadata containing chemical formula
+ * @returns {Object} Object containing radius and SVG size
+ */
 function calculateMoleculeSize(metadata) {
+  // Return default size if no metadata available
   if (!metadata || !metadata.chemical_formula) {
     return {
       radius: 35,
@@ -251,7 +232,7 @@ function calculateMoleculeSize(metadata) {
 
   const formula = metadata.chemical_formula;
 
-  // Count total atoms including repeats
+  // Count total atoms including repeating ones
   const atomMatches = formula.match(/[A-Z][a-z]?\d*/g) || [];
   let totalAtoms = 0;
   atomMatches.forEach((match) => {
@@ -259,15 +240,15 @@ function calculateMoleculeSize(metadata) {
     totalAtoms += count ? parseInt(count[0]) : 1;
   });
 
-  // Count unique elements
+  // Count unique elements for complexity
   const uniqueElements = new Set(formula.replace(/[0-9]/g, "").split("")).size;
 
-  // New calculation that better accounts for molecular size
-  const baseRadius = 45; // Increased base radius
-  const complexityFactor = Math.log(totalAtoms) * 20; // Steeper scaling
+  // Calculate radius based on molecular complexity
+  const baseRadius = 45; // Base size for all molecules
+  const complexityFactor = Math.log(totalAtoms) * 20; // Additional size based on atom count
   const radius = Math.max(baseRadius, baseRadius + complexityFactor);
 
-  // SVG size proportional to radius with larger multiplier for complex molecules
+  // Calculate SVG size with extra space for complex molecules
   const svgSize = totalAtoms > 50 ? radius * 2 : radius * 1.8;
 
   return {
@@ -276,63 +257,79 @@ function calculateMoleculeSize(metadata) {
   };
 }
 
+/**
+ * Calculates the overall size needed for a reaction step
+ * @param {Array} molecules - Array of molecules in the step
+ * @returns {number} Maximum radius needed for the step
+ */
 function calculateStepSize(molecules) {
-  // Find largest molecule in step
+  // Find the largest molecule in the step to determine minimum space needed
   let maxRadius = 0;
   molecules.forEach((molecule) => {
+    // Get appropriate metadata based on molecule type
     const metadata =
       molecule.type === "step0"
         ? molecule.product_metadata
         : molecule.reactant_metadata;
+
+    // Calculate size and update maximum if needed
     const { radius } = calculateMoleculeSize(metadata);
     maxRadius = Math.max(maxRadius, radius);
   });
   return maxRadius;
 }
 
+/**
+ * Formats chemical formulas with subscripts for proper display
+ * @param {string} formula - Chemical formula to format
+ * @returns {string} HTML formatted formula with subscripts
+ */
 function formatFormula(formula) {
+  // Convert numbers in chemical formulas to subscripts using tspan
   return formula.replace(/(\d+)/g, '<tspan baseline-shift="sub">$1</tspan>');
 }
 
+/**
+ * Main function for rendering the reaction pathway graph
+ * Sets up the SVG canvas, renders nodes and edges, and adds interactivity
+ * @param {Object} rootStep - Root node of the reaction pathway tree
+ */
 function renderGraph(rootStep) {
+  // Clear existing graph and tooltips
   d3.select("#graph").selectAll("*").remove();
   d3.select("body").selectAll(".tooltip").remove();
 
+  // Add container styles
   const containerStyles = document.createElement("style");
   containerStyles.textContent = `
-        #graph {
-            width: 100%;
-            height: 800px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #ddd;
-        }
-        
-        #graph button {
-            width: 30px;
-            height: 30px;
-            margin: 2px;
-            color: black;
-            font-weight: bold;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: white;
-            cursor: pointer;
-        }
-        #graph button:hover {
-            background: #f5f5f5;
-        }
-    `;
+    #graph {
+      width: 100%;
+      height: 800px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #ddd;
+    }
+    
+    #graph button {
+      width: 30px;
+      height: 30px;
+      margin: 2px;
+      color: black;
+      font-weight: bold;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
+    }
+    #graph button:hover {
+      background: #f5f5f5;
+    }
+  `;
   document.head.appendChild(containerStyles);
 
+  // Helper function to build D3 hierarchy
   const buildTree = (step) => {
-    // Add diagnostic logging
-    console.log(
-      `[renderGraph.buildTree] Processing step ${step.step.step} with ${
-        Object.keys(step.children).length
-      } children`
-    );
-
+    console.log(`[renderGraph.buildTree] Processing step ${step.step.step}`);
     const node = {
       ...step.step,
       children: Object.values(step.children).map((childStep) =>
@@ -342,58 +339,16 @@ function renderGraph(rootStep) {
     return node;
   };
 
+  // Create D3 hierarchy from data
   const root = buildTree(rootStep);
-  console.log(
-    `[renderGraph] Built tree with root step ${root.step}, children count: ${
-      root.children ? root.children.length : 0
-    }`
-  );
-
-  const styles = document.createElement("style");
-  styles.textContent = `
-        .tooltip {
-            position: absolute;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            pointer-events: none;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-            font-size: 14px;
-            border: 1px solid #f0f0f0;
-            max-width: 300px;
-            z-index: 9999;
-            transition: opacity 0.2s ease-in-out;
-        }
-        .molecule-node {
-            transition: all 0.2s ease;
-        }
-        .molecule-node:hover circle {
-            stroke-width: 3px;
-            filter: brightness(0.98);
-        }
-        .link path, .link line {
-            transition: all 0.2s ease;
-        }
-        .link:hover path, .link:hover line {
-            stroke: #2196F3;
-            stroke-width: 2.5px;
-        }
-        .mol-info text {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-            font-size: 12px;
-            fill: #666;
-        }
-    `;
-  document.head.appendChild(styles);
-
-  // Create hierarchy and calculate spacing
   let hierarchyRoot = d3.hierarchy(root);
 
+  // Calculate spacing based on molecule sizes
   function calculateSpacingParams(hierarchyRoot) {
     let maxStepSize = 0;
     hierarchyRoot.each((d) => {
       const molecules = [];
+      // Collect molecules from step
       if (d.data.step === "0" && d.data.products) {
         molecules.push(
           ...d.data.products.map((m) => ({ ...m, type: "step0" }))
@@ -413,8 +368,7 @@ function renderGraph(rootStep) {
     };
   }
 
-  const spacing = calculateSpacingParams(hierarchyRoot);
-
+  // Set up SVG and zoom behavior
   const svg = d3
     .select("#graph")
     .append("svg")
@@ -424,6 +378,7 @@ function renderGraph(rootStep) {
 
   const g = svg.append("g");
 
+  // Add gradient definitions for molecule styling
   const defs = svg.append("defs");
 
   defs
@@ -461,6 +416,7 @@ function renderGraph(rootStep) {
     .attr("stop-color", (d) => d.color);
 
   // Create tree layout with dynamic spacing
+  const spacing = calculateSpacingParams(hierarchyRoot);
   const treeLayout = d3
     .tree()
     .nodeSize([spacing.moleculeSpacing * 2, spacing.nodeSpacing])
@@ -471,9 +427,10 @@ function renderGraph(rootStep) {
       return (a.parent === b.parent ? 2 : 2.5) * (1 + maxReactants * 0.2);
     });
 
-  // Apply layout to hierarchy
+  // Apply layout and calculate bounds
   hierarchyRoot = treeLayout(hierarchyRoot);
 
+  // Calculate SVG bounds based on node positions
   function calculateBounds(hierarchyRoot) {
     let minX = Infinity,
       maxX = -Infinity;
@@ -496,6 +453,7 @@ function renderGraph(rootStep) {
     };
   }
 
+  // Set SVG viewBox based on content bounds
   const bounds = calculateBounds(hierarchyRoot);
   svg.attr(
     "viewBox",
@@ -551,6 +509,7 @@ function renderGraph(rootStep) {
     .attr("class", "tooltip")
     .style("opacity", 0);
 
+  // Render links between nodes
   const link = g
     .selectAll(".link")
     .data(hierarchyRoot.links())
@@ -558,6 +517,7 @@ function renderGraph(rootStep) {
     .append("g")
     .attr("class", "link");
 
+  // Add curved paths for links
   link
     .append("path")
     .attr("d", (d) => {
@@ -565,20 +525,18 @@ function renderGraph(rootStep) {
       const sourceY = d.source.y;
       const targetX = d.target.x;
       const targetY = d.target.y;
-
-      // Calculate control points for the curved path
       const midY = (sourceY + targetY) / 2;
-
       return `M ${sourceY} ${sourceX}
-                    C ${midY} ${sourceX},
-                      ${midY} ${targetX},
-                      ${targetY} ${targetX}`;
+              C ${midY} ${sourceX},
+                ${midY} ${targetX},
+                ${targetY} ${targetX}`;
     })
     .attr("fill", "none")
     .attr("stroke", "#999")
     .attr("stroke-width", 1.5)
     .attr("marker-end", "url(#arrow)");
 
+  // Add hover effects and tooltips to links
   link
     .on("mouseover", function (event, d) {
       const path = d3.select(this).select("path");
@@ -631,6 +589,7 @@ function renderGraph(rootStep) {
     .attr("d", "M0,-5L10,0L0,5")
     .attr("fill", "#999");
 
+  // Render nodes
   const node = g
     .selectAll(".node")
     .data(hierarchyRoot.descendants())
@@ -647,11 +606,12 @@ function renderGraph(rootStep) {
       return `translate(${d.y},${d.x - yOffset})`;
     });
 
+  // Render molecules within nodes
   node.each(function (d) {
     const group = d3.select(this);
     try {
+      // Collect molecules for this node
       const molecules = [];
-
       if (d.data.step === "0" && d.data.products) {
         molecules.push(
           ...d.data.products.map((m) => ({ ...m, type: "step0" }))
@@ -662,8 +622,8 @@ function renderGraph(rootStep) {
         );
       }
 
+      // Calculate step size and add step number
       const stepSize = calculateStepSize(molecules);
-
       group
         .append("text")
         .attr("x", 0)
@@ -676,6 +636,7 @@ function renderGraph(rootStep) {
         .style("font-weight", "500")
         .text(`Step ${d.data.step}`);
 
+      // Render each molecule
       molecules.forEach((molecule, i) => {
         // Wrap individual molecule rendering in try...catch
         let molGroup; // Define molGroup here to be accessible in catch block
@@ -916,7 +877,7 @@ function renderGraph(rootStep) {
   });
 }
 
-// Export main functions for testing and coverage
+// Export functions for testing and coverage
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     updatePathwayNumber,

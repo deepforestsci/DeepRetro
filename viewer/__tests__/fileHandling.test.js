@@ -1,93 +1,165 @@
 /**
  * @jest-environment jsdom
+ *
+ * Test Suite for File Handling Functions
+ *
+ * These tests verify the functionality of file handling operations:
+ * 1. Processing uploaded JSON files
+ * 2. Parsing file contents and updating the pathway
+ * 3. Error handling for invalid files and JSON parsing
+ * 4. DOM updates based on file contents
  */
 
-// Import the functions to test
 const { handleFileSelect } = require("../app_v4");
 
+// Common test data
+const SAMPLE_DATA = {
+  VALID_JSON: {
+    steps: [
+      {
+        step: "1",
+        products: [{ smiles: "CCO" }],
+      },
+    ],
+  },
+  INVALID_JSON: "This is not valid JSON",
+};
+
+// Common DOM templates
+const DOM_TEMPLATES = {
+  COMPLETE: `
+    <div id="graph"></div>
+    <div id="pathway-number" style="display: none;">
+      <span id="current-pathway">-</span>
+    </div>
+  `,
+};
+
 describe("File Handling Functions", () => {
+  // Test environment setup
   beforeEach(() => {
-    // Reset all mocks before each test
+    setupTestEnvironment();
+  });
+
+  // Basic Functionality Tests
+  describe("Valid File Processing", () => {
+    test("processes valid JSON file input", () => {
+      // Setup test data
+      const { mockEvent, reader } = createMockFileEvent(
+        SAMPLE_DATA.VALID_JSON,
+        "application/json"
+      );
+
+      // Setup file reader mock
+      setupFileReaderMock(reader, SAMPLE_DATA.VALID_JSON);
+
+      // Execute file handling
+      handleFileSelect(mockEvent);
+
+      // Verify pathway update
+      expect(console.log).toHaveBeenCalledWith("Updated pathway number to:", 1);
+    });
+  });
+
+  // Error Handling Tests
+  describe("Error Handling", () => {
+    test("handles JSON parsing errors", () => {
+      // Setup test data
+      const { mockEvent, reader } = createMockFileEvent(
+        SAMPLE_DATA.INVALID_JSON,
+        "text/plain"
+      );
+
+      // Setup file reader mock
+      setupFileReaderMock(reader, SAMPLE_DATA.INVALID_JSON);
+
+      // Execute file handling
+      handleFileSelect(mockEvent);
+
+      // Verify error handling
+      expect(window.alert).toHaveBeenCalledWith(
+        expect.stringContaining("Error parsing JSON")
+      );
+    });
+
+    test("handles missing file input", () => {
+      const mockEvent = { target: {} };
+      handleFileSelect(mockEvent);
+      expect(console.error).toHaveBeenCalledWith(
+        "[handleFileSelect] Invalid event or missing files list"
+      );
+    });
+
+    test("handles null file list", () => {
+      const mockEvent = { target: { files: null } };
+      handleFileSelect(mockEvent);
+      expect(console.error).toHaveBeenCalledWith(
+        "[handleFileSelect] Invalid event or missing files list"
+      );
+    });
+
+    test("handles empty file list", () => {
+      const mockEvent = { target: { files: [] } };
+      handleFileSelect(mockEvent);
+      expect(console.error).toHaveBeenCalledWith(
+        "[handleFileSelect] No file selected"
+      );
+    });
+  });
+
+  // Helper Functions
+  function setupTestEnvironment() {
+    // Reset all mocks
     jest.clearAllMocks();
 
-    // Reset DOM elements for each test
-    document.body.innerHTML = `
-      <div id="graph"></div>
-      <div id="pathway-number" style="display: none;"><span id="current-pathway">-</span></div>
-    `;
+    // Setup DOM
+    document.body.innerHTML = DOM_TEMPLATES.COMPLETE;
 
-    // Reset console methods
+    // Setup console mocks
     global.console = {
       log: jest.fn(),
       error: jest.fn(),
       warn: jest.fn(),
     };
 
-    // Mock alert to prevent errors in test environment
+    // Setup alert mock
     global.alert = jest.fn();
-  });
+  }
 
-  test("handleFileSelect processes valid file input", () => {
+  function createMockFileEvent(content, type) {
+    // Create mock file
     const mockFile = new Blob(
-      [
-        JSON.stringify({
-          steps: [{ step: "1", products: [{ smiles: "CCO" }] }],
-        }),
-      ],
-      { type: "application/json" }
+      [typeof content === "string" ? content : JSON.stringify(content)],
+      { type }
     );
-    const mockEvent = { target: { files: [mockFile] } };
 
+    // Create mock event
+    const mockEvent = {
+      target: {
+        files: [mockFile],
+      },
+    };
+
+    // Setup file input element
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     document.body.appendChild(fileInput);
 
+    // Setup FileReader
     const reader = new FileReader();
     jest.spyOn(window, "FileReader").mockImplementation(() => reader);
+
+    return { mockEvent, reader };
+  }
+
+  function setupFileReaderMock(reader, content) {
     jest.spyOn(reader, "readAsText").mockImplementation(function () {
       this.onload({
         target: {
-          result: JSON.stringify({
-            steps: [{ step: "1", products: [{ smiles: "CCO" }] }],
-          }),
+          result:
+            typeof content === "string" ? content : JSON.stringify(content),
         },
       });
     });
-
-    handleFileSelect(mockEvent);
-
-    expect(console.log).toHaveBeenCalledWith("Updated pathway number to:", 1);
-  });
-
-  test("handles JSON parsing errors", () => {
-    // Spy on alert to verify it's called
-    jest.spyOn(window, "alert").mockImplementation(() => {});
-
-    // Create an invalid JSON file
-    const invalidJsonFile = new Blob(["This is not valid JSON"], {
-      type: "text/plain",
-    });
-
-    const mockEvent = { target: { files: [invalidJsonFile] } };
-
-    // Setup DOM element for the test
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    document.body.appendChild(fileInput);
-
-    // Mock FileReader
-    const reader = new FileReader();
-    jest.spyOn(window, "FileReader").mockImplementation(() => reader);
-    jest.spyOn(reader, "readAsText").mockImplementation(function () {
-      this.onload({ target: { result: "This is not valid JSON" } });
-    });
-
-    // Execute the function
-    handleFileSelect(mockEvent);
-
-    // Verify alert was called with error message
-    expect(window.alert).toHaveBeenCalledWith(
-      expect.stringContaining("Error parsing JSON")
-    );
-  });
+  }
 });
