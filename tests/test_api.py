@@ -3,6 +3,7 @@ import os
 import json
 from unittest.mock import patch, ANY
 
+
 # --- Minimal change for CI: Start ---
 # Store original API_KEY if it exists and set a specific one for tests
 _ORIGINAL_API_KEY_ENV = os.environ.get('API_KEY')
@@ -10,9 +11,11 @@ _TEST_API_KEY = "test_api_key_for_ci_12345"
 os.environ['API_KEY'] = _TEST_API_KEY
 # --- Minimal change for CI: End ---
 
+
 from src.api import app, save_result, load_result, PARTIAL_JSON_PATH, API_KEY
 
 class TestApiFunctions(unittest.TestCase):
+
 
     @classmethod
     def tearDownClass(cls):
@@ -29,12 +32,14 @@ class TestApiFunctions(unittest.TestCase):
         self.app_context = app.app_context()
         self.app_context.push()
         self.client = app.test_client()
+
         self.api_key = API_KEY
         # --- Minimal change for CI: Start ---
         # Verify that the API_KEY from src.api is the one we set for testing
         self.assertEqual(self.api_key, _TEST_API_KEY, 
                          "API_KEY from src.api was not the expected test key. Check environment setup at the top of this file.")
         # --- Minimal change for CI: End ---
+
 
     def tearDown(self):
         if os.path.exists(PARTIAL_JSON_PATH):

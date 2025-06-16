@@ -1,9 +1,20 @@
 <!DOCTYPE html>
+<!--
+  DeepRetro Viewer - Web Interface
+  
+  This is the main HTML file for the DeepRetro application, which provides:
+  1. A user interface for retrosynthesis analysis using SMILES input
+  2. Visualization of reaction pathways using D3.js
+  3. File upload capabilities for viewing existing pathways
+  4. Advanced settings for model configuration
+  5. Interactive editing and rerunning of pathways
+-->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DeepRetro</title>
+    <!-- External Dependencies -->
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="https://unpkg.com/openchemlib@^7.0.3/dist/openchemlib-full.js"></script>
     <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
@@ -13,7 +24,9 @@
   </head>
 
   <body>
+    <!-- Main Container -->
     <div class="container">
+      <!-- Header Section with Logo and View Toggle -->
       <div class="header">
         <div class="header-left">
           <div class="logo">
@@ -25,24 +38,26 @@
           </div>
           <h1>DeepRetro</h1>
         </div>
+        <!-- Toggle between API and File Upload views -->
         <div class="toggle-view">
           <button onclick="toggleView('api')">Smart Retrosynthesis</button>
           <button onclick="toggleView('file')">View Pathway</button>
         </div>
       </div>
 
+      <!-- Advanced Settings Panel -->
       <div class="advanced-settings">
         <div class="settings-toggle" onclick="toggleSettings()">
           <span>Advanced Settings</span>
           <span class="arrow-down" id="settings-arrow"></span>
         </div>
         <div class="settings-content" id="settings-content">
-          <div id="server-settings-container">
-            <!-- Server settings will be dynamically generated here -->
-          </div>
+          <!-- Server settings are dynamically generated here -->
+          <div id="server-settings-container"></div>
         </div>
       </div>
 
+      <!-- API View - For direct SMILES input -->
       <div id="apiView">
         <div class="input-group">
           <input
@@ -53,6 +68,7 @@
           />
           <button onclick="analyze()" id="analyzeBtn">Analyze</button>
         </div>
+        <!-- User guidance note -->
         <div
           class="note-section"
           style="
@@ -70,6 +86,7 @@
         </div>
         <div id="status" class="status"></div>
 
+        <!-- JSON Result Display Toggle -->
         <div
           class="json-toggle"
           onclick="toggleJson()"
@@ -82,6 +99,7 @@
         <div id="result" class="result" style="display: none"></div>
       </div>
 
+      <!-- File View - For uploading existing JSON files -->
       <div id="fileView" style="display: none">
         <div class="test-controls">
           <h3>Test with JSON File</h3>
@@ -90,6 +108,7 @@
 
         <div id="fileStatus" class="status" style="display: none"></div>
 
+        <!-- File JSON Display Toggle -->
         <div class="json-toggle" id="file-json-toggle" style="display: none">
           <span>JSON Result</span>
           <span class="json-toggle-icon arrow-down" id="file-json-arrow"></span>
@@ -97,9 +116,10 @@
         <div id="file-result" class="result" style="display: none"></div>
       </div>
 
+      <!-- Graph Visualization Area -->
       <div id="graph"></div>
 
-      <!-- Pathway number display - always present in DOM -->
+      <!-- Pathway Number Display -->
       <div id="pathway-number" class="pathway-number">
         <strong>Current Pathway:</strong> <span id="current-pathway">-</span>
       </div>
@@ -120,7 +140,15 @@
       // For testing: Uncomment the line below to see the loaded/entered API_KEY
       console.log("DEBUG (index.html): API_KEY from localStorage/prompt: ", apiKey);
 
-      // Function to initialize server settings
+      /**
+       * Initializes server settings UI based on configuration
+       * Creates controls for each server instance including:
+       * - Model version selection
+       * - LLM model type
+       * - Advanced prompt toggle
+       * - Stability checker toggle
+       * - Hallucination checker toggle
+       */
       function initializeServerSettings() {
         const container = document.getElementById("server-settings-container");
 
@@ -261,7 +289,14 @@
         });
       }
 
-      // Setup file upload handler
+      /**
+       * Sets up file upload handler for JSON pathway files
+       * Handles:
+       * - File reading and parsing
+       * - JSON validation and display
+       * - Graph visualization
+       * - Rerun controls setup
+       */
       function setupFileUploadHandler() {
         const fileInput = document.getElementById("fileInput");
         const fileStatus = document.getElementById("fileStatus");
@@ -342,7 +377,10 @@
         });
       }
 
-      // Create download button for file data
+      /**
+       * Creates a download button for the current pathway data
+       * @param {Object} jsonData - The pathway data to be downloaded
+       */
       function createFileDownloadButton(jsonData) {
         // Remove any existing download button
         const existingDownloadBtn = document.querySelector(".download-btn");
@@ -374,7 +412,10 @@
         graphDiv.parentNode.insertBefore(downloadButton, graphDiv);
       }
 
-      // Create rerun controls for file view
+      /**
+       * Sets up controls for rerunning analysis from specific steps
+       * @param {Object} jsonData - The pathway data containing steps
+       */
       function setupFileRerunControls(jsonData) {
         // Create or get the rerun section container
         let fileRerunSection = document.getElementById("file-rerun-section");
@@ -479,14 +520,20 @@
         graphDiv.parentNode.insertBefore(fileRerunSection, graphDiv);
       }
 
-      // Function to toggle file rerun button visibility
+      /**
+       * Toggles visibility of the rerun button based on step selection
+       */
       function toggleFileRerunBtn() {
         const select = document.getElementById("file-steps-select");
         const button = document.getElementById("file-rerun-btn");
         button.style.display = select.value ? "inline-block" : "none";
       }
 
-      // Function to handle partial reruns for file upload
+      /**
+       * Initiates a partial rerun of the analysis from a specific step
+       * @param {string} stepNumber - The step number to start from
+       * @param {Object} data - The current pathway data
+       */
       async function startFilePartialRerun(stepNumber, data) {
         console.log("startFilePartialRerun called with step:", stepNumber);
 
@@ -684,7 +731,10 @@
         }
       }
 
-      // Open edit modal for file data
+      /**
+       * Opens the JSON editor modal for file data
+       * Allows users to manually edit pathway data
+       */
       function openFileEditModal() {
         // First, ensure we have a modal to display
         if (!document.getElementById("editJsonModal")) {
@@ -716,7 +766,10 @@
         }
       }
 
-      // Create JSON Editor Modal if it doesn't exist
+      /**
+       * Creates the JSON editor modal if it doesn't exist
+       * Sets up the modal structure and event handlers
+       */
       function createJsonEditorModal() {
         // Check if modal already exists
         if (document.getElementById("editJsonModal")) {
@@ -759,14 +812,11 @@
         }
       }
 
-      // Update the saveJsonChanges function to handle file editing
-      const originalSaveJsonChanges =
-        window.saveJsonChanges ||
-        function () {
-          console.error("Original saveJsonChanges function not found");
-        };
-
-      window.saveJsonChanges = function () {
+      /**
+       * Handles saving changes made in the JSON editor
+       * Validates and updates the pathway data
+       */
+      function saveJsonChanges() {
         // Check if we're editing file data
         if (window.currentEditingContext === "file") {
           const textarea = document.getElementById("jsonEditorTextarea");
@@ -834,9 +884,11 @@
           // Handle original pathway editing
           originalSaveJsonChanges();
         }
-      };
+      }
 
-      // New functions for toggling settings and JSON display
+      /**
+       * Toggles visibility of advanced settings panel
+       */
       function toggleSettings() {
         const content = document.getElementById("settings-content");
         const arrow = document.getElementById("settings-arrow");
@@ -850,6 +902,9 @@
         }
       }
 
+      /**
+       * Toggles visibility of JSON result display
+       */
       function toggleJson() {
         const result = document.getElementById("result");
         const arrow = document.getElementById("json-arrow");
@@ -863,6 +918,10 @@
         }
       }
 
+      /**
+       * Switches between API and File upload views
+       * @param {string} view - The view to switch to ('api' or 'file')
+       */
       function toggleView(view) {
         document.getElementById("apiView").style.display =
           view === "api" ? "block" : "none";
@@ -903,6 +962,10 @@
         }
       }
 
+      /**
+       * Downloads the current pathway results
+       * @param {string} currentInstance - The instance key for the current pathway
+       */
       function downloadResults(currentInstance) {
         try {
           // Get the current instance data from the global results object
@@ -939,7 +1002,10 @@
         }
       }
 
-      // Update showResult function to handle download button
+      /**
+       * Updates the display with the selected pathway result
+       * @param {string} instance - The instance key for the pathway to display
+       */
       window.showResult = (instance) => {
         // Update JSON content
         const jsonResult = document.getElementById("result");
@@ -982,6 +1048,10 @@
         }
       };
 
+      /**
+       * Main analysis function for processing SMILES input
+       * @param {boolean} isRerun - Whether this is a rerun of previous analysis
+       */
       async function analyze(isRerun = false) {
         const smilesInput = document.getElementById("smiles");
         const button = document.getElementById("analyzeBtn");
@@ -1338,7 +1408,13 @@
         }
       }
 
-      // Helper function to create rerun controls
+      /**
+       * Creates controls for rerunning analysis for a specific pathway
+       * @param {number} pathwayNumber - The pathway number
+       * @param {Object} data - The pathway data
+       * @param {Object} results - The results object
+       * @param {HTMLElement} rerunSection - The container for rerun controls
+       */
       function createRerunControl(pathwayNumber, data, results, rerunSection) {
         const rerunControl = document.createElement("div");
         rerunControl.className = "rerun-control";
@@ -1395,7 +1471,12 @@
         rerunSection.appendChild(rerunControl);
       }
 
-      // Function to handle partial reruns
+      /**
+       * Initiates a partial rerun of the analysis
+       * @param {number} pathwayNumber - The pathway number
+       * @param {string} stepNumber - The step to start from
+       * @param {Object} resultsData - The current results data
+       */
       async function startPartialRerun(pathwayNumber, stepNumber, resultsData) {
         const smilesInput = document.getElementById("smiles");
         const rerunButton = document.getElementById(
@@ -1582,9 +1663,11 @@
         }
       });
     </script>
+
+    <!-- Load the main application JavaScript -->
     <script src="app_v4.js"></script>
 
-    <!-- JSON Edit Modal -->
+    <!-- JSON Editor Modal -->
     <div id="editJsonModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -1601,6 +1684,5 @@
         </div>
       </div>
     </div>
-    <!-- End JSON Edit Modal -->
   </body>
 </html>
