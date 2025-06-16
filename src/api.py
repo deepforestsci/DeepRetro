@@ -1,3 +1,36 @@
+"""Flask API for the DeepRetro Retrosynthesis Application.
+
+This module sets up and runs a Flask web server to provide an HTTP API for
+the core retrosynthesis functionalities of the DeepRetro project.
+
+Key Features:
+
+-   **Authentication:** Endpoints are protected by an API key mechanism.
+    The API key must be provided in the `X-API-KEY` header and is configured
+    via the `API_KEY` environment variable.
+-   **CORS Enabled:** Cross-Origin Resource Sharing is enabled for all routes.
+-   **Retrosynthesis Endpoint (`/api/retrosynthesis`):**
+    The primary endpoint for submitting a molecule (SMILES string) and receiving
+    retrosynthesis predictions. Supports various LLM and AiZynthFinder model
+    configurations and optional processing flags.
+-   **Cache Management (`/api/clear_molecule_cache`):**
+    Allows clearing cached results for specific molecules.
+-   **Rerun Capabilities (`/api/rerun_retrosynthesis`, `/api/partial_rerun`):**
+    Endpoints to re-trigger retrosynthesis, potentially with cache clearing.
+-   **Health Check (`/api/health`):**
+    A simple endpoint to verify if the API is operational.
+-   **Result Persistence (`partial.json`):**
+    Helper functions (`save_result`, `load_result`) are provided to save the
+    latest retrosynthesis output to a local JSON file, possibly for debugging
+    or stateful interactions, though this is a simple file-based approach.
+
+Environment Variables:
+
+-   `API_KEY`: The secret key required for API authentication.
+
+The API leverages the `src.main.main()` function for the core retrosynthesis
+logic and `src.cache` for managing cached data.
+"""
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from functools import wraps
@@ -38,8 +71,23 @@ PARTIAL_JSON_PATH = "partial.json"
 
 
 # Functions for JSON file storage
-def save_result(smiles, result):
-    """Save retrosynthesis result to partial.json file."""
+def save_result(smiles: str, result: dict):
+    """Save a retrosynthesis result to the `partial.json` file.
+
+    This function stores the provided SMILES string and its corresponding
+    retrosynthesis result in a JSON file named `partial.json`. Any existing
+    content in this file will be overwritten.
+
+    The saved data structure is a JSON object:
+    `{"smiles": "<input_smiles>", "result": <retrosynthesis_output>}`
+
+    Args:
+        smiles (str): The SMILES string of the molecule for which the result is saved.
+        result (dict): The retrosynthesis result data (typically a dictionary).
+
+    Returns:
+        str: The path to the saved file (`PARTIAL_JSON_PATH`).
+    """
     # Create a data structure with the SMILES and result
     data = {"smiles": smiles, "result": result}
 
@@ -52,7 +100,18 @@ def save_result(smiles, result):
 
 
 def load_result():
-    """Load the most recent retrosynthesis result from partial.json."""
+    """Load the most recent retrosynthesis result from `partial.json`.
+
+    Attempts to read and parse the JSON data stored in `PARTIAL_JSON_PATH`.
+    This file is expected to contain a SMILES string and its associated
+    retrosynthesis result, as saved by `save_result()`.
+
+    Returns:
+        tuple[str | None, dict | None]:
+            A tuple containing the SMILES string and the result dictionary.
+            Returns `(None, None)` if the file does not exist, cannot be read,
+            or if a parsing error occurs.
+    """
     # Check if the file exists
     if not os.path.exists(PARTIAL_JSON_PATH):
         print(f"No result file found at {PARTIAL_JSON_PATH}")
@@ -75,6 +134,25 @@ def load_result():
 
 # Authentication decorator
 def require_api_key(f):
+    """Decorator to enforce API key authentication for Flask routes.
+
+    This decorator checks for the presence and validity of an API key sent
+    in the `X-API-KEY` request header. The required API key is loaded from
+    the `API_KEY` environment variable.
+
+    If the `X-API-KEY` header is missing or contains an incorrect key, the
+    decorated endpoint will return a 401 Unauthorized error with a JSON body:
+    `{"error": "Unauthorized"}`.
+
+    `OPTIONS` requests are allowed to pass through without an API key check
+    to support CORS preflight requests.
+
+    Args:
+        f (Callable): The Flask view function to decorate.
+
+    Returns:
+        Callable: The decorated view function with API key checking.
+    """
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -94,8 +172,41 @@ def require_api_key(f):
 @app.route('/api/retrosynthesis', methods=['POST'])
 @require_api_key
 def retrosynthesis_api():
-    """
-    Endpoint to perform retrosynthesis on a SMILES string.
+    """Endpoint to perform retrosynthesis on a target SMILES string.
+
+    This is the primary endpoint for initiating a retrosynthesis task.
+    It accepts a JSON payload containing the target molecule's SMILES string
+    and optional parameters to control the LLM, AiZynthFinder model,
+    and other processing flags.
+
+    **Request JSON Body:**
+
+    -   `smiles` (str, required): The SMILES string of the target molecule.
+    -   `model_type` (str, optional): Specifies the LLM to use.
+        Valid values: "claude3" (default), "claude37", "deepseek".
+    -   `advanced_prompt` (str or bool, optional): If "true" or `True`, appends
+        ":adv" to the LLM identifier, potentially selecting a different
+        prompt version. Defaults to `False`.
+    -   `model_version` (str, optional): Specifies the AiZynthFinder model.
+        Defaults to "USPTO". Must be a value from `src.variables.AZ_MODEL_LIST`.
+    -   `stability_flag` (str, optional): "True" or "False" to enable/disable
+        stability checks. Defaults to "False".
+    -   `hallucination_check` (str, optional): "True" or "False" to enable/disable
+        hallucination checks. Defaults to "False".
+
+    **Responses:**
+
+    -   **200 OK:** Success. The body contains the JSON result from the
+        retrosynthesis process (output of `src.main.main()`). The result is also
+        saved to `partial.json`.
+    -   **400 Bad Request:** Invalid input (e.g., missing `smiles`, invalid SMILES
+        string, invalid parameter values).
+        JSON body: `{"error": "<error message>"}`.
+    -   **401 Unauthorized:** Missing or invalid API key.
+        JSON body: `{"error": "Unauthorized"}`.
+    -   **500 Internal Server Error:** An unexpected error occurred during
+        retrosynthesis processing.
+        JSON body: `{"error": "Error in retrosynthesis: <exception message>. Please rerun."}`.
     """
     data = request.get_json()
     if not data or 'smiles' not in data:
@@ -203,8 +314,16 @@ def retrosynthesis_api():
 @app.route('/api/health', methods=['GET'])
 @require_api_key
 def health():
-    """
-    Endpoint to check the health of the API.
+    """Health check endpoint for the API.
+
+    Responds with a simple status message if the API is running and accessible.
+    Requires API key authentication.
+
+    **Responses:**
+
+    -   **200 OK:** API is healthy.
+        JSON body: `{"status": "healthy"}`.
+    -   **401 Unauthorized:** Missing or invalid API key.
     """
     return jsonify({"status": "healthy"}), 200
 
@@ -212,8 +331,23 @@ def health():
 @app.route('/api/clear_molecule_cache', methods=['POST'])
 @require_api_key
 def clear_molecule_cache():
-    """
-    Endpoint to clear the cache for a specific molecule.
+    """Endpoint to clear the cache for a specific molecule.
+
+    Removes any cached retrosynthesis results for the given molecule string.
+    This is useful if you want to ensure a fresh computation for a molecule.
+
+    **Request JSON Body:**
+
+    -   `molecule` (str, required): The SMILES string or identifier of the molecule
+        whose cache should be cleared.
+
+    **Responses:**
+
+    -   **200 OK:** Cache cleared successfully.
+        JSON body: `{"status": "success"}`.
+    -   **400 Bad Request:** `molecule` field is missing in the request.
+        JSON body: `{"error": "Molecule string is required"}`.
+    -   **401 Unauthorized:** Missing or invalid API key.
     """
     data = request.get_json()
     if not data or 'molecule' not in data:
@@ -227,8 +361,27 @@ def clear_molecule_cache():
 @app.route('/api/rerun_retrosynthesis', methods=['POST'])
 @require_api_key
 def rerun_retrosynthesis():
-    """
-    Endpoint to rerun retrosynthesis for a specific molecule.
+    """Endpoint to rerun retrosynthesis for a specific molecule, clearing its cache first.
+
+    This endpoint first clears any existing cache for the target molecule and
+    then performs a fresh retrosynthesis run. It accepts the same parameters
+    as the `/api/retrosynthesis` endpoint to control the models and flags.
+
+    **Request JSON Body:**
+
+    -   `smiles` (str, required): The SMILES string of the target molecule.
+    -   `model_type` (str, optional): Specifies the LLM. See `/api/retrosynthesis`.
+    -   `advanced_prompt` (str or bool, optional): See `/api/retrosynthesis`.
+    -   `model_version` (str, optional): Specifies AiZynthFinder model. See `/api/retrosynthesis`.
+    -   `stability_flag` (str, optional): See `/api/retrosynthesis`.
+    -   `hallucination_check` (str, optional): See `/api/retrosynthesis`.
+
+    **Responses:**
+
+    -   **200 OK:** Success. See `/api/retrosynthesis`.
+    -   **400 Bad Request:** Invalid input. See `/api/retrosynthesis`.
+    -   **401 Unauthorized:** Missing or invalid API key.
+    -   **500 Internal Server Error:** See `/api/retrosynthesis`.
     """
     data = request.get_json()
     if not data or 'smiles' not in data:
@@ -338,11 +491,55 @@ def rerun_retrosynthesis():
 @app.route('/api/partial_rerun', methods=['POST'])
 @require_api_key
 def partial_rerun():
-    """
-    Endpoint to partially rerun retrosynthesis from a specific step.
-    Uses the stored results from the most recent retrosynthesis run in partial.json.
-    
-    When rerunning a step, we remove that step and everything to its right in the synthesis pathway.
+    """Endpoint to perform a partial rerun of a retrosynthesis pathway.
+
+    This complex endpoint allows modifying a previously computed retrosynthetic
+    route by rerunning the synthesis from a specific intermediate step.
+    It loads the last full retrosynthesis result (for the given `smiles`)
+    from `partial.json`, identifies a target `step` in that pathway, and then
+    initiates a new retrosynthesis (`src.main.main()`) starting from the product
+    of that target step. The newly generated sub-pathway then replaces the
+    original sub-pathway downstream of the target step.
+
+    The logic involves:
+
+    1.  Loading the previous result for `smiles` from `partial.json`.
+    2.  Identifying the molecule (`start_molecule`) to resynthesize based on the
+        product of the specified `steps` number in the loaded pathway.
+    3.  Running a new retrosynthesis on `start_molecule` using provided or default
+        LLM/AZ models and flags.
+    4.  Identifying all original steps and dependencies that are downstream of (depend on)
+        the `steps` chosen for rerun.
+    5.  Removing these downstream steps and their dependencies.
+    6.  Renumbering the steps from the new sub-pathway to follow existing steps.
+    7.  Merging the kept original steps with the new renumbered sub-pathway steps
+        and their dependencies.
+    8.  Connecting the new sub-pathway to the original pathway at the point where
+        the `steps` was branched from.
+    9.  Saving the final merged result back to `partial.json`.
+
+    **Request JSON Body:**
+
+    -   `smiles` (str, required): The SMILES string of the original target molecule
+        for which a result exists in `partial.json`.
+    -   `steps` (int, required): The step number in the previously stored pathway
+        from which the rerun should originate. The product of this step will be
+        the starting molecule for the new synthesis.
+    -   `model_type` (str, optional): LLM for the new sub-pathway. See `/api/retrosynthesis`.
+    -   `advanced_prompt` (str or bool, optional): See `/api/retrosynthesis`.
+    -   `model_version` (str, optional): AiZynthFinder model. See `/api/retrosynthesis`.
+    -   `stability_flag` (str, optional): See `/api/retrosynthesis`.
+    -   `hallucination_check` (str, optional): See `/api/retrosynthesis`.
+
+    **Responses:**
+
+    -   **200 OK:** Partial rerun successful. Body contains the merged JSON result.
+    -   **400 Bad Request:** Invalid input (e.g., missing fields, `smiles` not found
+        in `partial.json`, `steps` not found in pathway).
+    -   **401 Unauthorized:** Missing or invalid API key.
+    -   **404 Not Found:** If the specified `steps` number is not found in the
+        loaded pathway for the given `smiles`.
+    -   **500 Internal Server Error:** Unexpected error during processing.
     """
     print(
         "\n===================== STARTING PARTIAL RERUN PROCESS ====================="
@@ -680,7 +877,7 @@ def partial_rerun():
         # is identified as a building block or starting material
         if not merged_steps and not new_result.get('steps'):
             print(
-                "NOTE: Final result has no steps. The molecule was identified as a building block or starting material."
+                "NOTE: Final result has no steps. The molecule was identified as a building block or starting material and doesn't require further synthesis."
             )
             # Create a minimal result that acknowledges this molecule as a building block
             merged_result = {

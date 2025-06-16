@@ -254,7 +254,20 @@ def sub_structure_matching(target_smiles: str, query_smiles: str) -> bool:
 
 
 def get_reaction_type(mol1, mol2, model_path):
-    """Get the reaction type of a reaction"""
+    """Predicts reaction type from SMILES using a pre-trained model.
+
+    Uses Morgan fingerprints of `mol1` and `mol2` (SMILES strings) as input
+    to a classification model loaded from `model_path`. Maps the predicted
+    numerical class to a reaction name via `REACTION_ENCODING_NAMES`.
+
+    Args:
+        mol1 (str): SMILES of the first molecule.
+        mol2 (str): SMILES of the second molecule.
+        model_path (str): Path to the joblib model file.
+
+    Returns:
+        Tuple[str, int]: (reaction_name, reaction_class_id).
+    """
     clf = joblib.load(model_path)
     mol1_fingerprint = compute_fingerprint(mol1)
     mol2_fingerprint = compute_fingerprint(mol2)
@@ -263,17 +276,17 @@ def get_reaction_type(mol1, mol2, model_path):
 
 
 def calc_confidence_estimate(probability: float) -> float:
-    """Calculate the confidence estimate based on the probability
+    """Calculates a heuristic confidence score from a probability.
 
-    Parameters
-    ----------
-    probability : float
-        Probability of the prediction
+    Applies transformations to the input `probability` (e.g., from a model)
+    to derive a confidence score. Handles list input by using the first element.
+    The score is rounded and capped at 0.99.
 
-    Returns
-    -------
-    float
-        Confidence estimate
+    Args:
+        probability (Union[float, List[float]]): Input probability.
+
+    Returns:
+        float: Adjusted confidence score (0.0 to 0.99).
     """
     if isinstance(probability, list):
         probability = probability[0]
@@ -293,13 +306,37 @@ def calc_confidence_estimate(probability: float) -> float:
 
 
 def calc_scalability_index(mol1, mol2):
-    """Calculate the scalability index of a reaction"""
+    """Calculates a scalability index for a reaction between two molecules.
+
+    Determines reaction type using `get_reaction_type(mol1, mol2, ...)`,
+    then uses this type to look up a scalability score/category from
+    `ENCODING_SCALABILITY` (from `src.variables`).
+
+    Args:
+        mol1 (str): SMILES of the first molecule.
+        mol2 (str): SMILES of the second molecule.
+
+    Returns:
+        str: Scalability index (e.g., "Easy", "Hard") as a string.
+    """
     _, type = get_reaction_type(mol1, mol2, RXN_CLASSIFICATION_MODEL_PATH)
     return str(ENCODING_SCALABILITY[type])
 
 
 def calc_yield(mol1, mol2):
-    """Calculate the yield of a reaction"""
+    """(Placeholder) Calculates or estimates the yield of a reaction.
+
+    This function is intended to calculate or estimate the yield for a reaction
+    transforming `mol1` to `mol2`. The current implementation is a placeholder
+    and returns "#".
+
+    Args:
+        mol1 (str): SMILES of the first molecule (e.g., reactant).
+        mol2 (str): SMILES of the second molecule (e.g., product).
+
+    Returns:
+        str: Currently returns "#". Intended to return a yield value (e.g., float).
+    """
     return "#"
 
 

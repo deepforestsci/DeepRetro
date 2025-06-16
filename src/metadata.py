@@ -1,10 +1,26 @@
-"""Code for Metadata agents
-Metadata covers the following:
-1. Nearest Literature (1-2) - 1-2 nearest literature references, to contain the doi, title, authors, journal, year
-2. Reagents (1-2) - 1-2 reagents used in the reaction, to contain the SMILES
-3. Reaction conditions - Conditions used in the reaction, to contain the temperature, pressure, solvent, time
+"""LLM-based agents for predicting chemical reaction metadata.
 
-Each of these will be a separate agent, and will be called by the main agent to get the metadata for the reaction
+This module provides a suite of 'agent' functions that leverage Large Language
+Models (LLMs) via the `litellm` library to predict various metadata associated
+with a given chemical reaction (defined by reactants and products).
+
+The predicted metadata categories include:
+1.  **Reagents:** Likely reagents involved in the transformation.
+2.  **Reaction Conditions:** Plausible temperature, pressure, solvent, and reaction time.
+3.  **Literature References:** Potentially relevant scientific publications.
+
+Each category has a pair of functions:
+
+*   `*_agent()`: A higher-level function that takes structured input (often lists
+    of dictionaries containing SMILES and other info), calls the corresponding
+    `*_llm_call()` function, processes the LLM's raw output, validates it (e.g.,
+    SMILES validity), and formats it into a structured dictionary or list.
+    These agent functions are decorated with `@cache_results` for efficiency.
+*   `*_llm_call()`: A lower-level function that constructs the specific prompt for
+    the LLM (using templates from `src.variables`), makes the API call to the LLM,
+    and returns the raw (but parsed from string) response.
+
+Langfuse is integrated for logging LLM interactions.
 """
 
 import ast
@@ -40,23 +56,38 @@ def reagent_agent(reactants: list[dict],
                   product: list[dict],
                   LLM: str = "claude-3-opus-20240229",
                   temperature: float = 0.0):
-    """Calls the LLM model to predict the reagents used in the reaction
+    """Predicts reagents for a reaction and enriches them with metadata.
 
-    Parameters
-    ----------
-    reactants : list[dict]
-        List of reactants dict with SMILES and metadata
-    product : list[dict]
-        Product dict with SMILES and metadata
-    LLM : str, optional
-        LLM model to use, by default "claude-3-opus-20240229"
-    temperature : float, optional
-        Temperature for the LLM model, by default 0.0
+    This agent calls an LLM to suggest reagents given reactants and a product.
+    It then validates the SMILES of suggested reagents and calculates their
+    chemical formula and molecular weight.
 
-    Returns
-    -------
-    int, list[str]
-        Status code and list of reagents SMILES
+    Args:
+        reactants (list[dict]):
+            List of reactant dictionaries. Each dictionary must have a 'smiles'
+            key with the reactant's SMILES string (e.g., `[{'smiles': 'CCO'}]`).
+        product (list[dict]):
+            List containing a single product dictionary. The dictionary must have
+            a 'smiles' key (e.g., `[{'smiles': 'CC(=O)O'}]`).
+        LLM (str, optional):
+            Identifier for the LLM to use. Defaults to "claude-3-opus-20240229".
+        temperature (float, optional):
+            Temperature for LLM sampling. Defaults to 0.0 for deterministic output.
+
+    Returns:
+        tuple[int, list[dict] | str]:
+            A tuple containing a status code and the result.
+
+            -   If successful (status 200): A list of reagent dictionaries.
+                Each dictionary has the structure::
+
+                    {
+                        'smiles': '<reagent_SMILES>',
+                        'reagent_metadata': {'name': '', 'chemical_formula': '...', 'mass': ...}
+                    }
+
+            -   If an error occurs (e.g., LLM call fails, parsing error, no valid
+                reagents found): A status code (e.g., 404) and an empty string \"\".
     """
     logger = context_logger.get()
     product_smiles = product[0]['smiles']
@@ -111,23 +142,27 @@ def reagent_llm_call(reactants: list[str],
                      product: str,
                      LLM: str = "claude-3-opus-20240229",
                      temperature: float = 0.0):
-    """Calls the LLM model to predict the reagents used in the reaction
+    """Calls an LLM to predict reagents for a given reaction.
 
-    Parameters
-    ----------
-    reactants : list[str]
-        List of reactants SMILES
-    product : list[str]
-        Product SMILES
-    LLM : str, optional
-        LLM model to use, by default "claude-3-opus-20240229"
-    temperature : float, optional
-        Temperature for the LLM model, by default 0.0
+    Uses system and user prompts (`REAGENT_SYS_PROMPT`, `REAGENT_USER_PROMPT`)
+    to query the LLM for suggested reagents based on reactant and product SMILES.
 
-    Returns
-    -------
-    int, list[str]
-        Status code and list of reagents SMILES
+    Args:
+        reactants (list[str]): List of SMILES strings for the reactants.
+        product (str): SMILES string for the product.
+        LLM (str, optional):
+            Identifier for the LLM to use. Defaults to "claude-3-opus-20240229".
+        temperature (float, optional):
+            Temperature for LLM sampling. Defaults to 0.0.
+
+    Returns:
+        tuple[int, dict | str]:
+            A tuple containing a status code and the result.
+
+            -   If successful (status 200): A dictionary parsed from the LLM's JSON
+                response. Expected format: `{'data': ['reagent1_SMILES', ...],
+                'explanation': '...'}`.
+            -   If an LLM call or parsing fails (status 404): An empty string "".
     """
     logger = context_logger.get()
     user_prompt = REAGENT_USER_PROMPT.replace('{product}', product)
@@ -174,25 +209,32 @@ def conditions_agent(reactants: list[dict],
                      reagents: list[dict],
                      LLM: str = "claude-3-opus-20240229",
                      temperature: float = 0.0):
-    """Calls the LLM model to predict the reaction conditions
+    """Predicts reaction conditions using an LLM.
 
-    Parameters
-    ----------
-    reactants : list[str]
-        List of reactants SMILES
-    product : str
-        Product SMILES
-    reagents : list[str]
-        List of reagents SMILES
-    LLM : str, optional
-        LLM model to use, by default "claude-3-opus-20240229"
-    temperature : float, optional
-        Temperature for the LLM model, by default 0.0
+    Given reactants, product, and reagents, this agent calls an LLM to suggest
+    reaction conditions (temperature, pressure, solvent, time).
 
-    Returns
-    -------
-    int, str
-        Status code and response text
+    Args:
+        reactants (list[dict]):
+            List of reactant dictionaries, each with a 'smiles' key.
+        product (list[dict]):
+            List with a single product dictionary, with a 'smiles' key.
+        reagents (list[dict]):
+            List of reagent dictionaries, each with a 'smiles' key.
+        LLM (str, optional):
+            Identifier for the LLM. Defaults to "claude-3-opus-20240229".
+        temperature (float, optional):
+            LLM sampling temperature. Defaults to 0.0.
+
+    Returns:
+        tuple[int, dict | str]:
+            A tuple containing a status code and the result.
+
+            -   If successful (status 200): A dictionary containing the predicted
+                conditions, e.g., `{'temperature': '25 C', 'pressure': '1 atm',
+                'solvent': 'Water', 'time': '2 h'}`.
+            -   If an error occurs (LLM call, parsing): Status code (e.g., 404)
+                and an empty string "".
     """
     logger = context_logger.get()
     product_smiles = product[0]['smiles']
@@ -225,25 +267,26 @@ def conditions_llm_call(reactants: list[str],
                         reagents: list[str],
                         LLM: str = "claude-3-opus-20240229",
                         temperature: float = 0.0):
-    """Calls the LLM model to predict the reaction conditions
+    """Calls an LLM to predict reaction conditions.
 
-    Parameters
-    ----------
-    reactants : list[str]
-        List of reactants SMILES
-    product : str
-        Product SMILES
-    reagents : list[str]
-        List of reagents SMILES
-    LLM : str, optional
-        LLM model to use, by default "claude-3-opus-20240229"
-    temperature : float, optional
-        Temperature for the LLM model, by default 0.0
+    Uses `CONDITIONS_SYS_PROMPT` and `CONDITIONS_USER_PROMPT` to query the LLM.
 
-    Returns
-    -------
-    int, str
-        Status code and response text
+    Args:
+        reactants (list[str]): List of SMILES strings for reactants.
+        product (str): SMILES string for the product.
+        reagents (list[str]): List of SMILES strings for reagents.
+        LLM (str, optional):
+            Identifier for the LLM. Defaults to "claude-3-opus-20240229".
+        temperature (float, optional):
+            LLM sampling temperature. Defaults to 0.0.
+
+    Returns:
+        tuple[int, dict | str]:
+            A tuple containing a status code and the result.
+
+            -   If successful (status 200): A dictionary parsed from the LLM's JSON
+                response, e.g., `{'temperature': '25 C', ...}`.
+            -   If an LLM call or parsing fails (status 404): An empty string "".
     """
     logger = context_logger.get()
     user_prompt = CONDITIONS_USER_PROMPT.replace('{product}', product)
@@ -266,7 +309,6 @@ def conditions_llm_call(reactants: list[str],
                               metadata=metadata)
         res_text = response.choices[0].message.content
     except Exception as e:
-
         logger.info(f"Error in calling {LLM}: {e}")
         logger.info(f"Retrying call to {LLM}")
         try:
@@ -287,33 +329,45 @@ def conditions_llm_call(reactants: list[str],
 
 
 @cache_results
-def literature_agent(reactants: list[str],
-                     product: str,
-                     reagents: list[str],
-                     conditions: str,
+def literature_agent(reactants: list[dict],
+                     product: list[dict],
+                     reagents: list[dict],
+                     conditions: dict,
                      LLM: str = "claude-3-opus-20240229",
                      temperature: float = 0.0):
-    """Calls the LLM model to predict the nearest literature references
+    """Predicts literature references for a reaction using an LLM.
 
-    Parameters
-    ----------
-    reactants : list[str]
-        List of reactants SMILES
-    product : str
-        Product SMILES
-    reagents : list[str]
-        List of reagents SMILES
-    conditions : str
-        Reaction conditions
-    LLM : str, optional
-        LLM model to use, by default "claude-3-opus-20240229"
-    temperature : float, optional
-        Temperature for the LLM model, by default 0.0
+    This agent calls an LLM to suggest relevant literature references given
+    reactants, product, reagents, and reaction conditions.
+    It directly handles the LLM interaction using `LITERATURE_SYS_PROMPT`
+    and `LITERATURE_USER_PROMPT`.
 
-    Returns
-    -------
-    int, str
-        Status code and response text
+    Args:
+        reactants (list[dict]):
+            List of reactant dictionaries, each with a 'smiles' key.
+        product (list[dict]):
+            List with a single product dictionary, with a 'smiles' key.
+        reagents (list[dict]):
+            List of reagent dictionaries, each with a 'smiles' key.
+        conditions (dict):
+            A dictionary describing reaction conditions, typically the output
+            from `conditions_agent` (e.g., `{'temperature': '25 C', ...}`).
+            This is converted to a string for the prompt.
+        LLM (str, optional):
+            Identifier for the LLM. Defaults to "claude-3-opus-20240229".
+        temperature (float, optional):
+            LLM sampling temperature. Defaults to 0.0.
+
+    Returns:
+        tuple[int, list | dict | str]:
+            A tuple containing a status code and the result.
+
+            -   If successful (status 200): A list or dictionary containing the
+                predicted literature references. The exact structure depends on the
+                LLM prompt, but typically includes fields like DOI, title, authors,
+                journal, year for each reference (e.g., `[{'doi': '...', ...}]`).
+            -   If an error occurs (LLM call, parsing): Status code (e.g., 404)
+                and an empty string "".
     """
     logger = context_logger.get()
     product_smiles = product[0]['smiles']

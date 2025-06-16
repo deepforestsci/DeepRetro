@@ -1,0 +1,215 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.rec_prithvi Module &mdash; DeepRetro 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src.utils Package" href="utils_package.html" />
+    <link rel="prev" title="src.prithvi Module" href="prithvi_module.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DeepRetro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models Used in DeepRetro</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api_reference_landing.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api_module.html">src.api Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cache_module.html">src.cache Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main_module.html">src.main Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata_module.html">src.metadata Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prithvi_module.html">src.prithvi Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">src.rec_prithvi Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.rec_prithvi.rec_run_prithvi"><code class="docutils literal notranslate"><span class="pre">rec_run_prithvi()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils_package.html">src.utils Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables_module.html">src.variables Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DeepRetro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="api_reference_landing.html">API Reference</a></li>
+      <li class="breadcrumb-item active">src.rec_prithvi Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/rec_prithvi_module.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.rec_prithvi">
+<span id="src-rec-prithvi-module"></span><h1>src.rec_prithvi Module<a class="headerlink" href="#module-src.rec_prithvi" title="Link to this heading"></a></h1>
+<p>Implements the core recursive retrosynthesis logic for the Prithvi workflow.</p>
+<p>This module contains the <cite>rec_run_prithvi</cite> function, which drives the
+recursive exploration of synthetic pathways. It employs a hybrid strategy:</p>
+<ol class="arabic simple">
+<li><p><strong>AiZynthFinder First:</strong> Attempts to find a one-step retrosynthesis using
+<cite>src.utils.az.run_az()</cite>. If successful, the molecule is considered solved at
+this step, and its AiZynthFinder-derived precursors are used.</p></li>
+<li><p><strong>LLM Fallback &amp; Recursion:</strong> If AiZynthFinder fails to find a route for the
+current target molecule, the function queries a Large Language Model (LLM)
+via <cite>src.utils.llm.llm_pipeline()</cite> to propose precursor molecules (pathways).
+For each proposed precursor molecule in a pathway, <cite>rec_run_prithvi</cite> is called
+recursively.</p></li>
+<li><p><strong>Route Construction:</strong> The function builds a tree-like dictionary (<cite>result_dict</cite>)
+representing the explored synthetic routes. Nodes in this tree are either
+molecules (‘mol’) or reactions (‘reaction’).</p></li>
+<li><p><strong>Success Propagation:</strong> A molecule is considered ‘solved’ if AiZynthFinder resolves
+it directly, or if all precursors in at least one of its LLM-suggested pathways
+are recursively solved.</p></li>
+</ol>
+<p>The process continues until molecules are resolved to known building blocks (implicitly,
+when <cite>run_az</cite> indicates <cite>solved=True</cite> because the molecule is basic or in stock)
+_or_ no further valid pathways are found.</p>
+<p>The <cite>job_id</cite> is used to pass logging context via <cite>src.utils.job_context</cite>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.rec_prithvi.rec_run_prithvi">
+<span class="sig-prename descclassname"><span class="pre">src.rec_prithvi.</span></span><span class="sig-name descname"><span class="pre">rec_run_prithvi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'claude-3-opus-20240229'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'USPTO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stability_flag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'False'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hallucination_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'False'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/rec_prithvi.html#rec_run_prithvi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.rec_prithvi.rec_run_prithvi" title="Link to this definition"></a></dt>
+<dd><p>Recursively attempts to find a retrosynthetic route for a molecule.</p>
+<p>Tries AiZynthFinder first. If it fails, uses an LLM to propose precursor
+sets (pathways) and recursively calls itself for each precursor. The first
+fully solved pathway from the LLM is accepted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>molecule</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – SMILES string of the target molecule for the current recursive step.</p></li>
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Unique identifier for the overall synthesis job, used for logging context.</p></li>
+<li><p><strong>llm</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Identifier for the LLM. Defaults to “claude-3-opus-20240229”.</p></li>
+<li><p><strong>az_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Identifier for the AiZynthFinder model. Defaults to “USPTO”.</p></li>
+<li><p><strong>stability_flag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Flag (“True” or “False”) for stability checks in the LLM pipeline.
+Defaults to “False”.</p></li>
+<li><p><strong>hallucination_check</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Flag (“True” or “False”) for hallucination checks in the LLM pipeline.
+Defaults to “False”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul>
+<li><p><cite>result_dict</cite> (dict): A tree-like dictionary representing the explored
+synthetic pathway for the input <cite>molecule</cite>.
+Structure Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;mol&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;smiles&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">molecule_smiles</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s1">&#39;is_chemical&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;in_stock&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="kc">True</span> <span class="k">if</span> <span class="n">solved</span> <span class="n">by</span> <span class="n">AZ</span> <span class="k">as</span> <span class="n">basic</span><span class="o">/</span><span class="n">stock</span><span class="p">,</span> <span class="kc">False</span> <span class="n">otherwise</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[</span> <span class="c1"># Populated if LLM is used</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;reaction&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;is_reaction&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;metadata&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;policy_probability&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">LLM</span> <span class="n">confidence</span><span class="o">&gt;</span><span class="p">},</span>
+            <span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[</span> <span class="c1"># Precursor molecule nodes (recursive results)</span>
+                <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;mol&#39;</span><span class="p">,</span> <span class="s1">&#39;smiles&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">precursor1_smiles</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span> <span class="p">},</span>
+                <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;mol&#39;</span><span class="p">,</span> <span class="s1">&#39;smiles&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">precursor2_smiles</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span> <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If AiZynthFinder solves the molecule, <cite>result_dict</cite> is the direct,
+formatted output from <cite>run_az()</cite> (which might have a different but
+compatible structure, often simpler as it’s a one-step result).</p>
+</li>
+<li><p><cite>solved</cite> (bool): True if the <cite>molecule</cite> was successfully retrosynthesized
+either by AiZynthFinder directly, or by finding a complete recursive
+pathway through LLM-suggested precursors. False otherwise.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="prithvi_module.html" class="btn btn-neutral float-left" title="src.prithvi Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="utils_package.html" class="btn btn-neutral float-right" title="src.utils Package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Project Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

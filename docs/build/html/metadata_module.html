@@ -1,0 +1,330 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.metadata Module &mdash; DeepRetro 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src.prithvi Module" href="prithvi_module.html" />
+    <link rel="prev" title="src.main Module" href="main_module.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DeepRetro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models Used in DeepRetro</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api_reference_landing.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api_module.html">src.api Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cache_module.html">src.cache Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main_module.html">src.main Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">src.metadata Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.metadata.conditions_agent"><code class="docutils literal notranslate"><span class="pre">conditions_agent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.metadata.conditions_llm_call"><code class="docutils literal notranslate"><span class="pre">conditions_llm_call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.metadata.literature_agent"><code class="docutils literal notranslate"><span class="pre">literature_agent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.metadata.reagent_agent"><code class="docutils literal notranslate"><span class="pre">reagent_agent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.metadata.reagent_llm_call"><code class="docutils literal notranslate"><span class="pre">reagent_llm_call()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="prithvi_module.html">src.prithvi Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rec_prithvi_module.html">src.rec_prithvi Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils_package.html">src.utils Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables_module.html">src.variables Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DeepRetro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="api_reference_landing.html">API Reference</a></li>
+      <li class="breadcrumb-item active">src.metadata Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/metadata_module.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.metadata">
+<span id="src-metadata-module"></span><h1>src.metadata Module<a class="headerlink" href="#module-src.metadata" title="Link to this heading"></a></h1>
+<p>LLM-based agents for predicting chemical reaction metadata.</p>
+<p>This module provides a suite of ‘agent’ functions that leverage Large Language
+Models (LLMs) via the <cite>litellm</cite> library to predict various metadata associated
+with a given chemical reaction (defined by reactants and products).</p>
+<p>The predicted metadata categories include:
+1.  <strong>Reagents:</strong> Likely reagents involved in the transformation.
+2.  <strong>Reaction Conditions:</strong> Plausible temperature, pressure, solvent, and reaction time.
+3.  <strong>Literature References:</strong> Potentially relevant scientific publications.</p>
+<p>Each category has a pair of functions:</p>
+<ul class="simple">
+<li><p><cite>*_agent()</cite>: A higher-level function that takes structured input (often lists
+of dictionaries containing SMILES and other info), calls the corresponding
+<cite>*_llm_call()</cite> function, processes the LLM’s raw output, validates it (e.g.,
+SMILES validity), and formats it into a structured dictionary or list.
+These agent functions are decorated with <cite>&#64;cache_results</cite> for efficiency.</p></li>
+<li><p><cite>*_llm_call()</cite>: A lower-level function that constructs the specific prompt for
+the LLM (using templates from <cite>src.variables</cite>), makes the API call to the LLM,
+and returns the raw (but parsed from string) response.</p></li>
+</ul>
+<p>Langfuse is integrated for logging LLM interactions.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metadata.conditions_agent">
+<span class="sig-prename descclassname"><span class="pre">src.metadata.</span></span><span class="sig-name descname"><span class="pre">conditions_agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactants</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reagents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LLM</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'claude-3-opus-20240229'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/metadata.html#conditions_agent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.metadata.conditions_agent" title="Link to this definition"></a></dt>
+<dd><p>Predicts reaction conditions using an LLM.</p>
+<p>Given reactants, product, and reagents, this agent calls an LLM to suggest
+reaction conditions (temperature, pressure, solvent, time).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reactants</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>]</em>) – List of reactant dictionaries, each with a ‘smiles’ key.</p></li>
+<li><p><strong>product</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>]</em>) – List with a single product dictionary, with a ‘smiles’ key.</p></li>
+<li><p><strong>reagents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>]</em>) – List of reagent dictionaries, each with a ‘smiles’ key.</p></li>
+<li><p><strong>LLM</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Identifier for the LLM. Defaults to “claude-3-opus-20240229”.</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – LLM sampling temperature. Defaults to 0.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing a status code and the result.</p>
+<ul class="simple">
+<li><p>If successful (status 200): A dictionary containing the predicted
+conditions, e.g., <cite>{‘temperature’: ‘25 C’, ‘pressure’: ‘1 atm’,
+‘solvent’: ‘Water’, ‘time’: ‘2 h’}</cite>.</p></li>
+<li><p>If an error occurs (LLM call, parsing): Status code (e.g., 404)
+and an empty string “”.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metadata.conditions_llm_call">
+<span class="sig-prename descclassname"><span class="pre">src.metadata.</span></span><span class="sig-name descname"><span class="pre">conditions_llm_call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactants</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reagents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LLM</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'claude-3-opus-20240229'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/metadata.html#conditions_llm_call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.metadata.conditions_llm_call" title="Link to this definition"></a></dt>
+<dd><p>Calls an LLM to predict reaction conditions.</p>
+<p>Uses <cite>CONDITIONS_SYS_PROMPT</cite> and <cite>CONDITIONS_USER_PROMPT</cite> to query the LLM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reactants</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – List of SMILES strings for reactants.</p></li>
+<li><p><strong>product</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – SMILES string for the product.</p></li>
+<li><p><strong>reagents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – List of SMILES strings for reagents.</p></li>
+<li><p><strong>LLM</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Identifier for the LLM. Defaults to “claude-3-opus-20240229”.</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – LLM sampling temperature. Defaults to 0.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing a status code and the result.</p>
+<ul class="simple">
+<li><p>If successful (status 200): A dictionary parsed from the LLM’s JSON
+response, e.g., <cite>{‘temperature’: ‘25 C’, …}</cite>.</p></li>
+<li><p>If an LLM call or parsing fails (status 404): An empty string “”.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metadata.literature_agent">
+<span class="sig-prename descclassname"><span class="pre">src.metadata.</span></span><span class="sig-name descname"><span class="pre">literature_agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactants</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reagents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LLM</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'claude-3-opus-20240229'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/metadata.html#literature_agent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.metadata.literature_agent" title="Link to this definition"></a></dt>
+<dd><p>Predicts literature references for a reaction using an LLM.</p>
+<p>This agent calls an LLM to suggest relevant literature references given
+reactants, product, reagents, and reaction conditions.
+It directly handles the LLM interaction using <cite>LITERATURE_SYS_PROMPT</cite>
+and <cite>LITERATURE_USER_PROMPT</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reactants</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>]</em>) – List of reactant dictionaries, each with a ‘smiles’ key.</p></li>
+<li><p><strong>product</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>]</em>) – List with a single product dictionary, with a ‘smiles’ key.</p></li>
+<li><p><strong>reagents</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>]</em>) – List of reagent dictionaries, each with a ‘smiles’ key.</p></li>
+<li><p><strong>conditions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – A dictionary describing reaction conditions, typically the output
+from <cite>conditions_agent</cite> (e.g., <cite>{‘temperature’: ‘25 C’, …}</cite>).
+This is converted to a string for the prompt.</p></li>
+<li><p><strong>LLM</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Identifier for the LLM. Defaults to “claude-3-opus-20240229”.</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – LLM sampling temperature. Defaults to 0.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing a status code and the result.</p>
+<ul class="simple">
+<li><p>If successful (status 200): A list or dictionary containing the
+predicted literature references. The exact structure depends on the
+LLM prompt, but typically includes fields like DOI, title, authors,
+journal, year for each reference (e.g., <cite>[{‘doi’: ‘…’, …}]</cite>).</p></li>
+<li><p>If an error occurs (LLM call, parsing): Status code (e.g., 404)
+and an empty string “”.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metadata.reagent_agent">
+<span class="sig-prename descclassname"><span class="pre">src.metadata.</span></span><span class="sig-name descname"><span class="pre">reagent_agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactants</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LLM</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'claude-3-opus-20240229'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/metadata.html#reagent_agent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.metadata.reagent_agent" title="Link to this definition"></a></dt>
+<dd><p>Predicts reagents for a reaction and enriches them with metadata.</p>
+<p>This agent calls an LLM to suggest reagents given reactants and a product.
+It then validates the SMILES of suggested reagents and calculates their
+chemical formula and molecular weight.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reactants</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>]</em>) – List of reactant dictionaries. Each dictionary must have a ‘smiles’
+key with the reactant’s SMILES string (e.g., <cite>[{‘smiles’: ‘CCO’}]</cite>).</p></li>
+<li><p><strong>product</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>]</em>) – List containing a single product dictionary. The dictionary must have
+a ‘smiles’ key (e.g., <cite>[{‘smiles’: ‘CC(=O)O’}]</cite>).</p></li>
+<li><p><strong>LLM</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Identifier for the LLM to use. Defaults to “claude-3-opus-20240229”.</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Temperature for LLM sampling. Defaults to 0.0 for deterministic output.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing a status code and the result.</p>
+<ul>
+<li><p>If successful (status 200): A list of reagent dictionaries.
+Each dictionary has the structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;smiles&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;reagent_SMILES&gt;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;reagent_metadata&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;chemical_formula&#39;</span><span class="p">:</span> <span class="s1">&#39;...&#39;</span><span class="p">,</span> <span class="s1">&#39;mass&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>If an error occurs (e.g., LLM call fails, parsing error, no valid
+reagents found): A status code (e.g., 404) and an empty string “”.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a>] | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.metadata.reagent_llm_call">
+<span class="sig-prename descclassname"><span class="pre">src.metadata.</span></span><span class="sig-name descname"><span class="pre">reagent_llm_call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactants</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LLM</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'claude-3-opus-20240229'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/metadata.html#reagent_llm_call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.metadata.reagent_llm_call" title="Link to this definition"></a></dt>
+<dd><p>Calls an LLM to predict reagents for a given reaction.</p>
+<p>Uses system and user prompts (<cite>REAGENT_SYS_PROMPT</cite>, <cite>REAGENT_USER_PROMPT</cite>)
+to query the LLM for suggested reagents based on reactant and product SMILES.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reactants</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – List of SMILES strings for the reactants.</p></li>
+<li><p><strong>product</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – SMILES string for the product.</p></li>
+<li><p><strong>LLM</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Identifier for the LLM to use. Defaults to “claude-3-opus-20240229”.</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Temperature for LLM sampling. Defaults to 0.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing a status code and the result.</p>
+<ul class="simple">
+<li><p>If successful (status 200): A dictionary parsed from the LLM’s JSON
+response. Expected format: <cite>{‘data’: [‘reagent1_SMILES’, …],
+‘explanation’: ‘…’}</cite>.</p></li>
+<li><p>If an LLM call or parsing fails (status 404): An empty string “”.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="main_module.html" class="btn btn-neutral float-left" title="src.main Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="prithvi_module.html" class="btn btn-neutral float-right" title="src.prithvi Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Project Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

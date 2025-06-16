@@ -1,0 +1,242 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.cache &mdash; DeepRetro 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DeepRetro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models Used in DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference_landing.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DeepRetro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.cache</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.cache</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Caching utilities for the DeepRetro application.</span>
+
+<span class="sd">This module provides a decorator and functions to cache results of expensive</span>
+<span class="sd">computations using the `diskcache` library. It helps in speeding up repeated</span>
+<span class="sd">analyses by storing and retrieving previously computed results.</span>
+
+<span class="sd">Attributes:</span>
+<span class="sd">    cache (diskcache.Cache): The global cache object instance used for storing</span>
+<span class="sd">        and retrieving cached items.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">diskcache</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+
+<span class="n">cache</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">Cache</span><span class="p">(</span><span class="s1">&#39;cache_api_new&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="_generate_cache_key">
+<a class="viewcode-back" href="../../cache_module.html#src.cache._generate_cache_key">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_cache_key</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a unique cache key based on the function name and its arguments.</span>
+
+<span class="sd">    This is an internal helper function. The key is formed by combining the</span>
+<span class="sd">    function&#39;s name with an MD5 hash of its serialized arguments to ensure</span>
+<span class="sd">    uniqueness.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        func_name (str): The name of the function being called.</span>
+<span class="sd">        *args: Positional arguments passed to the function.</span>
+<span class="sd">        **kwargs: Keyword arguments passed to the function.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: A unique string cache key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arg_string</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;args&#39;</span><span class="p">:</span> <span class="n">args</span><span class="p">,</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">},</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">args_hash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">arg_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func_name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">args_hash</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="cache_results">
+<a class="viewcode-back" href="../../cache_module.html#src.cache.cache_results">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">cache_results</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to cache the results of a function using diskcache.</span>
+
+<span class="sd">    If the decorated function is called with the same arguments (as determined</span>
+<span class="sd">    by the generated cache key), the cached result is returned. Otherwise,</span>
+<span class="sd">    the function is executed, and its result is stored in the cache for</span>
+<span class="sd">    future calls.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        func (callable): The function to be decorated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        callable: The wrapped function with caching capabilities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrapper that implements the caching logic.</span>
+
+<span class="sd">        Checks if a result for the given function and arguments already exists</span>
+<span class="sd">        in the cache. If so, it returns the cached result. Otherwise, it</span>
+<span class="sd">        executes the original function, caches its result, and then returns</span>
+<span class="sd">        the result.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args: Positional arguments for the wrapped function.</span>
+<span class="sd">            **kwargs: Keyword arguments for the wrapped function.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The result of the wrapped function, which could be retrieved</span>
+<span class="sd">                 from the cache or by executing the function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">arg_string</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+            <span class="s1">&#39;args&#39;</span><span class="p">:</span> <span class="n">args</span><span class="p">,</span>
+            <span class="s1">&#39;kwargs&#39;</span><span class="p">:</span> <span class="n">kwargs</span>
+        <span class="p">},</span>
+                                <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">cache_key</span> <span class="o">=</span> <span class="n">_generate_cache_key</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">,</span> <span class="s1">&#39;input_args&#39;</span><span class="p">:</span> <span class="n">arg_string</span><span class="p">}</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+
+<div class="viewcode-block" id="clear_entire_cache">
+<a class="viewcode-back" href="../../cache_module.html#src.cache.clear_entire_cache">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">clear_entire_cache</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clears all items from the global disk cache.</span>
+
+<span class="sd">    This function will remove all persisted cache entries managed by the</span>
+<span class="sd">    `cache` object defined in this module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="clear_cache_for_molecule">
+<a class="viewcode-back" href="../../cache_module.html#src.cache.clear_cache_for_molecule">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">clear_cache_for_molecule</span><span class="p">(</span><span class="n">molecule</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clears cache entries potentially related to a specific molecule string.</span>
+
+<span class="sd">    This function iterates through the cache and removes entries where the</span>
+<span class="sd">    provided `molecule` string (typically a SMILES string) is found within</span>
+<span class="sd">    the string representation of the cached function&#39;s input arguments.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        The matching is based on a substring check within the serialized</span>
+<span class="sd">        arguments, which might not be perfectly precise for all use cases</span>
+<span class="sd">        but serves as a targeted way to invalidate cache entries related</span>
+<span class="sd">        to a particular molecule.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        molecule (str): The molecule string (e.g., SMILES) to search for</span>
+<span class="sd">                        in the `input_args` of cached items.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">keys_to_delete</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">cache</span><span class="o">.</span><span class="n">iterkeys</span><span class="p">():</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">and</span> <span class="s1">&#39;input_args&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="c1"># Just check if the string representation of molecule is in the JSON</span>
+            <span class="k">if</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;input_args&#39;</span><span class="p">]:</span>
+                <span class="n">keys_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys_to_delete</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">cache</span><span class="p">[</span><span class="n">k</span><span class="p">]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Project Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.rec_prithvi &mdash; DeepRetro 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DeepRetro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models Used in DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference_landing.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DeepRetro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.rec_prithvi</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.rec_prithvi</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Implements the core recursive retrosynthesis logic for the Prithvi workflow.</span>
+
+<span class="sd">This module contains the `rec_run_prithvi` function, which drives the</span>
+<span class="sd">recursive exploration of synthetic pathways. It employs a hybrid strategy:</span>
+
+<span class="sd">1.  **AiZynthFinder First:** Attempts to find a one-step retrosynthesis using</span>
+<span class="sd">    `src.utils.az.run_az()`. If successful, the molecule is considered solved at</span>
+<span class="sd">    this step, and its AiZynthFinder-derived precursors are used.</span>
+
+<span class="sd">2.  **LLM Fallback &amp; Recursion:** If AiZynthFinder fails to find a route for the</span>
+<span class="sd">    current target molecule, the function queries a Large Language Model (LLM)</span>
+<span class="sd">    via `src.utils.llm.llm_pipeline()` to propose precursor molecules (pathways).</span>
+<span class="sd">    For each proposed precursor molecule in a pathway, `rec_run_prithvi` is called</span>
+<span class="sd">    recursively.</span>
+
+<span class="sd">3.  **Route Construction:** The function builds a tree-like dictionary (`result_dict`)</span>
+<span class="sd">    representing the explored synthetic routes. Nodes in this tree are either</span>
+<span class="sd">    molecules (&#39;mol&#39;) or reactions (&#39;reaction&#39;).</span>
+
+<span class="sd">4.  **Success Propagation:** A molecule is considered &#39;solved&#39; if AiZynthFinder resolves</span>
+<span class="sd">    it directly, or if all precursors in at least one of its LLM-suggested pathways</span>
+<span class="sd">    are recursively solved.</span>
+
+<span class="sd">The process continues until molecules are resolved to known building blocks (implicitly,</span>
+<span class="sd">when `run_az` indicates `solved=True` because the molecule is basic or in stock)</span>
+<span class="sd">_or_ no further valid pathways are found.</span>
+
+<span class="sd">The `job_id` is used to pass logging context via `src.utils.job_context`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.utils.llm</span><span class="w"> </span><span class="kn">import</span> <span class="n">llm_pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.utils.az</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_az</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.utils.job_context</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">context_logger</span>
+
+
+<div class="viewcode-block" id="rec_run_prithvi">
+<a class="viewcode-back" href="../../rec_prithvi_module.html#src.rec_prithvi.rec_run_prithvi">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">rec_run_prithvi</span><span class="p">(</span><span class="n">molecule</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">llm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;claude-3-opus-20240229&quot;</span><span class="p">,</span>
+                    <span class="n">az_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;USPTO&quot;</span><span class="p">,</span>
+                    <span class="n">stability_flag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span><span class="p">,</span>
+                    <span class="n">hallucination_check</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively attempts to find a retrosynthetic route for a molecule.</span>
+
+<span class="sd">    Tries AiZynthFinder first. If it fails, uses an LLM to propose precursor</span>
+<span class="sd">    sets (pathways) and recursively calls itself for each precursor. The first</span>
+<span class="sd">    fully solved pathway from the LLM is accepted.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        molecule (str):</span>
+<span class="sd">            SMILES string of the target molecule for the current recursive step.</span>
+<span class="sd">        job_id (str):</span>
+<span class="sd">            Unique identifier for the overall synthesis job, used for logging context.</span>
+<span class="sd">        llm (str, optional):</span>
+<span class="sd">            Identifier for the LLM. Defaults to &quot;claude-3-opus-20240229&quot;.</span>
+<span class="sd">        az_model (str, optional):</span>
+<span class="sd">            Identifier for the AiZynthFinder model. Defaults to &quot;USPTO&quot;.</span>
+<span class="sd">        stability_flag (str, optional):</span>
+<span class="sd">            Flag (&quot;True&quot; or &quot;False&quot;) for stability checks in the LLM pipeline.</span>
+<span class="sd">            Defaults to &quot;False&quot;.</span>
+<span class="sd">        hallucination_check (str, optional):</span>
+<span class="sd">            Flag (&quot;True&quot; or &quot;False&quot;) for hallucination checks in the LLM pipeline.</span>
+<span class="sd">            Defaults to &quot;False&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple[dict, bool]:</span>
+
+<span class="sd">            -   `result_dict` (dict): A tree-like dictionary representing the explored</span>
+<span class="sd">                synthetic pathway for the input `molecule`.</span>
+<span class="sd">                Structure Example:</span>
+<span class="sd">                ::</span>
+
+<span class="sd">                    {</span>
+<span class="sd">                        &#39;type&#39;: &#39;mol&#39;,</span>
+<span class="sd">                        &#39;smiles&#39;: &lt;molecule_smiles&gt;,</span>
+<span class="sd">                        &#39;is_chemical&#39;: True,</span>
+<span class="sd">                        &#39;in_stock&#39;: &lt;True if solved by AZ as basic/stock, False otherwise&gt;,</span>
+<span class="sd">                        &#39;children&#39;: [ # Populated if LLM is used</span>
+<span class="sd">                            {</span>
+<span class="sd">                                &#39;type&#39;: &#39;reaction&#39;,</span>
+<span class="sd">                                &#39;is_reaction&#39;: True,</span>
+<span class="sd">                                &#39;metadata&#39;: {&#39;policy_probability&#39;: &lt;LLM confidence&gt;},</span>
+<span class="sd">                                &#39;children&#39;: [ # Precursor molecule nodes (recursive results)</span>
+<span class="sd">                                    { &#39;type&#39;: &#39;mol&#39;, &#39;smiles&#39;: &lt;precursor1_smiles&gt;, ... },</span>
+<span class="sd">                                    { &#39;type&#39;: &#39;mol&#39;, &#39;smiles&#39;: &lt;precursor2_smiles&gt;, ... }</span>
+<span class="sd">                                ]</span>
+<span class="sd">                            }</span>
+<span class="sd">                        ]</span>
+<span class="sd">                    }</span>
+
+<span class="sd">                If AiZynthFinder solves the molecule, `result_dict` is the direct,</span>
+<span class="sd">                formatted output from `run_az()` (which might have a different but</span>
+<span class="sd">                compatible structure, often simpler as it&#39;s a one-step result).</span>
+<span class="sd">            -   `solved` (bool): True if the `molecule` was successfully retrosynthesized</span>
+<span class="sd">                either by AiZynthFinder directly, or by finding a complete recursive</span>
+<span class="sd">                pathway through LLM-suggested precursors. False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">solved</span><span class="p">,</span> <span class="n">result_dict</span> <span class="o">=</span> <span class="n">run_az</span><span class="p">(</span><span class="n">smiles</span><span class="o">=</span><span class="n">molecule</span><span class="p">,</span> <span class="n">az_model</span><span class="o">=</span><span class="n">az_model</span><span class="p">)</span>
+    <span class="n">result_dict</span> <span class="o">=</span> <span class="n">result_dict</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">context_logger</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">solved</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AZ failed for </span><span class="si">{</span><span class="n">molecule</span><span class="si">}</span><span class="s2">, running LLM&quot;</span><span class="p">)</span>
+        <span class="n">out_pathways</span><span class="p">,</span> <span class="n">out_explained</span><span class="p">,</span> <span class="n">out_confidence</span> <span class="o">=</span> <span class="n">llm_pipeline</span><span class="p">(</span>
+            <span class="n">molecule</span><span class="o">=</span><span class="n">molecule</span><span class="p">,</span>
+            <span class="n">LLM</span><span class="o">=</span><span class="n">llm</span><span class="p">,</span>
+            <span class="n">stability_flag</span><span class="o">=</span><span class="n">stability_flag</span><span class="p">,</span>
+            <span class="n">hallucination_check</span><span class="o">=</span><span class="n">hallucination_check</span><span class="p">)</span>
+        <span class="n">result_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span>
+            <span class="s1">&#39;mol&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;smiles&#39;</span><span class="p">:</span>
+            <span class="n">molecule</span><span class="p">,</span>
+            <span class="c1"># &#39;confidence&#39;: out_confidence,</span>
+            <span class="s2">&quot;is_chemical&quot;</span><span class="p">:</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;in_stock&quot;</span><span class="p">:</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reaction&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;is_reaction&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;policy_probability&quot;</span><span class="p">:</span> <span class="n">out_confidence</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;children&quot;</span><span class="p">:</span> <span class="p">[]</span>
+            <span class="p">}]</span>
+        <span class="p">}</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LLM returned </span><span class="si">{</span><span class="n">out_pathways</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LLM explained </span><span class="si">{</span><span class="n">out_explained</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pathway</span> <span class="ow">in</span> <span class="n">out_pathways</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pathway</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">temp_stat</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">mol</span> <span class="ow">in</span> <span class="n">pathway</span><span class="p">:</span>
+                    <span class="n">res</span><span class="p">,</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">rec_run_prithvi</span><span class="p">(</span>
+                        <span class="n">molecule</span><span class="o">=</span><span class="n">mol</span><span class="p">,</span>
+                        <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span>
+                        <span class="n">llm</span><span class="o">=</span><span class="n">llm</span><span class="p">,</span>
+                        <span class="n">az_model</span><span class="o">=</span><span class="n">az_model</span><span class="p">,</span>
+                        <span class="n">stability_flag</span><span class="o">=</span><span class="n">stability_flag</span><span class="p">,</span>
+                        <span class="n">hallucination_check</span><span class="o">=</span><span class="n">hallucination_check</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">stat</span><span class="p">:</span>
+                        <span class="n">temp_stat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="n">result_dict</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;children&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;temp_stat: </span><span class="si">{</span><span class="n">temp_stat</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">temp_stat</span><span class="p">):</span>
+                    <span class="n">solved</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">res</span><span class="p">,</span> <span class="n">solved</span> <span class="o">=</span> <span class="n">rec_run_prithvi</span><span class="p">(</span>
+                    <span class="n">molecule</span><span class="o">=</span><span class="n">pathway</span><span class="p">,</span>
+                    <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span>
+                    <span class="n">llm</span><span class="o">=</span><span class="n">llm</span><span class="p">,</span>
+                    <span class="n">az_model</span><span class="o">=</span><span class="n">az_model</span><span class="p">,</span>
+                    <span class="n">stability_flag</span><span class="o">=</span><span class="n">stability_flag</span><span class="p">,</span>
+                    <span class="n">hallucination_check</span><span class="o">=</span><span class="n">hallucination_check</span><span class="p">)</span>
+                <span class="n">result_dict</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;children&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">solved</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;breaking&#39;</span><span class="p">)</span>
+                <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AZ solved </span><span class="si">{</span><span class="n">molecule</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># print(f&quot;Solved : {solved}, Returning {result_dict}&quot;)</span>
+    <span class="k">return</span> <span class="n">result_dict</span><span class="p">,</span> <span class="n">solved</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Project Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,7 +1,50 @@
+"""Utilities for Interacting with Large Language Models (LLMs).
+
+This module centralizes all functionality related to Large Language Model (LLM)
+operations within the DeepRetro application. It leverages the `litellm` library
+to provide a consistent interface across various LLM providers and models.
+
+Key responsibilities include:
+- **Prompt Management (`obtain_prompt`):
+  Dynamically selecting appropriate system and user prompts based on the specified
+  LLM model identifier. Supports standard and "advanced" prompt versions (indicated
+  by an ":adv" suffix on the LLM model string).
+
+- **LLM API Calls (`call_LLM`):
+  Encapsulating the logic for making requests to LLMs. This includes constructing
+  the message payload, handling model-specific parameters (e.g., for DeepSeek or
+  specific Claude versions), incorporating conditional prompt additions (like for
+  7-membered rings), and implementing retry mechanisms. LLM calls are cached.
+
+- **Response Parsing (various `split_*` functions):
+  Extracting structured data from potentially complex LLM responses. This includes:
+    - Separating Chain-of-Thought (COT) narratives from JSON payloads
+      (e.g., `split_cot_json`).
+    - Handling model-specific output formats (e.g., `split_json_openAI`,
+      `split_json_deepseek`).
+    - A master parsing function (`split_json_master`) to dispatch to the correct
+      parser based on the model.
+
+- **Output Validation (`validate_split_json`):
+  Ensuring the integrity and correctness of the data extracted from LLM responses,
+  such as validating SMILES strings and expected JSON structures.
+
+- **Main Pipeline (`llm_pipeline`):
+  Orchestrating the sequence of calling an LLM, parsing its response, validating
+  the output, and potentially performing other checks like stability or hallucination
+  analysis.
+
+- **Error Handling (`get_error_log`):
+  Mapping status codes to descriptive error messages.
+
+Langfuse is integrated for logging LLM interactions, controlled by an environment
+variable `ENABLE_LOGGING`.
+"""
 import os
 import ast
 import litellm
 from typing import Optional
+import structlog
 from dotenv import load_dotenv
 from litellm import completion
 from src.variables import OPENAI_MODELS, DEEPSEEK_MODELS
@@ -35,19 +78,14 @@ ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
                                     "true").lower() == "false" else True
 
 
-def log_message(message: str, logger=None):
-    """Log the message
+def log_message(message: str, logger: Optional[structlog.stdlib.BoundLogger] = None):
+    """Logs a message using a provided logger or defaults to print.
 
-    Parameters
-    ----------
-    message : str
-        The message to be logged
-    logger : _type_, optional
-        The logger object, by default None
-
-    Returns
-    -------
-    None
+    Args:
+        message (str): The message to be logged.
+        logger (Optional[structlog.stdlib.BoundLogger], optional):
+            A structlog bound logger instance. If None, `print()` is used.
+            Defaults to None.
     """
     if logger is not None:
         logger.info(message)
@@ -55,18 +93,24 @@ def log_message(message: str, logger=None):
         print(message)
 
 
-def obtain_prompt(LLM: str):
-    """Obtain the prompt based on the LLM model
+def obtain_prompt(LLM: str) -> tuple[str, str, int]:
+    """Determines the system prompt, user prompt, and max completion tokens based on the LLM model.
 
-    Parameters
-    ----------
-    LLM : str
-        The LLM model to be used
+    The `LLM` model string can include an optional ":adv" suffix (e.g.,
+    "claude-3-opus-20240229:adv") to select an "advanced" version of prompts.
+    Different base prompts and token limits are defined for OpenAI, DeepSeek,
+    and other (default Claude) models.
 
-    Returns
-    -------
-    str, str, int
-        The system prompt, user prompt and max completion tokens
+    Args:
+        LLM (str):
+            The LLM model identifier, optionally with an ":adv" suffix.
+
+    Returns:
+        tuple[str, str, int]:
+            - `sys_prompt_final` (str): The selected system prompt.
+            - `user_prompt_final` (str): The selected user prompt template.
+            - `max_completion_tokens` (int): The maximum number of tokens for
+              the LLM completion.
     """
     advanced_prompt = False
     detector = LLM.split(":")
@@ -107,23 +151,34 @@ def call_LLM(molecule: str,
              LLM: str = "claude-3-opus-20240229",
              temperature: float = 0.0,
              messages: Optional[list[dict]] = None) -> tuple[int, str]:
-    """Calls the LLM model to predict the next step
+    """Calls the specified LLM to predict the next retrosynthetic step(s).
 
-    Parameters
-    ----------
-    molecule : str
-        The target molecule for retrosynthesis
-    LLM : str, optional
-        The LLM model to be used, by default "claude-3-opus-20240229"
-    temperature : float, optional
-        The temperature for sampling, by default 0.0
-    messages : Optional[list[dict]], optional
-        The conversation history, by default None
+    Constructs prompts using `obtain_prompt`, adds specific instructions if a
+    7-membered ring is detected (for some models), and adjusts API parameters for
+    certain LLM types (e.g., DeepSeek, specific Claude versions like "3-7").
+    Includes a retry mechanism for the API call.
+    The call is cached via `@cache_results`.
 
-    Returns
-    -------
-    tuple[int, str]
-        The status code and the response text
+    Args:
+        molecule (str):
+            The SMILES string of the target molecule for retrosynthesis.
+        LLM (str, optional):
+            The LLM model identifier (e.g., "claude-3-opus-20240229", or
+            "model-name:adv" for advanced prompts). Defaults to
+            "claude-3-opus-20240229". The base model name is extracted before the call.
+        temperature (float, optional):
+            The temperature for LLM sampling. Defaults to 0.0.
+        messages (Optional[list[dict]], optional):
+            A list of message dictionaries for the conversation history, each like
+            `{"role": "user/system/assistant", "content": "..."}`. If None,
+            a new conversation is started with a system and user prompt based on
+            the `molecule` and selected prompts. Defaults to None.
+
+    Returns:
+        tuple[int, str]:
+            - `status_code` (int): 200 for success, 400 for failure after retries.
+            - `response_text` (str): The raw response text from the LLM if successful,
+              otherwise an empty string.
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
     log_message(f"Calling {LLM} with molecule: {molecule}", logger)
@@ -191,17 +246,27 @@ def call_LLM(molecule: str,
 
 
 def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
-    """Parse the LLM response to extract the thinking steps and json content
+    """Parses LLM response text to extract Chain-of-Thought (COT) and JSON content.
 
-    Parameters
-    ----------
-    res_text : str
-        The response text from the LLM model
+    Assumes the input `res_text` contains distinct sections demarcated by
+    `<cot>\n...thinking steps...</cot>` and `<json>\n...json data...</json>` tags.
+    Individual thinking steps within the COT block are expected to be wrapped in
+    `<thinking>...</thinking>` tags (though the outer `<thinking>` tag itself seems
+    to be part of the split logic rather than the content).
 
-    Returns
-    -------
-    tuple[int, list[str], str]
-        The status code, thinking steps and json content
+    Args:
+        res_text (str):
+            The raw response text from an LLM.
+
+    Returns:
+        tuple[int, list[str], str]:
+            - `status_code` (int): 200 for successful parsing. 501 if COT or JSON
+              sections/tags are missing or malformed.
+            - `thinking_steps` (list[str]): A list of strings, where each string is
+              the content extracted from a `<thinking>...</thinking>` block within the COT.
+              Returns an empty list if parsing fails.
+            - `json_content` (str): The raw string content extracted from between
+              the `<json>\n` and `</json>` tags. Returns an empty string if parsing fails.
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
     try:
@@ -234,18 +299,25 @@ def split_cot_json(res_text: str) -> tuple[int, list[str], str]:
 
 
 def split_json_openAI(res_text: str) -> tuple[int, str]:
-    """Split the response text from OpenAI models to extract the molecules
-    Note: OpenAI O-series models do not provide Chain of Thoughts (COT) in the response
+    """Extracts JSON content from LLM response text, specifically for OpenAI models.
 
-    Parameters
-    ----------
-    res_text : str
-        The response text from the OpenAI model
+    This function is designed to parse responses from OpenAI models that are
+    expected to provide JSON content, potentially without explicit Chain-of-Thought
+    XML-like tags surrounding the JSON block itself. It looks for `<json>\n`
+    and `</json>` tags to delimit the JSON content, which implies that even
+    OpenAI responses are expected to follow this specific tagging for the JSON part.
 
-    Returns
-    -------
-    tuple[int, str]
-        the status code and json content
+    Args:
+        res_text (str):
+            The raw response text from an OpenAI LLM.
+
+    Returns:
+        tuple[int, str]:
+            - `status_code` (int): 200 for successful extraction of content between
+              `<json>\n` and `</json>` tags. 501 if these tags are not found or
+              the content is missing.
+            - `json_content` (str): The raw string content extracted from between
+              the JSON tags. Returns an empty string if parsing fails.
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
     try:
@@ -261,17 +333,25 @@ def split_json_openAI(res_text: str) -> tuple[int, str]:
 
 
 def split_json_deepseek(res_text: str) -> tuple[int, list[str], str]:
-    """Parse the LLM response to extract the thinking steps and json content
+    """Parses LLM response text from DeepSeek models.
 
-    Parameters
-    ----------
-    res_text : str
-        The response text from the LLM model
+    Assumes DeepSeek response contains a thinking block demarcated by
+    `<think>\n...thinking content...</think>` and a JSON block by
+    `<json>\n...json data...</json>` tags.
 
-    Returns
-    -------
-    tuple[int, list[str], str]
-        The status code, thinking steps and json content
+    Args:
+        res_text (str):
+            The raw response text from a DeepSeek LLM.
+
+    Returns:
+        tuple[int, list[str], str]:
+            - `status_code` (int): 200 for successful parsing. 503 if tags are
+              missing or content is malformed.
+            - `thinking_steps` (list[str]): A list containing a single string:
+              the content extracted from the `<think>...</think>` block.
+              Returns an empty list if parsing fails.
+            - `json_content` (str): The raw string content extracted from between
+              the `<json>\n` and `</json>` tags. Returns an empty string if parsing fails.
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
 
@@ -294,19 +374,26 @@ def split_json_deepseek(res_text: str) -> tuple[int, list[str], str]:
 
 
 def split_json_master(res_text: str, model: str) -> tuple[int, list[str], str]:
-    """Split the response text based on the model
+    """Master dispatch function for parsing LLM response text based on the model type.
 
-    Parameters
-    ----------
-    res_text : str
-        The response text from the LLM model
-    model : str
-        The LLM model used
+    Selects the appropriate parsing function (`split_json_deepseek`,
+    `split_json_openAI`, or `split_cot_json`) based on whether the `model`
+    is in `DEEPSEEK_MODELS`, `OPENAI_MODELS`, or defaults to the COT parser.
 
-    Returns
-    -------
-    tuple[int, list[str], str]
-        The status code, thinking steps and json content
+    Args:
+        res_text (str):
+            The raw response text from the LLM.
+        model (str):
+            The identifier of the LLM model used to generate the response (e.g.,
+            "deepseek-coder", "gpt-3.5-turbo", "claude-3-opus-20240229").
+
+    Returns:
+        tuple[int, list[str], str]:
+            - `status_code` (int): Status from the called parsing function, or 505
+              if an unexpected error occurs during dispatch.
+            - `thinking_steps` (list[str]): List of thinking/COT steps. Empty if
+              not applicable (e.g., for OpenAI) or if parsing failed.
+            - `json_content` (str): Extracted JSON string. Empty if parsing failed.
     """
     try:
         if model in DEEPSEEK_MODELS:
@@ -325,18 +412,29 @@ def split_json_master(res_text: str, model: str) -> tuple[int, list[str], str]:
 
 
 def validate_split_json(
-        json_content: str) -> tuple[int, list[str], list[str], list[int]]:
-    """Validate the split json content from LLM response
+        json_content: str) -> tuple[int, list[list[str]] | list[str], list[str], list[float]]:
+    """Validates and extracts data from a JSON string (from LLM response).
 
-    Parameters
-    ----------
-    json_content : str
-        The json content from the LLM response
+    Parses the `json_content` string (expected to be valid JSON representation
+    of a dictionary) using `ast.literal_eval`. It then attempts to extract
+    'data' (pathways/molecules), 'explanation', and 'confidence_scores' keys.
 
-    Returns
-    -------
-    tuple[int, list[str], list[str], list[int]]
-        The status code, list of molecules, list of explanations and list of confidence scores
+    Args:
+        json_content (str):
+            The JSON string content extracted from an LLM response.
+
+    Returns:
+        tuple[int, list[list[str]] | list[str], list[str], list[float]]:
+            - `status_code` (int): 200 for successful parsing and key extraction.
+              504 if parsing fails (e.g., invalid JSON) or if expected keys
+              are missing.
+            - `res_molecules` (list[list[str]] | list[str]): The 'data' field from
+              the JSON, typically a list of pathways, where each pathway is a
+              list of SMILES strings. Can also be a flat list of SMILES strings
+              if the LLM proposes single molecules. Empty list on failure.
+            - `res_explanations` (list[str]): The 'explanation' field. Empty list on failure.
+            - `res_confidence` (list[float]): The 'confidence_scores' field.
+              Empty list on failure.
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
     try:
@@ -357,21 +455,42 @@ def llm_pipeline(
     stability_flag: str = "False",
     hallucination_check: str = "False"
 ) -> tuple[list[list[str]], list[str], list[float]]:
-    """Pipeline to call LLM and validate the results
+    """Main pipeline for LLM-based retrosynthesis predictions.
 
-    Parameters
-    ----------
-    molecule : str
-        The target molecule for retrosynthesis
-    LLM : str, optional
-        LLM to be used for retrosynthesis , by default "claude-3-opus-20240229"
-    messages : Optional[list[dict]], optional
-        Conversation history, by default None
+    This function orchestrates the process of:
+    1. Calling an LLM (potentially with retries and increasing temperature via `call_LLM`).
+       It may switch models (e.g., from DeepSeek to Claude) upon retry.
+    2. Parsing the LLM's response using `split_json_master`.
+    3. Validating the extracted JSON content using `validate_split_json`.
+    4. (Implicitly, further down in the full code) Applying validity checks,
+       stability checks (`stability_checker`), and hallucination checks
+       (`hallucination_checker`) to the results.
 
-    Returns
-    -------
-    tuple[list[list[str]], list[str], list[float]]
-        The output pathways, explanations and confidence scores
+    The pipeline attempts to get valid pathways. The number of retries is
+    controlled by `max_run` which is influenced by `stability_flag` and
+    `hallucination_check`.
+
+    Args:
+        molecule (str):
+            The SMILES string of the target molecule.
+        LLM (str, optional):
+            The primary LLM identifier. Defaults to "claude-3-opus-20240229".
+        messages (Optional[list[dict]], optional):
+            Conversation history for the LLM. Defaults to None (new conversation).
+        stability_flag (str, optional):
+            "True" or "False" to enable stability checks. Affects retry attempts.
+            Defaults to "False".
+        hallucination_check (str, optional):
+            "True" or "False" to enable hallucination checks. Affects retry attempts.
+            Defaults to "False".
+
+    Returns:
+        tuple[list[list[str]], list[str], list[float]]:
+            - `output_pathways` (list[list[str]]): A list of proposed synthetic
+              pathways. Each pathway is a list of SMILES strings (precursors).
+              Returns an empty list if no valid pathways are found after all attempts.
+            - `output_explanations` (list[str]): Corresponding explanations for each pathway.
+            - `output_confidence` (list[float]): Corresponding confidence scores for each pathway.
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
     output_pathways: list[list[str]] = []
@@ -484,13 +603,16 @@ def llm_pipeline(
     return output_pathways, output_explanations, output_confidence
 
 
-def get_error_log(status_code: int):
-    """Prints error message based on the status code.
+def get_error_log(status_code: int) -> None:
+    """Logs a descriptive error message based on a status code.
 
-    Parameters
-    ----------
-    status_code : int
-        Status Code of the error.
+    Retrieves an error description from `src.variables.ERROR_MAP` using the
+    provided `status_code` and logs it. If the status code is not found
+    in the map, it logs an "unrecognized" error message.
+
+    Args:
+        status_code (int):
+            The status code representing an error that occurred.
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
 

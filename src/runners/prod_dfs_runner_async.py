@@ -1,3 +1,25 @@
+"""Asynchronously runs a series of Depth-First Search (DFS) experiments.
+
+This script is an asynchronous version of `prod_dfs_runner.py`. It uses `asyncio`
+and `concurrent.futures.ThreadPoolExecutor` to process multiple molecules in
+parallel, aiming to speed up the overall experimental runs.
+
+The core workflow, including loading molecules, mapping configurations, defining
+experimental folders, and iterating through run numbers, is similar to the
+synchronous version. The main difference lies in how individual molecule processing
+is handled.
+
+Key Features:
+- Asynchronous processing of molecules using `asyncio`.
+- Limits the number of concurrently processed molecules via `MAX_CONCURRENT_TASKS`.
+- The synchronous `src.main.main()` function is run in a `ThreadPoolExecutor` to
+  avoid blocking the asyncio event loop.
+- Saves results to JSON files with a `_hallucination.json` suffix in a structured
+  directory: `results/dfs/<condition_folder>/run_<run_no>/`.
+
+Dependencies:
+    - (Same as `prod_dfs_runner.py` plus `asyncio`, `concurrent.futures`).
+"""
 # load up USPTO-50k test dataset
 import rootutils
 import os
@@ -25,7 +47,21 @@ folder_list = ["m0p1:Pistachio_100+", "m1p0:Pistachio_100+"]
 MAX_CONCURRENT_TASKS = 6  # Process 5 molecules in parallel
 
 async def process_molecule(mol, folder, run_no):
-    """Process a single molecule asynchronously."""
+    """Asynchronously processes a single molecule for a given experimental setup.
+
+    This function handles the logic for one molecule: clearing its cache, determining
+    LLM and AZ model settings, running the main processing logic via `src.main.main`
+    (offloaded to a thread pool), and saving the results to a JSON file.
+
+    Args:
+        mol (str): The SMILES string of the molecule to process.
+        folder (str): The string representing the current experimental condition
+            (e.g., "m0p1:Pistachio_100+").
+        run_no (int): The current run number (for multiple trials).
+
+    Returns:
+        str: The SMILES string of the processed molecule (primarily for task tracking).
+    """
     molecule = mol
     llm = mapper[folder.split(":")[0]]
     az_model = folder.split(":")[1]
@@ -56,6 +92,13 @@ async def process_molecule(mol, folder, run_no):
     return mol
 
 async def main_async():
+    """Main asynchronous function to orchestrate experimental runs.
+
+    Iterates through run numbers and experimental folder configurations. For each
+    combination, it creates and manages asynchronous tasks for processing all
+    molecules in the dataset, respecting the `MAX_CONCURRENT_TASKS` limit.
+    Ensures that necessary output directories are created.
+    """
     for run_no in range(9, 12):
         for folder in folder_list:
             # Create directories if they don't exist

@@ -1,0 +1,552 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.metadata &mdash; DeepRetro 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DeepRetro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models Used in DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference_landing.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DeepRetro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.metadata</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.metadata</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;LLM-based agents for predicting chemical reaction metadata.</span>
+
+<span class="sd">This module provides a suite of &#39;agent&#39; functions that leverage Large Language</span>
+<span class="sd">Models (LLMs) via the `litellm` library to predict various metadata associated</span>
+<span class="sd">with a given chemical reaction (defined by reactants and products).</span>
+
+<span class="sd">The predicted metadata categories include:</span>
+<span class="sd">1.  **Reagents:** Likely reagents involved in the transformation.</span>
+<span class="sd">2.  **Reaction Conditions:** Plausible temperature, pressure, solvent, and reaction time.</span>
+<span class="sd">3.  **Literature References:** Potentially relevant scientific publications.</span>
+
+<span class="sd">Each category has a pair of functions:</span>
+
+<span class="sd">*   `*_agent()`: A higher-level function that takes structured input (often lists</span>
+<span class="sd">    of dictionaries containing SMILES and other info), calls the corresponding</span>
+<span class="sd">    `*_llm_call()` function, processes the LLM&#39;s raw output, validates it (e.g.,</span>
+<span class="sd">    SMILES validity), and formats it into a structured dictionary or list.</span>
+<span class="sd">    These agent functions are decorated with `@cache_results` for efficiency.</span>
+<span class="sd">*   `*_llm_call()`: A lower-level function that constructs the specific prompt for</span>
+<span class="sd">    the LLM (using templates from `src.variables`), makes the API call to the LLM,</span>
+<span class="sd">    and returns the raw (but parsed from string) response.</span>
+
+<span class="sd">Langfuse is integrated for logging LLM interactions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">litellm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">litellm</span><span class="w"> </span><span class="kn">import</span> <span class="n">completion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">REAGENT_USER_PROMPT</span><span class="p">,</span> <span class="n">REAGENT_SYS_PROMPT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">CONDITIONS_USER_PROMPT</span><span class="p">,</span> <span class="n">CONDITIONS_SYS_PROMPT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">LITERATURE_USER_PROMPT</span><span class="p">,</span> <span class="n">LITERATURE_SYS_PROMPT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache_results</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.utils.utils_molecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">calc_mol_wt</span><span class="p">,</span> <span class="n">is_valid_smiles</span><span class="p">,</span> <span class="n">calc_chemical_formula</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.utils.job_context</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">context_logger</span>
+
+<span class="n">load_dotenv</span><span class="p">()</span>
+
+<span class="c1"># set the success callback to langfuse for logging</span>
+<span class="n">litellm</span><span class="o">.</span><span class="n">success_callback</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;langfuse&quot;</span><span class="p">]</span>
+<span class="n">litellm</span><span class="o">.</span><span class="n">drop_params</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;generation_name&quot;</span><span class="p">:</span> <span class="s2">&quot;prod&quot;</span><span class="p">,</span>  <span class="c1"># set langfuse generation name</span>
+    <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;Retrosynthesis&quot;</span><span class="p">,</span>  <span class="c1"># set langfuse project name</span>
+    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.3&quot;</span><span class="p">,</span>  <span class="c1"># set langfuse version</span>
+    <span class="s2">&quot;trace_name&quot;</span><span class="p">:</span> <span class="s2">&quot;prod&quot;</span><span class="p">,</span>  <span class="c1"># set langfuse Trace Name</span>
+    <span class="s2">&quot;trace_user_id&quot;</span><span class="p">:</span> <span class="s2">&quot;sv&quot;</span><span class="p">,</span>  <span class="c1"># set langfuse Trace User ID</span>
+    <span class="s2">&quot;session_id&quot;</span><span class="p">:</span> <span class="s2">&quot;metadata&quot;</span><span class="p">,</span>  <span class="c1"># set langfuse Session ID</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="reagent_agent">
+<a class="viewcode-back" href="../../metadata_module.html#src.metadata.reagent_agent">[docs]</a>
+<span class="nd">@cache_results</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">reagent_agent</span><span class="p">(</span><span class="n">reactants</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+                  <span class="n">product</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+                  <span class="n">LLM</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;claude-3-opus-20240229&quot;</span><span class="p">,</span>
+                  <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Predicts reagents for a reaction and enriches them with metadata.</span>
+
+<span class="sd">    This agent calls an LLM to suggest reagents given reactants and a product.</span>
+<span class="sd">    It then validates the SMILES of suggested reagents and calculates their</span>
+<span class="sd">    chemical formula and molecular weight.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        reactants (list[dict]):</span>
+<span class="sd">            List of reactant dictionaries. Each dictionary must have a &#39;smiles&#39;</span>
+<span class="sd">            key with the reactant&#39;s SMILES string (e.g., `[{&#39;smiles&#39;: &#39;CCO&#39;}]`).</span>
+<span class="sd">        product (list[dict]):</span>
+<span class="sd">            List containing a single product dictionary. The dictionary must have</span>
+<span class="sd">            a &#39;smiles&#39; key (e.g., `[{&#39;smiles&#39;: &#39;CC(=O)O&#39;}]`).</span>
+<span class="sd">        LLM (str, optional):</span>
+<span class="sd">            Identifier for the LLM to use. Defaults to &quot;claude-3-opus-20240229&quot;.</span>
+<span class="sd">        temperature (float, optional):</span>
+<span class="sd">            Temperature for LLM sampling. Defaults to 0.0 for deterministic output.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple[int, list[dict] | str]:</span>
+<span class="sd">            A tuple containing a status code and the result.</span>
+
+<span class="sd">            -   If successful (status 200): A list of reagent dictionaries.</span>
+<span class="sd">                Each dictionary has the structure::</span>
+
+<span class="sd">                    {</span>
+<span class="sd">                        &#39;smiles&#39;: &#39;&lt;reagent_SMILES&gt;&#39;,</span>
+<span class="sd">                        &#39;reagent_metadata&#39;: {&#39;name&#39;: &#39;&#39;, &#39;chemical_formula&#39;: &#39;...&#39;, &#39;mass&#39;: ...}</span>
+<span class="sd">                    }</span>
+
+<span class="sd">            -   If an error occurs (e.g., LLM call fails, parsing error, no valid</span>
+<span class="sd">                reagents found): A status code (e.g., 404) and an empty string \&quot;\&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">context_logger</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">product_smiles</span> <span class="o">=</span> <span class="n">product</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;smiles&#39;</span><span class="p">]</span>
+    <span class="n">reactants_smiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;smiles&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reactants</span><span class="p">]</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">reagent_llm_call</span><span class="p">(</span><span class="n">reactants_smiles</span><span class="p">,</span> <span class="n">product_smiles</span><span class="p">,</span> <span class="n">LLM</span><span class="p">,</span>
+                                   <span class="n">temperature</span><span class="p">)</span>
+    <span class="c1"># logger.info(f&quot;Received reagents from LLM: {res}&quot;)</span>
+
+    <span class="c1"># Make sure the LLM call was successful</span>
+    <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># Parse the reagents and add metadata</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">reagents</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+        <span class="n">reagent_expl</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;explanation&#39;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in parsing reagents: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># Filter out invalid reagents</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">reagents</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reagents</span> <span class="k">if</span> <span class="n">is_valid_smiles</span><span class="p">(</span><span class="n">r</span><span class="p">)]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in filtering reagents: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># Flag if no reagents are found</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reagents</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># Add metadata to the reagents</span>
+    <span class="n">res_final</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">reagent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reagents</span><span class="p">):</span>
+            <span class="n">res_final</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;smiles&quot;</span><span class="p">:</span> <span class="n">reagent</span><span class="p">,</span>
+                <span class="s2">&quot;reagent_metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;chemical_formula&quot;</span><span class="p">:</span> <span class="n">calc_chemical_formula</span><span class="p">(</span><span class="n">reagent</span><span class="p">),</span>
+                    <span class="s2">&quot;mass&quot;</span><span class="p">:</span> <span class="n">calc_mol_wt</span><span class="p">(</span><span class="n">reagent</span><span class="p">),</span>
+                <span class="p">}</span>
+            <span class="p">})</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in adding metadata to reagents: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">200</span><span class="p">,</span> <span class="n">res_final</span></div>
+
+
+
+<div class="viewcode-block" id="reagent_llm_call">
+<a class="viewcode-back" href="../../metadata_module.html#src.metadata.reagent_llm_call">[docs]</a>
+<span class="nd">@cache_results</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">reagent_llm_call</span><span class="p">(</span><span class="n">reactants</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                     <span class="n">product</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">LLM</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;claude-3-opus-20240229&quot;</span><span class="p">,</span>
+                     <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calls an LLM to predict reagents for a given reaction.</span>
+
+<span class="sd">    Uses system and user prompts (`REAGENT_SYS_PROMPT`, `REAGENT_USER_PROMPT`)</span>
+<span class="sd">    to query the LLM for suggested reagents based on reactant and product SMILES.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        reactants (list[str]): List of SMILES strings for the reactants.</span>
+<span class="sd">        product (str): SMILES string for the product.</span>
+<span class="sd">        LLM (str, optional):</span>
+<span class="sd">            Identifier for the LLM to use. Defaults to &quot;claude-3-opus-20240229&quot;.</span>
+<span class="sd">        temperature (float, optional):</span>
+<span class="sd">            Temperature for LLM sampling. Defaults to 0.0.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple[int, dict | str]:</span>
+<span class="sd">            A tuple containing a status code and the result.</span>
+
+<span class="sd">            -   If successful (status 200): A dictionary parsed from the LLM&#39;s JSON</span>
+<span class="sd">                response. Expected format: `{&#39;data&#39;: [&#39;reagent1_SMILES&#39;, ...],</span>
+<span class="sd">                &#39;explanation&#39;: &#39;...&#39;}`.</span>
+<span class="sd">            -   If an LLM call or parsing fails (status 404): An empty string &quot;&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">context_logger</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">user_prompt</span> <span class="o">=</span> <span class="n">REAGENT_USER_PROMPT</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{product}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">product</span><span class="p">)</span>
+    <span class="n">user_prompt</span> <span class="o">=</span> <span class="n">user_prompt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{reactants}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">reactants</span><span class="p">))</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[{</span>
+        <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">REAGENT_SYS_PROMPT</span>
+    <span class="p">},</span> <span class="p">{</span>
+        <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">user_prompt</span>
+    <span class="p">}]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">completion</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">LLM</span><span class="p">,</span>
+                              <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+                              <span class="n">max_completion_tokens</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+                              <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+                              <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+                              <span class="n">top_p</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+                              <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="n">res_text</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in calling </span><span class="si">{</span><span class="n">LLM</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retrying call to </span><span class="si">{</span><span class="n">LLM</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">completion</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">LLM</span><span class="p">,</span>
+                                  <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+                                  <span class="n">max_completion_tokens</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+                                  <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+                                  <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+                                  <span class="n">top_p</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+            <span class="n">res_text</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;2nd Error in calling </span><span class="si">{</span><span class="n">LLM</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exiting call to </span><span class="si">{</span><span class="n">LLM</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received response from LLM: </span><span class="si">{</span><span class="n">res_text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">res_text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">200</span><span class="p">,</span> <span class="n">res</span></div>
+
+
+
+<div class="viewcode-block" id="conditions_agent">
+<a class="viewcode-back" href="../../metadata_module.html#src.metadata.conditions_agent">[docs]</a>
+<span class="nd">@cache_results</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">conditions_agent</span><span class="p">(</span><span class="n">reactants</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+                     <span class="n">product</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+                     <span class="n">reagents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+                     <span class="n">LLM</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;claude-3-opus-20240229&quot;</span><span class="p">,</span>
+                     <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Predicts reaction conditions using an LLM.</span>
+
+<span class="sd">    Given reactants, product, and reagents, this agent calls an LLM to suggest</span>
+<span class="sd">    reaction conditions (temperature, pressure, solvent, time).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        reactants (list[dict]):</span>
+<span class="sd">            List of reactant dictionaries, each with a &#39;smiles&#39; key.</span>
+<span class="sd">        product (list[dict]):</span>
+<span class="sd">            List with a single product dictionary, with a &#39;smiles&#39; key.</span>
+<span class="sd">        reagents (list[dict]):</span>
+<span class="sd">            List of reagent dictionaries, each with a &#39;smiles&#39; key.</span>
+<span class="sd">        LLM (str, optional):</span>
+<span class="sd">            Identifier for the LLM. Defaults to &quot;claude-3-opus-20240229&quot;.</span>
+<span class="sd">        temperature (float, optional):</span>
+<span class="sd">            LLM sampling temperature. Defaults to 0.0.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple[int, dict | str]:</span>
+<span class="sd">            A tuple containing a status code and the result.</span>
+
+<span class="sd">            -   If successful (status 200): A dictionary containing the predicted</span>
+<span class="sd">                conditions, e.g., `{&#39;temperature&#39;: &#39;25 C&#39;, &#39;pressure&#39;: &#39;1 atm&#39;,</span>
+<span class="sd">                &#39;solvent&#39;: &#39;Water&#39;, &#39;time&#39;: &#39;2 h&#39;}`.</span>
+<span class="sd">            -   If an error occurs (LLM call, parsing): Status code (e.g., 404)</span>
+<span class="sd">                and an empty string &quot;&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">context_logger</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">product_smiles</span> <span class="o">=</span> <span class="n">product</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;smiles&#39;</span><span class="p">]</span>
+    <span class="n">reactants_smiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;smiles&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reactants</span><span class="p">]</span>
+    <span class="n">reagents_smiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;smiles&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reagents</span><span class="p">]</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">conditions_llm_call</span><span class="p">(</span><span class="n">reactants_smiles</span><span class="p">,</span> <span class="n">product_smiles</span><span class="p">,</span>
+                                      <span class="n">reagents_smiles</span><span class="p">,</span> <span class="n">LLM</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span>
+    <span class="c1"># logger.info(f&quot;Received conditions from LLM: {res}&quot;)</span>
+
+    <span class="c1"># Make sure the LLM call was successful</span>
+    <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">status</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># Make sure the conditions are present</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span>
+        <span class="n">pressure</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span>
+        <span class="n">solvent</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;solvent&#39;</span><span class="p">]</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in parsing conditions: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="mi">200</span><span class="p">,</span> <span class="n">res</span></div>
+
+
+
+<div class="viewcode-block" id="conditions_llm_call">
+<a class="viewcode-back" href="../../metadata_module.html#src.metadata.conditions_llm_call">[docs]</a>
+<span class="nd">@cache_results</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">conditions_llm_call</span><span class="p">(</span><span class="n">reactants</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                        <span class="n">product</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                        <span class="n">reagents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                        <span class="n">LLM</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;claude-3-opus-20240229&quot;</span><span class="p">,</span>
+                        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calls an LLM to predict reaction conditions.</span>
+
+<span class="sd">    Uses `CONDITIONS_SYS_PROMPT` and `CONDITIONS_USER_PROMPT` to query the LLM.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        reactants (list[str]): List of SMILES strings for reactants.</span>
+<span class="sd">        product (str): SMILES string for the product.</span>
+<span class="sd">        reagents (list[str]): List of SMILES strings for reagents.</span>
+<span class="sd">        LLM (str, optional):</span>
+<span class="sd">            Identifier for the LLM. Defaults to &quot;claude-3-opus-20240229&quot;.</span>
+<span class="sd">        temperature (float, optional):</span>
+<span class="sd">            LLM sampling temperature. Defaults to 0.0.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple[int, dict | str]:</span>
+<span class="sd">            A tuple containing a status code and the result.</span>
+
+<span class="sd">            -   If successful (status 200): A dictionary parsed from the LLM&#39;s JSON</span>
+<span class="sd">                response, e.g., `{&#39;temperature&#39;: &#39;25 C&#39;, ...}`.</span>
+<span class="sd">            -   If an LLM call or parsing fails (status 404): An empty string &quot;&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">context_logger</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">user_prompt</span> <span class="o">=</span> <span class="n">CONDITIONS_USER_PROMPT</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{product}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">product</span><span class="p">)</span>
+    <span class="n">user_prompt</span> <span class="o">=</span> <span class="n">user_prompt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{reactants}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">reactants</span><span class="p">))</span>
+    <span class="n">user_prompt</span> <span class="o">=</span> <span class="n">user_prompt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{reagents}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">reagents</span><span class="p">))</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[{</span>
+        <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">CONDITIONS_SYS_PROMPT</span>
+    <span class="p">},</span> <span class="p">{</span>
+        <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">user_prompt</span>
+    <span class="p">}]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">completion</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">LLM</span><span class="p">,</span>
+                              <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+                              <span class="n">max_completion_tokens</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+                              <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+                              <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+                              <span class="n">top_p</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+                              <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="n">res_text</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in calling </span><span class="si">{</span><span class="n">LLM</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retrying call to </span><span class="si">{</span><span class="n">LLM</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">completion</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">LLM</span><span class="p">,</span>
+                                  <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+                                  <span class="n">max_completion_tokens</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+                                  <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+                                  <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+                                  <span class="n">top_p</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+            <span class="n">res_text</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;2nd Error in calling </span><span class="si">{</span><span class="n">LLM</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exiting call to </span><span class="si">{</span><span class="n">LLM</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received response from LLM: </span><span class="si">{</span><span class="n">res_text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">res_text</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">res_text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">200</span><span class="p">,</span> <span class="n">res_text</span></div>
+
+
+
+<div class="viewcode-block" id="literature_agent">
+<a class="viewcode-back" href="../../metadata_module.html#src.metadata.literature_agent">[docs]</a>
+<span class="nd">@cache_results</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">literature_agent</span><span class="p">(</span><span class="n">reactants</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+                     <span class="n">product</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+                     <span class="n">reagents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+                     <span class="n">conditions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                     <span class="n">LLM</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;claude-3-opus-20240229&quot;</span><span class="p">,</span>
+                     <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Predicts literature references for a reaction using an LLM.</span>
+
+<span class="sd">    This agent calls an LLM to suggest relevant literature references given</span>
+<span class="sd">    reactants, product, reagents, and reaction conditions.</span>
+<span class="sd">    It directly handles the LLM interaction using `LITERATURE_SYS_PROMPT`</span>
+<span class="sd">    and `LITERATURE_USER_PROMPT`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        reactants (list[dict]):</span>
+<span class="sd">            List of reactant dictionaries, each with a &#39;smiles&#39; key.</span>
+<span class="sd">        product (list[dict]):</span>
+<span class="sd">            List with a single product dictionary, with a &#39;smiles&#39; key.</span>
+<span class="sd">        reagents (list[dict]):</span>
+<span class="sd">            List of reagent dictionaries, each with a &#39;smiles&#39; key.</span>
+<span class="sd">        conditions (dict):</span>
+<span class="sd">            A dictionary describing reaction conditions, typically the output</span>
+<span class="sd">            from `conditions_agent` (e.g., `{&#39;temperature&#39;: &#39;25 C&#39;, ...}`).</span>
+<span class="sd">            This is converted to a string for the prompt.</span>
+<span class="sd">        LLM (str, optional):</span>
+<span class="sd">            Identifier for the LLM. Defaults to &quot;claude-3-opus-20240229&quot;.</span>
+<span class="sd">        temperature (float, optional):</span>
+<span class="sd">            LLM sampling temperature. Defaults to 0.0.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple[int, list | dict | str]:</span>
+<span class="sd">            A tuple containing a status code and the result.</span>
+
+<span class="sd">            -   If successful (status 200): A list or dictionary containing the</span>
+<span class="sd">                predicted literature references. The exact structure depends on the</span>
+<span class="sd">                LLM prompt, but typically includes fields like DOI, title, authors,</span>
+<span class="sd">                journal, year for each reference (e.g., `[{&#39;doi&#39;: &#39;...&#39;, ...}]`).</span>
+<span class="sd">            -   If an error occurs (LLM call, parsing): Status code (e.g., 404)</span>
+<span class="sd">                and an empty string &quot;&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">context_logger</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">product_smiles</span> <span class="o">=</span> <span class="n">product</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;smiles&#39;</span><span class="p">]</span>
+    <span class="n">reactants_smiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;smiles&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reactants</span><span class="p">]</span>
+    <span class="n">reagents_smiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;smiles&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reagents</span><span class="p">]</span>
+    <span class="n">user_prompt</span> <span class="o">=</span> <span class="n">LITERATURE_USER_PROMPT</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{product}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">product_smiles</span><span class="p">)</span>
+    <span class="n">user_prompt</span> <span class="o">=</span> <span class="n">user_prompt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{reactants}</span><span class="s1">&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">reactants_smiles</span><span class="p">))</span>
+    <span class="n">user_prompt</span> <span class="o">=</span> <span class="n">user_prompt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{reagents}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">reagents_smiles</span><span class="p">))</span>
+    <span class="n">user_prompt</span> <span class="o">=</span> <span class="n">user_prompt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{conditions}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">conditions</span><span class="p">))</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[{</span>
+        <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">LITERATURE_SYS_PROMPT</span>
+    <span class="p">},</span> <span class="p">{</span>
+        <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">user_prompt</span>
+    <span class="p">}]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">completion</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">LLM</span><span class="p">,</span>
+                              <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+                              <span class="n">max_completion_tokens</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+                              <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+                              <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+                              <span class="n">top_p</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+                              <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="n">res_text</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in calling </span><span class="si">{</span><span class="n">LLM</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retrying call to </span><span class="si">{</span><span class="n">LLM</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">completion</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">LLM</span><span class="p">,</span>
+                                  <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+                                  <span class="n">max_completion_tokens</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+                                  <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+                                  <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+                                  <span class="n">top_p</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+            <span class="n">res_text</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;2nd Error in calling </span><span class="si">{</span><span class="n">LLM</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exiting call to </span><span class="si">{</span><span class="n">LLM</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received response from LLM: </span><span class="si">{</span><span class="n">res_text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># convert the response to a dictionary</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">res_text</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">res_text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in parsing literature output: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># Parse the literature reaction</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">res_lit</span> <span class="o">=</span> <span class="n">res_text</span><span class="p">[</span><span class="s1">&#39;literature_reaction&#39;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in parsing literature reaction: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">404</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">200</span><span class="p">,</span> <span class="n">res_lit</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Project Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

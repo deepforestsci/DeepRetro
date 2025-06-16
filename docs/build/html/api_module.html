@@ -1,0 +1,390 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.api Module &mdash; DeepRetro 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src.cache Module" href="cache_module.html" />
+    <link rel="prev" title="API Reference" href="api_reference_landing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DeepRetro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models Used in DeepRetro</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api_reference_landing.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">src.api Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.api.clear_molecule_cache"><code class="docutils literal notranslate"><span class="pre">clear_molecule_cache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.api.health"><code class="docutils literal notranslate"><span class="pre">health()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.api.load_result"><code class="docutils literal notranslate"><span class="pre">load_result()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.api.partial_rerun"><code class="docutils literal notranslate"><span class="pre">partial_rerun()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.api.require_api_key"><code class="docutils literal notranslate"><span class="pre">require_api_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.api.rerun_retrosynthesis"><code class="docutils literal notranslate"><span class="pre">rerun_retrosynthesis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.api.retrosynthesis_api"><code class="docutils literal notranslate"><span class="pre">retrosynthesis_api()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.api.save_result"><code class="docutils literal notranslate"><span class="pre">save_result()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cache_module.html">src.cache Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main_module.html">src.main Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata_module.html">src.metadata Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prithvi_module.html">src.prithvi Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rec_prithvi_module.html">src.rec_prithvi Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils_package.html">src.utils Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables_module.html">src.variables Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DeepRetro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="api_reference_landing.html">API Reference</a></li>
+      <li class="breadcrumb-item active">src.api Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api_module.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.api">
+<span id="src-api-module"></span><h1>src.api Module<a class="headerlink" href="#module-src.api" title="Link to this heading"></a></h1>
+<p>Flask API for the DeepRetro Retrosynthesis Application.</p>
+<p>This module sets up and runs a Flask web server to provide an HTTP API for
+the core retrosynthesis functionalities of the DeepRetro project.</p>
+<p>Key Features:</p>
+<ul class="simple">
+<li><p><strong>Authentication:</strong> Endpoints are protected by an API key mechanism.
+The API key must be provided in the <cite>X-API-KEY</cite> header and is configured
+via the <cite>API_KEY</cite> environment variable.</p></li>
+<li><p><strong>CORS Enabled:</strong> Cross-Origin Resource Sharing is enabled for all routes.</p></li>
+<li><p><strong>Retrosynthesis Endpoint (`/api/retrosynthesis`):</strong>
+The primary endpoint for submitting a molecule (SMILES string) and receiving
+retrosynthesis predictions. Supports various LLM and AiZynthFinder model
+configurations and optional processing flags.</p></li>
+<li><p><strong>Cache Management (`/api/clear_molecule_cache`):</strong>
+Allows clearing cached results for specific molecules.</p></li>
+<li><p><strong>Rerun Capabilities (`/api/rerun_retrosynthesis`, `/api/partial_rerun`):</strong>
+Endpoints to re-trigger retrosynthesis, potentially with cache clearing.</p></li>
+<li><p><strong>Health Check (`/api/health`):</strong>
+A simple endpoint to verify if the API is operational.</p></li>
+<li><p><strong>Result Persistence (`partial.json`):</strong>
+Helper functions (<cite>save_result</cite>, <cite>load_result</cite>) are provided to save the
+latest retrosynthesis output to a local JSON file, possibly for debugging
+or stateful interactions, though this is a simple file-based approach.</p></li>
+</ul>
+<p>Environment Variables:</p>
+<ul class="simple">
+<li><p><cite>API_KEY</cite>: The secret key required for API authentication.</p></li>
+</ul>
+<p>The API leverages the <cite>src.main.main()</cite> function for the core retrosynthesis
+logic and <cite>src.cache</cite> for managing cached data.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.api.clear_molecule_cache">
+<span class="sig-prename descclassname"><span class="pre">src.api.</span></span><span class="sig-name descname"><span class="pre">clear_molecule_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/api.html#clear_molecule_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.api.clear_molecule_cache" title="Link to this definition"></a></dt>
+<dd><p>Endpoint to clear the cache for a specific molecule.</p>
+<p>Removes any cached retrosynthesis results for the given molecule string.
+This is useful if you want to ensure a fresh computation for a molecule.</p>
+<p><strong>Request JSON Body:</strong></p>
+<ul class="simple">
+<li><p><cite>molecule</cite> (str, required): The SMILES string or identifier of the molecule
+whose cache should be cleared.</p></li>
+</ul>
+<p><strong>Responses:</strong></p>
+<ul class="simple">
+<li><p><strong>200 OK:</strong> Cache cleared successfully.
+JSON body: <cite>{“status”: “success”}</cite>.</p></li>
+<li><p><strong>400 Bad Request:</strong> <cite>molecule</cite> field is missing in the request.
+JSON body: <cite>{“error”: “Molecule string is required”}</cite>.</p></li>
+<li><p><strong>401 Unauthorized:</strong> Missing or invalid API key.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.api.health">
+<span class="sig-prename descclassname"><span class="pre">src.api.</span></span><span class="sig-name descname"><span class="pre">health</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/api.html#health"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.api.health" title="Link to this definition"></a></dt>
+<dd><p>Health check endpoint for the API.</p>
+<p>Responds with a simple status message if the API is running and accessible.
+Requires API key authentication.</p>
+<p><strong>Responses:</strong></p>
+<ul class="simple">
+<li><p><strong>200 OK:</strong> API is healthy.
+JSON body: <cite>{“status”: “healthy”}</cite>.</p></li>
+<li><p><strong>401 Unauthorized:</strong> Missing or invalid API key.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.api.load_result">
+<span class="sig-prename descclassname"><span class="pre">src.api.</span></span><span class="sig-name descname"><span class="pre">load_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/api.html#load_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.api.load_result" title="Link to this definition"></a></dt>
+<dd><p>Load the most recent retrosynthesis result from <cite>partial.json</cite>.</p>
+<p>Attempts to read and parse the JSON data stored in <cite>PARTIAL_JSON_PATH</cite>.
+This file is expected to contain a SMILES string and its associated
+retrosynthesis result, as saved by <cite>save_result()</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple containing the SMILES string and the result dictionary.
+Returns <cite>(None, None)</cite> if the file does not exist, cannot be read,
+or if a parsing error occurs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a> | None, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a> | None]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.api.partial_rerun">
+<span class="sig-prename descclassname"><span class="pre">src.api.</span></span><span class="sig-name descname"><span class="pre">partial_rerun</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/api.html#partial_rerun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.api.partial_rerun" title="Link to this definition"></a></dt>
+<dd><p>Endpoint to perform a partial rerun of a retrosynthesis pathway.</p>
+<p>This complex endpoint allows modifying a previously computed retrosynthetic
+route by rerunning the synthesis from a specific intermediate step.
+It loads the last full retrosynthesis result (for the given <cite>smiles</cite>)
+from <cite>partial.json</cite>, identifies a target <cite>step</cite> in that pathway, and then
+initiates a new retrosynthesis (<cite>src.main.main()</cite>) starting from the product
+of that target step. The newly generated sub-pathway then replaces the
+original sub-pathway downstream of the target step.</p>
+<p>The logic involves:</p>
+<ol class="arabic simple">
+<li><p>Loading the previous result for <cite>smiles</cite> from <cite>partial.json</cite>.</p></li>
+<li><p>Identifying the molecule (<cite>start_molecule</cite>) to resynthesize based on the
+product of the specified <cite>steps</cite> number in the loaded pathway.</p></li>
+<li><p>Running a new retrosynthesis on <cite>start_molecule</cite> using provided or default
+LLM/AZ models and flags.</p></li>
+<li><p>Identifying all original steps and dependencies that are downstream of (depend on)
+the <cite>steps</cite> chosen for rerun.</p></li>
+<li><p>Removing these downstream steps and their dependencies.</p></li>
+<li><p>Renumbering the steps from the new sub-pathway to follow existing steps.</p></li>
+<li><p>Merging the kept original steps with the new renumbered sub-pathway steps
+and their dependencies.</p></li>
+<li><p>Connecting the new sub-pathway to the original pathway at the point where
+the <cite>steps</cite> was branched from.</p></li>
+<li><p>Saving the final merged result back to <cite>partial.json</cite>.</p></li>
+</ol>
+<p><strong>Request JSON Body:</strong></p>
+<ul class="simple">
+<li><p><cite>smiles</cite> (str, required): The SMILES string of the original target molecule
+for which a result exists in <cite>partial.json</cite>.</p></li>
+<li><p><cite>steps</cite> (int, required): The step number in the previously stored pathway
+from which the rerun should originate. The product of this step will be
+the starting molecule for the new synthesis.</p></li>
+<li><p><cite>model_type</cite> (str, optional): LLM for the new sub-pathway. See <cite>/api/retrosynthesis</cite>.</p></li>
+<li><p><cite>advanced_prompt</cite> (str or bool, optional): See <cite>/api/retrosynthesis</cite>.</p></li>
+<li><p><cite>model_version</cite> (str, optional): AiZynthFinder model. See <cite>/api/retrosynthesis</cite>.</p></li>
+<li><p><cite>stability_flag</cite> (str, optional): See <cite>/api/retrosynthesis</cite>.</p></li>
+<li><p><cite>hallucination_check</cite> (str, optional): See <cite>/api/retrosynthesis</cite>.</p></li>
+</ul>
+<p><strong>Responses:</strong></p>
+<ul class="simple">
+<li><p><strong>200 OK:</strong> Partial rerun successful. Body contains the merged JSON result.</p></li>
+<li><p><strong>400 Bad Request:</strong> Invalid input (e.g., missing fields, <cite>smiles</cite> not found
+in <cite>partial.json</cite>, <cite>steps</cite> not found in pathway).</p></li>
+<li><p><strong>401 Unauthorized:</strong> Missing or invalid API key.</p></li>
+<li><p><strong>404 Not Found:</strong> If the specified <cite>steps</cite> number is not found in the
+loaded pathway for the given <cite>smiles</cite>.</p></li>
+<li><p><strong>500 Internal Server Error:</strong> Unexpected error during processing.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.api.require_api_key">
+<span class="sig-prename descclassname"><span class="pre">src.api.</span></span><span class="sig-name descname"><span class="pre">require_api_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/api.html#require_api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.api.require_api_key" title="Link to this definition"></a></dt>
+<dd><p>Decorator to enforce API key authentication for Flask routes.</p>
+<p>This decorator checks for the presence and validity of an API key sent
+in the <cite>X-API-KEY</cite> request header. The required API key is loaded from
+the <cite>API_KEY</cite> environment variable.</p>
+<p>If the <cite>X-API-KEY</cite> header is missing or contains an incorrect key, the
+decorated endpoint will return a 401 Unauthorized error with a JSON body:
+<cite>{“error”: “Unauthorized”}</cite>.</p>
+<p><cite>OPTIONS</cite> requests are allowed to pass through without an API key check
+to support CORS preflight requests.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>Callable</em>) – The Flask view function to decorate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The decorated view function with API key checking.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.api.rerun_retrosynthesis">
+<span class="sig-prename descclassname"><span class="pre">src.api.</span></span><span class="sig-name descname"><span class="pre">rerun_retrosynthesis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/api.html#rerun_retrosynthesis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.api.rerun_retrosynthesis" title="Link to this definition"></a></dt>
+<dd><p>Endpoint to rerun retrosynthesis for a specific molecule, clearing its cache first.</p>
+<p>This endpoint first clears any existing cache for the target molecule and
+then performs a fresh retrosynthesis run. It accepts the same parameters
+as the <cite>/api/retrosynthesis</cite> endpoint to control the models and flags.</p>
+<p><strong>Request JSON Body:</strong></p>
+<ul class="simple">
+<li><p><cite>smiles</cite> (str, required): The SMILES string of the target molecule.</p></li>
+<li><p><cite>model_type</cite> (str, optional): Specifies the LLM. See <cite>/api/retrosynthesis</cite>.</p></li>
+<li><p><cite>advanced_prompt</cite> (str or bool, optional): See <cite>/api/retrosynthesis</cite>.</p></li>
+<li><p><cite>model_version</cite> (str, optional): Specifies AiZynthFinder model. See <cite>/api/retrosynthesis</cite>.</p></li>
+<li><p><cite>stability_flag</cite> (str, optional): See <cite>/api/retrosynthesis</cite>.</p></li>
+<li><p><cite>hallucination_check</cite> (str, optional): See <cite>/api/retrosynthesis</cite>.</p></li>
+</ul>
+<p><strong>Responses:</strong></p>
+<ul class="simple">
+<li><p><strong>200 OK:</strong> Success. See <cite>/api/retrosynthesis</cite>.</p></li>
+<li><p><strong>400 Bad Request:</strong> Invalid input. See <cite>/api/retrosynthesis</cite>.</p></li>
+<li><p><strong>401 Unauthorized:</strong> Missing or invalid API key.</p></li>
+<li><p><strong>500 Internal Server Error:</strong> See <cite>/api/retrosynthesis</cite>.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.api.retrosynthesis_api">
+<span class="sig-prename descclassname"><span class="pre">src.api.</span></span><span class="sig-name descname"><span class="pre">retrosynthesis_api</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/api.html#retrosynthesis_api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.api.retrosynthesis_api" title="Link to this definition"></a></dt>
+<dd><p>Endpoint to perform retrosynthesis on a target SMILES string.</p>
+<p>This is the primary endpoint for initiating a retrosynthesis task.
+It accepts a JSON payload containing the target molecule’s SMILES string
+and optional parameters to control the LLM, AiZynthFinder model,
+and other processing flags.</p>
+<p><strong>Request JSON Body:</strong></p>
+<ul class="simple">
+<li><p><cite>smiles</cite> (str, required): The SMILES string of the target molecule.</p></li>
+<li><p><cite>model_type</cite> (str, optional): Specifies the LLM to use.
+Valid values: “claude3” (default), “claude37”, “deepseek”.</p></li>
+<li><p><cite>advanced_prompt</cite> (str or bool, optional): If “true” or <cite>True</cite>, appends
+“:adv” to the LLM identifier, potentially selecting a different
+prompt version. Defaults to <cite>False</cite>.</p></li>
+<li><p><cite>model_version</cite> (str, optional): Specifies the AiZynthFinder model.
+Defaults to “USPTO”. Must be a value from <cite>src.variables.AZ_MODEL_LIST</cite>.</p></li>
+<li><p><cite>stability_flag</cite> (str, optional): “True” or “False” to enable/disable
+stability checks. Defaults to “False”.</p></li>
+<li><p><cite>hallucination_check</cite> (str, optional): “True” or “False” to enable/disable
+hallucination checks. Defaults to “False”.</p></li>
+</ul>
+<p><strong>Responses:</strong></p>
+<ul class="simple">
+<li><p><strong>200 OK:</strong> Success. The body contains the JSON result from the
+retrosynthesis process (output of <cite>src.main.main()</cite>). The result is also
+saved to <cite>partial.json</cite>.</p></li>
+<li><p><strong>400 Bad Request:</strong> Invalid input (e.g., missing <cite>smiles</cite>, invalid SMILES
+string, invalid parameter values).
+JSON body: <cite>{“error”: “&lt;error message&gt;”}</cite>.</p></li>
+<li><p><strong>401 Unauthorized:</strong> Missing or invalid API key.
+JSON body: <cite>{“error”: “Unauthorized”}</cite>.</p></li>
+<li><p><strong>500 Internal Server Error:</strong> An unexpected error occurred during
+retrosynthesis processing.
+JSON body: <cite>{“error”: “Error in retrosynthesis: &lt;exception message&gt;. Please rerun.”}</cite>.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.api.save_result">
+<span class="sig-prename descclassname"><span class="pre">src.api.</span></span><span class="sig-name descname"><span class="pre">save_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/api.html#save_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.api.save_result" title="Link to this definition"></a></dt>
+<dd><p>Save a retrosynthesis result to the <cite>partial.json</cite> file.</p>
+<p>This function stores the provided SMILES string and its corresponding
+retrosynthesis result in a JSON file named <cite>partial.json</cite>. Any existing
+content in this file will be overwritten.</p>
+<p>The saved data structure is a JSON object:
+<cite>{“smiles”: “&lt;input_smiles&gt;”, “result”: &lt;retrosynthesis_output&gt;}</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>smiles</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The SMILES string of the molecule for which the result is saved.</p></li>
+<li><p><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – The retrosynthesis result data (typically a dictionary).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The path to the saved file (<cite>PARTIAL_JSON_PATH</cite>).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_reference_landing.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cache_module.html" class="btn btn-neutral float-right" title="src.cache Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Project Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

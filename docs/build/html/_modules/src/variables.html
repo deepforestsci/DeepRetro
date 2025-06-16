@@ -1,0 +1,1503 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.variables &mdash; DeepRetro 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DeepRetro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models Used in DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference_landing.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DeepRetro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.variables</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.variables</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;File to store Variables for the retrosynthesis task&quot;&quot;&quot;</span>
+
+<span class="n">prompt_old</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;Do an one-step retrosynthesis on the given smile - </span><span class="si">{target_smiles}</span><span class="s1"> and provide </span>
+<span class="s1">the list containing the reactants in the smiles format of all the possible pathways. </span>
+<span class="s1">Now put all these outputs to a result list. Do not print anything other than the result.</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+<span class="n">SYS_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. </span>
+
+<span class="s2">Use chain-of-thought reasoning to analyze the target molecule, and enclose your detailed thinking process within &lt;thinking&gt;&lt;/thinking&gt; tags. This reasoning should appear in the final JSON output.</span>
+
+<span class="s2">Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. </span>
+
+<span class="s2">If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">USER_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Perform a single-step retrosynthesis on the following molecule, providing 3-5 possible precursors or reactions:</span>
+
+<span class="si">{target_smiles}</span>
+
+<span class="s2">Use chain-of-thought reasoning, enclosed within &lt;thinking&gt;&lt;/thinking&gt; tags, to analyze the molecule. This reasoning should detail your step-by-step thought process.</span>
+
+<span class="s2">Present your final analysis in the following JSON format:</span>
+
+<span class="s2">{</span>
+<span class="s2">  &quot;data&quot;: [</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;explanation&quot;: [</span>
+<span class="s2">    &quot;explanation 1&quot;,</span>
+<span class="s2">    &quot;explanation 2&quot;,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;confidence_scores&quot;: [</span>
+<span class="s2">    confidence_score1,</span>
+<span class="s2">    confidence_score2,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ]</span>
+<span class="s2">}</span>
+
+<span class="s2">For each suggestion in the &quot;data&quot; array, provide the precursor molecules in SMILES notation. Ensure to provide only valid SMILES strings.</span>
+
+<span class="s2">In the corresponding &quot;explanation&quot; array, briefly explain the reaction type and any key conditions or reagents needed.</span>
+
+<span class="s2">In the &quot;confidence_scores&quot; array, provide a confidence score for each suggestion between 0 and 1, indicating your confidence in the proposed retrosynthesis pathway.</span>
+
+<span class="s2">Ensure that the number of entries in &quot;data&quot;, &quot;explanation&quot;, and &quot;confidence_scores&quot; are the same.</span>
+
+<span class="s2">The final output should be in this format:</span>
+
+<span class="s2">&lt;cot&gt;</span>
+<span class="s2">&lt;thinking&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">...</span>
+<span class="s2">...</span>
+<span class="s2">...</span>
+
+<span class="s2">&lt;thinking&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;/cot&gt;</span>
+
+<span class="s2">&lt;json&gt;</span>
+<span class="s2">{</span>
+<span class="s2">  &quot;data&quot;: [</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;explanation&quot;: [</span>
+<span class="s2">    &quot;explanation 1&quot;,</span>
+<span class="s2">    &quot;explanation 2&quot;,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;confidence_scores&quot;: [</span>
+<span class="s2">    confidence_score1,</span>
+<span class="s2">    confidence_score2,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ]</span>
+<span class="s2">}</span>
+<span class="s2">&lt;/json&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">SYS_PROMPT_V2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. </span>
+
+<span class="s2">Use chain-of-thought reasoning to analyze the target molecule, and enclose your detailed thinking process within &lt;thinking&gt;&lt;/thinking&gt; tags. This reasoning should appear in the final JSON output.</span>
+
+<span class="s2">Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. </span>
+
+<span class="s2">If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.</span>
+
+<span class="s2">The final output should be in this format:</span>
+
+<span class="s2">&lt;cot&gt;</span>
+<span class="s2">&lt;thinking&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">...</span>
+<span class="s2">...</span>
+<span class="s2">...</span>
+
+<span class="s2">&lt;thinking&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;/cot&gt;</span>
+
+<span class="s2">&lt;json&gt;</span>
+<span class="s2">{</span>
+<span class="s2">  &quot;data&quot;: [</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;explanation&quot;: [</span>
+<span class="s2">    &quot;explanation 1&quot;,</span>
+<span class="s2">    &quot;explanation 2&quot;,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;confidence_scores&quot;: [</span>
+<span class="s2">    confidence_score1,</span>
+<span class="s2">    confidence_score2,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ]</span>
+<span class="s2">}</span>
+<span class="s2">&lt;/json&gt;</span>
+
+<span class="s2">For each suggestion in the &quot;data&quot; array, provide the precursor molecules in SMILES notation. Ensure to provide only valid SMILES strings.</span>
+
+<span class="s2">In the corresponding &quot;explanation&quot; array, briefly explain the reaction type and any key conditions or reagents needed.</span>
+
+<span class="s2">In the &quot;confidence_scores&quot; array, provide a confidence score for each suggestion between 0 and 1, indicating your confidence in the proposed retrosynthesis pathway.</span>
+
+<span class="s2">Ensure that the number of entries in &quot;data&quot;, &quot;explanation&quot;, and &quot;confidence_scores&quot; are the same.</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">USER_PROMPT_V2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Perform a single-step retrosynthesis on the following molecule, providing 3-5 possible precursors or reactions:</span>
+<span class="si">{target_smiles}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">SYS_PROMPT_V3</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">You are an expert organic chemist with deep specialization in retrosynthesis, reaction mechanisms, and practical synthesis. Think of yourself as a seasoned professor guiding a graduate student through complex synthetic planning.</span>
+
+<span class="s2">When analyzing a target molecule, follow this systematic thinking process and document your analysis carefully:</span>
+
+<span class="s2">&lt;cot&gt;</span>
+<span class="s2">&lt;thinking type=&quot;initial_assessment&quot;&gt;</span>
+<span class="s2">Begin by carefully examining the target molecule&#39;s structure. Consider:</span>
+<span class="s2">- What are the key functional groups present?</span>
+<span class="s2">- Are there any stereogenic centers?</span>
+<span class="s2">- What is the overall molecular complexity?</span>
+<span class="s2">- Are there any recognizable structural motifs from known syntheses?</span>
+
+<span class="s2">wait</span>
+
+<span class="s2">Now reflect: Have you identified all crucial structural features? Are there any subtle aspects you might have missed on first glance?</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking type=&quot;strategic_analysis&quot;&gt;</span>
+<span class="s2">Based on your initial assessment, consider possible disconnection strategies:</span>
+<span class="s2">- Which bonds could be strategically broken?</span>
+<span class="s2">- What known reactions could form these bonds?</span>
+<span class="s2">- How would these disconnections affect existing stereochemistry?</span>
+<span class="s2">- What functional groups could serve as synthetic handles?</span>
+
+<span class="s2">wait</span>
+
+<span class="s2">Pause to evaluate: Are your proposed disconnections truly strategic? Have you considered both obvious and non-obvious approaches?</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking type=&quot;practical_considerations&quot;&gt;</span>
+<span class="s2">For each potential disconnection, evaluate practical aspects:</span>
+<span class="s2">- Are the required reagents commercially available?</span>
+<span class="s2">- What are typical yields for similar transformations?</span>
+<span class="s2">- Are there potential selectivity issues?</span>
+<span class="s2">- Would the reaction conditions be compatible with other functional groups?</span>
+
+<span class="s2">wait</span>
+
+<span class="s2">Review your assessment: Have you considered all major practical challenges? Are there any scale-up issues you might have overlooked?</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking type=&quot;final_selection&quot;&gt;</span>
+<span class="s2">From all possible disconnections considered, select the most promising approaches by weighing:</span>
+<span class="s2">- Synthetic efficiency</span>
+<span class="s2">- Practical feasibility</span>
+<span class="s2">- Commercial availability of starting materials</span>
+<span class="s2">- Predicted stereoselectivity</span>
+<span class="s2">- Overall synthetic elegance</span>
+
+<span class="s2">wait</span>
+
+<span class="s2">Final check: Are your selected approaches truly the best options? Have you maintained a balance between innovation and practicality?</span>
+<span class="s2">&lt;/thinking&gt;</span>
+<span class="s2">&lt;/cot&gt;</span>
+
+<span class="s2">Present your complete analysis in this JSON format:</span>
+
+<span class="s2">&lt;cot&gt;</span>
+<span class="s2">&lt;thinking type=&quot;initial_assessment&quot;&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking type=&quot;strategic_analysis&quot;&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking type=&quot;practical_considerations&quot;&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking type=&quot;final_selection&quot;&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+<span class="s2">&lt;/cot&gt;</span>
+
+<span class="s2">&lt;json&gt;</span>
+<span class="s2">{</span>
+<span class="s2">  &quot;thinking_process&quot;: [</span>
+<span class="s2">    {</span>
+<span class="s2">      &quot;stage&quot;: &quot;initial_assessment&quot;,</span>
+<span class="s2">      &quot;analysis&quot;: &quot;Detailed record of your initial structural analysis...&quot;,</span>
+<span class="s2">      &quot;reflection&quot;: &quot;Your thoughts after the wait period...&quot;</span>
+<span class="s2">    },</span>
+<span class="s2">    {</span>
+<span class="s2">      &quot;stage&quot;: &quot;strategic_analysis&quot;,</span>
+<span class="s2">      &quot;analysis&quot;: &quot;Your strategic disconnection considerations...&quot;,</span>
+<span class="s2">      &quot;reflection&quot;: &quot;Your evaluation after the wait period...&quot;</span>
+<span class="s2">    },</span>
+<span class="s2">    {</span>
+<span class="s2">      &quot;stage&quot;: &quot;practical_considerations&quot;,</span>
+<span class="s2">      &quot;analysis&quot;: &quot;Your practical feasibility assessment...&quot;,</span>
+<span class="s2">      &quot;reflection&quot;: &quot;Your thoughts after reviewing practical aspects...&quot;</span>
+<span class="s2">    },</span>
+<span class="s2">    {</span>
+<span class="s2">      &quot;stage&quot;: &quot;final_selection&quot;,</span>
+<span class="s2">      &quot;analysis&quot;: &quot;Your reasoning for selecting the final approaches...&quot;,</span>
+<span class="s2">      &quot;reflection&quot;: &quot;Your final validation of the chosen strategies...&quot;</span>
+<span class="s2">    }</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;data&quot;: [</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;explanation&quot;: [</span>
+<span class="s2">    &quot;explanation 1&quot;,</span>
+<span class="s2">    &quot;explanation 2&quot;,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;confidence_scores&quot;: [</span>
+<span class="s2">    confidence_score1,</span>
+<span class="s2">    confidence_score2,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ]</span>
+<span class="s2">}</span>
+<span class="s2">&lt;/json&gt;</span>
+
+<span class="s2">Important Guidelines:</span>
+
+<span class="s2">1. Thinking Process Documentation:</span>
+<span class="s2">   - Record each stage of analysis in detail</span>
+<span class="s2">   - Include both initial thoughts and reflections after each &quot;wait&quot; period</span>
+<span class="s2">   - Be explicit about your reasoning and any adjustments made</span>
+
+<span class="s2">2. Data Requirements:</span>
+<span class="s2">   - Provide only valid SMILES strings for precursor molecules</span>
+<span class="s2">   - Each explanation should include:</span>
+<span class="s2">     * The type of reaction proposed</span>
+<span class="s2">     * Key reagents and conditions</span>
+<span class="s2">     * Important stereochemical considerations</span>
+<span class="s2">     * Critical practical notes</span>
+<span class="s2">   - Confidence scores (0-1) should reflect:</span>
+<span class="s2">     * Synthetic feasibility</span>
+<span class="s2">     * Expected yield</span>
+<span class="s2">     * Practical considerations</span>
+<span class="s2">     * Overall strategic value</span>
+
+<span class="s2">Remember: Your role is to demonstrate expert-level thinking while maintaining clear documentation of your analytical process. </span>
+<span class="s2">Use the &quot;wait&quot; moments to critically assess your thinking and ensure comprehensive coverage of all important aspects.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">USER_PROMPT_V3</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Analyze the following target molecule for single-step retrosynthesis. Document your complete thinking process and provide 3-5 well-reasoned disconnection approaches:</span>
+
+<span class="s2">Target SMILES: </span><span class="si">{target_smiles}</span>
+
+<span class="s2">Ensure your analysis includes both your initial thoughts and your reflections at each stage of the thinking process.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">SYS_PROMPT_V4</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">You are an expert organic chemist specializing in retrosynthesis, with extensive experience in both academic research and industrial process development. Your expertise spans reaction mechanisms, stereochemistry, scale-up considerations, and practical synthesis optimization.</span>
+
+<span class="s2">When analyzing a target molecule, approach the retrosynthesis as follows:</span>
+
+<span class="s2">INITIAL VALIDATION:</span>
+<span class="s2">Before beginning the analysis, verify that:</span>
+<span class="s2">- The provided SMILES string represents a valid organic molecule</span>
+<span class="s2">- The structure is complete and unambiguous</span>
+<span class="s2">- The complexity level warrants retrosynthetic analysis</span>
+<span class="s2">If any of these checks fail, return a JSON object explaining the issue.</span>
+
+<span class="s2">ANALYSIS FRAMEWORK:</span>
+
+<span class="s2">&lt;cot&gt;</span>
+<span class="s2">&lt;thinking type=&quot;structural_decomposition&quot;&gt;</span>
+<span class="s2">Perform a systematic structural analysis:</span>
+<span class="s2">1. Core Framework</span>
+<span class="s2">   - Identify the carbon skeleton type (linear, branched, cyclic)</span>
+<span class="s2">   - Note ring systems and their fusion patterns</span>
+<span class="s2">   - Recognize any common structural motifs</span>
+
+<span class="s2">2. Functional Group Analysis</span>
+<span class="s2">   - Catalog all functional groups</span>
+<span class="s2">   - Note their relative positions and relationships</span>
+<span class="s2">   - Identify any protecting groups present</span>
+
+<span class="s2">3. Stereochemical Features</span>
+<span class="s2">   - Identify all stereogenic centers</span>
+<span class="s2">   - Note any double bond geometry</span>
+<span class="s2">   - Recognize axis of chirality if present</span>
+<span class="s2">   - Consider relative and absolute stereochemistry</span>
+
+<span class="s2">wait</span>
+
+<span class="s2">Challenge your initial analysis:</span>
+<span class="s2">- Have you identified all structural features correctly?</span>
+<span class="s2">- Are there any unusual or strained geometric features?</span>
+<span class="s2">- Could there be any hidden symmetry elements?</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking type=&quot;disconnection_analysis&quot;&gt;</span>
+<span class="s2">Evaluate potential disconnection strategies:</span>
+<span class="s2">1. Strategic Bond Analysis</span>
+<span class="s2">   - Identify key carbon-carbon bonds</span>
+<span class="s2">   - Note carbon-heteroatom bonds</span>
+<span class="s2">   - Consider ring-forming/breaking operations</span>
+
+<span class="s2">2. Transform Consideration</span>
+<span class="s2">   - Map known reactions to desired transformations</span>
+<span class="s2">   - Consider both classical and modern methods</span>
+<span class="s2">   - Evaluate convergent vs. linear approaches</span>
+
+<span class="s2">3. Stereochemical Strategy</span>
+<span class="s2">   - Plan for stereocontrol in new bond formation</span>
+<span class="s2">   - Consider substrate-controlled reactions</span>
+<span class="s2">   - Evaluate reagent-controlled options</span>
+
+<span class="s2">wait</span>
+
+<span class="s2">Question your strategic choices:</span>
+<span class="s2">- Are there less obvious disconnections being overlooked?</span>
+<span class="s2">- Could alternative strategies offer better selectivity?</span>
+<span class="s2">- Have you considered all reasonable bond-forming methods?</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking type=&quot;practical_evaluation&quot;&gt;</span>
+<span class="s2">Assess practical implementation:</span>
+<span class="s2">1. Starting Material Evaluation</span>
+<span class="s2">   - Check commercial availability</span>
+<span class="s2">   - Consider cost and scale implications</span>
+<span class="s2">   - Assess stability and handling requirements</span>
+
+<span class="s2">2. Reaction Conditions</span>
+<span class="s2">   - Evaluate temperature and pressure requirements</span>
+<span class="s2">   - Consider solvent compatibility</span>
+<span class="s2">   - Assess reagent stability and safety</span>
+
+<span class="s2">3. Process Considerations</span>
+<span class="s2">   - Think about scalability</span>
+<span class="s2">   - Consider purification methods</span>
+<span class="s2">   - Evaluate waste generation and disposal</span>
+
+<span class="s2">wait</span>
+
+<span class="s2">Review practical aspects:</span>
+<span class="s2">- Are there potential scale-up challenges?</span>
+<span class="s2">- Have you considered all safety aspects?</span>
+<span class="s2">- What are the major risk factors?</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking type=&quot;proposal_refinement&quot;&gt;</span>
+<span class="s2">Refine your proposals:</span>
+<span class="s2">1. Rank Solutions</span>
+<span class="s2">   - Balance theoretical elegance with practicality</span>
+<span class="s2">   - Consider overall step economy</span>
+<span class="s2">   - Evaluate risk vs. reward</span>
+
+<span class="s2">2. Validate Selections</span>
+<span class="s2">   - Check for precedent in literature</span>
+<span class="s2">   - Consider robustness of methods</span>
+<span class="s2">   - Evaluate potential failure modes</span>
+
+<span class="s2">3. Final Assessment</span>
+<span class="s2">   - Assign confidence levels</span>
+<span class="s2">   - Note key advantages/disadvantages</span>
+<span class="s2">   - Consider contingency approaches</span>
+
+<span class="s2">wait</span>
+
+<span class="s2">Final validation:</span>
+<span class="s2">- Are your proposals both innovative and practical?</span>
+<span class="s2">- Have you maintained a balance between efficiency and reliability?</span>
+<span class="s2">- Are your confidence assessments realistic?</span>
+<span class="s2">&lt;/thinking&gt;</span>
+<span class="s2">&lt;/cot&gt;</span>
+
+<span class="s2">EDGE CASE HANDLING:</span>
+<span class="s2">- For highly complex molecules: Focus on key disconnections that maximize convergence</span>
+<span class="s2">- For simple molecules: Note if retrosynthesis is unnecessarily complex</span>
+<span class="s2">- For unusual structures: Consider specialized methods and note precedent limitations</span>
+
+<span class="s2">Output Requirements:</span>
+<span class="s2">Return analysis in this exact format:</span>
+
+<span class="s2">&lt;cot&gt;</span>
+<span class="s2">&lt;thinking type=&quot;initial_assessment&quot;&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking type=&quot;strategic_analysis&quot;&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking type=&quot;practical_considerations&quot;&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+
+<span class="s2">&lt;thinking type=&quot;final_selection&quot;&gt;</span>
+<span class="s2">...</span>
+<span class="s2">&lt;/thinking&gt;</span>
+<span class="s2">&lt;/cot&gt;</span>
+
+<span class="s2">&lt;json&gt;</span>
+<span class="s2">{</span>
+<span class="s2">  &quot;thinking_process&quot;: [</span>
+<span class="s2">    {</span>
+<span class="s2">      &quot;stage&quot;: &quot;initial_assessment&quot;,</span>
+<span class="s2">      &quot;analysis&quot;: &quot;Detailed record of your initial structural analysis...&quot;,</span>
+<span class="s2">      &quot;reflection&quot;: &quot;Your thoughts after the wait period...&quot;</span>
+<span class="s2">    },</span>
+<span class="s2">    {</span>
+<span class="s2">      &quot;stage&quot;: &quot;strategic_analysis&quot;,</span>
+<span class="s2">      &quot;analysis&quot;: &quot;Your strategic disconnection considerations...&quot;,</span>
+<span class="s2">      &quot;reflection&quot;: &quot;Your evaluation after the wait period...&quot;</span>
+<span class="s2">    },</span>
+<span class="s2">    {</span>
+<span class="s2">      &quot;stage&quot;: &quot;practical_considerations&quot;,</span>
+<span class="s2">      &quot;analysis&quot;: &quot;Your practical feasibility assessment...&quot;,</span>
+<span class="s2">      &quot;reflection&quot;: &quot;Your thoughts after reviewing practical aspects...&quot;</span>
+<span class="s2">    },</span>
+<span class="s2">    {</span>
+<span class="s2">      &quot;stage&quot;: &quot;final_selection&quot;,</span>
+<span class="s2">      &quot;analysis&quot;: &quot;Your reasoning for selecting the final approaches...&quot;,</span>
+<span class="s2">      &quot;reflection&quot;: &quot;Your final validation of the chosen strategies...&quot;</span>
+<span class="s2">    }</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;data&quot;: [</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;explanation&quot;: [</span>
+<span class="s2">    &quot;explanation 1&quot;,</span>
+<span class="s2">    &quot;explanation 2&quot;,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;confidence_scores&quot;: [</span>
+<span class="s2">    confidence_score1,</span>
+<span class="s2">    confidence_score2,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ]</span>
+<span class="s2">}</span>
+<span class="s2">&lt;/json&gt;</span>
+
+<span class="s2">Format Guidelines:</span>
+<span class="s2">1. SMILES Notation:</span>
+<span class="s2">   - Use only valid, standardized SMILES strings</span>
+<span class="s2">   - Include stereochemistry indicators where relevant</span>
+<span class="s2">   - Represent any protecting groups explicitly</span>
+
+<span class="s2">2. Explanations:</span>
+<span class="s2">   - Begin with reaction type identification</span>
+<span class="s2">   - Include key reagents and conditions</span>
+<span class="s2">   - Note critical stereochemical considerations</span>
+<span class="s2">   - Address any special handling requirements</span>
+<span class="s2">   - Keep each explanation focused and precise</span>
+
+<span class="s2">3. Confidence Scores:</span>
+<span class="s2">   - Use scale from 0.0 to 1.0</span>
+<span class="s2">   - Consider multiple factors:</span>
+<span class="s2">     * Synthetic feasibility (33%)</span>
+<span class="s2">     * Practical implementation (33%)</span>
+<span class="s2">     * Overall strategic value (34%)</span>
+<span class="s2">   - Round to two decimal places</span>
+
+<span class="s2">QUALITY CHECKS:</span>
+<span class="s2">Before submitting final output:</span>
+<span class="s2">1. Verify all SMILES strings are valid</span>
+<span class="s2">2. Ensure explanations are complete and clear</span>
+<span class="s2">3. Confirm confidence scores are properly justified</span>
+<span class="s2">4. Check that all arrays have matching lengths</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">USER_PROMPT_V4</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Analyze the following molecule for single-step retrosynthesis:</span>
+<span class="s2">Target SMILES: </span><span class="si">{target_smiles}</span>
+
+<span class="s2">Provide 3-5 strategic disconnection approaches, ensuring thorough documentation of your thinking process. Consider both innovative and practical aspects in your analysis.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">ADDON_PROMPT_7_MEMBER</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Examples of some 7-membered rings retrosynthesis:</span>
+<span class="s2">1. ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43 when broken down gives N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(OC)=C(Cl)C=C3</span>
+<span class="s2">2. O=C1NC2=CC=CC=3C(=O)CCCN1C23 when broken down gives O=C(O)CCCN1C(=O)NC=2C=CC=CC21</span>
+<span class="s2">3. FC(F)(F)c1nc3cccc2CCCCn1c23 when broken down gives C=CCCn2c(C(F)(F)F)nc1ccccc12</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">SYS_PROMPT_OPENAI</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. </span>
+
+<span class="s2">Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. </span>
+
+<span class="s2">If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">USER_PROMPT_OPENAI</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. </span>
+
+<span class="s2">Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. </span>
+
+<span class="s2">If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.</span>
+
+<span class="s2">Perform a single-step retrosynthesis on the following molecule, providing 3-5 possible precursors or reactions:</span>
+
+<span class="si">{target_smiles}</span>
+
+<span class="s2">Present your final analysis in the following JSON format:</span>
+
+<span class="s2">&lt;json&gt;</span>
+<span class="s2">{</span>
+<span class="s2">  &quot;data&quot;: [</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;explanation&quot;: [</span>
+<span class="s2">    &quot;explanation 1&quot;,</span>
+<span class="s2">    &quot;explanation 2&quot;,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;confidence_scores&quot;: [</span>
+<span class="s2">    confidence_score1,</span>
+<span class="s2">    confidence_score2,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ]</span>
+<span class="s2">}</span>
+<span class="s2">&lt;/json&gt;</span>
+
+<span class="s2">For each suggestion in the &quot;data&quot; array, provide the precursor molecules in SMILES notation. Ensure to provide only valid SMILES strings.</span>
+
+<span class="s2">In the corresponding &quot;explanation&quot; array, briefly explain the reaction type and any key conditions or reagents needed.</span>
+
+<span class="s2">In the &quot;confidence_scores&quot; array, provide a confidence score for each suggestion between 0 and 1, indicating your confidence in the proposed retrosynthesis pathway.</span>
+
+<span class="s2">Ensure that the number of entries in &quot;data&quot;, &quot;explanation&quot;, and &quot;confidence_scores&quot; are the same.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">SYS_PROMPT_DEEPSEEK</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. </span>
+
+<span class="s2">Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. </span>
+
+<span class="s2">Present your final analysis in the following JSON format:</span>
+<span class="s2">&lt;json&gt;</span>
+<span class="s2">{</span>
+<span class="s2">  &quot;data&quot;: [</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;explanation&quot;: [</span>
+<span class="s2">    &quot;explanation 1&quot;,</span>
+<span class="s2">    &quot;explanation 2&quot;,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;confidence_scores&quot;: [</span>
+<span class="s2">    confidence_score1,</span>
+<span class="s2">    confidence_score2,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ]</span>
+<span class="s2">}</span>
+<span class="s2">&lt;/json&gt;</span>
+
+<span class="s2">For each suggestion in the &quot;data&quot; array, provide the precursor molecules in SMILES notation. Ensure to provide only valid SMILES strings.</span>
+
+<span class="s2">In the corresponding &quot;explanation&quot; array, briefly explain the reaction type and any key conditions or reagents needed.</span>
+
+<span class="s2">In the &quot;confidence_scores&quot; array, provide a confidence score for each suggestion between 0 and 1, indicating your confidence in the proposed retrosynthesis pathway.</span>
+
+<span class="s2">Ensure that the number of entries in &quot;data&quot;, &quot;explanation&quot;, and &quot;confidence_scores&quot; are the same.</span>
+
+<span class="s2">If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">USER_PROMPT_DEEPSEEK</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. </span>
+
+<span class="s2">Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. </span>
+
+<span class="s2">Present your final analysis in the following JSON format:</span>
+<span class="s2">&lt;json&gt;</span>
+<span class="s2">{</span>
+<span class="s2">  &quot;data&quot;: [</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;explanation&quot;: [</span>
+<span class="s2">    &quot;explanation 1&quot;,</span>
+<span class="s2">    &quot;explanation 2&quot;,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;confidence_scores&quot;: [</span>
+<span class="s2">    confidence_score1,</span>
+<span class="s2">    confidence_score2,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ]</span>
+<span class="s2">}</span>
+<span class="s2">&lt;/json&gt;</span>
+
+<span class="s2">For each suggestion in the &quot;data&quot; array, provide the precursor molecules in SMILES notation. Ensure to provide only valid SMILES strings.</span>
+
+<span class="s2">In the corresponding &quot;explanation&quot; array, briefly explain the reaction type and any key conditions or reagents needed.</span>
+
+<span class="s2">In the &quot;confidence_scores&quot; array, provide a confidence score for each suggestion between 0 and 1, indicating your confidence in the proposed retrosynthesis pathway.</span>
+
+<span class="s2">Ensure that the number of entries in &quot;data&quot;, &quot;explanation&quot;, and &quot;confidence_scores&quot; are the same.</span>
+
+<span class="s2">If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.</span>
+
+<span class="s2">Perform a single-step retrosynthesis on the following molecule, providing 3-5 possible precursors or reactions: </span><span class="si">{target_smiles}</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">USER_PROMPT_DEEPSEEK_V4</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">You are an expert organic chemist specializing in retrosynthesis, with extensive experience in both academic research and industrial process development. Your expertise spans reaction mechanisms, stereochemistry, scale-up considerations, and practical synthesis optimization.</span>
+
+<span class="s2">When analyzing a target molecule, approach the retrosynthesis as follows:</span>
+
+<span class="s2">INITIAL VALIDATION:</span>
+<span class="s2">Before beginning the analysis, verify that:</span>
+<span class="s2">- The provided SMILES string represents a valid organic molecule</span>
+<span class="s2">- The structure is complete and unambiguous</span>
+<span class="s2">- The complexity level warrants retrosynthetic analysis</span>
+<span class="s2">If any of these checks fail, return a JSON object explaining the issue.</span>
+
+<span class="s2">ANALYSIS FRAMEWORK:</span>
+
+<span class="s2">Perform a systematic structural analysis:</span>
+<span class="s2">1. Core Framework</span>
+<span class="s2">   - Identify the carbon skeleton type (linear, branched, cyclic)</span>
+<span class="s2">   - Note ring systems and their fusion patterns</span>
+<span class="s2">   - Recognize any common structural motifs</span>
+
+<span class="s2">2. Functional Group Analysis</span>
+<span class="s2">   - Catalog all functional groups</span>
+<span class="s2">   - Note their relative positions and relationships</span>
+<span class="s2">   - Identify any protecting groups present</span>
+
+<span class="s2">3. Stereochemical Features</span>
+<span class="s2">   - Identify all stereogenic centers</span>
+<span class="s2">   - Note any double bond geometry</span>
+<span class="s2">   - Recognize axis of chirality if present</span>
+<span class="s2">   - Consider relative and absolute stereochemistry</span>
+
+<span class="s2">wait</span>
+
+<span class="s2">Challenge your initial analysis:</span>
+<span class="s2">- Have you identified all structural features correctly?</span>
+<span class="s2">- Are there any unusual or strained geometric features?</span>
+<span class="s2">- Could there be any hidden symmetry elements?</span>
+
+
+<span class="s2">Evaluate potential disconnection strategies:</span>
+<span class="s2">1. Strategic Bond Analysis</span>
+<span class="s2">   - Identify key carbon-carbon bonds</span>
+<span class="s2">   - Note carbon-heteroatom bonds</span>
+<span class="s2">   - Consider ring-forming/breaking operations</span>
+
+<span class="s2">2. Transform Consideration</span>
+<span class="s2">   - Map known reactions to desired transformations</span>
+<span class="s2">   - Consider both classical and modern methods</span>
+<span class="s2">   - Evaluate convergent vs. linear approaches</span>
+
+<span class="s2">3. Stereochemical Strategy</span>
+<span class="s2">   - Plan for stereocontrol in new bond formation</span>
+<span class="s2">   - Consider substrate-controlled reactions</span>
+<span class="s2">   - Evaluate reagent-controlled options</span>
+
+<span class="s2">wait</span>
+
+<span class="s2">Question your strategic choices:</span>
+<span class="s2">- Are there less obvious disconnections being overlooked?</span>
+<span class="s2">- Could alternative strategies offer better selectivity?</span>
+<span class="s2">- Have you considered all reasonable bond-forming methods?</span>
+
+
+
+<span class="s2">Assess practical implementation:</span>
+<span class="s2">1. Starting Material Evaluation</span>
+<span class="s2">   - Check commercial availability</span>
+<span class="s2">   - Consider cost and scale implications</span>
+<span class="s2">   - Assess stability and handling requirements</span>
+
+<span class="s2">2. Reaction Conditions</span>
+<span class="s2">   - Evaluate temperature and pressure requirements</span>
+<span class="s2">   - Consider solvent compatibility</span>
+<span class="s2">   - Assess reagent stability and safety</span>
+
+<span class="s2">3. Process Considerations</span>
+<span class="s2">   - Think about scalability</span>
+<span class="s2">   - Consider purification methods</span>
+<span class="s2">   - Evaluate waste generation and disposal</span>
+
+<span class="s2">wait</span>
+
+<span class="s2">Review practical aspects:</span>
+<span class="s2">- Are there potential scale-up challenges?</span>
+<span class="s2">- Have you considered all safety aspects?</span>
+<span class="s2">- What are the major risk factors?</span>
+
+
+<span class="s2">Refine your proposals:</span>
+<span class="s2">1. Rank Solutions</span>
+<span class="s2">   - Balance theoretical elegance with practicality</span>
+<span class="s2">   - Consider overall step economy</span>
+<span class="s2">   - Evaluate risk vs. reward</span>
+
+<span class="s2">2. Validate Selections</span>
+<span class="s2">   - Check for precedent in literature</span>
+<span class="s2">   - Consider robustness of methods</span>
+<span class="s2">   - Evaluate potential failure modes</span>
+
+<span class="s2">3. Final Assessment</span>
+<span class="s2">   - Assign confidence levels</span>
+<span class="s2">   - Note key advantages/disadvantages</span>
+<span class="s2">   - Consider contingency approaches</span>
+
+<span class="s2">wait</span>
+
+<span class="s2">Final validation:</span>
+<span class="s2">- Are your proposals both innovative and practical?</span>
+<span class="s2">- Have you maintained a balance between efficiency and reliability?</span>
+<span class="s2">- Are your confidence assessments realistic?</span>
+
+
+<span class="s2">EDGE CASE HANDLING:</span>
+<span class="s2">- For highly complex molecules: Focus on key disconnections that maximize convergence</span>
+<span class="s2">- For simple molecules: Note if retrosynthesis is unnecessarily complex</span>
+<span class="s2">- For unusual structures: Consider specialized methods and note precedent limitations</span>
+
+<span class="s2">Output Requirements:</span>
+<span class="s2">Return analysis in this exact format:</span>
+
+<span class="s2">&lt;json&gt;</span>
+<span class="s2">{</span>
+<span class="s2">  &quot;thinking_process&quot;: [</span>
+<span class="s2">    {</span>
+<span class="s2">      &quot;stage&quot;: &quot;initial_assessment&quot;,</span>
+<span class="s2">      &quot;analysis&quot;: &quot;Detailed record of your initial structural analysis...&quot;,</span>
+<span class="s2">      &quot;reflection&quot;: &quot;Your thoughts after the wait period...&quot;</span>
+<span class="s2">    },</span>
+<span class="s2">    {</span>
+<span class="s2">      &quot;stage&quot;: &quot;strategic_analysis&quot;,</span>
+<span class="s2">      &quot;analysis&quot;: &quot;Your strategic disconnection considerations...&quot;,</span>
+<span class="s2">      &quot;reflection&quot;: &quot;Your evaluation after the wait period...&quot;</span>
+<span class="s2">    },</span>
+<span class="s2">    {</span>
+<span class="s2">      &quot;stage&quot;: &quot;practical_considerations&quot;,</span>
+<span class="s2">      &quot;analysis&quot;: &quot;Your practical feasibility assessment...&quot;,</span>
+<span class="s2">      &quot;reflection&quot;: &quot;Your thoughts after reviewing practical aspects...&quot;</span>
+<span class="s2">    },</span>
+<span class="s2">    {</span>
+<span class="s2">      &quot;stage&quot;: &quot;final_selection&quot;,</span>
+<span class="s2">      &quot;analysis&quot;: &quot;Your reasoning for selecting the final approaches...&quot;,</span>
+<span class="s2">      &quot;reflection&quot;: &quot;Your final validation of the chosen strategies...&quot;</span>
+<span class="s2">    }</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;data&quot;: [</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;explanation&quot;: [</span>
+<span class="s2">    &quot;explanation 1&quot;,</span>
+<span class="s2">    &quot;explanation 2&quot;,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;confidence_scores&quot;: [</span>
+<span class="s2">    confidence_score1,</span>
+<span class="s2">    confidence_score2,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ]</span>
+<span class="s2">}</span>
+<span class="s2">&lt;/json&gt;</span>
+
+<span class="s2">Format Guidelines:</span>
+<span class="s2">1. SMILES Notation:</span>
+<span class="s2">   - Use only valid, standardized SMILES strings</span>
+<span class="s2">   - Include stereochemistry indicators where relevant</span>
+<span class="s2">   - Represent any protecting groups explicitly</span>
+
+<span class="s2">2. Explanations:</span>
+<span class="s2">   - Begin with reaction type identification</span>
+<span class="s2">   - Include key reagents and conditions</span>
+<span class="s2">   - Note critical stereochemical considerations</span>
+<span class="s2">   - Address any special handling requirements</span>
+<span class="s2">   - Keep each explanation focused and precise</span>
+
+<span class="s2">3. Confidence Scores:</span>
+<span class="s2">   - Use scale from 0.0 to 1.0</span>
+<span class="s2">   - Consider multiple factors:</span>
+<span class="s2">     * Synthetic feasibility (33%)</span>
+<span class="s2">     * Practical implementation (33%)</span>
+<span class="s2">     * Overall strategic value (34%)</span>
+<span class="s2">   - Round to two decimal places</span>
+
+<span class="s2">QUALITY CHECKS:</span>
+<span class="s2">Before submitting final output:</span>
+<span class="s2">1. Verify all SMILES strings are valid</span>
+<span class="s2">2. Ensure explanations are complete and clear</span>
+<span class="s2">3. Confirm confidence scores are properly justified</span>
+<span class="s2">4. Check that all arrays have matching lengths</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">SYS_PROMPT_OLD</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are an expert organic chemist specializing in retrosynthesis. </span>
+<span class="s2">When given a target molecule, you will perform a single step retrosynthesis, </span>
+<span class="s2">providing 3-5 possible precursor molecules or reactions that could lead to the formation of the </span>
+<span class="s2">target molecule. Present your analysis in a specific JSON format. </span>
+<span class="s2">For each suggestion, provide the precursor molecules in SMILES notation and a</span>
+<span class="s2">brief explanation of the reaction type and any key conditions or reagents needed. </span>
+<span class="s2">Use standard organic chemistry notation and terminology in your explanations. </span>
+<span class="s2">If the molecule is too simple for meaningful retrosynthesis, state this in a single</span>
+<span class="s2">JSON object with an appropriate explanation. &quot;&quot;&quot;</span>
+
+<span class="n">USER_PROMPT_OLD</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Perform a single step retrosynthesis on the following molecule, providing 3-5 possible precursors or reactions:</span>
+
+<span class="si">{target_smiles}</span>
+
+<span class="s2">Present your analysis in the following JSON format:</span>
+
+<span class="s2">{</span>
+<span class="s2">  &quot;data&quot;: [</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    [precursor1_SMILES, precursor2_SMILES, ...],</span>
+<span class="s2">    ...</span>
+<span class="s2">  ],</span>
+<span class="s2">  &quot;explanation&quot;: [</span>
+<span class="s2">    &quot;explanation 1&quot;,</span>
+<span class="s2">    &quot;explanation 2&quot;,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ]</span>
+<span class="s2">  &quot;confidence_scores&quot;: [</span>
+<span class="s2">    confidence_score1,</span>
+<span class="s2">    confidence_score2,</span>
+<span class="s2">    ...</span>
+<span class="s2">  ]</span>
+<span class="s2">}</span>
+
+<span class="s2">For each suggestion in the &quot;data&quot; array, provide the precursor molecules in SMILES notation. Make sure to provide only valid SMILES strings.</span>
+<span class="s2">In the corresponding &quot;explanation&quot; array, briefly explain the reaction type and any key conditions or reagents needed.</span>
+<span class="s2">In the &quot;confidence_scores&quot; array, provide a confidence score for each suggestion between 0 and 1, indicating your confidence in the proposed retrosynthesis pathway.</span>
+<span class="s2">Ensure that the number of entries in &quot;data&quot;, &quot;explanation&quot;, and &quot;confidence_scores&quot; are the same.</span>
+<span class="s2">Do not return anything other than the JSON object. &quot;&quot;&quot;</span>
+
+<span class="n">REAGENT_SYS_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are an expert organic chemist specializing in retrosynthesis.</span>
+<span class="s2">When given a target molecule and reactants, you will predict the reagents used in the reaction.</span>
+<span class="s2">Present your analysis in a specific JSON format.</span>
+<span class="s2">For each suggestion, provide the reagents in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed.</span>
+<span class="s2">Use standard organic chemistry notation and terminology in your explanations.</span>
+<span class="s2">If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.&quot;&quot;&quot;</span>
+
+<span class="n">REAGENT_USER_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Predict the reagents used in the following reaction:</span>
+<span class="s2">Reactants: </span><span class="si">{reactants}</span>
+<span class="s2">Product: </span><span class="si">{product}</span>
+
+<span class="s2">Present your analysis in the following JSON format:</span>
+
+<span class="s2">{</span>
+<span class="s2">  &quot;data&quot;: [reagent1_SMILES, reagent2_SMILES, ...],</span>
+<span class="s2">  &quot;explanation&quot;: [&quot;explanation 1&quot;, &quot;explanation 2&quot;, ...]</span>
+<span class="s2">}</span>
+
+<span class="s2">For each suggestion in the &quot;data&quot; array, provide the reagents in SMILES notation. Make sure to provide only valid SMILES strings.</span>
+<span class="s2">In the corresponding &quot;explanation&quot; array, briefly explain the reaction type and any key conditions or reagents needed.</span>
+<span class="s2">Ensure that the number of entries in &quot;data&quot; and &quot;explanation&quot; are the same.</span>
+<span class="s2">Do not return anything other than the JSON object.&quot;&quot;&quot;</span>
+
+<span class="n">CONDITIONS_SYS_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are an expert organic chemist specializing in retrosynthesis.</span>
+<span class="s2">When given a target molecule, reactants and reagents, you will predict the conditions used in the reaction.</span>
+<span class="s2">Present your analysis in a specific JSON format.</span>
+<span class="s2">For each suggestion, provide the conditions used in the reaction, including temperature, pressure, solvent, and time.</span>
+<span class="s2">Use standard organic chemistry notation and terminology in your explanations.</span>
+<span class="s2">If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.&quot;&quot;&quot;</span>
+
+<span class="n">CONDITIONS_USER_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Predict the conditions used in the following reaction:</span>
+<span class="s2">Reactants: </span><span class="si">{reactants}</span>
+<span class="s2">Product: </span><span class="si">{product}</span>
+<span class="s2">Reagents: </span><span class="si">{reagents}</span>
+
+<span class="s2">Present your analysis in the following JSON format:</span>
+
+<span class="s2">{</span>
+<span class="s2">  &quot;temperature&quot;: temperature,</span>
+<span class="s2">  &quot;pressure&quot;: pressure,</span>
+<span class="s2">  &quot;solvent&quot;: solvent,</span>
+<span class="s2">  &quot;time&quot;: time</span>
+<span class="s2">}</span>
+
+<span class="s2">Provide the temperature, pressure, solvent, and time used in the reaction.</span>
+<span class="s2">If any of these conditions are not applicable, provide an appropriate explanation.</span>
+<span class="s2">Do not return anything other than the JSON object.&quot;&quot;&quot;</span>
+
+<span class="n">LITERATURE_SYS_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;You are an expert organic chemist specializing in retrosynthesis.</span>
+<span class="s2">When given a target molecule, reactants, reagents, and conditions, you will find the closest literature reaction.</span>
+<span class="s2">Present your analysis in a specific JSON format.</span>
+<span class="s2">For each suggestion, provide the closest literature reaction and a brief explanation of the reaction type and any key conditions or reagents needed.</span>
+<span class="s2">Use standard organic chemistry notation and terminology in your explanations.</span>
+<span class="s2">If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.&quot;&quot;&quot;</span>
+
+<span class="n">LITERATURE_USER_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Find the closest literature reaction for the following retrosynthesis:</span>
+<span class="s2">Reactants: </span><span class="si">{reactants}</span>
+
+<span class="s2">Product: </span><span class="si">{product}</span>
+
+<span class="s2">Reagents: </span><span class="si">{reagents}</span>
+
+<span class="s2">Conditions: </span><span class="si">{conditions}</span>
+
+<span class="s2">Present your analysis in the following JSON format:</span>
+
+<span class="s2">{</span>
+<span class="s2">  &quot;literature_reaction&quot;: &quot;literature_reaction&quot;,</span>
+<span class="s2">  &quot;explanation&quot;: &quot;explanation&quot;</span>
+<span class="s2">}</span>
+
+<span class="s2">Provide the closest literature reaction and a brief explanation of the reaction type and any key conditions or reagents needed.</span>
+<span class="s2">Do not return anything other than the JSON object.&quot;&quot;&quot;</span>
+
+<span class="n">TOOLS</span> <span class="o">=</span> <span class="p">[{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;is_valid_smiles&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Check if the SMILES string is valid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;input_schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;smiles&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;SMILES string&quot;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;smiles&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+<span class="p">}]</span>
+
+<span class="n">BASIC_MOLECULES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;CC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;O&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;C&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CCO&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CCOC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CCOCC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CCOCO&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CCOCOC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ClC(=O)O&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CC(=O)Cl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Cl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Br&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;F&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;I&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;O=C=O&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CCCl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CCBr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CCF&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CO&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CCO&quot;</span><span class="p">,</span>  <span class="c1"># Ethanol</span>
+    <span class="s2">&quot;CC(=O)O&quot;</span><span class="p">,</span>  <span class="c1"># Acetic acid</span>
+    <span class="s2">&quot;CCBr&quot;</span><span class="p">,</span>  <span class="c1"># Bromoethane</span>
+    <span class="s2">&quot;CCCl&quot;</span><span class="p">,</span>  <span class="c1"># Chloroethane</span>
+    <span class="s2">&quot;CCN&quot;</span><span class="p">,</span>  <span class="c1"># Ethylamine</span>
+    <span class="s2">&quot;O=C=O&quot;</span><span class="p">,</span>  <span class="c1"># Carbon dioxide</span>
+    <span class="s2">&quot;C=O&quot;</span><span class="p">,</span>  <span class="c1"># Formaldehyde</span>
+    <span class="s2">&quot;CC=O&quot;</span><span class="p">,</span>  <span class="c1"># Acetaldehyde</span>
+    <span class="s2">&quot;CCCC&quot;</span><span class="p">,</span>  <span class="c1"># Butane</span>
+    <span class="s2">&quot;C=C&quot;</span><span class="p">,</span>  <span class="c1"># Ethylene</span>
+    <span class="s2">&quot;C#C&quot;</span><span class="p">,</span>  <span class="c1"># Acetylene</span>
+    <span class="s2">&quot;ClCCl&quot;</span><span class="p">,</span>  <span class="c1"># Chloroform</span>
+    <span class="s2">&quot;C1CCCCC1&quot;</span><span class="p">,</span>  <span class="c1"># Cyclohexane</span>
+    <span class="s2">&quot;C1=CC=CC=C1&quot;</span><span class="p">,</span>  <span class="c1"># Benzene</span>
+    <span class="s2">&quot;CCOCC&quot;</span><span class="p">,</span>  <span class="c1"># Diethyl ether</span>
+    <span class="s2">&quot;O&quot;</span><span class="p">,</span>  <span class="c1"># Water</span>
+    <span class="s2">&quot;C&quot;</span><span class="p">,</span>  <span class="c1"># Methane</span>
+    <span class="s2">&quot;C1CCOC1&quot;</span><span class="p">,</span>  <span class="c1"># Tetrahydrofuran (THF)</span>
+    <span class="s2">&quot;N#N&quot;</span><span class="p">,</span>  <span class="c1"># Nitrogen</span>
+    <span class="s2">&quot;O=O&quot;</span><span class="p">,</span>  <span class="c1"># Oxygen</span>
+    <span class="s2">&quot;O=S(=O)(O)O&quot;</span><span class="p">,</span>  <span class="c1"># Sulfuric acid</span>
+    <span class="s2">&quot;CCOC(=O)C&quot;</span><span class="p">,</span>  <span class="c1"># Ethyl acetate</span>
+    <span class="s2">&quot;NC=O&quot;</span><span class="p">,</span>  <span class="c1"># Formamide</span>
+    <span class="s2">&quot;CC(=O)C&quot;</span><span class="p">,</span>  <span class="c1"># Acetone</span>
+    <span class="s2">&quot;CC#N&quot;</span><span class="p">,</span>  <span class="c1"># Acetonitrile</span>
+    <span class="s2">&quot;C1C=CC=CC=1C&quot;</span><span class="p">,</span>  <span class="c1"># Cyclopentadiene</span>
+    <span class="s2">&quot;CSCC&quot;</span><span class="p">,</span>  <span class="c1"># Dimethyl sulfide</span>
+    <span class="s2">&quot;NCCO&quot;</span><span class="p">,</span>  <span class="c1"># Ethanolamine</span>
+    <span class="s2">&quot;CC(C)O&quot;</span><span class="p">,</span>  <span class="c1"># Isopropanol</span>
+    <span class="s2">&quot;CC=CC&quot;</span><span class="p">,</span>  <span class="c1"># 1-Butene</span>
+    <span class="s2">&quot;CC(C)(C)O&quot;</span><span class="p">,</span>  <span class="c1"># Tert-butanol</span>
+    <span class="s2">&quot;CC=O&quot;</span><span class="p">,</span>  <span class="c1"># Acetaldehyde</span>
+    <span class="s2">&quot;CC(=O)N&quot;</span><span class="p">,</span>  <span class="c1"># Acetamide</span>
+    <span class="s2">&quot;CC(C)C&quot;</span><span class="p">,</span>  <span class="c1"># Isobutane</span>
+    <span class="s2">&quot;C=CC&quot;</span><span class="p">,</span>  <span class="c1"># Propene</span>
+    <span class="s2">&quot;C1=CC=CC=C1O&quot;</span><span class="p">,</span>  <span class="c1"># Phenol</span>
+    <span class="s2">&quot;C1=CC=C(C=C1)O&quot;</span><span class="p">,</span>  <span class="c1"># Hydroquinone</span>
+    <span class="s2">&quot;C1=CC=C(C=C1)Cl&quot;</span><span class="p">,</span>  <span class="c1"># Chlorobenzene</span>
+    <span class="s2">&quot;C1=CC=C(C=C1)Br&quot;</span><span class="p">,</span>  <span class="c1"># Bromobenzene</span>
+    <span class="s2">&quot;C1=CC=C(C=C1)I&quot;</span><span class="p">,</span>  <span class="c1"># Iodobenzene</span>
+    <span class="s2">&quot;P(=O)(O)O&quot;</span><span class="p">,</span>  <span class="c1"># Phosphoric acid</span>
+    <span class="s2">&quot;P(Cl)(Cl)Cl&quot;</span><span class="p">,</span>  <span class="c1"># Phosphorus trichloride</span>
+    <span class="s2">&quot;P&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;[K+].[OH-]&quot;</span><span class="p">,</span>  <span class="c1"># Potassium hydroxide</span>
+    <span class="s2">&quot;[Na+].[OH-]&quot;</span><span class="p">,</span>  <span class="c1"># Sodium hydroxide</span>
+    <span class="s2">&quot;[Li+].[OH-]&quot;</span><span class="p">,</span>  <span class="c1"># Lithium hydroxide</span>
+    <span class="s2">&quot;[K+].[Cl-]&quot;</span><span class="p">,</span>  <span class="c1"># Potassium chloride</span>
+    <span class="s2">&quot;[Na+].[Cl-]&quot;</span><span class="p">,</span>  <span class="c1"># Sodium chloride</span>
+    <span class="s2">&quot;[Li+].[Cl-]&quot;</span><span class="p">,</span>  <span class="c1"># Lithium chloride</span>
+    <span class="s2">&quot;NaCN&quot;</span><span class="p">,</span>  <span class="c1"># Sodium cyanide</span>
+    <span class="s2">&quot;NaOH&quot;</span><span class="p">,</span>  <span class="c1"># Sodium hydroxide</span>
+    <span class="s2">&quot;H2SO4&quot;</span><span class="p">,</span>  <span class="c1"># Sulfuric acid</span>
+    <span class="s2">&quot;HCl&quot;</span><span class="p">,</span>  <span class="c1"># Hydrochloric acid</span>
+    <span class="s2">&quot;HBr&quot;</span><span class="p">,</span>  <span class="c1"># Hydrobromic acid</span>
+    <span class="s2">&quot;HI&quot;</span><span class="p">,</span>  <span class="c1"># Hydroiodic acid</span>
+    <span class="s2">&quot;H2O2&quot;</span><span class="p">,</span>  <span class="c1"># Hydrogen peroxide</span>
+    <span class="s2">&quot;H2O&quot;</span><span class="p">,</span>  <span class="c1"># Water</span>
+    <span class="s2">&quot;NH3&quot;</span><span class="p">,</span>  <span class="c1"># Ammonia</span>
+    <span class="s2">&quot;H2&quot;</span><span class="p">,</span>  <span class="c1"># Hydrogen gas</span>
+    <span class="s2">&quot;O2&quot;</span><span class="p">,</span>  <span class="c1"># Oxygen gas</span>
+    <span class="s2">&quot;N2&quot;</span><span class="p">,</span>  <span class="c1"># Nitrogen gas</span>
+    <span class="s2">&quot;CO2&quot;</span><span class="p">,</span>  <span class="c1"># Carbon dioxide</span>
+    <span class="s2">&quot;CO&quot;</span><span class="p">,</span>  <span class="c1"># Carbon monoxide</span>
+    <span class="s2">&quot;NaBr&quot;</span><span class="p">,</span>  <span class="c1"># Sodium bromide</span>
+    <span class="s2">&quot;[K+].[C-]#N&quot;</span><span class="p">,</span>  <span class="c1"># Potassium cyanide</span>
+    <span class="s2">&quot;[Na+].[C-]#N&quot;</span><span class="p">,</span>  <span class="c1"># Sodium cyanide</span>
+    <span class="s2">&quot;CC(C)[Mg]Br&quot;</span><span class="p">,</span>  <span class="c1"># Grignard reagent</span>
+<span class="p">]</span>
+
+<span class="n">REACTION_CLASSES_OLD</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;10&#39;</span><span class="p">:</span> <span class="s1">&#39;Functional group addition (FGA)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="s1">&#39;Heteroatom alkylation and arylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="s1">&#39;C-C bond formation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="s1">&#39;Acylation and related processes&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;5&#39;</span><span class="p">:</span> <span class="s1">&#39;Protections&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;4&#39;</span><span class="p">:</span> <span class="s1">&#39;Heterocycle formation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7&#39;</span><span class="p">:</span> <span class="s1">&#39;Reductions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6&#39;</span><span class="p">:</span> <span class="s1">&#39;Deprotections&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;9&#39;</span><span class="p">:</span> <span class="s1">&#39;Functional group interconversion (FGI)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;8&#39;</span><span class="p">:</span> <span class="s1">&#39;Oxidations&#39;</span>
+<span class="p">}</span>
+
+<span class="n">REACTION_CLASSES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;3.1.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Bromo Suzuki coupling&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6.1.5&#39;</span><span class="p">:</span> <span class="s1">&#39;N-Bn deprotection&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;3.1.6&#39;</span><span class="p">:</span> <span class="s1">&#39;Chloro Suzuki-type coupling&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;3.1.5&#39;</span><span class="p">:</span> <span class="s1">&#39;Bromo Suzuki-type coupling&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6.1.1&#39;</span><span class="p">:</span> <span class="s1">&#39;N-Boc deprotection&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;9.1.6&#39;</span><span class="p">:</span> <span class="s1">&#39;Hydroxy to chloro&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7.2&#39;</span><span class="p">:</span> <span class="s1">&#39;Amide to amine reduction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7.3&#39;</span><span class="p">:</span> <span class="s1">&#39;Cyano or imine to amine&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Nitro to amine reduction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6.3&#39;</span><span class="p">:</span> <span class="s1">&#39;ROH deprotections&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6.2&#39;</span><span class="p">:</span> <span class="s1">&#39;RCO2H deprotections&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6.1&#39;</span><span class="p">:</span> <span class="s1">&#39;NH deprotections&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7.9&#39;</span><span class="p">:</span> <span class="s1">&#39;Other reductions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6.1.3&#39;</span><span class="p">:</span> <span class="s1">&#39;N-Cbz deprotection&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Halogenation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.2&#39;</span><span class="p">:</span> <span class="s1">&#39;Nitration&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.4&#39;</span><span class="p">:</span> <span class="s1">&#39;Other functional group addition&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.6.2&#39;</span><span class="p">:</span> <span class="s1">&#39;Bromo N-alkylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.6.4&#39;</span><span class="p">:</span> <span class="s1">&#39;Chloro N-alkylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;8&#39;</span><span class="p">:</span> <span class="s1">&#39;Oxidations&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.6.8&#39;</span><span class="p">:</span> <span class="s1">&#39;Iodo N-alkylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.7.7&#39;</span><span class="p">:</span> <span class="s1">&#39;Mitsunobu aryl ether synthesis&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.8.5&#39;</span><span class="p">:</span> <span class="s1">&#39;Thioether synthesis&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.1.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Bromination&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.1.2&#39;</span><span class="p">:</span> <span class="s1">&#39;Chlorination&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.1.5&#39;</span><span class="p">:</span> <span class="s1">&#39;Wohl-Ziegler bromination&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;9.3.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Carboxylic acid to acid chloride&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7.9.2&#39;</span><span class="p">:</span> <span class="s1">&#39;Carboxylic acid to alcohol reduction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;3.4&#39;</span><span class="p">:</span> <span class="s1">&#39;Stille reaction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;3.3&#39;</span><span class="p">:</span> <span class="s1">&#39;Sonogashira reaction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;3.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Suzuki coupling&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.3&#39;</span><span class="p">:</span> <span class="s1">&#39;N-acylation to urea&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.2&#39;</span><span class="p">:</span> <span class="s1">&#39;N-sulfonylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.1&#39;</span><span class="p">:</span> <span class="s1">&#39;N-acylation to amide&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.7&#39;</span><span class="p">:</span> <span class="s1">&#39;O-sulfonylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.6&#39;</span><span class="p">:</span> <span class="s1">&#39;O-acylation to ester&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7.2.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Amide to amine reduction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="s1">&#39;C-C bond formation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7&#39;</span><span class="p">:</span> <span class="s1">&#39;Reductions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.4.2&#39;</span><span class="p">:</span> <span class="s1">&#39;Methylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;3.4.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Stille reaction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6.2.1&#39;</span><span class="p">:</span> <span class="s1">&#39;CO2H-Et deprotection&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6.2.3&#39;</span><span class="p">:</span> <span class="s1">&#39;CO2H-tBu deprotection&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6.2.2&#39;</span><span class="p">:</span> <span class="s1">&#39;CO2H-Me deprotection&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.2.3&#39;</span><span class="p">:</span> <span class="s1">&#39;Sulfonamide Schotten-Baumann&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;8.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Alcohols to aldehydes&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;8.2&#39;</span><span class="p">:</span> <span class="s1">&#39;Oxidations at sulfur&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10.2.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Nitration&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="s1">&#39;Acylation and related processes&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6&#39;</span><span class="p">:</span> <span class="s1">&#39;Deprotections&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;9.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Alcohol to halide&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;9.3&#39;</span><span class="p">:</span> <span class="s1">&#39;Acid to acid chloride&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.3.7&#39;</span><span class="p">:</span> <span class="s1">&#39;Chloro N-arylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.3.6&#39;</span><span class="p">:</span> <span class="s1">&#39;Bromo N-arylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.3.8&#39;</span><span class="p">:</span> <span class="s1">&#39;Fluoro N-arylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;8.2.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Sulfanyl to sulfinyl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;10&#39;</span><span class="p">:</span> <span class="s1">&#39;Functional group addition (FGA)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.6.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Ester Schotten-Baumann&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.6.3&#39;</span><span class="p">:</span> <span class="s1">&#39;Fischer-Speier esterification&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;3.3.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Sonogashira coupling&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6.3.7&#39;</span><span class="p">:</span> <span class="s1">&#39;Methoxy to hydroxy&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;6.3.1&#39;</span><span class="p">:</span> <span class="s1">&#39;O-Bn deprotection&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.6&#39;</span><span class="p">:</span> <span class="s1">&#39;Heteroaryl N-alkylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.7&#39;</span><span class="p">:</span> <span class="s1">&#39;O-substitution&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.2&#39;</span><span class="p">:</span> <span class="s1">&#39;Reductive amination&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.3&#39;</span><span class="p">:</span> <span class="s1">&#39;N-arylation with Ar-X&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.8&#39;</span><span class="p">:</span> <span class="s1">&#39;S-substitution&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.7.2&#39;</span><span class="p">:</span> <span class="s1">&#39;Sulfonic ester Schotten-Baumann&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.1.2&#39;</span><span class="p">:</span> <span class="s1">&#39;Carboxylic acid + amine reaction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.1.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Amide Schotten-Baumann&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.1.7&#39;</span><span class="p">:</span> <span class="s1">&#39;N-acetylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;5.1&#39;</span><span class="p">:</span> <span class="s1">&#39;NH protections&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="s1">&#39;Heteroatom alkylation and arylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;5&#39;</span><span class="p">:</span> <span class="s1">&#39;Protections&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.7.9&#39;</span><span class="p">:</span> <span class="s1">&#39;Williamson ether synthesis&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;9&#39;</span><span class="p">:</span> <span class="s1">&#39;Functional group interconversion (FGI)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.7.6&#39;</span><span class="p">:</span> <span class="s1">&#39;Methyl esterification&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.7.4&#39;</span><span class="p">:</span> <span class="s1">&#39;Hydroxy to methoxy&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;2.3.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Isocyanate + amine reaction&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.2.4&#39;</span><span class="p">:</span> <span class="s1">&#39;Eschweiler-Clarke methylation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.2.5&#39;</span><span class="p">:</span> <span class="s1">&#39;Ketone reductive amination&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;1.2.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Aldehyde reductive amination&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;8.1.4&#39;</span><span class="p">:</span> <span class="s1">&#39;Alcohol to aldehyde oxidation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;8.1.5&#39;</span><span class="p">:</span> <span class="s1">&#39;Alcohol to ketone oxidation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;5.1.1&#39;</span><span class="p">:</span> <span class="s1">&#39;N-Boc protection&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7.1.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Nitro to amino&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;7.3.1&#39;</span><span class="p">:</span> <span class="s1">&#39;Nitrile reduction&#39;</span>
+<span class="p">}</span>
+
+<span class="n">REACTION_ENCODING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;7.2.1&#39;</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;7.9.2&#39;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;1.7.9&#39;</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;8.1.5&#39;</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;10.1.2&#39;</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;6.3.1&#39;</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;10.2.1&#39;</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;6.1.5&#39;</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;9.3.1&#39;</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;3.1.5&#39;</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;1.3.7&#39;</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="s1">&#39;1.2.5&#39;</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;6.1.3&#39;</span><span class="p">,</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="s1">&#39;8.1.4&#39;</span><span class="p">,</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="s1">&#39;2.3.1&#39;</span><span class="p">,</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="s1">&#39;2.1.1&#39;</span><span class="p">,</span>
+    <span class="mi">16</span><span class="p">:</span> <span class="s1">&#39;2.1.7&#39;</span><span class="p">,</span>
+    <span class="mi">17</span><span class="p">:</span> <span class="s1">&#39;1.6.8&#39;</span><span class="p">,</span>
+    <span class="mi">18</span><span class="p">:</span> <span class="s1">&#39;1.6.4&#39;</span><span class="p">,</span>
+    <span class="mi">19</span><span class="p">:</span> <span class="s1">&#39;1.8.5&#39;</span><span class="p">,</span>
+    <span class="mi">20</span><span class="p">:</span> <span class="s1">&#39;3.4.1&#39;</span><span class="p">,</span>
+    <span class="mi">21</span><span class="p">:</span> <span class="s1">&#39;6.3.7&#39;</span><span class="p">,</span>
+    <span class="mi">22</span><span class="p">:</span> <span class="s1">&#39;6.2.3&#39;</span><span class="p">,</span>
+    <span class="mi">23</span><span class="p">:</span> <span class="s1">&#39;9.1.6&#39;</span><span class="p">,</span>
+    <span class="mi">24</span><span class="p">:</span> <span class="s1">&#39;1.7.4&#39;</span><span class="p">,</span>
+    <span class="mi">25</span><span class="p">:</span> <span class="s1">&#39;1.3.6&#39;</span><span class="p">,</span>
+    <span class="mi">26</span><span class="p">:</span> <span class="s1">&#39;6.2.2&#39;</span><span class="p">,</span>
+    <span class="mi">27</span><span class="p">:</span> <span class="s1">&#39;1.2.4&#39;</span><span class="p">,</span>
+    <span class="mi">28</span><span class="p">:</span> <span class="s1">&#39;7.3.1&#39;</span><span class="p">,</span>
+    <span class="mi">29</span><span class="p">:</span> <span class="s1">&#39;1.6.2&#39;</span><span class="p">,</span>
+    <span class="mi">30</span><span class="p">:</span> <span class="s1">&#39;7.1.1&#39;</span><span class="p">,</span>
+    <span class="mi">31</span><span class="p">:</span> <span class="s1">&#39;6.2.1&#39;</span><span class="p">,</span>
+    <span class="mi">32</span><span class="p">:</span> <span class="s1">&#39;2.6.1&#39;</span><span class="p">,</span>
+    <span class="mi">33</span><span class="p">:</span> <span class="s1">&#39;10.1.1&#39;</span><span class="p">,</span>
+    <span class="mi">34</span><span class="p">:</span> <span class="s1">&#39;6.1.1&#39;</span><span class="p">,</span>
+    <span class="mi">35</span><span class="p">:</span> <span class="s1">&#39;1.2.1&#39;</span><span class="p">,</span>
+    <span class="mi">36</span><span class="p">:</span> <span class="s1">&#39;1.7.7&#39;</span><span class="p">,</span>
+    <span class="mi">37</span><span class="p">:</span> <span class="s1">&#39;1.7.6&#39;</span><span class="p">,</span>
+    <span class="mi">38</span><span class="p">:</span> <span class="s1">&#39;2.6.3&#39;</span><span class="p">,</span>
+    <span class="mi">39</span><span class="p">:</span> <span class="s1">&#39;3.3.1&#39;</span><span class="p">,</span>
+    <span class="mi">40</span><span class="p">:</span> <span class="s1">&#39;2.2.3&#39;</span><span class="p">,</span>
+    <span class="mi">41</span><span class="p">:</span> <span class="s1">&#39;10.1.5&#39;</span><span class="p">,</span>
+    <span class="mi">42</span><span class="p">:</span> <span class="s1">&#39;3.1.6&#39;</span><span class="p">,</span>
+    <span class="mi">43</span><span class="p">:</span> <span class="s1">&#39;5.1.1&#39;</span><span class="p">,</span>
+    <span class="mi">44</span><span class="p">:</span> <span class="s1">&#39;10.4.2&#39;</span><span class="p">,</span>
+    <span class="mi">45</span><span class="p">:</span> <span class="s1">&#39;2.7.2&#39;</span><span class="p">,</span>
+    <span class="mi">46</span><span class="p">:</span> <span class="s1">&#39;1.3.8&#39;</span><span class="p">,</span>
+    <span class="mi">47</span><span class="p">:</span> <span class="s1">&#39;8.2.1&#39;</span><span class="p">,</span>
+    <span class="mi">48</span><span class="p">:</span> <span class="s1">&#39;2.1.2&#39;</span><span class="p">,</span>
+    <span class="mi">49</span><span class="p">:</span> <span class="s1">&#39;3.1.1&#39;</span>
+<span class="p">}</span>
+
+<span class="n">REACTION_ENCODING_NAMES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;Amide to amine reduction&#39;</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Carboxylic acid to alcohol reduction&#39;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Williamson ether synthesis&#39;</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Alcohol to ketone oxidation&#39;</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Chlorination&#39;</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;O-Bn deprotection&#39;</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;Nitration&#39;</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;N-Bn deprotection&#39;</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;Carboxylic acid to acid chloride&#39;</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;Bromo Suzuki-type coupling&#39;</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;Chloro N-arylation&#39;</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="s1">&#39;Ketone reductive amination&#39;</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;N-Cbz deprotection&#39;</span><span class="p">,</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="s1">&#39;Alcohol to aldehyde oxidation&#39;</span><span class="p">,</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="s1">&#39;Isocyanate + amine reaction&#39;</span><span class="p">,</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="s1">&#39;Amide Schotten-Baumann&#39;</span><span class="p">,</span>
+    <span class="mi">16</span><span class="p">:</span> <span class="s1">&#39;N-acetylation&#39;</span><span class="p">,</span>
+    <span class="mi">17</span><span class="p">:</span> <span class="s1">&#39;Iodo N-alkylation&#39;</span><span class="p">,</span>
+    <span class="mi">18</span><span class="p">:</span> <span class="s1">&#39;Chloro N-alkylation&#39;</span><span class="p">,</span>
+    <span class="mi">19</span><span class="p">:</span> <span class="s1">&#39;Thioether synthesis&#39;</span><span class="p">,</span>
+    <span class="mi">20</span><span class="p">:</span> <span class="s1">&#39;Stille reaction&#39;</span><span class="p">,</span>
+    <span class="mi">21</span><span class="p">:</span> <span class="s1">&#39;Methoxy to hydroxy&#39;</span><span class="p">,</span>
+    <span class="mi">22</span><span class="p">:</span> <span class="s1">&#39;CO2H-tBu deprotection&#39;</span><span class="p">,</span>
+    <span class="mi">23</span><span class="p">:</span> <span class="s1">&#39;Hydroxy to chloro&#39;</span><span class="p">,</span>
+    <span class="mi">24</span><span class="p">:</span> <span class="s1">&#39;Hydroxy to methoxy&#39;</span><span class="p">,</span>
+    <span class="mi">25</span><span class="p">:</span> <span class="s1">&#39;Bromo N-arylation&#39;</span><span class="p">,</span>
+    <span class="mi">26</span><span class="p">:</span> <span class="s1">&#39;CO2H-Me deprotection&#39;</span><span class="p">,</span>
+    <span class="mi">27</span><span class="p">:</span> <span class="s1">&#39;Eschweiler-Clarke methylation&#39;</span><span class="p">,</span>
+    <span class="mi">28</span><span class="p">:</span> <span class="s1">&#39;Nitrile reduction&#39;</span><span class="p">,</span>
+    <span class="mi">29</span><span class="p">:</span> <span class="s1">&#39;Bromo N-alkylation&#39;</span><span class="p">,</span>
+    <span class="mi">30</span><span class="p">:</span> <span class="s1">&#39;Nitro to amino&#39;</span><span class="p">,</span>
+    <span class="mi">31</span><span class="p">:</span> <span class="s1">&#39;CO2H-Et deprotection&#39;</span><span class="p">,</span>
+    <span class="mi">32</span><span class="p">:</span> <span class="s1">&#39;Ester Schotten-Baumann&#39;</span><span class="p">,</span>
+    <span class="mi">33</span><span class="p">:</span> <span class="s1">&#39;Bromination&#39;</span><span class="p">,</span>
+    <span class="mi">34</span><span class="p">:</span> <span class="s1">&#39;N-Boc deprotection&#39;</span><span class="p">,</span>
+    <span class="mi">35</span><span class="p">:</span> <span class="s1">&#39;Aldehyde reductive amination&#39;</span><span class="p">,</span>
+    <span class="mi">36</span><span class="p">:</span> <span class="s1">&#39;Mitsunobu aryl ether synthesis&#39;</span><span class="p">,</span>
+    <span class="mi">37</span><span class="p">:</span> <span class="s1">&#39;Methyl esterification&#39;</span><span class="p">,</span>
+    <span class="mi">38</span><span class="p">:</span> <span class="s1">&#39;Fischer-Speier esterification&#39;</span><span class="p">,</span>
+    <span class="mi">39</span><span class="p">:</span> <span class="s1">&#39;Sonogashira coupling&#39;</span><span class="p">,</span>
+    <span class="mi">40</span><span class="p">:</span> <span class="s1">&#39;Sulfonamide Schotten-Baumann&#39;</span><span class="p">,</span>
+    <span class="mi">41</span><span class="p">:</span> <span class="s1">&#39;Wohl-Ziegler bromination&#39;</span><span class="p">,</span>
+    <span class="mi">42</span><span class="p">:</span> <span class="s1">&#39;Chloro Suzuki-type coupling&#39;</span><span class="p">,</span>
+    <span class="mi">43</span><span class="p">:</span> <span class="s1">&#39;N-Boc protection&#39;</span><span class="p">,</span>
+    <span class="mi">44</span><span class="p">:</span> <span class="s1">&#39;Methylation&#39;</span><span class="p">,</span>
+    <span class="mi">45</span><span class="p">:</span> <span class="s1">&#39;Sulfonic ester Schotten-Baumann&#39;</span><span class="p">,</span>
+    <span class="mi">46</span><span class="p">:</span> <span class="s1">&#39;Fluoro N-arylation&#39;</span><span class="p">,</span>
+    <span class="mi">47</span><span class="p">:</span> <span class="s1">&#39;Sulfanyl to sulfinyl&#39;</span><span class="p">,</span>
+    <span class="mi">48</span><span class="p">:</span> <span class="s1">&#39;Carboxylic acid + amine reaction&#39;</span><span class="p">,</span>
+    <span class="mi">49</span><span class="p">:</span> <span class="s1">&#39;Bromo Suzuki coupling&#39;</span>
+<span class="p">}</span>
+
+<span class="n">ENCODING_SCALABILITY</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">16</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="mi">17</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="mi">18</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="mi">19</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">20</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="mi">21</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">22</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">23</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">24</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">25</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="mi">26</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">27</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">28</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">29</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="mi">30</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">31</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">32</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">33</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">34</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">35</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">36</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="mi">37</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="mi">38</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="mi">39</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">40</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">41</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="mi">42</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="mi">43</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">44</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">45</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">46</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="mi">47</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">48</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">49</span><span class="p">:</span> <span class="mi">10</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="bcolors">
+<a class="viewcode-back" href="../../variables_module.html#src.variables.bcolors">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">bcolors</span><span class="p">:</span>
+    <span class="n">HEADER</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[95m&#39;</span>
+    <span class="n">OKBLUE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[94m&#39;</span>
+    <span class="n">OKCYAN</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[96m&#39;</span>
+    <span class="n">OKGREEN</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[92m&#39;</span>
+    <span class="n">WARNING</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[93m&#39;</span>
+    <span class="n">FAIL</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[91m&#39;</span>
+    <span class="n">ENDC</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[0m&#39;</span>
+    <span class="n">BOLD</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[1m&#39;</span>
+    <span class="n">UNDERLINE</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[4m&#39;</span></div>
+
+
+
+<span class="n">OPENAI_MODELS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;chatgpt-4o-latest&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o-mini-2024-07-18&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;o1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;o1-2024-12-17&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;o1-mini&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;o1-mini-2024-09-12&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;o1-preview&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;o1-preview-2024-09-12&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o-realtime-preview&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o-realtime-preview-2024-12-17&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o-mini-realtime-preview&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o-mini-realtime-preview-2024-12-17&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gpt-4o-2024-08-06&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">DEEPSEEK_MODELS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;azure_ai/DeepSeek-R1&quot;</span><span class="p">,</span> <span class="s2">&quot;deepinfra/deepseek-ai/DeepSeek-R1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fireworks_ai/accounts/fireworks/models/deepseek-r1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;together_ai/deepseek-ai/DeepSeek-R1&quot;</span>
+<span class="p">]</span>
+
+<span class="n">ERROR_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">200</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;SUCCESS&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="mi">400</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;call_LLM() Function failed.&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="mi">501</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;split_cot_json() failed.&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="mi">502</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;split_json_openAI() failed.&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="mi">503</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;split_json_deepseek() failed.&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="mi">504</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;validate_split_json() failed.&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="mi">505</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;split_json_master() failed.&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="n">AZ_MODEL_LIST</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;USPTO&quot;</span><span class="p">,</span> <span class="s2">&quot;Pistachio_25&quot;</span><span class="p">,</span> <span class="s2">&quot;Pistachio_50&quot;</span><span class="p">,</span> <span class="s2">&quot;Pistachio_100&quot;</span><span class="p">,</span> <span class="s2">&quot;Pistachio_100+&quot;</span>
+<span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Project Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

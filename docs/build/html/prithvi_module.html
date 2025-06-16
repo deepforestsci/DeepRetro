@@ -1,0 +1,236 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.prithvi Module &mdash; DeepRetro 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src.rec_prithvi Module" href="rec_prithvi_module.html" />
+    <link rel="prev" title="src.metadata Module" href="metadata_module.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DeepRetro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models Used in DeepRetro</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api_reference_landing.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api_module.html">src.api Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cache_module.html">src.cache Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main_module.html">src.main Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata_module.html">src.metadata Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">src.prithvi Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.prithvi.add_metadata"><code class="docutils literal notranslate"><span class="pre">add_metadata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.prithvi.run_prithvi"><code class="docutils literal notranslate"><span class="pre">run_prithvi()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rec_prithvi_module.html">src.rec_prithvi Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils_package.html">src.utils Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables_module.html">src.variables Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DeepRetro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="api_reference_landing.html">API Reference</a></li>
+      <li class="breadcrumb-item active">src.prithvi Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/prithvi_module.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.prithvi">
+<span id="src-prithvi-module"></span><h1>src.prithvi Module<a class="headerlink" href="#module-src.prithvi" title="Link to this heading"></a></h1>
+<p>Orchestrates the Prithvi retrosynthesis workflow for a target molecule.</p>
+<p>This module provides the main <cite>run_prithvi</cite> function, which coordinates the
+end-to-end retrosynthesis process using the “Prithvi” methodology. This involves:</p>
+<ol class="arabic simple">
+<li><p><strong>Job-Specific Logging:</strong> Setting up a unique logger for each synthesis job,
+with outputs directed to a dated log file (<cite>logs/&lt;date&gt;/job_&lt;job_id&gt;.log</cite>).
+A context logger is used to pass this job-specific logger through the call stack.</p></li>
+<li><p><strong>Recursive Retrosynthesis:</strong> Calling <cite>src.rec_prithvi.rec_run_prithvi()</cite> to
+perform the core, potentially recursive, retrosynthetic analysis.</p></li>
+<li><p><strong>Output Formatting:</strong> Structuring the raw results from the recursive step into a
+standardized format using <cite>src.utils.parse.format_output()</cite>.</p></li>
+<li><p><strong>Metadata Enrichment:</strong> Augmenting each reaction step in the pathway with
+predicted reagents, reaction conditions, and literature references using
+agents from <cite>src.metadata</cite> via the <cite>add_metadata()</cite> helper function.</p></li>
+</ol>
+<p>The final output is a dictionary containing the complete retrosynthetic pathway
+with all associated predictions and metadata.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.prithvi.add_metadata">
+<span class="sig-prename descclassname"><span class="pre">src.prithvi.</span></span><span class="sig-name descname"><span class="pre">add_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/prithvi.html#add_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.prithvi.add_metadata" title="Link to this definition"></a></dt>
+<dd><p>Adds predicted reagents, conditions, and literature to reaction steps.</p>
+<p>Iterates through each step in the <cite>output_data</cite> and calls the respective
+agents from <cite>src.metadata</cite> to predict and append:</p>
+<ul class="simple">
+<li><p>Reagents (to <cite>step[‘reagents’]</cite>)</p></li>
+<li><p>Reaction conditions (to <cite>step[‘conditions’]</cite>)</p></li>
+<li><p>Closest literature references (to <cite>step[‘reactionmetrics’][0][‘closestliterature’]</cite>)</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>output_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – <p>The formatted retrosynthesis output dictionary, typically from
+<cite>format_output()</cite>. It must contain a ‘steps’ key, which is a list
+of dictionaries. Each step dictionary in the list is expected to have:</p>
+<ul class="simple">
+<li><p><cite>reactants</cite> (list[dict]): Input for <cite>reagent_agent</cite>, etc.</p></li>
+<li><p><cite>products</cite> (list[dict]): Input for <cite>reagent_agent</cite>, etc.</p></li>
+<li><p><cite>reagents</cite> (list): An existing list to which predicted reagents are appended.</p></li>
+<li><p><cite>conditions</cite> (any): Will be overwritten by predicted conditions dict.</p></li>
+<li><p><cite>reactionmetrics</cite> (list[dict]): A list where the first element is a
+dict that will have a <cite>closestliterature</cite> key added/updated.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The input <cite>output_data</cite> dictionary, modified in-place to include
+the predicted metadata within each step.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.prithvi.run_prithvi">
+<span class="sig-prename descclassname"><span class="pre">src.prithvi.</span></span><span class="sig-name descname"><span class="pre">run_prithvi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'claude-3-opus-20240229'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'USPTO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stability_flag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'False'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hallucination_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'False'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/prithvi.html#run_prithvi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.prithvi.run_prithvi" title="Link to this definition"></a></dt>
+<dd><p>Runs the Prithvi retrosynthesis workflow for a given molecule.</p>
+<p>This function orchestrates the retrosynthesis process, including setting up
+job-specific logging, calling the recursive Prithvi algorithm, formatting
+the output, and enriching it with predicted metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>molecule</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The SMILES string of the target molecule for retrosynthesis.</p></li>
+<li><p><strong>llm</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Identifier for the Large Language Model to be used. Defaults to
+“claude-3-opus-20240229”. Passed to <cite>rec_run_prithvi</cite>.</p></li>
+<li><p><strong>az_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Identifier for the AiZynthFinder model/configuration. Defaults to
+“USPTO”. Passed to <cite>rec_run_prithvi</cite>.</p></li>
+<li><p><strong>stability_flag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Flag (“True” or “False”) to enable/disable stability checks.
+Defaults to “False”. Passed to <cite>rec_run_prithvi</cite>.</p></li>
+<li><p><strong>hallucination_check</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Flag (“True” or “False”) to enable/disable hallucination checks.
+Defaults to “False”. Passed to <cite>rec_run_prithvi</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A dictionary representing the final retrosynthesis pathway and metadata.
+Key structure typically includes:</p>
+<ul class="simple">
+<li><p><cite>smiles</cite> (str): The input target molecule SMILES.</p></li>
+<li><p><cite>steps</cite> (list[dict]): A list of reaction steps. Each step includes:</p>
+<ul>
+<li><p><cite>step</cite> (str): Step number.</p></li>
+<li><p><cite>reactants</cite> (list[dict]): List of reactant molecules for the step.</p></li>
+<li><p><cite>products</cite> (list[dict]): List of product molecules for the step.</p></li>
+<li><p><cite>reagents</cite> (list[dict]): Predicted reagents for the step.</p></li>
+<li><p><cite>conditions</cite> (dict): Predicted reaction conditions.</p></li>
+<li><p><cite>reactionmetrics</cite> (list[dict]): Contains metrics like
+<cite>closestliterature</cite> (predicted literature references).</p></li>
+<li><p>… (other fields from <cite>format_output</cite> and <cite>rec_run_prithvi</cite>)</p></li>
+</ul>
+</li>
+<li><p><cite>dependencies</cite> (dict): Defines the relationship between steps.</p></li>
+<li><p>… (potentially other top-level keys from <cite>format_output</cite>)</p></li>
+</ul>
+<p>Job-specific logs are created in <cite>logs/&lt;date&gt;/job_&lt;job_id&gt;.log</cite>.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="metadata_module.html" class="btn btn-neutral float-left" title="src.metadata Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rec_prithvi_module.html" class="btn btn-neutral float-right" title="src.rec_prithvi Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Project Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

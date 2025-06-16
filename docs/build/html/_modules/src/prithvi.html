@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.prithvi &mdash; DeepRetro 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            DeepRetro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models Used in DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference_landing.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to DeepRetro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">DeepRetro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.prithvi</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.prithvi</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; Orchestrates the Prithvi retrosynthesis workflow for a target molecule.</span>
+
+<span class="sd">This module provides the main `run_prithvi` function, which coordinates the</span>
+<span class="sd">end-to-end retrosynthesis process using the &quot;Prithvi&quot; methodology. This involves:</span>
+
+<span class="sd">1.  **Job-Specific Logging:** Setting up a unique logger for each synthesis job,</span>
+<span class="sd">    with outputs directed to a dated log file (`logs/&lt;date&gt;/job_&lt;job_id&gt;.log`).</span>
+<span class="sd">    A context logger is used to pass this job-specific logger through the call stack.</span>
+<span class="sd">2.  **Recursive Retrosynthesis:** Calling `src.rec_prithvi.rec_run_prithvi()` to</span>
+<span class="sd">    perform the core, potentially recursive, retrosynthetic analysis.</span>
+<span class="sd">3.  **Output Formatting:** Structuring the raw results from the recursive step into a</span>
+<span class="sd">    standardized format using `src.utils.parse.format_output()`.</span>
+<span class="sd">4.  **Metadata Enrichment:** Augmenting each reaction step in the pathway with</span>
+<span class="sd">    predicted reagents, reaction conditions, and literature references using</span>
+<span class="sd">    agents from `src.metadata` via the `add_metadata()` helper function.</span>
+
+<span class="sd">The final output is a dictionary containing the complete retrosynthetic pathway</span>
+<span class="sd">with all associated predictions and metadata.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rootutils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">structlog</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.utils.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_output</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.rec_prithvi</span><span class="w"> </span><span class="kn">import</span> <span class="n">rec_run_prithvi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.utils.job_context</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span> <span class="k">as</span> <span class="n">context_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.utils.custom_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_job_specific_handler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">reagent_agent</span><span class="p">,</span> <span class="n">conditions_agent</span><span class="p">,</span> <span class="n">literature_agent</span>
+
+<span class="n">root_dir</span> <span class="o">=</span> <span class="n">rootutils</span><span class="o">.</span><span class="n">setup_root</span><span class="p">(</span><span class="vm">__file__</span><span class="p">,</span>
+                                <span class="n">indicator</span><span class="o">=</span><span class="s2">&quot;.project-root&quot;</span><span class="p">,</span>
+                                <span class="n">pythonpath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">date_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">root_dir</span><span class="si">}</span><span class="s1">/logs/</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+
+
+<div class="viewcode-block" id="run_prithvi">
+<a class="viewcode-back" href="../../prithvi_module.html#src.prithvi.run_prithvi">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_prithvi</span><span class="p">(</span><span class="n">molecule</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="n">llm</span><span class="o">=</span><span class="s2">&quot;claude-3-opus-20240229&quot;</span><span class="p">,</span>
+                <span class="n">az_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;USPTO&quot;</span><span class="p">,</span>
+                <span class="n">stability_flag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span><span class="p">,</span>
+                <span class="n">hallucination_check</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Runs the Prithvi retrosynthesis workflow for a given molecule.</span>
+
+<span class="sd">    This function orchestrates the retrosynthesis process, including setting up</span>
+<span class="sd">    job-specific logging, calling the recursive Prithvi algorithm, formatting</span>
+<span class="sd">    the output, and enriching it with predicted metadata.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        molecule (str):</span>
+<span class="sd">            The SMILES string of the target molecule for retrosynthesis.</span>
+<span class="sd">        llm (str, optional):</span>
+<span class="sd">            Identifier for the Large Language Model to be used. Defaults to</span>
+<span class="sd">            &quot;claude-3-opus-20240229&quot;. Passed to `rec_run_prithvi`.</span>
+<span class="sd">        az_model (str, optional):</span>
+<span class="sd">            Identifier for the AiZynthFinder model/configuration. Defaults to</span>
+<span class="sd">            &quot;USPTO&quot;. Passed to `rec_run_prithvi`.</span>
+<span class="sd">        stability_flag (str, optional):</span>
+<span class="sd">            Flag (&quot;True&quot; or &quot;False&quot;) to enable/disable stability checks.</span>
+<span class="sd">            Defaults to &quot;False&quot;. Passed to `rec_run_prithvi`.</span>
+<span class="sd">        hallucination_check (str, optional):</span>
+<span class="sd">            Flag (&quot;True&quot; or &quot;False&quot;) to enable/disable hallucination checks.</span>
+<span class="sd">            Defaults to &quot;False&quot;. Passed to `rec_run_prithvi`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict:</span>
+<span class="sd">            A dictionary representing the final retrosynthesis pathway and metadata.</span>
+<span class="sd">            Key structure typically includes:</span>
+
+<span class="sd">            -   `smiles` (str): The input target molecule SMILES.</span>
+<span class="sd">            -   `steps` (list[dict]): A list of reaction steps. Each step includes:</span>
+
+<span class="sd">                -   `step` (str): Step number.</span>
+<span class="sd">                -   `reactants` (list[dict]): List of reactant molecules for the step.</span>
+<span class="sd">                -   `products` (list[dict]): List of product molecules for the step.</span>
+<span class="sd">                -   `reagents` (list[dict]): Predicted reagents for the step.</span>
+<span class="sd">                -   `conditions` (dict): Predicted reaction conditions.</span>
+<span class="sd">                -   `reactionmetrics` (list[dict]): Contains metrics like</span>
+<span class="sd">                    `closestliterature` (predicted literature references).</span>
+<span class="sd">                -   ... (other fields from `format_output` and `rec_run_prithvi`)</span>
+
+<span class="sd">            -   `dependencies` (dict): Defines the relationship between steps.</span>
+<span class="sd">            -   ... (potentially other top-level keys from `format_output`)</span>
+
+<span class="sd">            Job-specific logs are created in `logs/&lt;date&gt;/job_&lt;job_id&gt;.log`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Generate a unique job ID using timestamp and a random suffix</span>
+    <span class="n">job_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">_%H%M%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">job_log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">date_dir</span><span class="si">}</span><span class="s2">/job_</span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2">.log&quot;</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">)</span>
+    <span class="c1"># Set the logger in the context variable</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">context_logger</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+
+    <span class="c1"># Add job-specific handler</span>
+    <span class="n">handler</span> <span class="o">=</span> <span class="n">add_job_specific_handler</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting new synthesis job </span><span class="si">{</span><span class="n">job_id</span><span class="si">}</span><span class="s2"> for molecule </span><span class="si">{</span><span class="n">molecule</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result_dict</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">rec_run_prithvi</span><span class="p">(</span>
+            <span class="n">molecule</span><span class="o">=</span><span class="n">molecule</span><span class="p">,</span>
+            <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span>
+            <span class="n">llm</span><span class="o">=</span><span class="n">llm</span><span class="p">,</span>
+            <span class="n">az_model</span><span class="o">=</span><span class="n">az_model</span><span class="p">,</span>
+            <span class="n">stability_flag</span><span class="o">=</span><span class="n">stability_flag</span><span class="p">,</span>
+            <span class="n">hallucination_check</span><span class="o">=</span><span class="n">hallucination_check</span><span class="p">)</span>
+        <span class="n">output_data</span> <span class="o">=</span> <span class="n">format_output</span><span class="p">(</span><span class="n">result_dict</span><span class="p">)</span>
+        <span class="n">output_data</span> <span class="o">=</span> <span class="n">add_metadata</span><span class="p">(</span><span class="n">output_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output_data</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="c1"># Clean up handlers</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">context_logger</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">token</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="add_metadata">
+<a class="viewcode-back" href="../../prithvi_module.html#src.prithvi.add_metadata">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_metadata</span><span class="p">(</span><span class="n">output_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds predicted reagents, conditions, and literature to reaction steps.</span>
+
+<span class="sd">    Iterates through each step in the `output_data` and calls the respective</span>
+<span class="sd">    agents from `src.metadata` to predict and append:</span>
+
+<span class="sd">    -   Reagents (to `step[&#39;reagents&#39;]`)</span>
+<span class="sd">    -   Reaction conditions (to `step[&#39;conditions&#39;]`)</span>
+<span class="sd">    -   Closest literature references (to `step[&#39;reactionmetrics&#39;][0][&#39;closestliterature&#39;]`)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        output_data (dict):</span>
+<span class="sd">            The formatted retrosynthesis output dictionary, typically from</span>
+<span class="sd">            `format_output()`. It must contain a &#39;steps&#39; key, which is a list</span>
+<span class="sd">            of dictionaries. Each step dictionary in the list is expected to have:</span>
+
+<span class="sd">            -   `reactants` (list[dict]): Input for `reagent_agent`, etc.</span>
+<span class="sd">            -   `products` (list[dict]): Input for `reagent_agent`, etc.</span>
+<span class="sd">            -   `reagents` (list): An existing list to which predicted reagents are appended.</span>
+<span class="sd">            -   `conditions` (any): Will be overwritten by predicted conditions dict.</span>
+<span class="sd">            -   `reactionmetrics` (list[dict]): A list where the first element is a</span>
+<span class="sd">                dict that will have a `closestliterature` key added/updated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict:</span>
+<span class="sd">            The input `output_data` dictionary, modified in-place to include</span>
+<span class="sd">            the predicted metadata within each step.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">output_data</span><span class="p">[</span><span class="s1">&#39;steps&#39;</span><span class="p">]):</span>
+        <span class="n">status</span><span class="p">,</span> <span class="n">reagents</span> <span class="o">=</span> <span class="n">reagent_agent</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="s1">&#39;reactants&#39;</span><span class="p">],</span> <span class="n">step</span><span class="p">[</span><span class="s1">&#39;products&#39;</span><span class="p">])</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="s1">&#39;steps&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">][</span><span class="s1">&#39;reagents&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">reagents</span><span class="p">)</span>
+
+        <span class="n">status</span><span class="p">,</span> <span class="n">conditions</span> <span class="o">=</span> <span class="n">conditions_agent</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="s1">&#39;reactants&#39;</span><span class="p">],</span>
+                                              <span class="n">step</span><span class="p">[</span><span class="s1">&#39;products&#39;</span><span class="p">],</span>
+                                              <span class="n">step</span><span class="p">[</span><span class="s1">&#39;reagents&#39;</span><span class="p">])</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="s1">&#39;steps&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">][</span><span class="s1">&#39;conditions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conditions</span>
+
+        <span class="n">status</span><span class="p">,</span> <span class="n">literature</span> <span class="o">=</span> <span class="n">literature_agent</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="s1">&#39;reactants&#39;</span><span class="p">],</span>
+                                              <span class="n">step</span><span class="p">[</span><span class="s1">&#39;products&#39;</span><span class="p">],</span>
+                                              <span class="n">step</span><span class="p">[</span><span class="s1">&#39;reagents&#39;</span><span class="p">],</span>
+                                              <span class="n">step</span><span class="p">[</span><span class="s1">&#39;conditions&#39;</span><span class="p">])</span>
+        <span class="n">output_data</span><span class="p">[</span><span class="s1">&#39;steps&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">][</span><span class="s1">&#39;reactionmetrics&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span>
+            <span class="s1">&#39;closestliterature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">literature</span>
+
+    <span class="k">return</span> <span class="n">output_data</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Project Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
