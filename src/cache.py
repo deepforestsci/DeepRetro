@@ -1,6 +1,7 @@
 import diskcache as dc
 import hashlib
 import json
+import functools
 
 cache = dc.Cache('cache_api_new')
 
@@ -23,7 +24,7 @@ def cache_results(func):
     func : _type_
         Function to be decorated
     """
-
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         """Wrapper function to cache the results of the function.
 
