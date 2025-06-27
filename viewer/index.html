@@ -126,8 +126,19 @@
     </div>
 
     <script>
-      // API Key for authentication
-      const API_KEY = "your-secure-api-key";
+
+      let apiKey = localStorage.getItem('userApiKey');
+      if (!apiKey) {
+        apiKey = prompt('Please enter the API Key for your self-hosted backend (this will be stored in your browser\'s local storage):');
+        if (apiKey) {
+          localStorage.setItem('userApiKey', apiKey);
+        } else {
+          alert('API Key is required to use the application. Please refresh and enter your key.');
+          // You might want to disable functionality or show a persistent message
+        }
+      }
+      // For testing: Uncomment the line below to see the loaded/entered API_KEY
+      console.log("DEBUG (index.html): API_KEY from localStorage/prompt: ", apiKey);
 
       /**
        * Initializes server settings UI based on configuration
@@ -664,7 +675,7 @@
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "X-API-KEY": API_KEY,
+              "X-API-KEY": apiKey,
             },
             body: JSON.stringify(requestBody),
           });
@@ -1232,14 +1243,29 @@
                 hallucination_check: hallucinationToggle.checked.toString(),
               };
 
-              // Make API call
+              // --- TEMPORARY DEBUG LOGGING --- START ---
+              // (You can remove or comment out these lines later)
+              const headersToSend = {
+                "Content-Type": "application/json",
+                "X-API-KEY": apiKey, // 'apiKey' should be in scope from localStorage/prompt
+              };
+              const bodyToSend = JSON.stringify(requestBody);
+/*
+              console.groupCollapsed(`DEBUG: Preparing to send request to: ${endpoint}`); // Collapsed by default
+              console.log("Target Endpoint:", endpoint);
+              // Use JSON.parse(JSON.stringify(...)) for a deep copy to avoid logging live objects that might change
+              console.log("Request Headers to be sent:", JSON.parse(JSON.stringify(headersToSend)));
+              console.log("Request Body (raw object being stringified):", JSON.parse(JSON.stringify(requestBody)));
+              console.log("Request Body (JSON string to be sent):", bodyToSend);
+              console.groupEnd();
+*/
+              // --- TEMPORARY DEBUG LOGGING --- END ---
+
+              // Make API call (using the prepared headers and body)
               const response = await fetch(endpoint, {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-API-KEY": API_KEY,
-                },
-                body: JSON.stringify(requestBody),
+                headers: headersToSend, // Use the prepared headers
+                body: bodyToSend,       // Use the prepared body
               });
 
               const data = await response.json();
@@ -1492,13 +1518,13 @@
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "X-API-KEY": API_KEY,
+              "X-API-KEY": apiKey,
             },
             // --- Modified request body ---
             body: JSON.stringify({
               smiles: smilesInput.value, // Send the original SMILES from the input field
               steps: stepNumber, // Send the selected step number as a string
-              model_type: modelTypeSelect.value, // Keep settings
+              model_type: modelTypeSelect.value,
               advanced_prompt: promptToggle.checked.toString(),
               model_version: modelSelect.value,
               stability_flag: stabilityToggle.checked.toString(),

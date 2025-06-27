@@ -21,8 +21,17 @@ from src.variables import AZ_MODEL_LIST
 app = Flask(__name__)
 CORS(app)
 
-# Predefined API key for authentication
-API_KEY = "your-secure-api-key"
+# API key loaded from environment variable
+API_KEY = os.getenv('API_KEY')
+
+# For testing: Uncomment the line below to see the loaded API_KEY
+# print(f"DEBUG: API_KEY loaded from environment: {API_KEY}")
+
+if not API_KEY:
+    print("CRITICAL ERROR: The 'API_KEY' environment variable is not set.")
+    print("Please set this variable in your .env file or your system environment.")
+    print("Example: API_KEY='your-chosen-secret-key'")
+    exit(1)  # Exit if the API key is not configured
 
 # File path for storing results
 PARTIAL_JSON_PATH = "partial.json"
