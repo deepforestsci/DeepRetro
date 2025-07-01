@@ -104,7 +104,7 @@ def substructure_matching(target_smiles: str, query_smiles: str):
 
 @cache_results
 def call_LLM(molecule: str,
-             LLM: str = "claude-3-opus-20240229",
+             LLM: str = "claude-opus-4-20250514",
              temperature: float = 0.0,
              messages: Optional[list[dict]] = None):
     """Calls the LLM model to predict the next step"""
@@ -153,7 +153,7 @@ def call_LLM(molecule: str,
 
 
 def llm_pipeline(molecule: str,
-                 LLM: str = "claude-3-opus-20240229",
+                 LLM: str = "claude-opus-4-20250514",
                  messages: Optional[list[dict]] = None):
     """Pipeline to call LLM and validate the results"""
     output_pathways = []
@@ -230,7 +230,7 @@ def validity_check(molecule, res_molecules, res_explanations, res_confidence):
 
 
 def llm_pipeline_alt(molecule: str,
-                     LLM: str = "claude-3-opus-20240229",
+                     LLM: str = "claude-opus-4-20250514",
                      messages: Optional[list[dict]] = None):
     """Pipeline to call LLM and validate the results"""
     # output_pathways = []

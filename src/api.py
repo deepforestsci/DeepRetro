@@ -29,7 +29,9 @@ API_KEY = os.getenv('API_KEY')
 
 if not API_KEY:
     print("CRITICAL ERROR: The 'API_KEY' environment variable is not set.")
-    print("Please set this variable in your .env file or your system environment.")
+    print(
+        "Please set this variable in your .env file or your system environment."
+    )
     print("Example: API_KEY='your-chosen-secret-key'")
     exit(1)  # Exit if the API key is not configured
 
@@ -128,6 +130,10 @@ def retrosynthesis_api():
         llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
     elif model_type == "claude37":
         llm = "anthropic/claude-3-7-sonnet-20250219"
+    elif model_type == "claude4opus":
+        llm = "anthropic/claude-opus-4-20250514"
+    elif model_type == "claude4sonnet":
+        llm = "anthropic/claude-sonnet-4-20250514"
     else:  # Default to Claude 3 Opus
         llm = "claude-3-opus-20240229"
 
@@ -264,6 +270,10 @@ def rerun_retrosynthesis():
         llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
     elif model_type == "claude37":
         llm = "anthropic/claude-3-7-sonnet-20250219"
+    elif model_type == "claude4opus":
+        llm = "anthropic/claude-opus-4-20250514"
+    elif model_type == "claude4sonnet":
+        llm = "anthropic/claude-sonnet-4-20250514"
     else:  # Default to Claude 3 Opus
         llm = "claude-3-opus-20240229"
 
@@ -440,6 +450,10 @@ def partial_rerun():
             llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
         elif model_type == "claude37":
             llm = "anthropic/claude-3-7-sonnet-20250219"
+        elif model_type == "claude4opus":
+            llm = "anthropic/claude-opus-4-20250514"
+        elif model_type == "claude4sonnet":
+            llm = "anthropic/claude-sonnet-4-20250514"
         else:  # Default to Claude 3 Opus
             llm = "claude-3-opus-20240229"
         print(f"SELECTED LLM: {llm}")
@@ -620,7 +634,8 @@ def partial_rerun():
         print(f"\nRENUMBERING NEW STEPS STARTING FROM {max_step + 1}:")
         for idx, step in enumerate(new_result.get('steps', [])):
             new_step_num = max_step + 1 + idx
-            old_step_num = str(step['step'])  # Convert to string for consistency
+            old_step_num = str(
+                step['step'])  # Convert to string for consistency
             step_mapping[old_step_num] = str(new_step_num)
             print(f"  MAPPING STEP {old_step_num} -> {new_step_num}")
 
@@ -684,7 +699,8 @@ def partial_rerun():
             )
             # Create a minimal result that acknowledges this molecule as a building block
             merged_result = {
-                'smiles': smiles,  # Add the original SMILES
+                'smiles':
+                smiles,  # Add the original SMILES
                 'steps': [],
                 'dependencies': {},
                 'message':
