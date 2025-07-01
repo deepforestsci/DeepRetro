@@ -104,7 +104,7 @@ def obtain_prompt(LLM: str):
 
 @cache_results
 def call_LLM(molecule: str,
-             LLM: str = "claude-3-opus-20240229",
+             LLM: str = "claude-opus-4-20250514",
              temperature: float = 0.0,
              messages: Optional[list[dict]] = None) -> tuple[int, str]:
     """Calls the LLM model to predict the next step
@@ -114,7 +114,7 @@ def call_LLM(molecule: str,
     molecule : str
         The target molecule for retrosynthesis
     LLM : str, optional
-        The LLM model to be used, by default "claude-3-opus-20240229"
+        The LLM model to be used, by default "claude-opus-4-20250514"
     temperature : float, optional
         The temperature for sampling, by default 0.0
     messages : Optional[list[dict]], optional
@@ -352,7 +352,7 @@ def validate_split_json(
 
 def llm_pipeline(
     molecule: str,
-    LLM: str = "claude-3-opus-20240229",
+    LLM: str = "claude-opus-4-20250514",
     messages: Optional[list[dict]] = None,
     stability_flag: str = "False",
     hallucination_check: str = "False"
@@ -364,7 +364,7 @@ def llm_pipeline(
     molecule : str
         The target molecule for retrosynthesis
     LLM : str, optional
-        LLM to be used for retrosynthesis , by default "claude-3-opus-20240229"
+        LLM to be used for retrosynthesis , by default "claude-opus-4-20250514"
     messages : Optional[list[dict]], optional
         Conversation history, by default None
 
@@ -390,7 +390,7 @@ def llm_pipeline(
         # Selecting the model based on the run number
         current_model = LLM
         if LLM in DEEPSEEK_MODELS and run > 0.0:
-            current_model = "claude-3-opus-20240229"
+            current_model = "claude-opus-4-20250514"
 
         # --------------------
         # Call LLM
@@ -445,8 +445,9 @@ def llm_pipeline(
         # --------------------
         # Hallucination check
         if hallucination_check.lower() == "true":
-            log_message(f"Calling hallucination check with pathways: {output_pathways}",
-                        logger)
+            log_message(
+                f"Calling hallucination check with pathways: {output_pathways}",
+                logger)
             status_code, hallucination_pathways = hallucination_checker(
                 molecule, output_pathways)
             if status_code != 200:
