@@ -163,7 +163,7 @@ curl -X POST http://localhost:5000/api/retrosynthesis \
 ## Model Configuration
 
 ### Supported LLM Models
-- **Claude 4 Sonnet**: `claude-4-sonnet-20241022`
+- **Claude 4 Sonnet**: `claude-4-sonnet-20250514`
 - **Claude 3 Opus**: `claude-3-opus-20240229`
 - **Claude 3.7 Sonnet**: `anthropic/claude-3-7-sonnet-20250219`
 - **DeepSeek-R1**: `fireworks_ai/accounts/fireworks/models/deepseek-r1`
