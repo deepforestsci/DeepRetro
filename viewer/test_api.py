@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import traceback
+import os
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -178,8 +179,18 @@ REACTION_DATA = {
     ]
 }
 
-# API key validation (in a production environment, use a more secure method)
-API_KEY = "your-secure-api-key"
+# API key validation (load from environment for testing)
+API_KEY = os.getenv('API_KEY')
+
+# For testing: Uncomment the line below to see the loaded API_KEY
+print(f"DEBUG (test_api.py): API_KEY loaded from environment: {API_KEY}")
+
+if not API_KEY:
+    print("CRITICAL ERROR (test_api.py): The 'API_KEY' environment variable is not set for testing.")
+    print("Please ensure it is available in your test environment (e.g., via .env file).")
+    # Decide if you want to exit(1) here or allow tests to proceed with a dummy key or skip.
+    # For now, we'll let it proceed, but tests requiring a key might fail.
+    API_KEY = "test-dummy-key-if-not-set" # Fallback for tests if not set, though not ideal
 
 def validate_api_key():
     api_key = request.headers.get('X-API-KEY')

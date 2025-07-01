@@ -21,8 +21,17 @@ from src.variables import AZ_MODEL_LIST
 app = Flask(__name__)
 CORS(app)
 
-# Predefined API key for authentication
-API_KEY = "your-secure-api-key"
+# API key loaded from environment variable
+API_KEY = os.getenv('API_KEY')
+
+# For testing: Uncomment the line below to see the loaded API_KEY
+# print(f"DEBUG: API_KEY loaded from environment: {API_KEY}")
+
+if not API_KEY:
+    print("CRITICAL ERROR: The 'API_KEY' environment variable is not set.")
+    print("Please set this variable in your .env file or your system environment.")
+    print("Example: API_KEY='your-chosen-secret-key'")
+    exit(1)  # Exit if the API key is not configured
 
 # File path for storing results
 PARTIAL_JSON_PATH = "partial.json"
@@ -611,7 +620,7 @@ def partial_rerun():
         print(f"\nRENUMBERING NEW STEPS STARTING FROM {max_step + 1}:")
         for idx, step in enumerate(new_result.get('steps', [])):
             new_step_num = max_step + 1 + idx
-            old_step_num = step['step']
+            old_step_num = str(step['step'])  # Convert to string for consistency
             step_mapping[old_step_num] = str(new_step_num)
             print(f"  MAPPING STEP {old_step_num} -> {new_step_num}")
 
@@ -625,12 +634,14 @@ def partial_rerun():
         new_deps = {}
         print(f"\nADJUSTING DEPENDENCIES FOR NEW STEPS:")
         for old_num, deps in new_result.get('dependencies', {}).items():
+            old_num = str(old_num)  # Convert to string for consistency
             new_num = step_mapping[old_num]
             print(f"  STEP {old_num} -> {new_num} DEPENDS ON:")
 
             # Map old step numbers to new step numbers in dependencies
             mapped_deps = []
             for d in deps:
+                d = str(d)  # Convert to string for consistency
                 mapped_d = step_mapping[d]
                 mapped_deps.append(mapped_d)
                 print(f"    OLD DEP {d} -> NEW DEP {mapped_d}")
@@ -673,6 +684,7 @@ def partial_rerun():
             )
             # Create a minimal result that acknowledges this molecule as a building block
             merged_result = {
+                'smiles': smiles,  # Add the original SMILES
                 'steps': [],
                 'dependencies': {},
                 'message':
@@ -684,6 +696,7 @@ def partial_rerun():
         else:
             # Create the normal merged result
             merged_result = {
+                'smiles': smiles,  # Add the original SMILES to the result
                 'steps': merged_steps,
                 'dependencies': merged_deps
             }

@@ -9,3 +9,5 @@ pistachio/
 .vscode/
 
 results/
+node_modules/
+coverage/
