@@ -24,4 +24,5 @@ dependencies:
     - diskcache
     - langfuse
     - joblib
+    - requests
 
