@@ -20,7 +20,3 @@ formats:
   - pdf
   - epub
 
-
-# Build documentation for these tags
-tags:
-  - latest 
