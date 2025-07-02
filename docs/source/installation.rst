@@ -1,7 +1,7 @@
 Installation Guide
 =================
 
-Quick setup for RecursiveLLM.
+Quick setup for DeepRetro.
 
 Prerequisites
 -------------
@@ -25,7 +25,7 @@ Installation Steps
    .. code-block:: bash
 
       git clone <repository-url>
-      cd recursiveLLM
+      cd DeepRetro
 
 2. **Create environment:**
 

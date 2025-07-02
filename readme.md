@@ -69,7 +69,7 @@ DeepRetro performs retrosynthesis analysis by:
 
 ```bash
 git clone <repository-url>
-cd recursiveLLM
+cd DeepRetro
 
 # Create conda environment
 conda env create -f environment.yml

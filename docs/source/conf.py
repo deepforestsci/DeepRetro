@@ -12,6 +12,7 @@
 #
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath('../..'))
 sys.path.insert(0, os.path.abspath('../../src'))
 
@@ -128,10 +129,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'deepretro', 'DeepRetro Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, 'deepretro', 'DeepRetro Documentation', [author], 1)]
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -139,9 +137,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'DeepRetro', 'DeepRetro Documentation',
-     author, 'DeepRetro', 'AI-Powered Retrosynthesis Tool',
-     'Miscellaneous'),
+    (master_doc, 'DeepRetro', 'DeepRetro Documentation', author, 'DeepRetro',
+     'AI-Powered Retrosynthesis Tool', 'Miscellaneous'),
 ]
 
 # -- Extension configuration -------------------------------------------------
@@ -197,7 +194,7 @@ epub_copyright = copyright
 
 # The unique identifier of the text. This can be a ISBN number
 # or the project homepage.
-epub_identifier = 'https://github.com/yourusername/recursiveLLM'
+epub_identifier = 'https://github.com/deepforestsci/DeepRetro'
 
 # A unique identification for the text.
 epub_uid = 'deepretro'
@@ -220,4 +217,4 @@ numfig = True
 math_number_all = True
 
 # Suppress warnings
-suppress_warnings = ['autosectionlabel.*'] 
+suppress_warnings = ['autosectionlabel.*']

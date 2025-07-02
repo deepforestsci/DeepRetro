@@ -1,7 +1,7 @@
 Quickstart Guide
 ================
 
-Get up and running with RecursiveLLM in 5 minutes.
+Get up and running with DeepRetro in 5 minutes.
 
 Installation
 ------------
@@ -13,7 +13,7 @@ Installation
    :caption: Environment setup
 
    git clone <repository-url>
-   cd recursiveLLM
+   cd DeepRetro
    conda env create -f environment.yml
    conda activate deepretro
 
@@ -273,7 +273,7 @@ Common Parameters
      - string
      - 
      - ``claude3``
-     - LLM model: ``claude3``, ``claude37``, ``deepseek``, ``gpt4o``
+     - LLM model: ``claude3``, ``claude37``, ``deepseek``, ``claude4opus``
    * - ``advanced_prompt``
      - boolean
      - 

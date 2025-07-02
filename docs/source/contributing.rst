@@ -1,7 +1,7 @@
 Contributing Guide
 =================
 
-How to contribute to RecursiveLLM.
+How to contribute to DeepRetro.
 
 Getting Started
 --------------

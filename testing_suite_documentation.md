@@ -1,8 +1,8 @@
-# RecursiveLLM Testing Suite Documentation
+# DeepRetro Testing Suite Documentation
 
 ## Overview
 
-This document provides a detailed explanation of the testing suite in the RecursiveLLM project, focusing on `test_api.py` and `test_cache.py`. The testing suite is designed to ensure the proper functioning of the API endpoints and caching mechanisms that are critical for the retrosynthesis application.
+This document provides a detailed explanation of the testing suite in the DeepRetro project, focusing on `test_api.py` and `test_cache.py`. The testing suite is designed to ensure the proper functioning of the API endpoints and caching mechanisms that are critical for the retrosynthesis application.
 
 ## Table of Contents
 
@@ -141,7 +141,7 @@ The tests demonstrate the integration between the API and cache:
 
 ### The Retrosynthesis Workflow
 
-The RecursiveLLM project implements a computer-aided retrosynthesis workflow that combines two powerful technologies:
+The DeepRetro project implements a computer-aided retrosynthesis workflow that combines two powerful technologies:
 
 1. **AiZynthFinder**: A rule-based retrosynthesis tool that applies known chemical transformations to break down complex molecules into simpler precursors
 2. **Large Language Models (LLMs)**: Models like Claude and DeepSeek that bring chemical reasoning and knowledge to suggest synthesis pathways
