@@ -15,7 +15,7 @@ Installation
    git clone <repository-url>
    cd recursiveLLM
    conda env create -f environment.yml
-   conda activate dfs_si_challenge
+   conda activate deepretro
 
 **2. Configure API keys:**
 

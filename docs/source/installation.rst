@@ -32,7 +32,7 @@ Installation Steps
    .. code-block:: bash
 
       conda env create -f environment.yml
-      conda activate dfs_si_challenge
+      conda activate deepretro
 
 3. **Download models:**
 

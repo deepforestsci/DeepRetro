@@ -73,7 +73,7 @@ cd recursiveLLM
 
 # Create conda environment
 conda env create -f environment.yml
-conda activate dfs_si_challenge
+conda activate deepretro
 ```
 
 ### Step 2: Install Models
