@@ -81,7 +81,7 @@ API Parameters
      - string
      - 
      - ``claude3``
-     - LLM model: ``claude3``, ``claude37``, ``deepseek``, ``gpt4o``
+     - LLM model: ``claude3``, ``claude37``, ``claude4``, ``deepseek``
    * - ``advanced_prompt``
      - boolean
      - 
@@ -125,14 +125,14 @@ LLM Models
      - ``claude37``
      - Hybrid reasoning
      - ``anthropic/claude-3-7-sonnet-20250219``
+   * - **Claude 4 Sonnet**
+     - ``claude4``
+     - Latest reasoning
+     - ``claude-4-sonnet-20250514``
    * - **DeepSeek-R1**
      - ``deepseek``
      - Cost-effective analysis
      - ``fireworks_ai/accounts/fireworks/models/deepseek-r1``
-   * - **GPT-4o**
-     - ``gpt4o``
-     - General purpose
-     - ``gpt-4o``
 
 .. note::
    **Claude 3.7 Sonnet** is the latest model with hybrid reasoning capabilities, 

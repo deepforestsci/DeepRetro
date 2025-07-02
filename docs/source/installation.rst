@@ -6,6 +6,11 @@ Quick setup for RecursiveLLM.
 Prerequisites
 -------------
 
+**Option 1: Docker (Recommended)**
+* Docker and Docker Compose
+* Git
+
+**Option 2: Local Development**
 * Python 3.9+
 * Conda/Miniconda
 * Git
@@ -19,6 +24,36 @@ System Requirements
 
 Installation Steps
 -----------------
+
+**Option 1: Docker Installation (Recommended)**
+
+1. **Clone repository:**
+
+   .. code-block:: bash
+
+      git clone <repository-url>
+      cd recursiveLLM
+
+2. **Set up environment:**
+
+   .. code-block:: bash
+
+      cp env.example .env
+      # Edit .env with your API keys
+
+3. **Start the service:**
+
+   .. code-block:: bash
+
+      docker-compose up -d
+
+4. **Verify installation:**
+
+   .. code-block:: bash
+
+      curl -H "X-API-KEY: your-api-key" http://localhost:5000/api/health
+
+**Option 2: Local Development Installation**
 
 1. **Clone repository:**
 
@@ -71,11 +106,13 @@ Model Configuration
    * - LLM Model
      - Identifier
    * - Claude 3 Opus
-     - ``claude-3-opus-20240229``
+     - ``claude3``
    * - Claude 3.7 Sonnet
-     - ``anthropic/claude-3-7-sonnet-20250219``
+     - ``claude37``
+   * - Claude 4 Sonnet
+     - ``claude4``
    * - DeepSeek-R1
-     - ``fireworks_ai/accounts/fireworks/models/deepseek-r1``
+     - ``deepseek``
 
 .. list-table::
    :widths: 30 70
@@ -84,7 +121,7 @@ Model Configuration
    * - AiZynthFinder Model
      - Description
    * - USPTO
-     - Standard database (free, default)
+     - Standard database (free, default, downloaded automatically in Docker)
    * - Pistachio_25
      - 25% Pistachio database (licensed)
    * - Pistachio_50
