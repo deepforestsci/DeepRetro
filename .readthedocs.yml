@@ -23,7 +23,6 @@ formats:
 # Build documentation for these branches
 branches:
   - main
-  - develop
 
 # Build documentation for these tags
 tags:
