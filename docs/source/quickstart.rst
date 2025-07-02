@@ -6,6 +6,20 @@ Get up and running with RecursiveLLM in 5 minutes.
 Installation
 ------------
 
+**Option 1: Docker Installation (Recommended)**
+
+.. code-block:: bash
+   :linenos:
+   :caption: Docker setup
+
+   git clone <repository-url>
+   cd recursiveLLM
+   cp env.example .env
+   # Edit .env with your API keys
+   docker-compose up -d
+
+**Option 2: Local Development Installation**
+
 **1. Clone and setup environment:**
 
 .. code-block:: bash
@@ -30,7 +44,6 @@ Create `.env` file:
    
    # LLM API keys (choose based on your model preference)
    ANTHROPIC_API_KEY=your-anthropic-key      # For Claude models
-   OPENAI_API_KEY=your-openai-key            # For GPT models
    FIREWORKS_API_KEY=your-fireworks-key      # For DeepSeek models
 
 **3. Download models:**
@@ -94,6 +107,8 @@ Available Models
      - ``claude3``
    * - **Claude 3.7 Sonnet**
      - ``claude37``
+   * - **Claude 4 Sonnet**
+     - ``claude4``
    * - **DeepSeek-R1**
      - ``deepseek``
 
@@ -108,7 +123,7 @@ Available Models
      - Description
    * - ``USPTO``
      - Free
-     - Standard USPTO database (default)
+     - Standard USPTO database (default, downloaded automatically in Docker)
    * - ``Pistachio_25``
      - Licensed
      - 25% Pistachio database coverage
@@ -181,7 +196,7 @@ Open `http://localhost:8000` in your browser.
    * - **SMILES Input**
      - Enter SMILES strings or paste from clipboard
    * - **Model Selection**
-     - Choose from Claude 3, Claude 3.7, DeepSeek, GPT-4o
+     - Choose from Claude 3, Claude 3.7, Claude 4, DeepSeek
    * - **Interactive Visualization**
      - Tree view of synthesis pathways with confidence scores
    * - **Step Editing**
@@ -273,7 +288,7 @@ Common Parameters
      - string
      - 
      - ``claude3``
-     - LLM model: ``claude3``, ``claude37``, ``deepseek``, ``gpt4o``
+     - LLM model: ``claude3``, ``claude37``, ``claude4``, ``deepseek``
    * - ``advanced_prompt``
      - boolean
      - 

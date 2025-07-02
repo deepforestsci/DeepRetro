@@ -39,6 +39,9 @@ Model Configuration
    * - Claude 3.7 Sonnet
      - ``claude37``
      - ``anthropic/claude-3-7-sonnet-20250219``
+   * - Claude 4 Sonnet
+     - ``claude4``
+     - ``claude-4-sonnet-20250514``
    * - DeepSeek-R1
      - ``deepseek``
      - ``fireworks_ai/accounts/fireworks/models/deepseek-r1``

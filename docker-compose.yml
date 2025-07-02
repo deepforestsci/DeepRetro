@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  recursive-llm:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - API_KEY=${API_KEY:-default-test-key}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - FIREWORKS_API_KEY=${FIREWORKS_API_KEY}
+      - ENABLE_LOGGING=${ENABLE_LOGGING:-true}
+    volumes:
+      - ./logs:/app/logs
+      - ./cache_api:/app/cache_api
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s 

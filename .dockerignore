@@ -1,0 +1,76 @@
+# Git and version control
+.git/
+.gitignore
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+nohup.out
+
+# Cache directories
+cache_*/
+cache_api/
+cache_api_new/
+
+# Test files
+tests/
+htmlcov/
+.coverage
+.pytest_cache/
+
+# Documentation
+docs/
+*.md
+!readme.md
+
+# Data files (keep only essential ones)
+data/*.csv
+!data/basic_mols.csv
+
+# Model files (will be downloaded at runtime if needed)
+aizynthfinder/
+pistachio/
+
+# Environment files
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Jupyter notebooks
+*.ipynb
+
+# Results
+results/
+
+# Node modules (if any)
+node_modules/
+
+# Build artifacts
+dist/
+build/ 
