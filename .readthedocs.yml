@@ -20,9 +20,6 @@ formats:
   - pdf
   - epub
 
-# Build documentation for these branches
-branches:
-  - main
 
 # Build documentation for these tags
 tags:
