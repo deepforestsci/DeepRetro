@@ -223,6 +223,12 @@
                         <option value="deepseek" ${
                           defaults.model_type === "deepseek" ? "selected" : ""
                         }>DeepSeek</option>
+                        <option value="claude4opus" ${
+                          defaults.model_type === "claude4opus" ? "selected" : ""
+                        }>Claude 4 Opus</option>
+                        <option value="claude4sonnet" ${
+                          defaults.model_type === "claude4sonnet" ? "selected" : ""
+                        }>Claude 4 Sonnet</option>
                     </select>
                 `;
           serverDiv.appendChild(modelTypeRow);

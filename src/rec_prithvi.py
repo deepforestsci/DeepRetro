@@ -7,7 +7,7 @@ from src.utils.job_context import logger as context_logger
 
 def rec_run_prithvi(molecule: str,
                     job_id: str,
-                    llm: str = "claude-3-opus-20240229",
+                    llm: str = "claude-opus-4-20250514",
                     az_model: str = "USPTO",
                     stability_flag: str = "False",
                     hallucination_check: str = "False") -> tuple[dict, bool]:
@@ -20,7 +20,7 @@ def rec_run_prithvi(molecule: str,
     job_id : str
         Job ID
     llm : str, optional
-        LLM to be used, by default "claude-3-opus-20240229"
+        LLM to be used, by default "claude-opus-4-20250514"
 
     Returns
     -------

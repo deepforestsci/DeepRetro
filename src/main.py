@@ -22,7 +22,7 @@ load_dotenv()
 
 
 def main(smiles: str,
-         llm: str = "claude-3-opus-20240229",
+         llm: str = "claude-opus-4-20250514",
          az_model: str = "USPTO",
          stability_flag: str = "False",
          hallucination_check: str = "False") -> Any:
@@ -33,7 +33,7 @@ def main(smiles: str,
     smiles : str
         SMILES string of the molecule.
     llm : str, optional
-        LLM model, by default "claude-3-opus-20240229"
+        LLM model, by default "claude-opus-4-20250514"
 
     Returns
     -------
