@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "recursiveLLM"
+version = "1.0.0"
+description = "DeepRetro: Recursive LLM for reaction prediction"
+authors = [{name = "Project Contributors"}]
+readme = "readme.md"
+requires-python = ">=3.9"
+dependencies = [
+    "anthropic",
+    "openai",
+    "langfuse",
+    "flask",
+    "numpy",
+    "pandas",
+    "rdkit-pypi",
+    "requests",
+    "boto3",
+    "azure-ai-ml",
+    "together",
+    "fireworks-ai"
+]
+
+[project.optional-dependencies]
+docs = [
+    "sphinx>=4.5.0",
+    "sphinx-rtd-theme>=1.0.0",
+    "sphinx-autodoc-typehints>=1.19.5",
+    "myst-parser>=0.18.0"
+]
+
+[project.urls]
+Documentation = "https://recursiveLLM.readthedocs.io/"
+Repository = "https://github.com/yourusername/recursiveLLM"
+
+[tool.setuptools.packages.find]
+where = ["src"] 
