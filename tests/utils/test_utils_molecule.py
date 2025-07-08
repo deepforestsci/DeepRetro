@@ -171,6 +171,33 @@ def test_get_reaction_type(mock_compute_fingerprint, mock_load):
         mock_model.predict.assert_called_once()
 
 
+# Test for get_reaction_type function with FileNotFoundError
+@mock.patch('src.utils.utils_molecule.joblib.load')
+def test_get_reaction_type_file_not_found(mock_load):
+    # Configure mocks to simulate FileNotFoundError
+    mock_load.side_effect = FileNotFoundError("Model file not found")
+    
+    reaction_name, reaction_type = utils_molecule.get_reaction_type("C1", "C2", "model_path")
+    
+    assert reaction_name == 'Unknown Reaction'
+    assert reaction_type == -1
+    mock_load.assert_called_once_with("model_path")
+
+
+# Test for get_reaction_type function with other exception
+@mock.patch('src.utils.utils_molecule.joblib.load')
+@mock.patch('src.utils.utils_molecule.compute_fingerprint')
+def test_get_reaction_type_exception(mock_compute_fingerprint, mock_load):
+    # Configure mocks to simulate exception
+    mock_load.return_value = mock.MagicMock()
+    mock_compute_fingerprint.side_effect = Exception("Test exception")
+    
+    reaction_name, reaction_type = utils_molecule.get_reaction_type("C1", "C2", "model_path")
+    
+    assert reaction_name == 'Unknown Reaction'
+    assert reaction_type == -1
+
+
 # Test for calc_confidence_estimate function
 def test_calc_confidence_estimate():
     # Test with probability < 0.3
@@ -210,6 +237,30 @@ def test_calc_scalability_index(mock_get_reaction_type):
         
         assert result == '5'
         mock_get_reaction_type.assert_called_once_with("C1", "C2", utils_molecule.RXN_CLASSIFICATION_MODEL_PATH)
+
+
+# Test for calc_scalability_index function with model not found
+@mock.patch('src.utils.utils_molecule.get_reaction_type')
+def test_calc_scalability_index_model_not_found(mock_get_reaction_type):
+    # Configure mocks to simulate model not found
+    mock_get_reaction_type.return_value = ('Unknown Reaction', -1)
+    
+    result = utils_molecule.calc_scalability_index("C1", "C2")
+    
+    assert result == 'N/A'
+    mock_get_reaction_type.assert_called_once_with("C1", "C2", utils_molecule.RXN_CLASSIFICATION_MODEL_PATH)
+
+
+# Test for calc_scalability_index function with exception
+@mock.patch('src.utils.utils_molecule.get_reaction_type')
+def test_calc_scalability_index_exception(mock_get_reaction_type):
+    # Configure mocks to simulate exception
+    mock_get_reaction_type.side_effect = Exception("Test exception")
+    
+    result = utils_molecule.calc_scalability_index("C1", "C2")
+    
+    assert result == 'N/A'
+    mock_get_reaction_type.assert_called_once_with("C1", "C2", utils_molecule.RXN_CLASSIFICATION_MODEL_PATH)
 
 
 # Test for calc_yield function
