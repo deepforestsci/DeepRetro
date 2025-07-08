@@ -1,7 +1,7 @@
 Installation Guide
 =================
 
-Quick setup for RecursiveLLM.
+Quick setup for DeepRetro.
 
 Prerequisites
 -------------
@@ -60,14 +60,14 @@ Installation Steps
    .. code-block:: bash
 
       git clone <repository-url>
-      cd recursiveLLM
+      cd DeepRetro
 
 2. **Create environment:**
 
    .. code-block:: bash
 
       conda env create -f environment.yml
-      conda activate dfs_si_challenge
+      conda activate deepretro
 
 3. **Download models:**
 

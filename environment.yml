@@ -1,4 +1,4 @@
-name: dfs_si_challenge
+name: deepretro
 channels:
   - defaults
   - conda-forge

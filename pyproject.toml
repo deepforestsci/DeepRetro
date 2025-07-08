@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "recursiveLLM"
-version = "1.0.0"
+name = "DeepRetro"
+version = "0.0.1"
 description = "DeepRetro: Recursive LLM for reaction prediction"
 authors = [{name = "Project Contributors"}]
 readme = "readme.md"
@@ -33,8 +33,8 @@ docs = [
 ]
 
 [project.urls]
-Documentation = "https://recursiveLLM.readthedocs.io/"
-Repository = "https://github.com/yourusername/recursiveLLM"
+Documentation = "https://DeepRetro.readthedocs.io/"
+Repository = "https://github.com/deepforestsci/DeepRetro"
 
 [tool.setuptools.packages.find]
 where = ["src"] 

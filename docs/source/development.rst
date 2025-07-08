@@ -1,7 +1,7 @@
 Development Guide
 =================
 
-Essential information for developing RecursiveLLM.
+Essential information for developing DeepRetro.
 
 Setup
 -----
@@ -9,9 +9,9 @@ Setup
 .. code-block:: bash
 
    git clone <repository-url>
-   cd recursiveLLM
+   cd DeepRetro
    conda env create -f environment.yml
-   conda activate dfs_si_challenge
+   conda activate deepretro
    pip install -r tests/requirements_tests.txt
 
 Project Structure
@@ -19,7 +19,7 @@ Project Structure
 
 .. code-block:: text
 
-   recursiveLLM/
+   DeepRetro/
    ├── src/                    # Main source code
    │   ├── api.py             # Flask API server (main entry point)
    │   ├── main.py            # Core retrosynthesis function

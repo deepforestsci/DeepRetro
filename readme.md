@@ -117,11 +117,11 @@ docker-compose up --build -d
 
 ```bash
 git clone <repository-url>
-cd recursiveLLM
+cd DeepRetro
 
 # Create conda environment
 conda env create -f environment.yml
-conda activate dfs_si_challenge
+conda activate deepretro
 ```
 
 #### Step 2: Install Models (Local Development Only)

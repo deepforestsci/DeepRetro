@@ -1,4 +1,4 @@
 #!/bin/bash
 
-# conda activate dfs_si_challenge
+# conda activate deepretro
 python src/api.py

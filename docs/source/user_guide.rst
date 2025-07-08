@@ -1,7 +1,7 @@
 User Guide
 ==========
 
-Complete guide for using RecursiveLLM effectively for retrosynthesis analysis.
+Complete guide for using DeepRetro effectively for retrosynthesis analysis.
 
 Quick Start
 -----------
@@ -81,7 +81,7 @@ API Parameters
      - string
      - 
      - ``claude3``
-     - LLM model: ``claude3``, ``claude37``, ``claude4``, ``deepseek``
+     - LLM model: ``claude3``, ``claude37``, ``deepseek``, ``claude4opus``
    * - ``advanced_prompt``
      - boolean
      - 
@@ -125,10 +125,10 @@ LLM Models
      - ``claude37``
      - Hybrid reasoning
      - ``anthropic/claude-3-7-sonnet-20250219``
-   * - **Claude 4 Sonnet**
-     - ``claude4``
-     - Latest reasoning
-     - ``claude-4-sonnet-20250514``
+   * - **Claude 4 Opus**
+     - ``claude4opus``
+     - High quality results
+     - ``claude-4-opus-20250219``
    * - **DeepSeek-R1**
      - ``deepseek``
      - Cost-effective analysis
@@ -303,7 +303,7 @@ Error Response
 Web Interface
 -------------
 
-The web interface provides an intuitive way to interact with RecursiveLLM:
+The web interface provides an intuitive way to interact with DeepRetro:
 
 Features
 ~~~~~~~~
