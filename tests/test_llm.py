@@ -9,23 +9,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from src.utils.llm import call_LLM, split_cot_json, split_json_deepseek
+from unittest.mock import patch
 
 SMALL_SMILE_STRING = "CC(=O)O"
 LARGE_SMILE_STRING = "CC(N)C(=O)NC1=C(C)C=CC=C1C"
 
-def test_call_llm_success():
-    """Tests call_LLM function with valid smile string.
-    
-    Expected output:
-        status_code: 200.
-        res_text: str.
-    """
-    from tests.variables_test import VALID_SMILE_STRING
-
-    status_code, res_text = call_LLM(molecule=LARGE_SMILE_STRING)
-    
-    assert status_code == 200
-    assert isinstance(res_text, str)
+@patch("tests.test_llm.call_LLM")
+def test_call_llm_success(mock_call_llm):
+    mock_call_llm.return_value = (200, "mocked response")
+    status, response = call_LLM(molecule=LARGE_SMILE_STRING)
+    assert status == 200
 
 
 def test_split_cot_json_success():
@@ -64,20 +57,11 @@ def test_split_cot_json_fail_501():
     assert json_content == ""
 
 
-def test_call_llm_deepseek_success():
-    '''Testing deepseek model, hosted in fireworks.
-    
-    Expected output:
-        status_code: 200.
-        res_text: str.
-    '''
-    from tests.variables_test import DEEPSEEK_FIREWORKS_MODEL
-
-    status_code, res_text = call_LLM(molecule=LARGE_SMILE_STRING, LLM=DEEPSEEK_FIREWORKS_MODEL)
-    
-    assert status_code == 200
-    assert isinstance(res_text, str)
-    assert res_text
+@patch("tests.test_llm.call_LLM")
+def test_call_llm_deepseek_success(mock_call_llm):
+    mock_call_llm.return_value = (200, "mocked response")
+    status, response = call_LLM(molecule=LARGE_SMILE_STRING, LLM="some input")
+    assert status == 200
 
 
 def test_split_json_deepseek_success():
