@@ -21,6 +21,7 @@ COPY start_backend.sh .
 COPY .project-root .
 
 # Download USPTO models during build
+
 RUN conda run -n deepretro python -c "from aizynthfinder.utils.download_public_data import download_public_data; download_public_data('aizynthfinder/models/')"
 
 # Create necessary directories
@@ -38,7 +39,9 @@ EXPOSE 5000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+
     CMD conda run -n deepretro curl -f http://localhost:5000/api/health || exit 1
+
 
 # Set environment variables
 ENV PYTHONPATH=/app
@@ -46,4 +49,5 @@ ENV FLASK_APP=src.api
 ENV FLASK_ENV=production
 
 # Start the application using conda run (not conda activate)
+
 CMD ["conda", "run", "-n", "deepretro", "python", "src/api.py"] 
