@@ -218,3 +218,20 @@ This project is licensed under the MIT License.
 ## Contributing
 
 We welcome contributions! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+## Citing DeepRetro
+
+If you have used DeepRetrp in the course of your research, we ask that you cite the "DeepRetro: Retrosynthetic Pathway Discovery using Iterative LLM Reasoning" paper by the DeepRetro core team.
+
+To cite this paper, please use this bibtex entry:
+```
+@misc{sathyanarayana2025deepretroretrosyntheticpathwaydiscovery,
+      title={DeepRetro: Retrosynthetic Pathway Discovery using Iterative LLM Reasoning}, 
+      author={Shreyas Vinaya Sathyanarayana and Rahil Shah and Sharanabasava D. Hiremath and Rishikesh Panda and Rahul Jana and Riya Singh and Rida Irfan and Ashwin Murali and Bharath Ramsundar},
+      year={2025},
+      eprint={2507.07060},
+      archivePrefix={arXiv},
+      primaryClass={q-bio.QM},
+      url={https://arxiv.org/abs/2507.07060}, 
+}
+```
