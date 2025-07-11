@@ -3,16 +3,55 @@ import os
 import json
 from unittest.mock import patch, ANY
 
-
 # --- Minimal change for CI: Start ---
 # Store original API_KEY if it exists and set a specific one for tests
 _ORIGINAL_API_KEY_ENV = os.environ.get('API_KEY')
 _TEST_API_KEY = "test_api_key_for_ci_12345"
 os.environ['API_KEY'] = _TEST_API_KEY
+
+# Mock the config loading for tests
+_TEST_CONFIG = {
+    "llm_models": {
+        "claude3": {
+            "internal_name": "claude-3-opus-20240229",
+            "display_name": "Claude 3 Opus",
+            "supports_advanced_prompt": True,
+            "supports_stability_check": True,
+            "supports_hallucination_check": True
+        },
+        "claude37": {
+            "internal_name": "anthropic/claude-3-7-sonnet-20250219",
+            "display_name": "Claude 3.7 Sonnet",
+            "supports_advanced_prompt": True,
+            "supports_stability_check": True,
+            "supports_hallucination_check": True
+        },
+        "deepseek": {
+            "internal_name": "fireworks_ai/accounts/fireworks/models/deepseek-r1",
+            "display_name": "DeepSeek",
+            "supports_advanced_prompt": True,
+            "supports_stability_check": True,
+            "supports_hallucination_check": True
+        }
+    },
+    "az_models": {
+        "USPTO": {"display_name": "USPTO"},
+        "Pistachio_100+": {"display_name": "Pistachio (100+)"}
+    },
+    "defaults": {
+        "model_type": "claude3",
+        "advanced_prompt": False,
+        "model_version": "USPTO",
+        "stability_flag": False,
+        "hallucination_check": False
+    }
+}
+
+# Mock the config loading before importing the API
+with patch('src.api.advanced_config', _TEST_CONFIG):
+    from src.api import app, save_result, load_result, PARTIAL_JSON_PATH, API_KEY
 # --- Minimal change for CI: End ---
 
-
-from src.api import app, save_result, load_result, PARTIAL_JSON_PATH, API_KEY
 
 class TestApiFunctions(unittest.TestCase):
 
