@@ -89,10 +89,3 @@ Why DeepRetro?
    api_reference
    development
    contributing
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search` 
