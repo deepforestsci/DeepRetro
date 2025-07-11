@@ -19,7 +19,8 @@ from src.cache import clear_cache_for_molecule
 from src.variables import AZ_MODEL_LIST
 
 # Load advanced settings config once at startup
-with open('config/advanced_settings.json') as f:
+config_path = os.path.join(root_dir, 'config', 'advanced_settings.json')
+with open(config_path) as f:
     advanced_config = json.load(f)
 
 app = Flask(__name__)
