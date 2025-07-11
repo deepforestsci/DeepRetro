@@ -186,21 +186,20 @@ class TestApiFunctions(unittest.TestCase):
             'smiles': smiles_input,
             'model_type': 'deepseek',
             'advanced_prompt': 'True', # String 'True'
-            'model_version': 'gsk',
+            'model_version': 'Pistachio_100+',
             'stability_flag': 'True',
             'hallucination_check': 'True'
         }
         
-        with patch('src.api.AZ_MODEL_LIST', ["USPTO", "gsk", "pistachio"]):
-            response = self.client.post('/api/retrosynthesis',
-                                         headers={'X-API-KEY': self.api_key},
-                                         json=payload)
+        response = self.client.post('/api/retrosynthesis',
+                                     headers={'X-API-KEY': self.api_key},
+                                     json=payload)
         
         self.assertEqual(response.status_code, 200)
         mock_main.assert_called_once_with(
             smiles=smiles_input,
             llm="fireworks_ai/accounts/fireworks/models/deepseek-r1:adv", 
-            az_model="gsk", # Expect 'gsk' as it's now valid
+            az_model="Pistachio_100+",
             stability_flag="True",
             hallucination_check="True"
         )
@@ -215,45 +214,46 @@ class TestApiFunctions(unittest.TestCase):
         
         payload = {
             'smiles': smiles_input,
-            'model_type': 'invalid_model_type' 
+            'model_type': 'invalid_model_type'  # Invalid model type
         }
         
         response = self.client.post('/api/retrosynthesis',
                                      headers={'X-API-KEY': self.api_key},
                                      json=payload)
         
-        self.assertEqual(response.status_code, 200)
-        mock_main.assert_called_once_with(
-            smiles=smiles_input,
-            llm="claude-3-opus-20240229", 
-            az_model="USPTO",
-            stability_flag="False",
-            hallucination_check="False"
-        )
-        mock_save_result.assert_called_once_with(smiles_input, mock_main.return_value)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Unsupported model type", response.json['error'])
+        mock_main.assert_not_called()
 
     @patch('src.api.save_result') # Added to avoid UnboundLocalError if main fails before save_result is defined
     @patch('src.api.main')
     @patch('src.api.Chem.MolFromSmiles', return_value=True)
     def test_retrosynthesis_advanced_prompt_false_string(self, mock_mol_from_smiles, mock_main, mock_save_result):
-        mock_main.return_value = {"result": "data"}
-        smiles_input = "CCN"
+        mock_main.return_value = {"false_advanced_result": "data"}
+        smiles_input = "CCN(CC)C(=O)c1ccccc1"
+        
         payload = {
             'smiles': smiles_input,
             'model_type': 'claude3',
-            'advanced_prompt': 'false' # String "false"
+            'advanced_prompt': 'False',  # String 'False'
+            'model_version': 'USPTO',
+            'stability_flag': 'False',
+            'hallucination_check': 'False'
         }
+        
         response = self.client.post('/api/retrosynthesis',
                                      headers={'X-API-KEY': self.api_key},
                                      json=payload)
+        
         self.assertEqual(response.status_code, 200)
         mock_main.assert_called_once_with(
             smiles=smiles_input,
-            llm="claude-3-opus-20240229:adv", # :adv WILL be appended by current API logic
+            llm="claude-3-opus-20240229", # No :adv since advanced_prompt is false
             az_model="USPTO",
             stability_flag="False",
             hallucination_check="False"
         )
+        mock_save_result.assert_called_once_with(smiles_input, mock_main.return_value)
 
     @patch('src.api.save_result')
     @patch('src.api.main')

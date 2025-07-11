@@ -18,6 +18,10 @@ from src.main import main
 from src.cache import clear_cache_for_molecule
 from src.variables import AZ_MODEL_LIST
 
+# Load advanced settings config once at startup
+with open('config/advanced_settings.json') as f:
+    advanced_config = json.load(f)
+
 app = Flask(__name__)
 CORS(app)
 
@@ -102,107 +106,56 @@ def retrosynthesis_api():
     data = request.get_json()
     if not data or 'smiles' not in data:
         return jsonify({
-            "error":
-            "SMILES string is required. Please include a 'smiles' field"
+            "error": "SMILES string is required. Please include a 'smiles' field"
         }), 400
 
     smiles = data['smiles']
-
-    # Check if the SMILES string is valid
     if not Chem.MolFromSmiles(smiles):
         return jsonify({"error": "Invalid SMILES string"}), 400
 
-    # -----------------
-    # Advanced model - DeepSeek-R1
-    model_type = "claude3"  # Default is Claude 3 Opus
-    try:
-        if 'model_type' in data:
-            model_type = data['model_type'].lower()
-            assert model_type in ["claude3", "claude37", "deepseek"]
-            print(f"USING MODEL TYPE: {model_type}")
-    except Exception as e:
-        print(f"Error processing model type: {e}")
-        model_type = "claude3"
-        print(f"FALLING BACK TO DEFAULT MODEL TYPE: {model_type}")
+    defaults = advanced_config['defaults']
+    model_type = data.get('model_type', defaults['model_type'])
+    if model_type not in advanced_config['llm_models']:
+        return jsonify({"error": f"Unsupported model type: {model_type}"}), 400
+    model_config = advanced_config['llm_models'][model_type]
+    llm = model_config['internal_name']
 
-    # Select the appropriate LLM based on model_type
-    if model_type == "deepseek":
-        llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
-    elif model_type == "claude37":
-        llm = "anthropic/claude-3-7-sonnet-20250219"
-    elif model_type == "claude4opus":
-        llm = "anthropic/claude-opus-4-20250514"
-    elif model_type == "claude4sonnet":
-        llm = "anthropic/claude-sonnet-4-20250514"
-    else:  # Default to Claude 3 Opus
-        llm = "claude-3-opus-20240229"
-
-    # -----------------
-    # Advanced Prompt - To use the more guardrails prompt
-    advanced_prompt = False
-    try:
-        if 'advanced_prompt' in data:
-            advanced_prompt = data['advanced_prompt']
-            if advanced_prompt.lower() == "true":
-                advanced_prompt = True
-    except Exception as e:
-        print(f"Error processing advanced prompt: {e}")
+    advanced_prompt = data.get('advanced_prompt', defaults['advanced_prompt'])
+    if isinstance(advanced_prompt, str):
+        advanced_prompt = advanced_prompt.lower() == "true"
+    if advanced_prompt and not model_config['supports_advanced_prompt']:
         advanced_prompt = False
-
     if advanced_prompt:
-        llm = llm + ":adv"
+        llm += ":adv"
 
-    # -----------------
-    # Choose AiZynthFinder model
-    az_model = "USPTO"
+    az_model = data.get('model_version', defaults['model_version'])
+    if az_model not in advanced_config['az_models']:
+        return jsonify({"error": f"Unsupported AZ model: {az_model}"}), 400
+
+    stability_flag = data.get('stability_flag', defaults['stability_flag'])
+    if isinstance(stability_flag, str):
+        stability_flag = stability_flag.lower() == "true"
+    if stability_flag and not model_config['supports_stability_check']:
+        stability_flag = False
+
+    hallucination_check = data.get('hallucination_check', defaults['hallucination_check'])
+    if isinstance(hallucination_check, str):
+        hallucination_check = hallucination_check.lower() == "true"
+    if hallucination_check and not model_config['supports_hallucination_check']:
+        hallucination_check = False
+
     try:
-        if 'model_version' in data:
-            az_model = data['model_version']
-            assert az_model in AZ_MODEL_LIST
-    except Exception as e:
-        print(f"Error processing model version: {e}")
-        az_model = "USPTO"
-
-    # -----------------
-    # Stability check flag
-    stability_flag = "False"
-    try:
-        if 'stability_flag' in data:
-            stability_flag = data['stability_flag']
-            assert stability_flag.lower() in ["false", "true"]
-    except Exception as e:
-        print(f"Error processing stability flag: {e}")
-        stability_flag = "False"
-
-    # -----------------
-    # Hallucination check flag
-    hallucination_check = "False"
-    try:
-        if 'hallucination_check' in data:
-            hallucination_check = data['hallucination_check']
-            assert hallucination_check.lower() in ["false", "true"]
-    except Exception as e:
-        print(f"Error processing hallucination check: {e}")
-        hallucination_check = "False"
-
-    # -----------------
-    # Run retrosynthesis
-    try:
-        # Run retrosynthesis
-        result = main(smiles=smiles,
-                      llm=llm,
-                      az_model=az_model,
-                      stability_flag=stability_flag,
-                      hallucination_check=hallucination_check)
-
-        # Store the result in partial.json
+        result = main(
+            smiles=smiles,
+            llm=llm,
+            az_model=az_model,
+            stability_flag=str(stability_flag),
+            hallucination_check=str(hallucination_check)
+        )
         save_result(smiles, result)
     except Exception as e:
         print(e)
-        return jsonify(
-            {"error":
-             f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500
-
+        return jsonify({"error": f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500
     return jsonify(result), 200
 
 

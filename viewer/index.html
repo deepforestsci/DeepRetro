@@ -140,6 +140,55 @@
       // For testing: Uncomment the line below to see the loaded/entered API_KEY
       console.log("DEBUG (index.html): API_KEY from localStorage/prompt: ", apiKey);
 
+      let advancedConfig = null;
+
+      async function loadAdvancedConfig() {
+          const response = await fetch('/config/advanced_settings.json');
+          advancedConfig = await response.json();
+          populateModelDropdowns();
+      }
+
+      function populateModelDropdowns() {
+          // For each server instance
+          config.instances.forEach((instance, index) => {
+              const serverNum = index + 1;
+              // LLM model dropdown
+              const modelTypeSelect = document.getElementById(`modelType${serverNum}`);
+              if (modelTypeSelect) {
+                  modelTypeSelect.innerHTML = '';
+                  Object.keys(advancedConfig.llm_models).forEach(modelType => {
+                      const model = advancedConfig.llm_models[modelType];
+                      const option = document.createElement('option');
+                      option.value = modelType;
+                      option.textContent = model.display_name;
+                      if (instance.defaults.model_type === modelType) option.selected = true;
+                      modelTypeSelect.appendChild(option);
+                  });
+              }
+              // AZ model dropdown
+              const modelVersionSelect = document.getElementById(`modelVersion${serverNum}`);
+              if (modelVersionSelect) {
+                  modelVersionSelect.innerHTML = '';
+                  Object.keys(advancedConfig.az_models).forEach(modelVersion => {
+                      const model = advancedConfig.az_models[modelVersion];
+                      const option = document.createElement('option');
+                      option.value = modelVersion;
+                      option.textContent = model.display_name;
+                      if (instance.defaults.model_version === modelVersion) option.selected = true;
+                      modelVersionSelect.appendChild(option);
+                  });
+              }
+          });
+      }
+
+      function updateFeatureToggles(serverNum) {
+          const selectedModel = document.getElementById(`modelType${serverNum}`).value;
+          const modelConfig = advancedConfig.llm_models[selectedModel];
+          document.getElementById(`promptToggle${serverNum}`).disabled = !modelConfig.supports_advanced_prompt;
+          document.getElementById(`stabilityToggle${serverNum}`).disabled = !modelConfig.supports_stability_check;
+          document.getElementById(`hallucinationToggle${serverNum}`).disabled = !modelConfig.supports_hallucination_check;
+      }
+
       /**
        * Initializes server settings UI based on configuration
        * Creates controls for each server instance including:
