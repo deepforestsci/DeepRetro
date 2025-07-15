@@ -4,20 +4,20 @@ VALID_SMILE_STRING = 'CC(=O)CC'
 # Claude model
 CLAUDE_MODEL = "claude-3-opus-20240229"
 
-CLAUDE_ADV_MODEL = "claude-3-opus-20240229:adv"
-
 # OpenAI model
 OPENAI_MODEL = "gpt-4o"
 
-OPENAI_ADV_MODEL = "gpt-4o:adv"
+OPENAI_ADV_MODEL = "gpt-4o"
 
 # Deepseek model
-DEEPSEEK_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1"
+DEEPSEEK_DEEPINFRA_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1"
 
-DEEPSEEK_ADV_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1:adv"
+DEEPSEEK_FIREWORKS_MODEL = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
 
-DEEPSEEK_FIREWORKS_MODEL = "fireworks_ai/accounts/fireworks/models/deepseek-r1:adv"
+# AZ Model
+USPTO_MODEL = "USPTO"
 
+PISTACHIO_MODEL = "Pistachio_25"
 
 # Valid claude model response
 VALID_CLAUDE_RESPONSE = 'Here is the single-step retrosynthesis analysis for the molecule CC(=O)CC:\n\n<cot>\n<thinking>\nThe target molecule CC(=O)CC contains a ketone functional group. Possible retrosynthetic disconnections to consider are:\n1) Disconnection of the C-C bond adjacent to the ketone, which could arise from an aldol condensation reaction.\n2) Disconnection of the C-C bond on the other side of the ketone, which could come from a Grignard addition to a carboxylic acid derivative like an ester.\n3) Reduction of the ketone to an alcohol, which could then be derived from an oxidation of the corresponding secondary alcohol.\n</thinking>\n\n<thinking>\nFor the aldol disconnection, the precursors would be acetone (CC(=O)C) and acetaldehyde (CC=O). The reaction would proceed via enolate formation of the acetone, followed by nucleophilic addition to the acetaldehyde. A subsequent dehydration step would give the α,β-unsaturated ketone product.\n</thinking>\n\n<thinking>\nFor the Grignard addition, the precursors would be propanoyl chloride (CCC(=O)Cl) and methylmagnesium bromide (CMgBr). The Grignard reagent would add to the carbonyl, followed by an acidic workup to give the final ketone product.  \n</thinking>\n\n<thinking>\nFor the alcohol reduction, the precursor would be butan-2-ol (CC(O)CC). Oxidation, potentially using a chromium reagent like pyridinium chlorochromate (PCC) or a Swern oxidation, would convert the secondary alcohol to the ketone.\n</thinking>\n\n</cot>\n\n<json>\n{\n  "data": [\n    ["CC(=O)C", "CC=O"],\n    ["CCC(=O)Cl", "CMgBr"],\n    ["CC(O)CC"]\n  ],\n  "explanation": [\n    "Aldol condensation of acetone and acetaldehyde, proceeding via enolate formation, nucleophilic addition, and dehydration",\n    "Grignard addition of methylmagnesium bromide to propanoyl chloride, followed by acidic workup",\n    "Oxidation of butan-2-ol, e.g. using PCC or Swern conditions"\n  ],\n  "confidence_scores": [\n    0.9,\n    0.7,\n    0.8\n  ]\n}\n</json>'
@@ -37,7 +37,6 @@ COT_AND_THINKING_VALID_CLAUDE_RESPONSE = 'Here is the single-step retrosynthesis
 JSON_TAG_MISSING_CLAUDE_RESPONSE = 'Here is the single-step retrosynthesis analysis for the molecule CC(=O)CC:\n\n<cot>\n<thinking>\nThe target molecule CC(=O)CC contains a ketone functional group. Possible retrosynthetic disconnections to consider are:\n1) Disconnection of the C-C bond adjacent to the ketone, which could arise from an aldol condensation reaction.\n2) Disconnection of the C-C bond on the other side of the ketone, which could come from a Grignard addition to a carboxylic acid derivative like an ester.\n3) Reduction of the ketone to an alcohol, which could then be derived from an oxidation of the corresponding secondary alcohol.\n</thinking>\n\n<thinking>\nFor the aldol disconnection, the precursors would be acetone (CC(=O)C) and acetaldehyde (CC=O). The reaction would proceed via enolate formation of the acetone, followed by nucleophilic addition to the acetaldehyde. A subsequent dehydration step would give the α,β-unsaturated ketone product.\n</thinking>\n\n<thinking>\nFor the Grignard addition, the precursors would be propanoyl chloride (CCC(=O)Cl) and methylmagnesium bromide (CMgBr). The Grignard reagent would add to the carbonyl, followed by an acidic workup to give the final ketone product.  \n</thinking>\n\n<thinking>\nFor the alcohol reduction, the precursor would be butan-2-ol (CC(O)CC). Oxidation, potentially using a chromium reagent like pyridinium chlorochromate (PCC) or a Swern oxidation, would convert the secondary alcohol to the ketone.\n</thinking>\n\n</cot>\n{\n  "data": [\n    ["CC(=O)C", "CC=O"],\n    ["CCC(=O)Cl", "CMgBr"],\n    ["CC(O)CC"]\n  ],\n  "explanation": [\n    "Aldol condensation of acetone and acetaldehyde, proceeding via enolate formation, nucleophilic addition, and dehydration",\n    "Grignard addition of methylmagnesium bromide to propanoyl chloride, followed by acidic workup",\n    "Oxidation of butan-2-ol, e.g. using PCC or Swern conditions"\n  ],\n  "confidence_scores": [\n    0.9,\n    0.7,\n    0.8\n  ]\n}\n'
 
 EMPTY_JSON_BODY_RESPONSE = 'Here is the single-step retrosynthesis analysis for the molecule CC(=O)CC:\n\n<cot>\n<thinking>\nThe target molecule CC(=O)CC contains a ketone functional group. Possible retrosynthetic disconnections to consider are:\n1) Disconnection of the C-C bond adjacent to the ketone, which could arise from an aldol condensation reaction.\n2) Disconnection of the C-C bond on the other side of the ketone, which could come from a Grignard addition to a carboxylic acid derivative like an ester.\n3) Reduction of the ketone to an alcohol, which could then be derived from an oxidation of the corresponding secondary alcohol.\n</thinking>\n\n<thinking>\nFor the aldol disconnection, the precursors would be acetone (CC(=O)C) and acetaldehyde (CC=O). The reaction would proceed via enolate formation of the acetone, followed by nucleophilic addition to the acetaldehyde. A subsequent dehydration step would give the α,β-unsaturated ketone product.\n</thinking>\n\n<thinking>\nFor the Grignard addition, the precursors would be propanoyl chloride (CCC(=O)Cl) and methylmagnesium bromide (CMgBr). The Grignard reagent would add to the carbonyl, followed by an acidic workup to give the final ketone product.  \n</thinking>\n\n<thinking>\nFor the alcohol reduction, the precursor would be butan-2-ol (CC(O)CC). Oxidation, potentially using a chromium reagent like pyridinium chlorochromate (PCC) or a Swern oxidation, would convert the secondary alcohol to the ketone.\n</thinking>\n\n</cot>\n\n<json></json>'
-
 
 # Advance prompt vars
 CLAUDE_ADV_VALID_RESPONSE = '''<cot>
@@ -160,7 +159,6 @@ The proposed routes balance strategic elegance with practical considerations. Th
 </json>
 '''
 
-
 CLAUDE_ADV_RESPONSE_COT_TAG_MISSING = '''
 <thinking type="initial_assessment">
 The target molecule CC(=O)CC has the following structural features:
@@ -281,7 +279,6 @@ The proposed routes balance strategic elegance with practical considerations. Th
 </json>
 '''
 
-
 CLAUDE_ADV_RESPONSE_THINKING_TAG_MISSING = '''<cot>
 The target molecule CC(=O)CC has the following structural features:
 - Linear 4-carbon chain 
@@ -393,7 +390,6 @@ The proposed routes balance strategic elegance with practical considerations. Th
 }
 </json>
 '''
-
 
 CLAUDE_ADV_RESPONSE_COT_BODY_MISSING = '''<cot>
 </cot>
@@ -676,3 +672,15 @@ MOLS_SMALL = {
     "Sulfadiazine": "NC1=CC=C(C=C1)S(=O)(=O)NC1=NC=CC=N1",
     "Phenprocoumon": "CCC(C1=CC=CC=C1)C1=C(O)C2=C(OC1=O)C=CC=C2",
 }
+
+BASE_URL = "http://ec2-18-220-15-234.us-east-2.compute.amazonaws.com:5000"
+
+ENDPOINTS = {
+    "retrosynthesis": "/api/retrosynthesis",
+    "rerun_retro": "/api/rerun_retrosynthesis",
+    "health": "/api/health"
+}
+
+MOLECULE_1 = "COC1=CC(C(O)C(C)N)=C(OC)C=C1"
+
+X_API_KEY = "your-secure-api-key"
