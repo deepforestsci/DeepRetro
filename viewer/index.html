@@ -140,6 +140,55 @@
       // For testing: Uncomment the line below to see the loaded/entered API_KEY
       console.log("DEBUG (index.html): API_KEY from localStorage/prompt: ", apiKey);
 
+      let advancedConfig = null;
+
+      async function loadAdvancedConfig() {
+          const response = await fetch('/config/advanced_settings.json');
+          advancedConfig = await response.json();
+          populateModelDropdowns();
+      }
+
+      function populateModelDropdowns() {
+          // For each server instance
+          config.instances.forEach((instance, index) => {
+              const serverNum = index + 1;
+              // LLM model dropdown
+              const modelTypeSelect = document.getElementById(`modelType${serverNum}`);
+              if (modelTypeSelect) {
+                  modelTypeSelect.innerHTML = '';
+                  Object.keys(advancedConfig.llm_models).forEach(modelType => {
+                      const model = advancedConfig.llm_models[modelType];
+                      const option = document.createElement('option');
+                      option.value = modelType;
+                      option.textContent = model.display_name;
+                      if (instance.defaults.model_type === modelType) option.selected = true;
+                      modelTypeSelect.appendChild(option);
+                  });
+              }
+              // AZ model dropdown
+              const modelVersionSelect = document.getElementById(`modelVersion${serverNum}`);
+              if (modelVersionSelect) {
+                  modelVersionSelect.innerHTML = '';
+                  Object.keys(advancedConfig.az_models).forEach(modelVersion => {
+                      const model = advancedConfig.az_models[modelVersion];
+                      const option = document.createElement('option');
+                      option.value = modelVersion;
+                      option.textContent = model.display_name;
+                      if (instance.defaults.model_version === modelVersion) option.selected = true;
+                      modelVersionSelect.appendChild(option);
+                  });
+              }
+          });
+      }
+
+      function updateFeatureToggles(serverNum) {
+          const selectedModel = document.getElementById(`modelType${serverNum}`).value;
+          const modelConfig = advancedConfig.llm_models[selectedModel];
+          document.getElementById(`promptToggle${serverNum}`).disabled = !modelConfig.supports_advanced_prompt;
+          document.getElementById(`stabilityToggle${serverNum}`).disabled = !modelConfig.supports_stability_check;
+          document.getElementById(`hallucinationToggle${serverNum}`).disabled = !modelConfig.supports_hallucination_check;
+      }
+
       /**
        * Initializes server settings UI based on configuration
        * Creates controls for each server instance including:
@@ -178,32 +227,30 @@
           // Create the model version selection
           const modelRow = document.createElement("div");
           modelRow.className = "toggle-row";
+          
+          // Build dynamic AZ model options from config
+          let azOptions = '';
+          if (advancedConfig && advancedConfig.az_models) {
+            Object.keys(advancedConfig.az_models).forEach(modelVersion => {
+              const model = advancedConfig.az_models[modelVersion];
+              const selected = defaults.model_version === modelVersion ? "selected" : "";
+              azOptions += `<option value="${modelVersion}" ${selected}>${model.display_name}</option>`;
+            });
+          } else {
+            // Fallback to hardcoded options if config is not available
+            azOptions = `
+              <option value="USPTO" ${defaults.model_version === "USPTO" ? "selected" : ""}>USPTO</option>
+              <option value="Pistachio_25" ${defaults.model_version === "Pistachio_25" ? "selected" : ""}>Pistachio (25)</option>
+              <option value="Pistachio_50" ${defaults.model_version === "Pistachio_50" ? "selected" : ""}>Pistachio (50)</option>
+              <option value="Pistachio_100" ${defaults.model_version === "Pistachio_100" ? "selected" : ""}>Pistachio (100)</option>
+              <option value="Pistachio_100+" ${defaults.model_version === "Pistachio_100+" ? "selected" : ""}>Pistachio (100+)</option>
+            `;
+          }
+          
           modelRow.innerHTML = `
                     <label for="modelVersion${serverNum}" class="toggle-label" style="margin-right: 10px;">Model Version:</label>
                     <select id="modelVersion${serverNum}" class="model-select" data-server="${serverNum}">
-                        <option value="USPTO" ${
-                          defaults.model_version === "USPTO" ? "selected" : ""
-                        }>USPTO</option>
-                        <option value="Pistachio_25" ${
-                          defaults.model_version === "Pistachio_25"
-                            ? "selected"
-                            : ""
-                        }>Pistachio (25)</option>
-                        <option value="Pistachio_50" ${
-                          defaults.model_version === "Pistachio_50"
-                            ? "selected"
-                            : ""
-                        }>Pistachio (50)</option>
-                        <option value="Pistachio_100" ${
-                          defaults.model_version === "Pistachio_100"
-                            ? "selected"
-                            : ""
-                        }>Pistachio (100)</option>
-                        <option value="Pistachio_100+" ${
-                          defaults.model_version === "Pistachio_100+"
-                            ? "selected"
-                            : ""
-                        }>Pistachio (100+)</option>
+                        ${azOptions}
                     </select>
                 `;
           serverDiv.appendChild(modelRow);
@@ -211,24 +258,30 @@
           // Create the model type dropdown
           const modelTypeRow = document.createElement("div");
           modelTypeRow.className = "toggle-row";
+          
+          // Build dynamic LLM model options from config
+          let llmOptions = '';
+          if (advancedConfig && advancedConfig.llm_models) {
+            Object.keys(advancedConfig.llm_models).forEach(modelType => {
+              const model = advancedConfig.llm_models[modelType];
+              const selected = defaults.model_type === modelType ? "selected" : "";
+              llmOptions += `<option value="${modelType}" ${selected}>${model.display_name}</option>`;
+            });
+          } else {
+            // Fallback to hardcoded options if config is not available
+            llmOptions = `
+              <option value="claude3" ${defaults.model_type === "claude3" ? "selected" : ""}>Claude 3 Opus</option>
+              <option value="claude37" ${defaults.model_type === "claude37" ? "selected" : ""}>Claude 3.7 Sonnet</option>
+              <option value="deepseek" ${defaults.model_type === "deepseek" ? "selected" : ""}>DeepSeek</option>
+              <option value="claude4opus" ${defaults.model_type === "claude4opus" ? "selected" : ""}>Claude 4 Opus</option>
+              <option value="claude4sonnet" ${defaults.model_type === "claude4sonnet" ? "selected" : ""}>Claude 4 Sonnet</option>
+            `;
+          }
+          
           modelTypeRow.innerHTML = `
                     <label for="modelType${serverNum}" class="toggle-label" style="margin-right: 10px;">LLM Model:</label>
                     <select id="modelType${serverNum}" class="model-select" data-server="${serverNum}">
-                        <option value="claude3" ${
-                          defaults.model_type === "claude3" ? "selected" : ""
-                        }>Claude 3 Opus</option>
-                        <option value="claude37" ${
-                          defaults.model_type === "claude37" ? "selected" : ""
-                        }>Claude 3.7 Sonnet</option>
-                        <option value="deepseek" ${
-                          defaults.model_type === "deepseek" ? "selected" : ""
-                        }>DeepSeek</option>
-                        <option value="claude4opus" ${
-                          defaults.model_type === "claude4opus" ? "selected" : ""
-                        }>Claude 4 Opus</option>
-                        <option value="claude4sonnet" ${
-                          defaults.model_type === "claude4sonnet" ? "selected" : ""
-                        }>Claude 4 Sonnet</option>
+                        ${llmOptions}
                     </select>
                 `;
           serverDiv.appendChild(modelTypeRow);
@@ -292,6 +345,14 @@
 
           // Add this server's settings to the container
           container.appendChild(serverDiv);
+          
+          // Add event listeners for model type changes to update feature toggles
+          const modelTypeSelect = document.getElementById(`modelType${serverNum}`);
+          if (modelTypeSelect && advancedConfig) {
+            modelTypeSelect.addEventListener('change', () => updateFeatureToggles(serverNum));
+            // Initialize feature toggles for this server
+            updateFeatureToggles(serverNum);
+          }
         });
       }
 
@@ -1657,15 +1718,31 @@
         });
 
       // Initialize UI by hiding advanced settings by default
-      document.addEventListener("DOMContentLoaded", function () {
+      document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById("settings-content").style.display = "none";
 
-        // Initialize server settings once the config is loaded
-        if (typeof config !== "undefined" && config.instances) {
-          initializeServerSettings();
-        } else {
-          // If config isn't loaded yet, set up an event listener
-          window.addEventListener("configLoaded", initializeServerSettings);
+        // Load advanced config and initialize server settings
+        try {
+          await loadAdvancedConfig();
+          if (typeof config !== "undefined" && config.instances) {
+            initializeServerSettings();
+          } else {
+            // If config isn't loaded yet, set up an event listener
+            window.addEventListener("configLoaded", initializeServerSettings);
+          }
+        } catch (error) {
+          console.error("Failed to load advanced config:", error);
+          // Show error message to user
+          const status = document.getElementById("status");
+          if (status) {
+            status.className = "status error";
+            status.textContent = "Error: Could not load configuration. Advanced settings may not work properly.";
+            status.style.display = "block";
+          }
+          // Still initialize with fallback settings
+          if (typeof config !== "undefined" && config.instances) {
+            initializeServerSettings();
+          }
         }
       });
     </script>
