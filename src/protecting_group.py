@@ -10,6 +10,57 @@ PG_MAP = {
 
 
 def mask_protecting_groups_multisymbol(smiles: str) -> str:
+    """
+    Replace protecting groups in a SMILES string with single-character symbols.
+    
+    This function identifies and replaces common protecting groups in organic molecules
+    with simplified single-character symbols to facilitate retrosynthetic analysis.
+    The function first converts the input SMILES to canonical form, then replaces
+    protecting groups in order of decreasing length to avoid partial matches.
+    
+    Parameters
+    ----------
+    smiles : str
+        Input SMILES string representing an organic molecule. Can be any valid SMILES
+        notation, including molecules with multiple disconnected components (e.g., salts).
+        
+    Returns
+    -------
+    str
+        Modified SMILES string with protecting groups replaced by symbols:
+        
+        - 'OC' (OMe) → '$'
+        - 'COCc1ccccc1' (OBn) → '%'  
+        - 'COC' (OEt) → '&'
+        
+        Returns 'INVALID_SMILES' if the input cannot be parsed by RDKit.
+        Returns empty string if the input is an empty string.
+    
+    Examples
+    --------
+    >>> mask_protecting_groups_multisymbol("COC")
+    '&'
+    
+    >>> mask_protecting_groups_multisymbol("COCc1ccccc1")
+    '%'
+    
+    >>> mask_protecting_groups_multisymbol("CC(C)COCc1ccccc1")
+    'CC(C)%'
+    
+    >>> mask_protecting_groups_multisymbol("COC.COC")
+    '&'
+    
+    >>> mask_protecting_groups_multisymbol("invalid_smiles")
+    'INVALID_SMILES'
+    
+    >>> mask_protecting_groups_multisymbol("")
+    ''
+      
+    References
+    ----------
+    .. [1] Greene, T.W. and Wuts, P.G.M. (2006) Protective Groups in Organic Synthesis.
+           4th Edition, John Wiley & Sons, Inc., Hoboken.
+    """
     mol = Chem.MolFromSmiles(smiles)
     if mol is None:
         return "INVALID_SMILES"
@@ -24,8 +75,3 @@ def mask_protecting_groups_multisymbol(smiles: str) -> str:
     # Clean up any edge-case SMILES formatting (e.g., ".%", "$.")
     full_smiles = re.sub(r"[\.\$%&]+", lambda m: m.group(0)[0], full_smiles)
     return full_smiles
-
-
-if __name__ == "__main__":
-    erythro_smiles = "CC(C)CC1=C(C(=O)OC)C(=C(C=C1OC)OC)C2OC(C(C(O2)COC(=O)C3=C(C(=C(C(=C3C(=O)OC)OC)OC)OC)OC)OC)OC"
-    print(mask_protecting_groups_multisymbol(erythro_smiles))

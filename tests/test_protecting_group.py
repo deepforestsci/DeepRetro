@@ -283,7 +283,3 @@ class TestProtectingGroup(unittest.TestCase):
             with self.subTest(smiles=smiles):
                 result = mask_protecting_groups_multisymbol(smiles)
                 self.assertEqual(result, expected)
-
-
-if __name__ == '__main__':
-    unittest.main(verbosity=2)
