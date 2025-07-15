@@ -1,0 +1,53 @@
+{
+  "llm_models": {
+    "claude3": {
+      "internal_name": "claude-3-opus-20240229",
+      "display_name": "Claude 3 Opus",
+      "supports_advanced_prompt": true,
+      "supports_stability_check": true,
+      "supports_hallucination_check": true
+    },
+    "claude37": {
+      "internal_name": "anthropic/claude-3-7-sonnet-20250219",
+      "display_name": "Claude 3.7 Sonnet",
+      "supports_advanced_prompt": true,
+      "supports_stability_check": true,
+      "supports_hallucination_check": true
+    },
+    "deepseek": {
+      "internal_name": "fireworks_ai/accounts/fireworks/models/deepseek-r1",
+      "display_name": "DeepSeek",
+      "supports_advanced_prompt": true,
+      "supports_stability_check": true,
+      "supports_hallucination_check": true
+    },
+    "claude4opus": {
+      "internal_name": "anthropic/claude-opus-4-20250514",
+      "display_name": "Claude 4 Opus",
+      "supports_advanced_prompt": true,
+      "supports_stability_check": true,
+      "supports_hallucination_check": true
+    },
+    "claude4sonnet": {
+      "internal_name": "anthropic/claude-sonnet-4-20250514",
+      "display_name": "Claude 4 Sonnet",
+      "supports_advanced_prompt": true,
+      "supports_stability_check": true,
+      "supports_hallucination_check": true
+    }
+  },
+  "az_models": {
+    "USPTO": { "display_name": "USPTO" },
+    "Pistachio_25": { "display_name": "Pistachio (25)" },
+    "Pistachio_50": { "display_name": "Pistachio (50)" },
+    "Pistachio_100": { "display_name": "Pistachio (100)" },
+    "Pistachio_100+": { "display_name": "Pistachio (100+)" }
+  },
+  "defaults": {
+    "model_type": "claude4sonnet",
+    "advanced_prompt": false,
+    "model_version": "USPTO",
+    "stability_flag": true,
+    "hallucination_check": true
+  }
+} 
