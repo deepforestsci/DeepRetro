@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
 
 # Copy environment file and create conda environment
 COPY environment.yml .
+RUN apt-get update && apt-get install -y build-essential
 RUN conda env create -f environment.yml
 
 # Copy application code
@@ -20,9 +21,12 @@ COPY data/ ./data/
 COPY start_backend.sh .
 COPY .project-root .
 
+# Create models directory before downloading
+RUN mkdir -p aizynthfinder/models/
 # Download USPTO models during build
 
 RUN conda run -n deepretro python -c "from aizynthfinder.utils.download_public_data import download_public_data; download_public_data('aizynthfinder/models/')"
+
 
 # Create necessary directories
 RUN mkdir -p logs cache_api

@@ -130,10 +130,10 @@ conda activate deepretro
 
 ```bash
 # Create models directory
-mkdir aizynthfinder/models
+mkdir -p aizynthfinder/models
 
 # Download USPTO models (free)
-python -c "from aizynthfinder.utils.download_public_data import download_public_data; download_public_data('aizynthfinder/models/')"
+download_public_data aizynthfinder/models/
 ```
 
 #### Step 3: Configure Environment
@@ -282,6 +282,21 @@ curl -X POST \
 pip install -r tests/requirements_tests.txt
 python -m pytest tests/
 ```
+
+## Production Deployment
+
+1. **Copy the example environment file and fill in your secrets:**
+   ```sh
+   cp env.example .env
+   # Edit .env and add your real API keys and settings
+   ```
+
+2. **Run the container with your environment file:**
+   ```sh
+   docker run -d --name deepretro -p 5000:5000 --env-file .env deepretro
+   ```
+
+> **Security Note:** Never commit real secrets or API keys to your repository. Use `.env` or `--env-file` for all sensitive configuration.
 
 ## License
 

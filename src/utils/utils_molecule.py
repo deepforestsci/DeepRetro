@@ -255,11 +255,20 @@ def sub_structure_matching(target_smiles: str, query_smiles: str) -> bool:
 
 def get_reaction_type(mol1, mol2, model_path):
     """Get the reaction type of a reaction"""
-    clf = joblib.load(model_path)
-    mol1_fingerprint = compute_fingerprint(mol1)
-    mol2_fingerprint = compute_fingerprint(mol2)
-    reaction_type = clf.predict([mol1_fingerprint + mol2_fingerprint])
-    return REACTION_ENCODING_NAMES[reaction_type[0]], reaction_type[0]
+    try:
+        clf = joblib.load(model_path)
+        mol1_fingerprint = compute_fingerprint(mol1)
+        mol2_fingerprint = compute_fingerprint(mol2)
+        reaction_type = clf.predict([mol1_fingerprint + mol2_fingerprint])
+        return REACTION_ENCODING_NAMES[reaction_type[0]], reaction_type[0]
+    except FileNotFoundError:
+        # Return default values when model file is not found
+        return "Unknown Reaction", -1
+    except Exception as e:
+        # Handle other exceptions (invalid fingerprints, etc.)
+        logger = context_logger.get() if ENABLE_LOGGING else None
+        log_message(f"Error in get_reaction_type: {e}", logger)
+        return "Unknown Reaction", -1
 
 
 def calc_confidence_estimate(probability: float) -> float:
@@ -294,8 +303,16 @@ def calc_confidence_estimate(probability: float) -> float:
 
 def calc_scalability_index(mol1, mol2):
     """Calculate the scalability index of a reaction"""
-    _, type = get_reaction_type(mol1, mol2, RXN_CLASSIFICATION_MODEL_PATH)
-    return str(ENCODING_SCALABILITY[type])
+    try:
+        _, type = get_reaction_type(mol1, mol2, RXN_CLASSIFICATION_MODEL_PATH)
+        if type == -1:  # Model not found or error occurred
+            return "N/A"
+        return str(ENCODING_SCALABILITY[type])
+    except Exception as e:
+        # Handle any other exceptions
+        logger = context_logger.get() if ENABLE_LOGGING else None
+        log_message(f"Error in calc_scalability_index: {e}", logger)
+        return "N/A"
 
 
 def calc_yield(mol1, mol2):

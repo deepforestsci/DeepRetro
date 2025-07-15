@@ -53,10 +53,7 @@ Create `.env` file:
    :caption: Model download
 
    mkdir -p aizynthfinder/models
-   python -c "
-   from aizynthfinder.utils.download_public_data import download_public_data
-   download_public_data('aizynthfinder/models/')
-   "
+   download_public_data aizynthfinder/models/
 
 Quick Start
 -----------
