@@ -16,12 +16,62 @@ root_dir = rootutils.setup_root(__file__,
 load_dotenv()
 from src.main import main
 from src.cache import clear_cache_for_molecule
-from src.variables import AZ_MODEL_LIST
+
 
 # Load advanced settings config once at startup
 config_path = os.path.join(root_dir, 'config', 'advanced_settings.json')
-with open(config_path) as f:
-    advanced_config = json.load(f)
+
+def validate_config(config):
+    """Validate the advanced config structure and contents."""
+    required_keys = ['llm_models', 'az_models', 'defaults']
+    for key in required_keys:
+        if key not in config:
+            raise ValueError(f"Missing required config key: {key}")
+    
+    # Validate defaults exist in models
+    defaults = config['defaults']
+    required_defaults = ['model_type', 'advanced_prompt', 'model_version', 'stability_flag', 'hallucination_check']
+    for default_key in required_defaults:
+        if default_key not in defaults:
+            raise ValueError(f"Missing required default: {default_key}")
+    
+    # Validate default model exists in llm_models
+    default_model = defaults['model_type']
+    if default_model not in config['llm_models']:
+        raise ValueError(f"Default model '{default_model}' not found in llm_models")
+    
+    # Validate default AZ model exists in az_models
+    default_az = defaults['model_version']
+    if default_az not in config['az_models']:
+        raise ValueError(f"Default AZ model '{default_az}' not found in az_models")
+    
+    # Validate all models have required fields
+    for model_key, model_config in config['llm_models'].items():
+        required_model_fields = ['internal_name', 'display_name', 'supports_advanced_prompt', 'supports_stability_check', 'supports_hallucination_check']
+        for field in required_model_fields:
+            if field not in model_config:
+                raise ValueError(f"Model '{model_key}' missing required field: {field}")
+
+try:
+    with open(config_path) as f:
+        advanced_config = json.load(f)
+    validate_config(advanced_config)
+    print(f"✅ Config loaded and validated successfully from {config_path}")
+except FileNotFoundError:
+    print(f"❌ CRITICAL ERROR: Config file not found at {config_path}")
+    print("Please ensure the config file exists and is accessible.")
+    exit(1)
+except json.JSONDecodeError as e:
+    print(f"❌ CRITICAL ERROR: Invalid JSON in config file: {e}")
+    print("Please check the JSON syntax in the config file.")
+    exit(1)
+except ValueError as e:
+    print(f"❌ CRITICAL ERROR: Invalid config structure: {e}")
+    print("Please check the config file structure and required fields.")
+    exit(1)
+except Exception as e:
+    print(f"❌ CRITICAL ERROR: Unexpected error loading config: {e}")
+    exit(1)
 
 app = Flask(__name__)
 CORS(app)
@@ -207,77 +257,43 @@ def rerun_retrosynthesis():
         return jsonify({"error": "Invalid SMILES string"}), 400
 
     # -----------------
-    # Advanced model - DeepSeek-R1
-    model_type = "claude3"  # Default is Claude 3 Opus
-    try:
-        if 'model_type' in data:
-            model_type = data['model_type'].lower()
-            assert model_type in ["claude3", "claude37", "deepseek"]
-            print(f"USING MODEL TYPE: {model_type}")
-    except Exception as e:
-        print(f"Error processing model type: {e}")
-        model_type = "claude3"
-        print(f"FALLING BACK TO DEFAULT MODEL TYPE: {model_type}")
+    # Standardized config access using indirect pattern
+    defaults = advanced_config['defaults']
+    
+    # Model type validation and selection using config
+    model_type = data.get('model_type', defaults['model_type'])
+    if model_type not in advanced_config['llm_models']:
+        return jsonify({"error": f"Unsupported model type: {model_type}"}), 400
+    model_config = advanced_config['llm_models'][model_type]
+    llm = model_config['internal_name']
 
-    # Select the appropriate LLM based on model_type
-    if model_type == "deepseek":
-        llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
-    elif model_type == "claude37":
-        llm = "anthropic/claude-3-7-sonnet-20250219"
-    elif model_type == "claude4opus":
-        llm = "anthropic/claude-opus-4-20250514"
-    elif model_type == "claude4sonnet":
-        llm = "anthropic/claude-sonnet-4-20250514"
-    else:  # Default to Claude 3 Opus
-        llm = "claude-3-opus-20240229"
-
-    # -----------------
-    # Advanced prompt handling
-    advanced_prompt = False
-    try:
-        if 'advanced_prompt' in data:
-            advanced_prompt = data['advanced_prompt']
-            if advanced_prompt.lower() == "true":
-                advanced_prompt = True
-    except Exception as e:
-        print(f"Error processing advanced prompt: {e}")
-        advanced_prompt = False
-
+    # Advanced prompt handling using config
+    advanced_prompt = data.get('advanced_prompt', defaults['advanced_prompt'])
+    if isinstance(advanced_prompt, str):
+        advanced_prompt = advanced_prompt.lower() == "true"
+    if advanced_prompt and not model_config['supports_advanced_prompt']:
+        return jsonify({"error": f"Model {model_type} does not support advanced prompts"}), 400
     if advanced_prompt:
-        llm = llm + ":adv"
+        llm += ":adv"
 
-    # -----------------
-    # Choose AiZynthFinder model
-    az_model = "USPTO"
-    try:
-        if 'model_version' in data:
-            az_model = data['model_version']
-            assert az_model in AZ_MODEL_LIST
-    except Exception as e:
-        print(f"Error processing model version: {e}")
-        az_model = "USPTO"
+    # Choose AiZynthFinder model using config
+    az_model = data.get('model_version', defaults['model_version'])
+    if az_model not in advanced_config['az_models']:
+        return jsonify({"error": f"Unsupported AZ model: {az_model}"}), 400
 
-    # -----------------
-    # Stability check flag
-    stability_flag = "False"
-    try:
-        if 'stability_flag' in data:
-            stability_flag = data['stability_flag']
-            assert stability_flag.lower() in ["false", "true"]
-    except Exception as e:
-        print(f"Error processing stability flag: {e}")
-        stability_flag = "False"
+    # Stability check flag using config
+    stability_flag = data.get('stability_flag', defaults['stability_flag'])
+    if isinstance(stability_flag, str):
+        stability_flag = stability_flag.lower() == "true"
+    if stability_flag and not model_config['supports_stability_check']:
+        return jsonify({"error": f"Model {model_type} does not support stability checks"}), 400
 
-    # -----------------
-    # Hallucination check flag
-    hallucination_check = "False"
-    try:
-        if 'hallucination_check' in data:
-            hallucination_check = data['hallucination_check']
-            assert hallucination_check.lower() in ["false", "true"]
-    except Exception as e:
-        print(f"Error processing hallucination check: {e}")
-        hallucination_check = "False"
+    # Hallucination check flag using config
+    hallucination_check = data.get('hallucination_check', defaults['hallucination_check'])
+    if isinstance(hallucination_check, str):
+        hallucination_check = hallucination_check.lower() == "true"
+    if hallucination_check and not model_config['supports_hallucination_check']:
+        return jsonify({"error": f"Model {model_type} does not support hallucination checks"}), 400
 
     # -----------------
     # Rerun retrosynthesis
@@ -285,8 +301,8 @@ def rerun_retrosynthesis():
         result = main(smiles=molecule,
                       llm=llm,
                       az_model=az_model,
-                      stability_flag=stability_flag,
-                      hallucination_check=hallucination_check)
+                      stability_flag=str(stability_flag),
+                      hallucination_check=str(hallucination_check))
 
         # Store the result in partial.json
         save_result(molecule, result)
@@ -387,88 +403,50 @@ def partial_rerun():
         print(f"\nSTARTING NEW SYNTHESIS FROM MOLECULE: {start_molecule}")
 
         # -----------------
-        # Advanced model - DeepSeek-R1
-        model_type = "claude3"  # Default is Claude 3 Opus
-        try:
-            if 'model_type' in data:
-                model_type = data['model_type'].lower()
-                assert model_type in ["claude3", "claude37", "deepseek"]
-                print(f"USING MODEL TYPE: {model_type}")
-        except Exception as e:
-            print(f"Error processing model type: {e}")
-            model_type = "claude3"
-            print(f"FALLING BACK TO DEFAULT MODEL TYPE: {model_type}")
-
-        # Select the appropriate LLM based on model_type
-        if model_type == "deepseek":
-            llm = "fireworks_ai/accounts/fireworks/models/deepseek-r1"
-        elif model_type == "claude37":
-            llm = "anthropic/claude-3-7-sonnet-20250219"
-        elif model_type == "claude4opus":
-            llm = "anthropic/claude-opus-4-20250514"
-        elif model_type == "claude4sonnet":
-            llm = "anthropic/claude-sonnet-4-20250514"
-        else:  # Default to Claude 3 Opus
-            llm = "claude-3-opus-20240229"
+        # Standardized config access using indirect pattern
+        defaults = advanced_config['defaults']
+        
+        # Model type validation and selection using config
+        model_type = data.get('model_type', defaults['model_type'])
+        if model_type not in advanced_config['llm_models']:
+            return jsonify({"error": f"Unsupported model type: {model_type}"}), 400
+        model_config = advanced_config['llm_models'][model_type]
+        llm = model_config['internal_name']
         print(f"SELECTED LLM: {llm}")
 
-        # -----------------
-        # Advanced prompt handling
-        advanced_prompt = False
-        try:
-            if 'advanced_prompt' in data:
-                advanced_prompt = data['advanced_prompt']
-                if advanced_prompt.lower() == "true":
-                    advanced_prompt = True
-                print(f"USING ADVANCED PROMPT: {advanced_prompt}")
-        except Exception as e:
-            print(f"ERROR PROCESSING ADVANCED PROMPT: {e}")
-            advanced_prompt = False
+        # Advanced prompt handling using config
+        advanced_prompt = data.get('advanced_prompt', defaults['advanced_prompt'])
+        if isinstance(advanced_prompt, str):
+            advanced_prompt = advanced_prompt.lower() == "true"
+        if advanced_prompt and not model_config['supports_advanced_prompt']:
+            return jsonify({"error": f"Model {model_type} does not support advanced prompts"}), 400
+        print(f"USING ADVANCED PROMPT: {advanced_prompt}")
 
         if advanced_prompt:
-            llm = llm + ":adv"
+            llm += ":adv"
             print(f"UPDATED LLM WITH ADVANCED PROMPT: {llm}")
 
-        # -----------------
-        # Choose AiZynthFinder model
-        az_model = "USPTO"
-        try:
-            if 'model_version' in data:
-                az_model = data['model_version']
-                assert az_model in AZ_MODEL_LIST
-                print(f"USING MODEL VERSION: {az_model}")
-        except Exception as e:
-            print(f"ERROR PROCESSING MODEL VERSION: {e}")
-            az_model = "USPTO"
-            print(f"FALLING BACK TO DEFAULT MODEL: {az_model}")
+        # Choose AiZynthFinder model using config
+        az_model = data.get('model_version', defaults['model_version'])
+        if az_model not in advanced_config['az_models']:
+            return jsonify({"error": f"Unsupported AZ model: {az_model}"}), 400
+        print(f"USING MODEL VERSION: {az_model}")
 
-        # -----------------
-        # Stability check flag
-        stability_flag = "False"
-        try:
-            if 'stability_flag' in data:
-                stability_flag = data['stability_flag']
-                assert stability_flag.lower() in ["false", "true"]
-                print(f"USING STABILITY FLAG: {stability_flag}")
-        except Exception as e:
-            print(f"ERROR PROCESSING STABILITY FLAG: {e}")
-            stability_flag = "False"
-            print(f"FALLING BACK TO DEFAULT STABILITY FLAG: {stability_flag}")
+        # Stability check flag using config
+        stability_flag = data.get('stability_flag', defaults['stability_flag'])
+        if isinstance(stability_flag, str):
+            stability_flag = stability_flag.lower() == "true"
+        if stability_flag and not model_config['supports_stability_check']:
+            return jsonify({"error": f"Model {model_type} does not support stability checks"}), 400
+        print(f"USING STABILITY FLAG: {stability_flag}")
 
-        # -----------------
-        # Hallucination check flag
-        hallucination_check = "False"
-        try:
-            if 'hallucination_check' in data:
-                hallucination_check = data['hallucination_check']
-                assert hallucination_check.lower() in ["false", "true"]
-                print(f"USING HALLUCINATION CHECK: {hallucination_check}")
-        except Exception as e:
-            print(f"ERROR PROCESSING HALLUCINATION CHECK: {e}")
-            hallucination_check = "False"
-            print(
-                f"FALLING BACK TO DEFAULT HALLUCINATION CHECK: {hallucination_check}"
-            )
+        # Hallucination check flag using config
+        hallucination_check = data.get('hallucination_check', defaults['hallucination_check'])
+        if isinstance(hallucination_check, str):
+            hallucination_check = hallucination_check.lower() == "true"
+        if hallucination_check and not model_config['supports_hallucination_check']:
+            return jsonify({"error": f"Model {model_type} does not support hallucination checks"}), 400
+        print(f"USING HALLUCINATION CHECK: {hallucination_check}")
 
         # Run new synthesis on the starting molecule
         print(f"\nCALLING MAIN FUNCTION WITH PARAMETERS:")
@@ -482,8 +460,8 @@ def partial_rerun():
             new_result = main(smiles=start_molecule,
                               llm=llm,
                               az_model=az_model,
-                              stability_flag=stability_flag,
-                              hallucination_check=hallucination_check)
+                              stability_flag=str(stability_flag),
+                              hallucination_check=str(hallucination_check))
             print(
                 f"NEW RETROSYNTHESIS RESULT: {json.dumps(new_result, indent=2)}"
             )

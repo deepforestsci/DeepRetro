@@ -44,10 +44,10 @@
     "Pistachio_100+": { "display_name": "Pistachio (100+)" }
   },
   "defaults": {
-    "model_type": "claude3",
+    "model_type": "claude4sonnet",
     "advanced_prompt": false,
     "model_version": "USPTO",
-    "stability_flag": false,
-    "hallucination_check": false
+    "stability_flag": true,
+    "hallucination_check": true
   }
 } 

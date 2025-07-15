@@ -167,10 +167,10 @@ class TestApiFunctions(unittest.TestCase):
         mock_mol_from_smiles.assert_called_once_with(smiles_input)
         mock_main.assert_called_once_with(
             smiles=smiles_input,
-            llm="claude-3-opus-20240229", 
+            llm="anthropic/claude-sonnet-4-20250514", 
             az_model="USPTO",            
-            stability_flag="False",      
-            hallucination_check="False"  
+            stability_flag="True",      
+            hallucination_check="True"  
         )
         mock_save_result.assert_called_once_with(smiles_input, mock_main.return_value)
 
@@ -307,10 +307,10 @@ class TestApiFunctions(unittest.TestCase):
         mock_mol_from_smiles.assert_called_once_with(smiles_input)
         mock_main.assert_called_once_with(
             smiles=smiles_input,
-            llm="claude-3-opus-20240229",
+            llm="anthropic/claude-sonnet-4-20250514",
             az_model="USPTO",
-            stability_flag="False",
-            hallucination_check="False"
+            stability_flag="True",
+            hallucination_check="True"
         )
         mock_save_result.assert_called_once_with(smiles_input, mock_main.return_value)
 
@@ -325,24 +325,23 @@ class TestApiFunctions(unittest.TestCase):
             'smiles': smiles_input,
             'model_type': 'claude37',
             'advanced_prompt': 'true', # string 'true'
-            'model_version': 'pistachio', 
+            'model_version': 'Pistachio_100+', 
             'stability_flag': 'true',
             'hallucination_check': 'true'
         }
         
-        with patch('src.api.AZ_MODEL_LIST', ["USPTO", "gsk", "pistachio"]): 
-            response = self.client.post('/api/rerun_retrosynthesis',
-                                        headers={'X-API-KEY': self.api_key},
-                                        json=payload)
-        
+        response = self.client.post('/api/rerun_retrosynthesis',
+                                    headers={'X-API-KEY': self.api_key},
+                                    json=payload)
+    
         self.assertEqual(response.status_code, 200)
         mock_clear_cache.assert_called_once_with(smiles_input)
         mock_main.assert_called_once_with(
             smiles=smiles_input,
             llm="anthropic/claude-3-7-sonnet-20250219:adv", # :adv will be added by API
-            az_model="pistachio",
-            stability_flag="true", 
-            hallucination_check="true"
+            az_model="Pistachio_100+",
+            stability_flag="True", 
+            hallucination_check="True"
         )
         mock_save_result.assert_called_once_with(smiles_input, mock_main.return_value)
 
@@ -719,19 +718,18 @@ class TestApiFunctions(unittest.TestCase):
             'steps': rerun_from_step_num,
             'model_type': 'deepseek',
             'advanced_prompt': 'True', # String 'True'
-            'model_version': 'gsk',
+            'model_version': 'USPTO',
             'stability_flag': 'True',
             'hallucination_check': 'True'
         }
         
-        with patch('src.api.AZ_MODEL_LIST', ["USPTO", "gsk"]): 
-            response = self.client.post('/api/partial_rerun', headers={'X-API-KEY': self.api_key}, json=payload)
+        response = self.client.post('/api/partial_rerun', headers={'X-API-KEY': self.api_key}, json=payload)
         
         self.assertEqual(response.status_code, 200)
         mock_main.assert_called_once_with(
             smiles=start_molecule_for_new_synthesis, # "B"
             llm="fireworks_ai/accounts/fireworks/models/deepseek-r1:adv", # :adv will be added
-            az_model="gsk",
+            az_model="USPTO",
             stability_flag="True",
             hallucination_check="True"
         )
