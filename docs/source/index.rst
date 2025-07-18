@@ -78,6 +78,8 @@ Why DeepRetro?
      - Developer setup, contribution guidelines, and code structure.
    * - :doc:`contributing`
      - How to contribute to the project.
+   * - :doc:`tutorial`
+     - Step-by-step tutorial for using the DeepRetro GUI.
 
 .. toctree::
    :maxdepth: 2
@@ -89,3 +91,4 @@ Why DeepRetro?
    api_reference
    development
    contributing
+   tutorial
