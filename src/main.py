@@ -1,4 +1,7 @@
-"""Utils for Retrosynthesis"""
+"""Utils for Retrosynthesis
+
+This module provides the main entry point for running retrosynthesis analysis using DeepRetro.
+"""
 import os
 from typing import Any, Dict, List, Optional, Sequence
 import time
@@ -20,25 +23,46 @@ from src.utils.custom_logging import setup_logging
 # load environment variables
 load_dotenv()
 
-
 def main(smiles: str,
          llm: str = "claude-opus-4-20250514",
          az_model: str = "USPTO",
          stability_flag: str = "False",
          hallucination_check: str = "False") -> Any:
-    """Run the retrosynthesis on specific molecule.
+    """Run the retrosynthesis on a specific molecule.
 
     Parameters
     ----------
     smiles : str
         SMILES string of the molecule.
     llm : str, optional
-        LLM model, by default "claude-opus-4-20250514"
+        LLM model to use, by default "claude-opus-4-20250514".
+    az_model : str, optional
+        Retrosynthesis model backend, by default "USPTO".
+    stability_flag : str, optional
+        Enable stability validation, by default "False".
+    hallucination_check : str, optional
+        Enable hallucination detection, by default "False".
 
     Returns
     -------
     Any
-        Returns result of retrosynthesis.
+        Result of retrosynthesis.
+
+    Examples
+    --------
+    >>> result = main("COc1ccc(-c2ccc(/C=C(\\C#N)c3ccc(-c4ccncc4)cc3)cc2)cc1")  # doctest: +SKIP
+    >>> isinstance(result, dict)  # doctest: +SKIP
+    True
+    >>> # Example with custom model and validation
+    >>> result = main(
+    ...     "COc1ccc(-c2ccc(/C=C(\\C#N)c3ccc(-c4ccncc4)cc3)cc2)cc1",
+    ...     llm="claude-3-sonnet",
+    ...     az_model="Pistachio_100",
+    ...     stability_flag="True",
+    ...     hallucination_check="True"
+    ... )  # doctest: +SKIP
+    >>> isinstance(result, dict)  # doctest: +SKIP
+    True
     """
     # Initialize generic logging
     setup_logging()

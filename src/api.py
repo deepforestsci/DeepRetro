@@ -1,3 +1,8 @@
+"""
+API for DeepRetro Retrosynthesis Service.
+
+This module provides Flask endpoints for retrosynthesis, cache management, and health checks.
+"""
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from functools import wraps
@@ -22,7 +27,28 @@ from src.cache import clear_cache_for_molecule
 config_path = os.path.join(root_dir, 'config', 'advanced_settings.json')
 
 def validate_config(config):
-    """Validate the advanced config structure and contents."""
+    """
+    Validate the advanced config structure and contents.
+
+    Parameters
+    ----------
+    config : dict
+        Configuration dictionary to validate.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    ValueError
+        If required keys or structure are missing.
+
+    Examples
+    --------
+    >>> example_config = {'llm_models': {}, 'az_models': {}, 'defaults': {'model_type': 'foo', 'advanced_prompt': False, 'model_version': 'bar', 'stability_flag': False, 'hallucination_check': False}}
+    >>> validate_config(example_config)  # doctest: +SKIP
+    """
     required_keys = ['llm_models', 'az_models', 'defaults']
     for key in required_keys:
         if key not in config:
@@ -96,7 +122,25 @@ PARTIAL_JSON_PATH = "partial.json"
 
 # Functions for JSON file storage
 def save_result(smiles, result):
-    """Save retrosynthesis result to partial.json file."""
+    """
+    Save retrosynthesis result to partial.json file.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES string of the molecule.
+    result : dict
+        The retrosynthesis result dictionary.
+
+    Returns
+    -------
+    str
+        Path to the saved file.
+
+    Examples
+    --------
+    >>> save_result('CCO', {'smiles': 'CCO', 'steps': [{'step': 1, 'reaction': 'C=O + H2O -> CO + H2O'}]})  # doctest: +SKIP
+    """
     # Create a data structure with the SMILES and result
     data = {"smiles": smiles, "result": result}
 
@@ -109,7 +153,19 @@ def save_result(smiles, result):
 
 
 def load_result():
-    """Load the most recent retrosynthesis result from partial.json."""
+    """
+    Load the most recent retrosynthesis result from partial.json.
+
+    Returns
+    -------
+    tuple
+        A tuple containing the SMILES string and the result dictionary.
+        Returns (None, None) if no result file is found.
+
+    Examples
+    --------
+    >>> load_result()  # doctest: +SKIP
+    """
     # Check if the file exists
     if not os.path.exists(PARTIAL_JSON_PATH):
         print(f"No result file found at {PARTIAL_JSON_PATH}")
@@ -153,6 +209,39 @@ def require_api_key(f):
 def retrosynthesis_api():
     """
     Endpoint to perform retrosynthesis on a SMILES string.
+
+    Parameters
+    ----------
+    smiles : str
+        The SMILES string of the molecule to synthesize.
+    model_type : str, optional
+        The type of model to use (e.g., 'llm_model_1', 'llm_model_2').
+        Defaults to the default model type from config.
+    model_version : str, optional
+        The specific version of the AZ model to use (e.g., 'a', 'b').
+        Defaults to the default AZ model version from config.
+    advanced_prompt : bool, optional
+        Whether to use advanced prompt for the LLM.
+        Defaults to the default advanced prompt setting from config.
+    stability_flag : bool, optional
+        Whether to enable stability check for the AZ model.
+        Defaults to the default stability flag from config.
+    hallucination_check : bool, optional
+        Whether to enable hallucination check for the AZ model.
+        Defaults to the default hallucination check from config.
+
+    Returns
+    -------
+    json
+        A JSON response containing the retrosynthesis result.
+
+    Examples
+    --------
+    >>> from flask.testing import FlaskClient
+    >>> client = app.test_client()
+    >>> response = client.post('/api/retrosynthesis', json={'smiles': 'CCO', 'model_type': 'llm_model_1', 'model_version': 'a', 'advanced_prompt': True, 'stability_flag': True, 'hallucination_check': True})  # doctest: +SKIP
+    >>> response.status_code  # doctest: +SKIP
+    200
     """
     data = request.get_json()
     if not data or 'smiles' not in data:
@@ -215,6 +304,19 @@ def retrosynthesis_api():
 def health():
     """
     Endpoint to check the health of the API.
+
+    Returns
+    -------
+    json
+        A JSON response indicating the API's health status.
+
+    Examples
+    --------
+    >>> from flask.testing import FlaskClient
+    >>> client = app.test_client()
+    >>> response = client.get('/api/health')  # doctest: +SKIP
+    >>> response.status_code  # doctest: +SKIP
+    200
     """
     return jsonify({"status": "healthy"}), 200
 
@@ -224,6 +326,24 @@ def health():
 def clear_molecule_cache():
     """
     Endpoint to clear the cache for a specific molecule.
+
+    Parameters
+    ----------
+    molecule : str
+        The SMILES string of the molecule to clear from cache.
+
+    Returns
+    -------
+    json
+        A JSON response indicating the success of cache clearing.
+
+    Examples
+    --------
+    >>> from flask.testing import FlaskClient
+    >>> client = app.test_client()
+    >>> response = client.post('/api/clear_molecule_cache', json={'molecule': 'CCO'})  # doctest: +SKIP
+    >>> response.status_code  # doctest: +SKIP
+    200
     """
     data = request.get_json()
     if not data or 'molecule' not in data:
@@ -239,6 +359,39 @@ def clear_molecule_cache():
 def rerun_retrosynthesis():
     """
     Endpoint to rerun retrosynthesis for a specific molecule.
+
+    Parameters
+    ----------
+    smiles : str
+        The SMILES string of the molecule to rerun retrosynthesis for.
+    model_type : str, optional
+        The type of model to use (e.g., 'llm_model_1', 'llm_model_2').
+        Defaults to the default model type from config.
+    model_version : str, optional
+        The specific version of the AZ model to use (e.g., 'a', 'b').
+        Defaults to the default AZ model version from config.
+    advanced_prompt : bool, optional
+        Whether to use advanced prompt for the LLM.
+        Defaults to the default advanced prompt setting from config.
+    stability_flag : bool, optional
+        Whether to enable stability check for the AZ model.
+        Defaults to the default stability flag from config.
+    hallucination_check : bool, optional
+        Whether to enable hallucination check for the AZ model.
+        Defaults to the default hallucination check from config.
+
+    Returns
+    -------
+    json
+        A JSON response containing the rerun retrosynthesis result.
+
+    Examples
+    --------
+    >>> from flask.testing import FlaskClient
+    >>> client = app.test_client()
+    >>> response = client.post('/api/rerun_retrosynthesis', json={'smiles': 'CCO', 'model_type': 'llm_model_1', 'model_version': 'a', 'advanced_prompt': True, 'stability_flag': True, 'hallucination_check': True})  # doctest: +SKIP
+    >>> response.status_code  # doctest: +SKIP
+    200
     """
     data = request.get_json()
     if not data or 'smiles' not in data:

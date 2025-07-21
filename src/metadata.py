@@ -1,10 +1,12 @@
-"""Code for Metadata agents
-Metadata covers the following:
+"""
+Code for Metadata agents
+
+Metadata covers:
 1. Nearest Literature (1-2) - 1-2 nearest literature references, to contain the doi, title, authors, journal, year
 2. Reagents (1-2) - 1-2 reagents used in the reaction, to contain the SMILES
 3. Reaction conditions - Conditions used in the reaction, to contain the temperature, pressure, solvent, time
 
-Each of these will be a separate agent, and will be called by the main agent to get the metadata for the reaction
+Each of these will be a separate agent, and will be called by the main agent to get the metadata for the reaction.
 """
 
 import ast
@@ -40,7 +42,8 @@ def reagent_agent(reactants: list[dict],
                   product: list[dict],
                   LLM: str = "claude-opus-4-20250514",
                   temperature: float = 0.0):
-    """Calls the LLM model to predict the reagents used in the reaction
+    """
+    Calls the LLM model to predict the reagents used in the reaction.
 
     Parameters
     ----------
@@ -57,6 +60,16 @@ def reagent_agent(reactants: list[dict],
     -------
     int, list[str]
         Status code and list of reagents SMILES
+
+    Examples
+    --------
+    >>> reactants = [{'smiles': 'CCO'}]
+    >>> product = [{'smiles': 'CC=O'}]
+    >>> status, reagents = reagent_agent(reactants, product)  # doctest: +SKIP
+    >>> status  # doctest: +SKIP
+    200
+    >>> isinstance(reagents, list)  # doctest: +SKIP
+    True
     """
     logger = context_logger.get()
     product_smiles = product[0]['smiles']

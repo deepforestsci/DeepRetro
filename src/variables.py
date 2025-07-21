@@ -1,4 +1,14 @@
-"""File to store Variables for the retrosynthesis task"""
+"""
+Variables and constants for the retrosynthesis task.
+
+This file stores prompts, model lists, reaction class mappings, and other constants used throughout DeepRetro.
+
+Examples
+--------
+>>> from src import variables
+>>> variables.BASIC_MOLECULES[:3]  # doctest: +SKIP
+['CC', 'O', 'C']
+"""
 
 prompt_old = '''Do an one-step retrosynthesis on the given smile - {target_smiles} and provide 
 the list containing the reactants in the smiles format of all the possible pathways. 
@@ -1326,6 +1336,13 @@ ENCODING_SCALABILITY = {
 
 
 class bcolors:
+    """
+    ANSI color codes for terminal output.
+
+    Use these constants to print colored or styled text in supported terminals.
+    Example:
+        print(f"{bcolors.OKGREEN}Success!{bcolors.ENDC}")
+    """
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'

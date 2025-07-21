@@ -32,6 +32,8 @@ master_doc = 'index'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
@@ -42,6 +44,10 @@ extensions = [
     'sphinx_rtd_theme',
     'sphinx.ext.doctest',
     'myst_parser',
+]
+
+autodoc_mock_imports = [
+    "flask", "flask_cors", "rdkit", "rootutils", "structlog", "dotenv", "aizynthfinder"
 ]
 
 # Add any paths that contain templates here, relative to this directory.

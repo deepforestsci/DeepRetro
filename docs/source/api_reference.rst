@@ -157,4 +157,43 @@ When rate limits are exceeded, the API returns HTTP 429 with:
        "message": "Rate limit exceeded. Please try again later.",
        "retry_after": 60
      }
-   } 
+   }
+
+
+API Python Reference
+====================
+
+.. automodule:: src.api
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: src.cache
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: src.main
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: src.metadata
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: src.prithvi
+    :members:
+    :undoc-members:
+    :show-inheritance: 
+
+.. automodule:: src.protecting_group
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: src.variables
+    :members:
+    :undoc-members:
+    :show-inheritance:
