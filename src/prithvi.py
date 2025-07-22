@@ -1,4 +1,7 @@
-""" Module to run prithvi retrosynthesis on a molecule """
+""" Module to run prithvi retrosynthesis on a molecule
+
+Provides functions to run retrosynthesis and add metadata to results.
+"""
 import time
 import os
 import rootutils
@@ -22,7 +25,8 @@ def run_prithvi(molecule: str,
                 az_model: str = "USPTO",
                 stability_flag: str = "False",
                 hallucination_check: str = "False") -> dict:
-    """Run prithvi services to generate retrosynthesis on a molecule.
+    """
+    Run prithvi services to generate retrosynthesis on a molecule.
 
     Parameters
     ----------
@@ -30,11 +34,23 @@ def run_prithvi(molecule: str,
         SMILE String of the molecule.
     llm : str, optional
         LLM Model, by default "claude-opus-4-20250514"
+    az_model : str, optional
+        Retrosynthesis model backend, by default "USPTO"
+    stability_flag : str, optional
+        Enable stability validation, by default "False"
+    hallucination_check : str, optional
+        Enable hallucination detection, by default "False"
 
     Returns
     -------
     dict
         Result after running prithvi.
+
+    Examples
+    --------
+    >>> result = run_prithvi('CCO')  # doctest: +SKIP
+    >>> isinstance(result, dict)  # doctest: +SKIP
+    True
     """
 
     # Generate a unique job ID using timestamp and a random suffix
@@ -68,7 +84,8 @@ def run_prithvi(molecule: str,
 
 
 def add_metadata(output_data: dict) -> dict:
-    """method to add metadata to reaction metrics
+    """
+    Add metadata to reaction metrics in the output data.
 
     Parameters
     ----------
@@ -79,6 +96,13 @@ def add_metadata(output_data: dict) -> dict:
     -------
     dict
         json output with metadata
+
+    Examples
+    --------
+    >>> dummy = {'steps': [{'reactants': [], 'products': [], 'reagents': [], 'conditions': '', 'reactionmetrics': [{}]}]}
+    >>> result = add_metadata(dummy)  # doctest: +SKIP
+    >>> isinstance(result, dict)  # doctest: +SKIP
+    True
     """
     for idx, step in enumerate(output_data['steps']):
         status, reagents = reagent_agent(step['reactants'], step['products'])
