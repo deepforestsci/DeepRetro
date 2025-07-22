@@ -1,4 +1,4 @@
-Tutorial
+Tutorial 1
 ========
 
 Using the DeepRetro GUI for Retrosynthesis Analysis and Pathway Visualization
@@ -348,3 +348,5 @@ After completing this tutorial:
   - Troubleshoot common issues
 
 For advanced usage: :doc:`user_guide`, :doc:`api_reference`, :doc:`development` 
+
+For an additional example featuring a more complex, bioactive molecule, see :doc:`tutorial_new_molecule` (Tutorial 2). 
