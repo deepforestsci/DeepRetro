@@ -92,3 +92,63 @@ def rec_run_prithvi(molecule: str,
         logger.info(f"AZ solved {molecule}")
     # print(f"Solved : {solved}, Returning {result_dict}")
     return result_dict, solved
+
+
+def single_run_DeepRetro(
+        molecule: str,
+        llm: str = "anthropic/claude-opus-4-20250514",
+        az_model: str = "USPTO",
+        stability_flag: str = "False",
+        hallucination_check: str = "False") -> tuple[dict, bool]:
+    """Single run function to run DeepRetro on a molecule
+
+    Parameters
+    ----------
+    molecule : str
+        Molecule SMILES
+    llm : str, optional
+        LLM to be used, by default "claude-opus-4-20250514"
+    az_model : str, optional
+        AZ model to be used, by default "USPTO"
+    stability_flag : str, optional
+        Stability flag, by default "False"
+    hallucination_check : str, optional
+        Hallucination check, by default "False"
+
+    Returns
+    -------
+    tuple(dict, bool)
+        result_dict: result of retrosynthesis.
+        solved: boolean value indicating if the molecule was solved.
+    """
+    solved, result_dict = run_az(smiles=molecule, az_model=az_model)
+    result_dict = result_dict[0]
+    logger = context_logger.get()
+    logger.info(f"AZ failed for {molecule}, running LLM")
+    out_pathways, out_explained, out_confidence = llm_pipeline(
+        molecule=molecule,
+        LLM=llm,
+        stability_flag=stability_flag,
+        hallucination_check=hallucination_check)
+    result_dict = {
+        'type':
+        'mol',
+        'smiles':
+        molecule,
+        "is_chemical":
+        True,
+        "in_stock":
+        False,
+        'children': [{
+            "type": "reaction",
+            "is_reaction": True,
+            "metadata": {
+                "policy_probability": out_confidence,
+            },
+            "children": []
+        }]
+    }
+    logger.info(f"LLM returned {out_pathways}")
+    logger.info(f"LLM explained {out_explained}")
+
+    return result_dict, solved
