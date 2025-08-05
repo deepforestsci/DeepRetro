@@ -17,6 +17,7 @@ from src.utils.job_context import logger as context_logger
 from src.utils.stability_checks import stability_checker
 from src.utils.hallucination_checks import hallucination_checker
 from src.protecting_group import mask_protecting_groups_multisymbol
+from src.deprotecting_group import unmask_protecting_groups_multisymbol, get_protecting_group_info
 
 load_dotenv()
 
@@ -143,7 +144,7 @@ def call_LLM(molecule: str,
         log_message(
             f"Detected protecting groups in molecule: {molecule} -> {masked_smiles}",
             logger)
-        protecting_group_context = f"\n\nPROTECTING GROUP CONTEXT:\nThe molecule contains protecting groups that have been masked:\nOriginal SMILES: {molecule}\nMasked SMILES: {masked_smiles}\n\nSymbol mapping:\n- '$' represents OMe (methoxy) groups\n- '%' represents OBn (benzyl ether) groups\n- '&' represents OEt (ethoxy) groups\n\nIMPORTANT: In your retrosynthetic analysis:\n1. Return ACTUAL SMILES strings (not the masked symbols) in the 'data' field\n2. Include deprotection steps in your explanations when appropriate\n3. Consider the protecting groups as synthetic handles that may need removal\n4. Suggest specific deprotection conditions (e.g., acidic hydrolysis for OEt, hydrogenolysis for OBn)"
+        protecting_group_context = f"\n\nPROTECTING GROUP CONTEXT:\nThe molecule contains protecting groups that have been masked:\nOriginal SMILES: {molecule}\nMasked SMILES: {masked_smiles}\n\nSymbol mapping:\n- '$' represents OMe (methoxy) groups\n- '%' represents OBn (benzyl ether) groups\n- '&' represents OEt (ethoxy) groups\n\nIMPORTANT: In your retrosynthetic analysis:\n1. Return ACTUAL SMILES strings (not the masked symbols) in the 'data' field\n2. Include deprotection steps in your explanations when appropriate\n3. Consider the protecting groups as synthetic handles that may need removal\n4. Suggest specific deprotection conditions:\n   - OMe ($): Acidic hydrolysis (HCl/MeOH, TFA)\n   - OBn (%): Hydrogenolysis (H2/Pd-C), Birch reduction\n   - OEt (&): Acidic hydrolysis (HCl/EtOH), basic hydrolysis (NaOH/EtOH)\n5. When suggesting deprotection steps, use the unmask_protecting_groups_multisymbol() function to convert symbols back to full SMILES\n6. Consider protecting group compatibility and orthogonal deprotection strategies"
         add_on += protecting_group_context
 
     sys_prompt_final, user_prompt_final, max_completion_tokens = obtain_prompt(
