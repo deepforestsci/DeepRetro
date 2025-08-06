@@ -1,80 +1,74 @@
 .. title:: Tutorial 2
 
-Tutorial 2
-==========
+Tutorial 2: Interactive Retrosynthesis Analysis
+==============================================
 
-Using the DeepRetro GUI for Retrosynthesis Analysis and Pathway Visualization
+Welcome to the DeepRetro GUI! In this tutorial, we'll walk through analyzing and visualizing a retrosynthetic pathway for a bioactive heterocyclic compound. Let us see how to interact with the system to explore chemical retrosynthesis routes.
 
-This tutorial guides you through analyzing and visualizing the retrosynthetic pathway for a bioactive heterocyclic compound using the DeepRetro GUI.
+Setting Up Your Workspace
+-------------------------
 
-Getting Started
----------------
+Before we dive into the analysis, you'll need the DeepRetro backend server running and an API key for access. Once you have those, simply navigate to `viewer/index.html` in your browser. The system will greet you with a prompt for your API key. Enter it and you're ready to start!
 
-Before you begin, ensure you have:
+Analysis
+----------------------------
 
-- The DeepRetro backend server running
-- An API key for backend access
-- A modern web browser (Chrome/Firefox/Safari)
+Imagine you're working on a kinase inhibitor project and need to understand how to synthesize a complex heterocyclic compound. The molecule we'll analyze is: ``O=C1N(CC2=C(F)C=C(C3=CC=CC4=NN(C)C=C43)C=C2F)CC5=NC=CC=C51``
 
-To start, navigate to `viewer/index.html`, enter your API key when prompted, and choose your analysis mode.
-
-Entering the Target Molecule
----------------------------
 .. image:: _static/tut2.png
    :alt: Example Pathway Visualization
    :align: center
    :width: 800px
 
-Once the GUI is open, enter the SMILES notation for your target molecule in the input field:
+This SMILES string represents 6-(2,6-Difluoro-4-(2-methyl-2H-indazol-4-yl)benzyl)-6,7-dihydro-5H-pyrrolo[3,4-b]pyridin-5-one, a bioactive compound with potential therapeutic applications. Type this into the input field and click "Analyze" to start the journey.
 
-  Example: ``O=C1N(CC2=C(F)C=C(C3=CC=CC4=NN(C)C=C43)C=C2F)CC5=NC=CC=C51``
+What Happens During Analysis
+---------------------------
 
-Click "Analyze" to begin the retrosynthesis process. The system will validate the SMILES and start generating possible synthetic pathways.
+When you click "Analyze," the system springs into action. It first validates your SMILES string to ensure it's chemically meaningful, then begins the process of working backwards from your target molecule. The system explores various synthetic routes, evaluating the feasibility of each pathway.
 
-Running the Analysis
---------------------
+The system doesn't just generate one route. These multiple generated routes explore multiple possibilities, considering factors like reaction conditions and reagent availability.
 
-After clicking "Analyze," the backend will process your molecule and, if successful, display the retrosynthetic pathway as an interactive graph.
+.. image:: _static/pathways.png
+   :alt: Example Pathway Visualization
+   :align: center
+   :width: 800px
 
-Pathway Visualization and Chemical Context
------------------------------------------
+Exploring Your Results
+---------------------
 
-Once the analysis is complete, you will see the retrosynthetic pathway for your molecule displayed as an interactive graph.
-
-- **Explore the pathway:**
-  - Click on molecule nodes to view their structure and details.
-  - Hover over reaction arrows to see reaction conditions and success metrics.
-  - Use navigation tools to switch between alternative routes if available.
+Once the analysis completes, you'll see an interactive graph showing the retrosynthetic pathway.
 
 .. image:: _static/tut2_pathway.png
    :alt: Example Pathway Visualization
    :align: center
    :width: 800px
 
-This example demonstrates the synthesis of 6-(2,6-Difluoro-4-(2-methyl-2H-indazol-4-yl)benzyl)-6,7-dihydro-5H-pyrrolo[3,4-b]pyridin-5-one, a bioactive heterocyclic compound with potential therapeutic applications, including as a kinase inhibitor.
+.. admonition:: Chemical Context: Kinase Inhibitor Synthesis
+   :class: info
 
-**Two-Step Synthesis Approach**
+   In this case, the system identified a two-step synthesis approach. The first step involves a Suzuki coupling reaction, where the 2-methylindazole moiety connects to the difluorobenzene ring.
 
-  - **Step 1 (Suzuki Coupling):** Attach the 2-methylindazole moiety to the difluorobenzene ring via a Suzuki coupling reaction.
-  - **Step 2 (SN2 Reaction):** Perform a simple SN2 reaction on the secondary amine group of 6,7-dihydro-5H-pyrrolo[3,4-b]pyridin-5-one to obtain the final product.
+   The second step is a simple SN2 reaction on the secondary amine group of the pyrrolopyridine core. This straightforward transformation completes the synthesis, giving you access to your target compound.
 
-**Applications**
+Interactive Exploration
+---------------------
 
-  - Potential kinase inhibitor
-  - Therapeutic agent for various diseases
-  - Useful scaffold for medicinal chemistry research
+The DeepRetro interface is interactive. You can hover on any molecule node to dive deeper into its structure and properties. Hover over reaction arrows to discover the specific conditions and success metrics for each transformation.
 
-Exploring and Exporting Results
--------------------------------
 .. image:: _static/tut2_info.png
    :alt: Example Pathway Visualization
    :align: center
    :width: 800px
-- Click on molecule nodes to view detailed information (structure, formula, SMILES, etc.).
-- Hover over reaction arrows to inspect conditions and success metrics.
-- Export the pathway as JSON for further analysis or record-keeping.
 
-Further Features
-----------------
+The reaction metdata includes molecular formulae, structural details, SMILES representations, and even confidence scores that tell you how reliable the predictions are.
 
+The system also allows you to export your pathway as a JSON file.
+
+Beyond the Basics
+-----------------
+
+This tutorial has shown you the fundamentals, but DeepRetro offers much more. You can explore alternative synthesis routes, modify reaction conditions, and even perform partial reruns to optimize specific steps. The system supports advanced features like selective regeneration and direct interactive guidance, allowing you to fine-tune the pathway.
+
+For those interested in finer granular control, the system includes advanced settings for model selection, stability checks, and hallucination detection.
 For advanced editing, troubleshooting, or more detailed features, refer to :doc:`Tutorial 1 <tutorial>`. 
