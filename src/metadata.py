@@ -25,14 +25,7 @@ load_dotenv()
 litellm.success_callback = ["langfuse"]
 litellm.drop_params = True
 
-metadata = {
-    "generation_name": "prod",  # set langfuse generation name
-    "project": "Retrosynthesis",  # set langfuse project name
-    "version": "0.0.3",  # set langfuse version
-    "trace_name": "prod",  # set langfuse Trace Name
-    "trace_user_id": "sv",  # set langfuse Trace User ID
-    "session_id": "metadata",  # set langfuse Session ID
-}
+from src.utils.langfuse_config import get_langfuse_metadata
 
 
 @cache_results
@@ -146,7 +139,7 @@ def reagent_llm_call(reactants: list[str],
                               temperature=temperature,
                               seed=42,
                               top_p=0.9,
-                              metadata=metadata)
+                              metadata=get_langfuse_metadata("metadata"))
         res_text = response.choices[0].message.content
     except Exception as e:
         logger.info(f"Error in calling {LLM}: {e}")
@@ -263,7 +256,7 @@ def conditions_llm_call(reactants: list[str],
                               temperature=temperature,
                               seed=42,
                               top_p=0.9,
-                              metadata=metadata)
+                              metadata=get_langfuse_metadata("metadata"))
         res_text = response.choices[0].message.content
     except Exception as e:
 
@@ -338,7 +331,7 @@ def literature_agent(reactants: list[str],
                               temperature=temperature,
                               seed=42,
                               top_p=0.9,
-                              metadata=metadata)
+                              metadata=get_langfuse_metadata("metadata"))
         res_text = response.choices[0].message.content
     except Exception as e:
         logger.info(f"Error in calling {LLM}: {e}")

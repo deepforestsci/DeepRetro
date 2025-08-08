@@ -25,14 +25,7 @@ load_dotenv()
 litellm.success_callback = ["langfuse"]
 litellm.drop_params = True
 
-metadata = {
-    "generation_name": "prod",  # set langfuse generation name
-    "project": "Retrosynthesis",  # set langfuse project name
-    "version": "0.0.3",  # set langfuse version
-    "trace_name": "prod",  # set langfuse Trace Name
-    "trace_user_id": "sv",  # set langfuse Trace User ID
-    "session_id": "prod",  # set langfuse Session ID
-}
+from src.utils.langfuse_config import get_langfuse_metadata
 ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
                                     "true").lower() == "false" else True
 
@@ -157,7 +150,7 @@ def call_LLM(molecule: str,
         "temperature": temperature,
         "seed": 42,
         "top_p": 0.9,
-        "metadata": metadata,
+        "metadata": get_langfuse_metadata("retrosynthesis"),
     }
 
     if LLM in DEEPSEEK_MODELS:
