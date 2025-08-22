@@ -5,12 +5,14 @@ from src.utils.az import run_az
 from src.utils.job_context import logger as context_logger
 
 
-def rec_run_prithvi(molecule: str,
-                    job_id: str,
-                    llm: str = "claude-opus-4-20250514",
-                    az_model: str = "USPTO",
-                    stability_flag: str = "False",
-                    hallucination_check: str = "False") -> tuple[dict, bool]:
+def rec_run_prithvi(
+        molecule: str,
+        job_id: str,
+        llm: str = "claude-opus-4-20250514",
+        az_model: str = "USPTO",
+        stability_flag: str = "False",
+        hallucination_check: str = "False",
+        use_protecting_group_feature: bool = False) -> tuple[dict, bool]:
     """Recursive function to run Prithvi on a molecule
 
     Parameters
@@ -37,7 +39,8 @@ def rec_run_prithvi(molecule: str,
             molecule=molecule,
             LLM=llm,
             stability_flag=stability_flag,
-            hallucination_check=hallucination_check)
+            hallucination_check=hallucination_check,
+            use_protecting_group_feature=use_protecting_group_feature)
         result_dict = {
             'type':
             'mol',
@@ -69,7 +72,9 @@ def rec_run_prithvi(molecule: str,
                         llm=llm,
                         az_model=az_model,
                         stability_flag=stability_flag,
-                        hallucination_check=hallucination_check)
+                        hallucination_check=hallucination_check,
+                        use_protecting_group_feature=
+                        use_protecting_group_feature)
                     if stat:
                         temp_stat.append(True)
                         result_dict['children'][0]['children'].append(res)
@@ -83,7 +88,8 @@ def rec_run_prithvi(molecule: str,
                     llm=llm,
                     az_model=az_model,
                     stability_flag=stability_flag,
-                    hallucination_check=hallucination_check)
+                    hallucination_check=hallucination_check,
+                    use_protecting_group_feature=use_protecting_group_feature)
                 result_dict['children'][0]['children'].append(res)
             if solved:
                 logger.info('breaking')
@@ -99,7 +105,8 @@ def single_run_DeepRetro(
         llm: str = "anthropic/claude-opus-4-20250514",
         az_model: str = "USPTO",
         stability_flag: str = "False",
-        hallucination_check: str = "False") -> tuple[dict, bool]:
+        hallucination_check: str = "False",
+        use_protecting_group_feature: bool = False) -> tuple[dict, bool]:
     """Single run function to run DeepRetro on a molecule
 
     Parameters
@@ -129,7 +136,8 @@ def single_run_DeepRetro(
         molecule=molecule,
         LLM=llm,
         stability_flag=stability_flag,
-        hallucination_check=hallucination_check)
+        hallucination_check=hallucination_check,
+        use_protecting_group_feature=use_protecting_group_feature)
     result_dict = {
         'type':
         'mol',

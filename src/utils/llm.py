@@ -10,7 +10,7 @@ from src.variables import USER_PROMPT_V4, SYS_PROMPT_V4
 from src.variables import USER_PROMPT_OPENAI, SYS_PROMPT_OPENAI
 from src.variables import USER_PROMPT_DEEPSEEK, SYS_PROMPT_DEEPSEEK
 from src.variables import ADDON_PROMPT_7_MEMBER, USER_PROMPT_DEEPSEEK_V4
-from src.variables import ERROR_MAP
+from src.variables import ERROR_MAP, PROTECTING_GROUP_CONTEXT
 from src.cache import cache_results
 from src.utils.utils_molecule import validity_check, detect_seven_member_rings
 from src.utils.job_context import logger as context_logger
@@ -108,7 +108,8 @@ def obtain_prompt(LLM: str):
 def call_LLM(molecule: str,
              LLM: str = "claude-opus-4-20250514",
              temperature: float = 0.0,
-             messages: Optional[list[dict]] = None) -> tuple[int, str]:
+             messages: Optional[list[dict]] = None,
+             use_protecting_group_feature: bool = False) -> tuple[int, str]:
     """Calls the LLM model to predict the next step
 
     Parameters
@@ -138,17 +139,16 @@ def call_LLM(molecule: str,
     else:
         add_on = ""
 
-    # # Check for protecting groups and add context
-    # # if protect_group_flag.lower() == "true":
-    # #     masked_smiles = mask_protecting_groups_multisymbol(molecule)
-    # # else:
-    # #     masked_smiles = molecule
-    # if masked_smiles != molecule and masked_smiles != "INVALID_SMILES":
-    #     log_message(
-    #         f"Detected protecting groups in molecule: {molecule} -> {masked_smiles}",
-    #         logger)
-    #     protecting_group_context = f"\n\nPROTECTING GROUP CONTEXT:\nThe molecule contains protecting groups that have been masked:\nOriginal SMILES: {molecule}\nMasked SMILES: {masked_smiles}\n\nSymbol mapping:\n- '$' represents OMe (methoxy) groups\n- '%' represents OBn (benzyl ether) groups\n- '&' represents OEt (ethoxy) groups\n\nIMPORTANT: In your retrosynthetic analysis:\n1. Return ACTUAL SMILES strings (not the masked symbols) in the 'data' field\n2. Include deprotection steps in your explanations when appropriate\n3. Consider the protecting groups as synthetic handles that may need removal\n4. Suggest specific deprotection conditions:\n   - OMe ($): Acidic hydrolysis (HCl/MeOH, TFA)\n   - OBn (%): Hydrogenolysis (H2/Pd-C), Birch reduction\n   - OEt (&): Acidic hydrolysis (HCl/EtOH), basic hydrolysis (NaOH/EtOH)\n5. When suggesting deprotection steps, use the unmask_protecting_groups_multisymbol() function to convert symbols back to full SMILES\n6. Consider protecting group compatibility and orthogonal deprotection strategies"
-    #     add_on += protecting_group_context
+    # Check for protecting groups and add context
+    if use_protecting_group_feature:
+        masked_smiles = mask_protecting_groups_multisymbol(molecule)
+        if masked_smiles != molecule and masked_smiles != "INVALID_SMILES":
+            log_message(
+                f"Detected protecting groups in molecule: {molecule} -> {masked_smiles}",
+                logger)
+            protecting_group_context = PROTECTING_GROUP_CONTEXT.format(
+                molecule=molecule, masked_smiles=masked_smiles)
+            add_on += protecting_group_context
 
     sys_prompt_final, user_prompt_final, max_completion_tokens = obtain_prompt(
         LLM)
@@ -370,7 +370,8 @@ def llm_pipeline(
     LLM: str = "claude-opus-4-20250514",
     messages: Optional[list[dict]] = None,
     stability_flag: str = "False",
-    hallucination_check: str = "False"
+    hallucination_check: str = "False",
+    use_protecting_group_feature: bool = False
 ) -> tuple[list[list[str]], list[str], list[float]]:
     """Pipeline to call LLM and validate the results
 
@@ -409,10 +410,12 @@ def llm_pipeline(
 
         # --------------------
         # Call LLM
-        status_code, res_text = call_LLM(molecule,
-                                         current_model,
-                                         messages=messages,
-                                         temperature=run)
+        status_code, res_text = call_LLM(
+            molecule,
+            current_model,
+            messages=messages,
+            temperature=run,
+            use_protecting_group_feature=use_protecting_group_feature)
         if status_code != 200:
             log_message(f"Error in calling LLM: {res_text}", logger)
             run += 0.1
