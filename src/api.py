@@ -17,9 +17,9 @@ load_dotenv()
 from src.main import main
 from src.cache import clear_cache_for_molecule
 
-
 # Load advanced settings config once at startup
 config_path = os.path.join(root_dir, 'config', 'advanced_settings.json')
+
 
 def validate_config(config):
     """Validate the advanced config structure and contents."""
@@ -27,30 +27,40 @@ def validate_config(config):
     for key in required_keys:
         if key not in config:
             raise ValueError(f"Missing required config key: {key}")
-    
+
     # Validate defaults exist in models
     defaults = config['defaults']
-    required_defaults = ['model_type', 'advanced_prompt', 'model_version', 'stability_flag', 'hallucination_check']
+    required_defaults = [
+        'model_type', 'advanced_prompt', 'model_version', 'stability_flag',
+        'hallucination_check'
+    ]
     for default_key in required_defaults:
         if default_key not in defaults:
             raise ValueError(f"Missing required default: {default_key}")
-    
+
     # Validate default model exists in llm_models
     default_model = defaults['model_type']
     if default_model not in config['llm_models']:
-        raise ValueError(f"Default model '{default_model}' not found in llm_models")
-    
+        raise ValueError(
+            f"Default model '{default_model}' not found in llm_models")
+
     # Validate default AZ model exists in az_models
     default_az = defaults['model_version']
     if default_az not in config['az_models']:
-        raise ValueError(f"Default AZ model '{default_az}' not found in az_models")
-    
+        raise ValueError(
+            f"Default AZ model '{default_az}' not found in az_models")
+
     # Validate all models have required fields
     for model_key, model_config in config['llm_models'].items():
-        required_model_fields = ['internal_name', 'display_name', 'supports_advanced_prompt', 'supports_stability_check', 'supports_hallucination_check']
+        required_model_fields = [
+            'internal_name', 'display_name', 'supports_advanced_prompt',
+            'supports_stability_check', 'supports_hallucination_check'
+        ]
         for field in required_model_fields:
             if field not in model_config:
-                raise ValueError(f"Model '{model_key}' missing required field: {field}")
+                raise ValueError(
+                    f"Model '{model_key}' missing required field: {field}")
+
 
 try:
     with open(config_path) as f:
@@ -157,7 +167,8 @@ def retrosynthesis_api():
     data = request.get_json()
     if not data or 'smiles' not in data:
         return jsonify({
-            "error": "SMILES string is required. Please include a 'smiles' field"
+            "error":
+            "SMILES string is required. Please include a 'smiles' field"
         }), 400
 
     smiles = data['smiles']
@@ -189,11 +200,19 @@ def retrosynthesis_api():
     if stability_flag and not model_config['supports_stability_check']:
         stability_flag = False
 
-    hallucination_check = data.get('hallucination_check', defaults['hallucination_check'])
+    hallucination_check = data.get('hallucination_check',
+                                   defaults['hallucination_check'])
     if isinstance(hallucination_check, str):
         hallucination_check = hallucination_check.lower() == "true"
     if hallucination_check and not model_config['supports_hallucination_check']:
         hallucination_check = False
+
+    # Handle protecting group feature flag
+    use_protecting_group_feature = data.get('use_protecting_group_feature',
+                                            False)
+    if isinstance(use_protecting_group_feature, str):
+        use_protecting_group_feature = use_protecting_group_feature.lower(
+        ) == "true"
 
     try:
         result = main(
@@ -201,12 +220,14 @@ def retrosynthesis_api():
             llm=llm,
             az_model=az_model,
             stability_flag=str(stability_flag),
-            hallucination_check=str(hallucination_check)
-        )
+            hallucination_check=str(hallucination_check),
+            use_protecting_group_feature=use_protecting_group_feature)
         save_result(smiles, result)
     except Exception as e:
         print(e)
-        return jsonify({"error": f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500
+        return jsonify(
+            {"error":
+             f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500
     return jsonify(result), 200
 
 
@@ -259,7 +280,7 @@ def rerun_retrosynthesis():
     # -----------------
     # Standardized config access using indirect pattern
     defaults = advanced_config['defaults']
-    
+
     # Model type validation and selection using config
     model_type = data.get('model_type', defaults['model_type'])
     if model_type not in advanced_config['llm_models']:
@@ -272,7 +293,9 @@ def rerun_retrosynthesis():
     if isinstance(advanced_prompt, str):
         advanced_prompt = advanced_prompt.lower() == "true"
     if advanced_prompt and not model_config['supports_advanced_prompt']:
-        return jsonify({"error": f"Model {model_type} does not support advanced prompts"}), 400
+        return jsonify(
+            {"error":
+             f"Model {model_type} does not support advanced prompts"}), 400
     if advanced_prompt:
         llm += ":adv"
 
@@ -286,23 +309,38 @@ def rerun_retrosynthesis():
     if isinstance(stability_flag, str):
         stability_flag = stability_flag.lower() == "true"
     if stability_flag and not model_config['supports_stability_check']:
-        return jsonify({"error": f"Model {model_type} does not support stability checks"}), 400
+        return jsonify(
+            {"error":
+             f"Model {model_type} does not support stability checks"}), 400
 
     # Hallucination check flag using config
-    hallucination_check = data.get('hallucination_check', defaults['hallucination_check'])
+    hallucination_check = data.get('hallucination_check',
+                                   defaults['hallucination_check'])
     if isinstance(hallucination_check, str):
         hallucination_check = hallucination_check.lower() == "true"
     if hallucination_check and not model_config['supports_hallucination_check']:
-        return jsonify({"error": f"Model {model_type} does not support hallucination checks"}), 400
+        return jsonify({
+            "error":
+            f"Model {model_type} does not support hallucination checks"
+        }), 400
+
+    # Handle protecting group feature flag
+    use_protecting_group_feature = data.get('use_protecting_group_feature',
+                                            False)
+    if isinstance(use_protecting_group_feature, str):
+        use_protecting_group_feature = use_protecting_group_feature.lower(
+        ) == "true"
 
     # -----------------
     # Rerun retrosynthesis
     try:
-        result = main(smiles=molecule,
-                      llm=llm,
-                      az_model=az_model,
-                      stability_flag=str(stability_flag),
-                      hallucination_check=str(hallucination_check))
+        result = main(
+            smiles=molecule,
+            llm=llm,
+            az_model=az_model,
+            stability_flag=str(stability_flag),
+            hallucination_check=str(hallucination_check),
+            use_protecting_group_feature=use_protecting_group_feature)
 
         # Store the result in partial.json
         save_result(molecule, result)
@@ -405,21 +443,26 @@ def partial_rerun():
         # -----------------
         # Standardized config access using indirect pattern
         defaults = advanced_config['defaults']
-        
+
         # Model type validation and selection using config
         model_type = data.get('model_type', defaults['model_type'])
         if model_type not in advanced_config['llm_models']:
-            return jsonify({"error": f"Unsupported model type: {model_type}"}), 400
+            return jsonify({"error":
+                            f"Unsupported model type: {model_type}"}), 400
         model_config = advanced_config['llm_models'][model_type]
         llm = model_config['internal_name']
         print(f"SELECTED LLM: {llm}")
 
         # Advanced prompt handling using config
-        advanced_prompt = data.get('advanced_prompt', defaults['advanced_prompt'])
+        advanced_prompt = data.get('advanced_prompt',
+                                   defaults['advanced_prompt'])
         if isinstance(advanced_prompt, str):
             advanced_prompt = advanced_prompt.lower() == "true"
         if advanced_prompt and not model_config['supports_advanced_prompt']:
-            return jsonify({"error": f"Model {model_type} does not support advanced prompts"}), 400
+            return jsonify({
+                "error":
+                f"Model {model_type} does not support advanced prompts"
+            }), 400
         print(f"USING ADVANCED PROMPT: {advanced_prompt}")
 
         if advanced_prompt:
@@ -437,16 +480,33 @@ def partial_rerun():
         if isinstance(stability_flag, str):
             stability_flag = stability_flag.lower() == "true"
         if stability_flag and not model_config['supports_stability_check']:
-            return jsonify({"error": f"Model {model_type} does not support stability checks"}), 400
+            return jsonify({
+                "error":
+                f"Model {model_type} does not support stability checks"
+            }), 400
         print(f"USING STABILITY FLAG: {stability_flag}")
 
         # Hallucination check flag using config
-        hallucination_check = data.get('hallucination_check', defaults['hallucination_check'])
+        hallucination_check = data.get('hallucination_check',
+                                       defaults['hallucination_check'])
         if isinstance(hallucination_check, str):
             hallucination_check = hallucination_check.lower() == "true"
-        if hallucination_check and not model_config['supports_hallucination_check']:
-            return jsonify({"error": f"Model {model_type} does not support hallucination checks"}), 400
+        if hallucination_check and not model_config[
+                'supports_hallucination_check']:
+            return jsonify({
+                "error":
+                f"Model {model_type} does not support hallucination checks"
+            }), 400
         print(f"USING HALLUCINATION CHECK: {hallucination_check}")
+
+        # Handle protecting group feature flag
+        use_protecting_group_feature = data.get('use_protecting_group_feature',
+                                                False)
+        if isinstance(use_protecting_group_feature, str):
+            use_protecting_group_feature = use_protecting_group_feature.lower(
+            ) == "true"
+        print(
+            f"USING PROTECTING GROUP FEATURE: {use_protecting_group_feature}")
 
         # Run new synthesis on the starting molecule
         print(f"\nCALLING MAIN FUNCTION WITH PARAMETERS:")
@@ -455,13 +515,17 @@ def partial_rerun():
         print(f"  AZ MODEL: {az_model}")
         print(f"  STABILITY FLAG: {stability_flag}")
         print(f"  HALLUCINATION CHECK: {hallucination_check}")
+        print(
+            f"  USE PROTECTING GROUP FEATURE: {use_protecting_group_feature}")
 
         try:
-            new_result = main(smiles=start_molecule,
-                              llm=llm,
-                              az_model=az_model,
-                              stability_flag=str(stability_flag),
-                              hallucination_check=str(hallucination_check))
+            new_result = main(
+                smiles=start_molecule,
+                llm=llm,
+                az_model=az_model,
+                stability_flag=str(stability_flag),
+                hallucination_check=str(hallucination_check),
+                use_protecting_group_feature=use_protecting_group_feature)
             print(
                 f"NEW RETROSYNTHESIS RESULT: {json.dumps(new_result, indent=2)}"
             )
