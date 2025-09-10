@@ -18,6 +18,7 @@ RUN conda env create -f environment.yml
 COPY src/ ./src/
 COPY viewer/ ./viewer/
 COPY data/ ./data/
+COPY config/ ./config/
 COPY start_backend.sh .
 COPY .project-root .
 
@@ -29,7 +30,7 @@ RUN conda run -n deepretro python -c "from aizynthfinder.utils.download_public_d
 
 
 # Create necessary directories
-RUN mkdir -p logs cache_api
+RUN mkdir -p logs cache_api config
 
 # Make start script executable
 RUN chmod +x start_backend.sh

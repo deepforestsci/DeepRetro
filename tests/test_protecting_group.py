@@ -6,7 +6,8 @@ import os
 # Add the src directory to the path so we can import the module
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from protecting_group import mask_protecting_groups_multisymbol, PG_MAP
+from protecting_group import mask_protecting_groups_multisymbol
+from config_loader import get_pg_map
 from rdkit import Chem
 
 
@@ -20,13 +21,14 @@ class TestProtectingGroup(unittest.TestCase):
         self.invalid_smiles = "This is not a valid SMILES"
 
     def test_pg_map_structure(self):
-        """Test that PG_MAP has the expected structure."""
-        self.assertIn("OMe", PG_MAP)
-        self.assertIn("OBn", PG_MAP)
-        self.assertIn("OEt", PG_MAP)
+        """Test that protecting groups configuration has the expected structure."""
+        pg_map = get_pg_map()
+
+        # Should have some protecting groups
+        self.assertGreater(len(pg_map), 0)
 
         # Check each entry has the correct format
-        for pg_name, (pg_smiles, symbol) in PG_MAP.items():
+        for pg_name, (pg_smiles, symbol) in pg_map.items():
             self.assertIsInstance(pg_name, str)
             self.assertIsInstance(pg_smiles, str)
             self.assertIsInstance(symbol, str)

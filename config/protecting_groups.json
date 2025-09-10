@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "description": "Protecting groups configuration for Protect*",
+  "protecting_groups": {
+    "OMe": {
+      "smiles": "CO",
+      "symbol": "$",
+      "description": "Methoxy protecting group",
+      "deprotection": "Acidic hydrolysis (HCl/MeOH, TFA)"
+    },
+    "OBn": {
+      "smiles": "COCc1ccccc1",
+      "symbol": "%",
+      "description": "Benzyl protecting group",
+      "deprotection": "Hydrogenolysis (H2/Pd-C), Birch reduction"
+    },
+    "OEt_COC": {
+      "smiles": "COC",
+      "symbol": "&",
+      "description": "Ethoxy protecting group (COC pattern)",
+      "deprotection": "Acidic hydrolysis (HCl/EtOH), basic hydrolysis (NaOH/EtOH)"
+    },
+    "OEt_CCO": {
+      "smiles": "CCO",
+      "symbol": "&",
+      "description": "Ethoxy protecting group (CCO pattern)",
+      "deprotection": "Acidic hydrolysis (HCl/EtOH), basic hydrolysis (NaOH/EtOH)"
+    }
+  }
+}

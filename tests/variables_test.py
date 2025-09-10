@@ -1,6 +1,20 @@
 # Valid sample smile string
 VALID_SMILE_STRING = 'CC(=O)CC'
 
+# Protecting group test molecules
+PROTECTING_GROUP_TEST_MOLECULES = {
+    "simple_methoxy": "COC",  # Should become "&"
+    "simple_benzyl": "COCc1ccccc1",  # Should become "%"  
+    "simple_ethoxy_cco": "CCO",  # Should become "&"
+    "simple_ethoxy_coc": "COC",  # Should become "&"
+    "complex_with_pg": "COCc1ccc(COC)cc1",  # Contains both patterns
+    "no_protecting_groups": "CC(=O)O",  # Should stay unchanged
+    "melatonin_with_pg":
+    "COC1=CC2=C(NC=C2CCNC(C)=O)C=C1",  # Real drug with methoxy
+    "naproxen_with_pg":
+    "COC1=CC2=C(C=C1)C=C(C=C2)[C@H](C)C(O)=O"  # Real drug with methoxy
+}
+
 # Claude model
 CLAUDE_MODEL = "claude-3-opus-20240229"
 
@@ -17,7 +31,6 @@ DEEPSEEK_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1"
 DEEPSEEK_ADV_MODEL = "deepinfra/deepseek-ai/DeepSeek-R1:adv"
 
 DEEPSEEK_FIREWORKS_MODEL = "fireworks_ai/accounts/fireworks/models/deepseek-r1:adv"
-
 
 # Valid claude model response
 VALID_CLAUDE_RESPONSE = 'Here is the single-step retrosynthesis analysis for the molecule CC(=O)CC:\n\n<cot>\n<thinking>\nThe target molecule CC(=O)CC contains a ketone functional group. Possible retrosynthetic disconnections to consider are:\n1) Disconnection of the C-C bond adjacent to the ketone, which could arise from an aldol condensation reaction.\n2) Disconnection of the C-C bond on the other side of the ketone, which could come from a Grignard addition to a carboxylic acid derivative like an ester.\n3) Reduction of the ketone to an alcohol, which could then be derived from an oxidation of the corresponding secondary alcohol.\n</thinking>\n\n<thinking>\nFor the aldol disconnection, the precursors would be acetone (CC(=O)C) and acetaldehyde (CC=O). The reaction would proceed via enolate formation of the acetone, followed by nucleophilic addition to the acetaldehyde. A subsequent dehydration step would give the α,β-unsaturated ketone product.\n</thinking>\n\n<thinking>\nFor the Grignard addition, the precursors would be propanoyl chloride (CCC(=O)Cl) and methylmagnesium bromide (CMgBr). The Grignard reagent would add to the carbonyl, followed by an acidic workup to give the final ketone product.  \n</thinking>\n\n<thinking>\nFor the alcohol reduction, the precursor would be butan-2-ol (CC(O)CC). Oxidation, potentially using a chromium reagent like pyridinium chlorochromate (PCC) or a Swern oxidation, would convert the secondary alcohol to the ketone.\n</thinking>\n\n</cot>\n\n<json>\n{\n  "data": [\n    ["CC(=O)C", "CC=O"],\n    ["CCC(=O)Cl", "CMgBr"],\n    ["CC(O)CC"]\n  ],\n  "explanation": [\n    "Aldol condensation of acetone and acetaldehyde, proceeding via enolate formation, nucleophilic addition, and dehydration",\n    "Grignard addition of methylmagnesium bromide to propanoyl chloride, followed by acidic workup",\n    "Oxidation of butan-2-ol, e.g. using PCC or Swern conditions"\n  ],\n  "confidence_scores": [\n    0.9,\n    0.7,\n    0.8\n  ]\n}\n</json>'
@@ -37,7 +50,6 @@ COT_AND_THINKING_VALID_CLAUDE_RESPONSE = 'Here is the single-step retrosynthesis
 JSON_TAG_MISSING_CLAUDE_RESPONSE = 'Here is the single-step retrosynthesis analysis for the molecule CC(=O)CC:\n\n<cot>\n<thinking>\nThe target molecule CC(=O)CC contains a ketone functional group. Possible retrosynthetic disconnections to consider are:\n1) Disconnection of the C-C bond adjacent to the ketone, which could arise from an aldol condensation reaction.\n2) Disconnection of the C-C bond on the other side of the ketone, which could come from a Grignard addition to a carboxylic acid derivative like an ester.\n3) Reduction of the ketone to an alcohol, which could then be derived from an oxidation of the corresponding secondary alcohol.\n</thinking>\n\n<thinking>\nFor the aldol disconnection, the precursors would be acetone (CC(=O)C) and acetaldehyde (CC=O). The reaction would proceed via enolate formation of the acetone, followed by nucleophilic addition to the acetaldehyde. A subsequent dehydration step would give the α,β-unsaturated ketone product.\n</thinking>\n\n<thinking>\nFor the Grignard addition, the precursors would be propanoyl chloride (CCC(=O)Cl) and methylmagnesium bromide (CMgBr). The Grignard reagent would add to the carbonyl, followed by an acidic workup to give the final ketone product.  \n</thinking>\n\n<thinking>\nFor the alcohol reduction, the precursor would be butan-2-ol (CC(O)CC). Oxidation, potentially using a chromium reagent like pyridinium chlorochromate (PCC) or a Swern oxidation, would convert the secondary alcohol to the ketone.\n</thinking>\n\n</cot>\n{\n  "data": [\n    ["CC(=O)C", "CC=O"],\n    ["CCC(=O)Cl", "CMgBr"],\n    ["CC(O)CC"]\n  ],\n  "explanation": [\n    "Aldol condensation of acetone and acetaldehyde, proceeding via enolate formation, nucleophilic addition, and dehydration",\n    "Grignard addition of methylmagnesium bromide to propanoyl chloride, followed by acidic workup",\n    "Oxidation of butan-2-ol, e.g. using PCC or Swern conditions"\n  ],\n  "confidence_scores": [\n    0.9,\n    0.7,\n    0.8\n  ]\n}\n'
 
 EMPTY_JSON_BODY_RESPONSE = 'Here is the single-step retrosynthesis analysis for the molecule CC(=O)CC:\n\n<cot>\n<thinking>\nThe target molecule CC(=O)CC contains a ketone functional group. Possible retrosynthetic disconnections to consider are:\n1) Disconnection of the C-C bond adjacent to the ketone, which could arise from an aldol condensation reaction.\n2) Disconnection of the C-C bond on the other side of the ketone, which could come from a Grignard addition to a carboxylic acid derivative like an ester.\n3) Reduction of the ketone to an alcohol, which could then be derived from an oxidation of the corresponding secondary alcohol.\n</thinking>\n\n<thinking>\nFor the aldol disconnection, the precursors would be acetone (CC(=O)C) and acetaldehyde (CC=O). The reaction would proceed via enolate formation of the acetone, followed by nucleophilic addition to the acetaldehyde. A subsequent dehydration step would give the α,β-unsaturated ketone product.\n</thinking>\n\n<thinking>\nFor the Grignard addition, the precursors would be propanoyl chloride (CCC(=O)Cl) and methylmagnesium bromide (CMgBr). The Grignard reagent would add to the carbonyl, followed by an acidic workup to give the final ketone product.  \n</thinking>\n\n<thinking>\nFor the alcohol reduction, the precursor would be butan-2-ol (CC(O)CC). Oxidation, potentially using a chromium reagent like pyridinium chlorochromate (PCC) or a Swern oxidation, would convert the secondary alcohol to the ketone.\n</thinking>\n\n</cot>\n\n<json></json>'
-
 
 # Advance prompt vars
 CLAUDE_ADV_VALID_RESPONSE = '''<cot>
@@ -160,7 +172,6 @@ The proposed routes balance strategic elegance with practical considerations. Th
 </json>
 '''
 
-
 CLAUDE_ADV_RESPONSE_COT_TAG_MISSING = '''
 <thinking type="initial_assessment">
 The target molecule CC(=O)CC has the following structural features:
@@ -281,7 +292,6 @@ The proposed routes balance strategic elegance with practical considerations. Th
 </json>
 '''
 
-
 CLAUDE_ADV_RESPONSE_THINKING_TAG_MISSING = '''<cot>
 The target molecule CC(=O)CC has the following structural features:
 - Linear 4-carbon chain 
@@ -393,7 +403,6 @@ The proposed routes balance strategic elegance with practical considerations. Th
 }
 </json>
 '''
-
 
 CLAUDE_ADV_RESPONSE_COT_BODY_MISSING = '''<cot>
 </cot>
@@ -676,3 +685,77 @@ MOLS_SMALL = {
     "Sulfadiazine": "NC1=CC=C(C=C1)S(=O)(=O)NC1=NC=CC=N1",
     "Phenprocoumon": "CCC(C1=CC=CC=C1)C1=C(O)C2=C(OC1=O)C=CC=C2",
 }
+
+# Mock LLM response with protecting group context
+VALID_PROTECTING_GROUP_RESPONSE = '''<cot>
+<thinking>
+The target molecule COCc1ccccc1 appears to be a benzyl methyl ether. Based on the protecting group context provided, this molecule has been masked as % indicating it contains OBn (benzyl ether) protecting group pattern.
+
+The protecting group context shows:
+- '%' represents OBn groups
+- OBn (%): Hydrogenolysis (H2/Pd-C), Birch reduction
+
+For retrosynthetic analysis, I need to consider that this protecting group may need to be removed or could be a synthetic handle for further transformations.
+
+Possible disconnections:
+1. Williamson ether synthesis - disconnect the C-O bond
+2. Benzylation of methanol - using benzyl halide
+3. Methylation of benzyl alcohol - using methyl halide
+</thinking>
+</cot>
+
+<json>
+{
+  "data": [
+    ["CO", "BrCc1ccccc1"],
+    ["OCc1ccccc1", "CI"],
+    ["CO", "ClCc1ccccc1"]
+  ],
+  "explanation": [
+    "Williamson ether synthesis: Methanol reacts with benzyl bromide under basic conditions (K2CO3, NaH)",
+    "Methylation: Benzyl alcohol reacts with methyl iodide under basic conditions (K2CO3, NaH)", 
+    "Alternative Williamson: Methanol reacts with benzyl chloride under basic conditions (NaOH, K2CO3)"
+  ],
+  "confidence_scores": [
+    0.95,
+    0.90,
+    0.90
+  ]
+}
+</json>'''
+
+# Mock LLM response without protecting groups
+VALID_NON_PROTECTING_GROUP_RESPONSE = '''<cot>
+<thinking>
+The target molecule CC(=O)O is acetic acid. This is a simple carboxylic acid with no protecting groups detected.
+
+Standard retrosynthetic analysis for acetic acid:
+1. Oxidation of ethanol
+2. Hydrolysis of acetyl chloride  
+3. Carbonylation of methanol
+4. Hydrolysis of acetonitrile
+</thinking>
+</cot>
+
+<json>
+{
+  "data": [
+    ["CCO"],
+    ["CC(=O)Cl"], 
+    ["CO", "C=O"],
+    ["CC#N"]
+  ],
+  "explanation": [
+    "Oxidation of ethanol using strong oxidizing agents (K2Cr2O7, KMnO4)",
+    "Hydrolysis of acetyl chloride with water under controlled conditions",
+    "Carbonylation of methanol with CO using metal catalysts (Rh, Ir)",
+    "Hydrolysis of acetonitrile under acidic or basic conditions"
+  ],
+  "confidence_scores": [
+    0.95,
+    0.90,
+    0.85,
+    0.80
+  ]
+}
+</json>'''
