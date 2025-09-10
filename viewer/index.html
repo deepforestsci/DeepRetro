@@ -187,6 +187,8 @@
           document.getElementById(`promptToggle${serverNum}`).disabled = !modelConfig.supports_advanced_prompt;
           document.getElementById(`stabilityToggle${serverNum}`).disabled = !modelConfig.supports_stability_check;
           document.getElementById(`hallucinationToggle${serverNum}`).disabled = !modelConfig.supports_hallucination_check;
+          // Protecting group feature is always enabled for now
+          document.getElementById(`protectingGroupToggle${serverNum}`).disabled = false;
       }
 
       /**
@@ -213,6 +215,7 @@
             model_version: "USPTO",
             stability_flag: false,
             hallucination_check: false,
+            use_protecting_group_feature: false,
           };
 
           // Create a div for this server's settings
@@ -333,6 +336,22 @@
                     </div>
                 `;
           serverDiv.appendChild(hallucinationRow);
+
+          // Create protecting group feature toggle
+          const protectingGroupRow = document.createElement("div");
+          protectingGroupRow.className = "toggle-row";
+          protectingGroupRow.innerHTML = `
+                    <div class="toggle-switch">
+                        <label class="switch">
+                            <input type="checkbox" id="protectingGroupToggle${serverNum}" ${
+            defaults.use_protecting_group_feature ? "checked" : ""
+          } data-server="${serverNum}">  
+                            <span class="slider"></span>
+                        </label>
+                        <span class="toggle-label">Protecting Group Feature</span>
+                    </div>
+                `;
+          serverDiv.appendChild(protectingGroupRow);
 
           // Add a horizontal line after each server except the last one
           if (index < config.instances.length - 1) {
@@ -654,6 +673,9 @@
           const hallucinationToggle = document.getElementById(
             `hallucinationToggle${serverNum}`
           );
+          const protectingGroupToggle = document.getElementById(
+            `protectingGroupToggle${serverNum}`
+          );
 
           // Verify endpoint exists
           if (!config.endpoints || !config.endpoints.partial_rerun) {
@@ -729,6 +751,9 @@
               : "false",
             hallucination_check: hallucinationToggle
               ? hallucinationToggle.checked.toString()
+              : "false",
+            use_protecting_group_feature: protectingGroupToggle
+              ? protectingGroupToggle.checked.toString()
               : "false",
           };
 
@@ -1300,6 +1325,9 @@
               const hallucinationToggle = document.getElementById(
                 `hallucinationToggle${serverNum}`
               );
+              const protectingGroupToggle = document.getElementById(
+                `protectingGroupToggle${serverNum}`
+              );
 
               const requestBody = {
                 smiles,
@@ -1308,6 +1336,7 @@
                 model_version: modelSelect.value,
                 stability_flag: stabilityToggle.checked.toString(),
                 hallucination_check: hallucinationToggle.checked.toString(),
+                use_protecting_group_feature: protectingGroupToggle.checked.toString(),
               };
 
               // --- TEMPORARY DEBUG LOGGING --- START ---
@@ -1574,6 +1603,9 @@
           const hallucinationToggle = document.getElementById(
             `hallucinationToggle${pathwayNumber}`
           );
+          const protectingGroupToggle = document.getElementById(
+            `protectingGroupToggle${pathwayNumber}`
+          );
 
           // Get endpoint
           const endpoint = `${config.instances[pathwayNumber - 1].url}${
@@ -1596,6 +1628,7 @@
               model_version: modelSelect.value,
               stability_flag: stabilityToggle.checked.toString(),
               hallucination_check: hallucinationToggle.checked.toString(),
+              use_protecting_group_feature: protectingGroupToggle.checked.toString(),
             }),
             // --- End modified request body ---
           });
