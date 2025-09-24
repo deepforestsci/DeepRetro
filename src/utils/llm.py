@@ -17,7 +17,6 @@ from src.utils.job_context import logger as context_logger
 from src.utils.stability_checks import stability_checker
 from src.utils.hallucination_checks import hallucination_checker
 from src.protecting_group import mask_protecting_groups_multisymbol
-from src.deprotecting_group import unmask_protecting_groups_multisymbol, get_protecting_group_info
 
 load_dotenv()
 
