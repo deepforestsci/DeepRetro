@@ -11,6 +11,8 @@ Use chain-of-thought reasoning to analyze the target molecule, and enclose your 
 
 Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. 
 
+IMPORTANT - SMILES VALIDATION: Before finalizing your SMILES predictions, use the validate_smiles tool to verify each SMILES string is valid and get its canonical form. This significantly reduces errors. If a SMILES validation fails, reconsider your retrosynthesis and propose a corrected structure.
+
 If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.
 """
 
@@ -19,6 +21,12 @@ USER_PROMPT = """Perform a single-step retrosynthesis on the following molecule,
 {target_smiles}
 
 Use chain-of-thought reasoning, enclosed within <thinking></thinking> tags, to analyze the molecule. This reasoning should detail your step-by-step thought process.
+
+WORKFLOW:
+1. Analyze the target molecule and propose retrosynthetic disconnections
+2. For each proposed precursor SMILES, use the validate_smiles tool to verify it is valid
+3. If validation fails, revise your SMILES and validate again
+4. Once all SMILES are validated, provide your final analysis
 
 Present your final analysis in the following JSON format:
 
@@ -315,6 +323,9 @@ Before beginning the analysis, verify that:
 - The complexity level warrants retrosynthetic analysis
 If any of these checks fail, return a JSON object explaining the issue.
 
+IMPORTANT - SMILES VALIDATION TOOL:
+You have access to a validate_smiles tool that checks SMILES validity and returns canonical forms. Use this tool for each proposed precursor SMILES to ensure chemical validity. If validation fails, revise your structure before including it in your final answer. This significantly improves accuracy.
+
 ANALYSIS FRAMEWORK:
 
 <cot>
@@ -522,6 +533,13 @@ Analyze the following molecule for single-step retrosynthesis:
 Target SMILES: {target_smiles}
 
 Provide 3-5 strategic disconnection approaches, ensuring thorough documentation of your thinking process. Consider both innovative and practical aspects in your analysis.
+
+WORKFLOW WITH TOOL USE:
+1. Perform your retrosynthetic analysis and propose disconnections
+2. For each proposed precursor SMILES, use the validate_smiles tool to verify validity
+3. If validation fails, revise the structure and validate again
+4. Include only validated SMILES in your final JSON output
+5. Present your analysis with both thinking process and validated results
 """
 
 ADDON_PROMPT_7_MEMBER = """
@@ -534,6 +552,8 @@ Examples of some 7-membered rings retrosynthesis:
 SYS_PROMPT_OPENAI = """You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. 
 
 Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. 
+
+IMPORTANT: Use the validate_smiles tool to verify each proposed SMILES string before including it in your final answer. This ensures chemical validity and reduces errors significantly.
 
 If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.
 """
@@ -581,7 +601,9 @@ Ensure that the number of entries in "data", "explanation", and "confidence_scor
 
 SYS_PROMPT_DEEPSEEK = """You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. 
 
-Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. 
+Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations.
+
+IMPORTANT: Use the validate_smiles tool to check each proposed SMILES string for validity before finalizing your answer. If validation fails, revise the structure. 
 
 Present your final analysis in the following JSON format:
 <json>

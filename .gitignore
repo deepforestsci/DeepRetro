@@ -11,3 +11,7 @@ pistachio/
 results/
 node_modules/
 coverage/
+
+*.out
+out/
+*.log

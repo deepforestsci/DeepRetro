@@ -54,6 +54,20 @@
     "model_version": "USPTO",
     "stability_flag": true,
     "hallucination_check": true,
-    "use_protecting_group_feature": false
+    "use_protecting_group_feature": false,
+    "use_agentic_pipeline": true,
+    "max_tool_iterations": 5
+  },
+  "agentic_settings": {
+    "enable_tools": true,
+    "max_tool_iterations": 5,
+    "available_tools": ["validate_smiles"],
+    "description": "Agentic pipeline uses tool calling to validate SMILES and reduce hallucinations"
+  },
+  "langfuse_settings": {
+    "enable_tool_logging": true,
+    "log_tool_inputs": true,
+    "log_tool_outputs": true,
+    "description": "Langfuse logging captures all tool calls and results for debugging"
   }
 } 

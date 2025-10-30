@@ -26,7 +26,9 @@ def main(smiles: str,
          az_model: str = "USPTO",
          stability_flag: str = "False",
          hallucination_check: str = "False",
-         use_protecting_group_feature: bool = False) -> Any:
+         use_protecting_group_feature: bool = False,
+         use_agentic_pipeline: bool = True,
+         max_tool_iterations: int = 5) -> Any:
     """Run the retrosynthesis on specific molecule.
 
     Parameters
@@ -35,6 +37,18 @@ def main(smiles: str,
         SMILES string of the molecule.
     llm : str, optional
         LLM model, by default "claude-opus-4-20250514"
+    az_model : str, optional
+        AZ model to be used, by default "USPTO"
+    stability_flag : str, optional
+        Stability flag, by default "False"
+    hallucination_check : str, optional
+        Hallucination check, by default "False"
+    use_protecting_group_feature : bool, optional
+        Whether to use protecting group feature, by default False
+    use_agentic_pipeline : bool, optional
+        Whether to use agentic pipeline with tools, by default True
+    max_tool_iterations : int, optional
+        Maximum number of tool iterations for agentic pipeline, by default 5
 
     Returns
     -------
@@ -54,6 +68,8 @@ def main(smiles: str,
         az_model=az_model,
         stability_flag=stability_flag,
         hallucination_check=hallucination_check,
-        use_protecting_group_feature=use_protecting_group_feature)
+        use_protecting_group_feature=use_protecting_group_feature,
+        use_agentic_pipeline=use_agentic_pipeline,
+        max_tool_iterations=max_tool_iterations)
     logging.info(f"Retrosynthesis result: {res}")
     return res

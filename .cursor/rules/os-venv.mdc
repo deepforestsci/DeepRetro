@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+- When running commands in a terminal, look at the environment to determine what the operating system is, and use this information to run appropriate terminal commands.
+- Always be sure that the Python venv environment called `.venv` is activated first using `source ../.venv/bin/activate`.

@@ -213,6 +213,16 @@ def retrosynthesis_api():
     if isinstance(use_protecting_group_feature, str):
         use_protecting_group_feature = use_protecting_group_feature.lower(
         ) == "true"
+    
+    # Handle agentic pipeline flag
+    use_agentic_pipeline = data.get('use_agentic_pipeline', True)
+    if isinstance(use_agentic_pipeline, str):
+        use_agentic_pipeline = use_agentic_pipeline.lower() == "true"
+    
+    # Handle max tool iterations
+    max_tool_iterations = data.get('max_tool_iterations', 5)
+    if isinstance(max_tool_iterations, str):
+        max_tool_iterations = int(max_tool_iterations)
 
     try:
         result = main(
@@ -221,7 +231,9 @@ def retrosynthesis_api():
             az_model=az_model,
             stability_flag=str(stability_flag),
             hallucination_check=str(hallucination_check),
-            use_protecting_group_feature=use_protecting_group_feature)
+            use_protecting_group_feature=use_protecting_group_feature,
+            use_agentic_pipeline=use_agentic_pipeline,
+            max_tool_iterations=max_tool_iterations)
         save_result(smiles, result)
     except Exception as e:
         print(e)
@@ -330,6 +342,16 @@ def rerun_retrosynthesis():
     if isinstance(use_protecting_group_feature, str):
         use_protecting_group_feature = use_protecting_group_feature.lower(
         ) == "true"
+    
+    # Handle agentic pipeline flag
+    use_agentic_pipeline = data.get('use_agentic_pipeline', True)
+    if isinstance(use_agentic_pipeline, str):
+        use_agentic_pipeline = use_agentic_pipeline.lower() == "true"
+    
+    # Handle max tool iterations
+    max_tool_iterations = data.get('max_tool_iterations', 5)
+    if isinstance(max_tool_iterations, str):
+        max_tool_iterations = int(max_tool_iterations)
 
     # -----------------
     # Rerun retrosynthesis
@@ -340,7 +362,9 @@ def rerun_retrosynthesis():
             az_model=az_model,
             stability_flag=str(stability_flag),
             hallucination_check=str(hallucination_check),
-            use_protecting_group_feature=use_protecting_group_feature)
+            use_protecting_group_feature=use_protecting_group_feature,
+            use_agentic_pipeline=use_agentic_pipeline,
+            max_tool_iterations=max_tool_iterations)
 
         # Store the result in partial.json
         save_result(molecule, result)
@@ -507,6 +531,18 @@ def partial_rerun():
             ) == "true"
         print(
             f"USING PROTECTING GROUP FEATURE: {use_protecting_group_feature}")
+        
+        # Handle agentic pipeline flag
+        use_agentic_pipeline = data.get('use_agentic_pipeline', True)
+        if isinstance(use_agentic_pipeline, str):
+            use_agentic_pipeline = use_agentic_pipeline.lower() == "true"
+        print(f"USING AGENTIC PIPELINE: {use_agentic_pipeline}")
+        
+        # Handle max tool iterations
+        max_tool_iterations = data.get('max_tool_iterations', 5)
+        if isinstance(max_tool_iterations, str):
+            max_tool_iterations = int(max_tool_iterations)
+        print(f"MAX TOOL ITERATIONS: {max_tool_iterations}")
 
         # Run new synthesis on the starting molecule
         print(f"\nCALLING MAIN FUNCTION WITH PARAMETERS:")
@@ -517,6 +553,8 @@ def partial_rerun():
         print(f"  HALLUCINATION CHECK: {hallucination_check}")
         print(
             f"  USE PROTECTING GROUP FEATURE: {use_protecting_group_feature}")
+        print(f"  USE AGENTIC PIPELINE: {use_agentic_pipeline}")
+        print(f"  MAX TOOL ITERATIONS: {max_tool_iterations}")
 
         try:
             new_result = main(
@@ -525,7 +563,9 @@ def partial_rerun():
                 az_model=az_model,
                 stability_flag=str(stability_flag),
                 hallucination_check=str(hallucination_check),
-                use_protecting_group_feature=use_protecting_group_feature)
+                use_protecting_group_feature=use_protecting_group_feature,
+                use_agentic_pipeline=use_agentic_pipeline,
+                max_tool_iterations=max_tool_iterations)
             print(
                 f"NEW RETROSYNTHESIS RESULT: {json.dumps(new_result, indent=2)}"
             )
