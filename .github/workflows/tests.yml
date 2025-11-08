@@ -47,6 +47,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          # Upgrade Cython first to fix CGRtools compilation issue
+          pip install --upgrade Cython
           pip install -r requirements_tests.txt
 
       - name: Run tests
