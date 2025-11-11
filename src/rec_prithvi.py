@@ -1,5 +1,6 @@
 """ Recursive function to run Prithvi on a molecule """
 
+from rdkit import Chem
 from src.utils.llm import llm_pipeline
 from src.utils.az import run_az
 from src.utils.job_context import logger as context_logger
@@ -50,13 +51,24 @@ def rec_run_prithvi(
     if visited is None:
         visited = set()
     logger = context_logger.get()
+    
+    # Canonicalize SMILES for proper cycle detection (handles different representations of same molecule)
+    try:
+        mol = Chem.MolFromSmiles(molecule)
+        if mol:
+            canonical_molecule = Chem.MolToSmiles(mol, canonical=True)
+        else:
+            canonical_molecule = molecule
+    except Exception:
+        canonical_molecule = molecule
+    
     if depth >= max_depth:
         logger.warning(f"Max depth {max_depth} reached for {molecule}")
         return {'type': 'mol', 'smiles': molecule, 'is_chemical': True, 'in_stock': False, 'children': []}, False
-    if molecule in visited:
-        logger.warning(f"Cycle detected: {molecule} already processed")
+    if canonical_molecule in visited:
+        logger.warning(f"Cycle detected: {molecule} (canonical: {canonical_molecule}) already processed")
         return {'type': 'mol', 'smiles': molecule, 'is_chemical': True, 'in_stock': False, 'children': []}, False
-    visited.add(molecule)
+    visited.add(canonical_molecule)
     solved, result_dict = run_az(smiles=molecule, az_model=az_model)
     result_dict = result_dict[0]
     if not solved:
