@@ -47,8 +47,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          # Use --no-build-isolation so pip uses the Cython version from requirements
-          # This ensures CGRtools builds with the correct Cython version
+          # Use --no-build-isolation to ensure Cython <3.2.0 is used for building CGRtools
+          # This is a known workaround for CGRtools compilation issues with Cython 3.2.0+
           pip install -r requirements_tests.txt --no-build-isolation
 
       - name: Run tests
