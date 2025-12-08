@@ -24,6 +24,7 @@ RUN conda env update -n deepretro -f environment.yml
 
 # Copy application code
 COPY src/ ./src/
+COPY config/ ./config/
 COPY viewer/ ./viewer/
 COPY data/ ./data/
 COPY start_backend.sh .
