@@ -31,10 +31,10 @@ COPY .project-root .
 
 # Create models directory before downloading
 RUN mkdir -p aizynthfinder/models/
+
 # Download USPTO models during build
-
-RUN conda run -n deepretro python -c "from aizynthfinder.utils.download_public_data import download_public_data; download_public_data('aizynthfinder/models/')"
-
+# (depricated) RUN conda run -n deepretro python -c "from aizynthfinder.utils.download_public_data import download_public_data; download_public_data('aizynthfinder/models/')"
+RUN conda run -n deepretro python -m aizynthfinder.tools.download_public_data aizynthfinder/models/
 
 # Create necessary directories
 RUN mkdir -p logs cache_api
