@@ -12,7 +12,15 @@ RUN apt-get update && apt-get install -y \
 # Copy environment file and create conda environment
 COPY environment.yml .
 RUN apt-get update && apt-get install -y build-essential
-RUN conda env create -f environment.yml
+
+RUN conda create -n deepretro python=3.9
+
+# install cgrtools
+RUN conda run --name deepretro pip install "Cython>=3.0.0,<3.2.0"
+RUN conda run --name deepretro pip install --no-build-isolation CGRtools
+
+# install other dependencies
+RUN conda env update -n deepretro -f environment.yml
 
 # Copy application code
 COPY src/ ./src/
