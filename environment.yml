@@ -13,7 +13,7 @@ dependencies:
     - aizynthfinder
     - anthropic
     - openai
-    - litellm==1.80.7
+    - litellm==1.78.0
     - tqdm
     - matplotlib
     - python-dotenv
