@@ -224,7 +224,9 @@ def retrosynthesis_api():
             use_protecting_group_feature=use_protecting_group_feature)
         save_result(smiles, result)
     except Exception as e:
-        print(e)
+        print(f"ERROR in retrosynthesis:")
+        print(f"  EXCEPTION: {str(e)}")
+        print(f"  TRACEBACK: {traceback.format_exc()}")
         return jsonify(
             {"error":
              f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500
@@ -345,7 +347,9 @@ def rerun_retrosynthesis():
         # Store the result in partial.json
         save_result(molecule, result)
     except Exception as e:
-        print(e)
+        print(f"ERROR in rerun_retrosynthesis:")
+        print(f"  EXCEPTION: {str(e)}")
+        print(f"  TRACEBACK: {traceback.format_exc()}")
         return jsonify(
             {"error":
              f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500

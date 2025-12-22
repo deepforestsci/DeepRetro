@@ -33,17 +33,16 @@ def run_az(smiles: str,
         A tuple containing the status of the retrosynthesis, 
         the results dictionary
     """
+    logger = context_logger.get()
     try:
         config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
         with open(config_path, "r") as file:
-            logger = context_logger.get()
             logger.info(f"AZ_MODEL_CONFIG_PATH found: {config_path}")
             config_filename = config_path
     except FileNotFoundError:
         logger.error(f"AZ_MODEL_CONFIG_PATH not found at {config_path}")
         try:
             with open(AZ_MODEL_CONFIG_PATH, "r") as file:
-                logger = context_logger.get()
                 logger.info(
                     f"AZ_MODEL_CONFIG_PATH found: {AZ_MODEL_CONFIG_PATH}")
                 config_filename = AZ_MODEL_CONFIG_PATH
