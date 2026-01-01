@@ -13,7 +13,7 @@ dependencies:
     - aizynthfinder
     - anthropic
     - openai
-    - litellm
+    - litellm==1.78.0
     - tqdm
     - matplotlib
     - python-dotenv
@@ -25,5 +25,3 @@ dependencies:
     - langfuse
     - joblib
     - requests
-    - cgrtools
-
