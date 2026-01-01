@@ -1,0 +1,28 @@
+{
+  "sessions": {
+    "default": {
+      "generation_name": "retrosynthesis",
+      "project": "DeepRetro",
+      "version": "0.0.1",
+      "trace_name": "retrosynthesis_pipeline",
+      "trace_user_id": "system",
+      "session_id": "default"
+    },
+    "metadata": {
+      "generation_name": "metadata_prediction",
+      "project": "DeepRetro",
+      "version": "0.0.1",
+      "trace_name": "metadata_pipeline",
+      "trace_user_id": "system",
+      "session_id": "metadata_agent"
+    },
+    "retrosynthesis": {
+      "generation_name": "retrosynthesis",
+      "project": "DeepRetro",
+      "version": "0.0.1",
+      "trace_name": "retrosynthesis_pipeline",
+      "trace_user_id": "system",
+      "session_id": "retrosynthesis_pipeline"
+    }
+  }
+} 
