@@ -10,6 +10,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
+import traceback
 import time
 from typing import Any, Dict, List, Tuple, Optional
 
@@ -160,7 +162,6 @@ def collect_checker_data_for_target(
     try:
         print(f"[checker] Starting job_id={job_id} for target={target_smiles!r}")
 
-        # Run the core retrosynthesis (multi-step)
         result_dict, solved = rec_run_prithvi(
             molecule=target_smiles,
             job_id=job_id,
@@ -185,15 +186,25 @@ def collect_checker_data_for_target(
     )
 
     for product_smiles, reactant_smiles, step_id, parent_step_id, depth in steps:
-        stability_results: Dict[str, Any] = {}
-        for rs in reactant_smiles:
-            stability_results[rs] = check_molecule_stability(rs)
+        try:
+            stability_results: Dict[str, Any] = {}
+            for rs in reactant_smiles:
+                try:
+                    stability_results[rs] = check_molecule_stability(rs)
+                except Exception as e:
+                    stability_results[rs] = {"error": str(e), "error_type": type(e).__name__}
 
-        combined_reactants = ".".join(reactant_smiles)
-        hallucination_result = calculate_hallucination_score(
-            reactant_smiles=combined_reactants,
-            product_smiles=product_smiles,
-        )
+            combined_reactants = ".".join(reactant_smiles)
+            try:
+                hallucination_result = calculate_hallucination_score(
+                    reactant_smiles=combined_reactants,
+                    product_smiles=product_smiles,
+                )
+            except Exception as e:
+                hallucination_result = {"error": str(e), "error_type": type(e).__name__}
+        except Exception as e:
+            print(f"[warning] Skipping step {step_id} due to error: {e}", file=sys.stderr)
+            continue
 
         record: Dict[str, Any] = {
             "timestamp": timestamp,
@@ -254,18 +265,78 @@ def main() -> None:
     import gc
 
     with open(args.output, "a", encoding="utf-8") as out_f:
+        total = len(entries)
+        successful = 0
+        failed = 0
+        failed_compounds: List[Dict[str, str]] = []
+
         for idx, (smiles, mol_id) in enumerate(entries):
-            records = collect_checker_data_for_target(
-                target_smiles=smiles,
-                target_id=mol_id,
-                llm=args.llm,
-                az_model=args.az_model,
-            )
-            for rec in records:
-                out_f.write(json.dumps(rec) + "\n")
-            out_f.flush()
-            del records
-            gc.collect()
+            compound_id = mol_id or f"compound_{idx + 1}"
+            print(f"\n[{idx + 1}/{total}] Processing {compound_id}: {smiles}")
+
+            try:
+                records = collect_checker_data_for_target(
+                    target_smiles=smiles,
+                    target_id=mol_id,
+                    llm=args.llm,
+                    az_model=args.az_model,
+                )
+                for rec in records:
+                    out_f.write(json.dumps(rec) + "\n")
+                out_f.flush()
+                successful += 1
+                print(f"[✓] Successfully processed {compound_id} ({len(records)} steps)")
+            except KeyboardInterrupt:
+                print("\n[!] Interrupted by user. Stopping.")
+                sys.exit(1)
+            except Exception as e:
+                failed += 1
+                error_info = {
+                    "compound_id": compound_id,
+                    "smiles": smiles,
+                    "error": str(e),
+                    "error_type": type(e).__name__,
+                }
+                failed_compounds.append(error_info)
+                
+                print(f"[✗] FAILED: {compound_id}", file=sys.stderr)
+                print(f"    SMILES: {smiles}", file=sys.stderr)
+                print(f"    Error: {str(e)}", file=sys.stderr)
+                print(f"    Type: {type(e).__name__}", file=sys.stderr)
+                if "--verbose" in sys.argv or "-v" in sys.argv:
+                    traceback.print_exc()
+                continue
+            finally:
+                if 'records' in locals():
+                    del records
+                gc.collect()
+
+        print(f"\n{'='*60}")
+        print(f"[Summary] Processed {total} compounds:")
+        print(f"  ✓ Successful: {successful}")
+        print(f"  ✗ Failed: {failed}")
+        print(f"{'='*60}")
+        
+        if failed_compounds:
+            print(f"\n[Failed Compounds List]")
+            for i, fail_info in enumerate(failed_compounds, 1):
+                print(f"  {i}. {fail_info['compound_id']}: {fail_info['smiles']}")
+                print(f"     Error: {fail_info['error']}")
+            
+            failed_file = args.output.replace(".jsonl", "_failed.txt")
+            try:
+                with open(failed_file, "w", encoding="utf-8") as f:
+                    f.write("Failed Compounds\n")
+                    f.write("=" * 60 + "\n\n")
+                    for fail_info in failed_compounds:
+                        f.write(f"Compound ID: {fail_info['compound_id']}\n")
+                        f.write(f"SMILES: {fail_info['smiles']}\n")
+                        f.write(f"Error Type: {fail_info['error_type']}\n")
+                        f.write(f"Error: {fail_info['error']}\n")
+                        f.write("-" * 60 + "\n")
+                print(f"\n[Info] Failed compounds saved to: {failed_file}")
+            except Exception as e:
+                print(f"[Warning] Could not write failed compounds file: {e}", file=sys.stderr)
 
 
 if __name__ == "__main__":

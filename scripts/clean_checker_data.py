@@ -25,9 +25,17 @@ def main():
             # stability_raw is a dict: reactant_smiles -> stability_dict
             stability_raw = rec.get("stability_raw", {}) or {}
 
-            # reactant_smiles_canonical is a list aligned with reactant_smiles
+            # reactant_smiles_canonical is a list of all reactants for this reaction step
             reactants_canonical = rec.get("reactant_smiles_canonical", [])
-
+            
+            # Join all reactants together (using "." as separator, common in SMILES)
+            all_reactants = ".".join(reactants_canonical) if reactants_canonical else ""
+            
+            # Aggregate stability data across all reactants
+            stability_scores = []
+            stability_assessments = []
+            all_stability_issues = []
+            
             for rcanon in reactants_canonical:
                 stab = stability_raw.get(rcanon, {})  # prefer canonical key if present
                 if not stab:
@@ -36,22 +44,46 @@ def main():
                         if key == rcanon:
                             stab = val
                             break
-
-                stability_score = stab.get("stability_score")
-                stability_assessment = stab.get("assessment")
+                
+                score = stab.get("stability_score")
+                if score is not None:
+                    stability_scores.append(score)
+                
+                assessment = stab.get("assessment")
+                if assessment:
+                    stability_assessments.append(assessment)
+                
                 issues = stab.get("issues", []) or []
-                stability_issues = "; ".join(issues)
+                if issues:
+                    # Prefix issues with reactant SMILES for clarity
+                    for issue in issues:
+                        all_stability_issues.append(f"{rcanon}: {issue}")
+            
+            # Calculate average stability score
+            avg_stability_score = sum(stability_scores) / len(stability_scores) if stability_scores else None
+            
+            # Determine overall assessment (use worst case if mixed)
+            overall_assessment = None
+            if stability_assessments:
+                if "Potentially unstable" in stability_assessments:
+                    overall_assessment = "Potentially unstable"
+                elif "Moderately stable" in stability_assessments:
+                    overall_assessment = "Moderately stable"
+                else:
+                    overall_assessment = "Likely stable"
+            
+            stability_issues = "; ".join(all_stability_issues) if all_stability_issues else ""
 
-                rows.append({
-                    "target_smiles_canonical": target,
-                    "product_smiles_canonical": product,
-                    "reactant_smiles_canonical": rcanon,
-                    "stability_score": stability_score,
-                    "stability_assessment": stability_assessment,
-                    "stability_issues": stability_issues,
-                    "hallucination_score": hallucination_score,
-                    "hallucination_severity": hallucination_severity,
-                })
+            rows.append({
+                "target_smiles_canonical": target,
+                "product_smiles_canonical": product,
+                "reactant_smiles_canonical": all_reactants,
+                "stability_score": avg_stability_score,
+                "stability_assessment": overall_assessment,
+                "stability_issues": stability_issues,
+                "hallucination_score": hallucination_score,
+                "hallucination_severity": hallucination_severity,
+            })
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with OUTPUT_PATH.open("w", encoding="utf-8", newline="") as out_f:
