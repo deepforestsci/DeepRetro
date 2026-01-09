@@ -18,15 +18,28 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock, Mock
 import numpy as np
 
-from src.utils.ml_hallucination import (
-    load_ml_model,
-    predict_hallucination_ml,
-    ml_hallucination_checker
-)
+# Try to import ML hallucination module, skip tests if dependencies missing
+try:
+    from src.utils.ml_hallucination import (
+        load_ml_model,
+        predict_hallucination_ml,
+        ml_hallucination_checker
+    )
+    ML_HALLUCINATION_AVAILABLE = True
+except ImportError as e:
+    ML_HALLUCINATION_AVAILABLE = False
+    # Create dummy functions to prevent import errors
+    def load_ml_model(*args, **kwargs):
+        return False, "Dependencies not available"
+    def predict_hallucination_ml(*args, **kwargs):
+        return {'is_hallucination': None, 'probability': None, 'method': 'ml_model', 'error': 'Dependencies not available'}
+    def ml_hallucination_checker(*args, **kwargs):
+        return 500, []
 from src.utils.hallucination_checks import hallucination_checker
 from src.main import main
 
 
+@unittest.skipIf(not ML_HALLUCINATION_AVAILABLE, "ML hallucination dependencies not available")
 class TestMlHallucinationModelLoading(unittest.TestCase):
     """Test ML model loading functionality."""
 
@@ -122,6 +135,7 @@ class TestMlHallucinationModelLoading(unittest.TestCase):
         self.assertTrue(success3)
 
 
+@unittest.skipIf(not ML_HALLUCINATION_AVAILABLE, "ML hallucination dependencies not available")
 class TestMlHallucinationPrediction(unittest.TestCase):
     """Test ML hallucination prediction functionality."""
 
@@ -216,6 +230,7 @@ class TestMlHallucinationPrediction(unittest.TestCase):
             self.assertIsNotNone(result.get('error'))
 
 
+@unittest.skipIf(not ML_HALLUCINATION_AVAILABLE, "ML hallucination dependencies not available")
 class TestMlHallucinationChecker(unittest.TestCase):
     """Test ML hallucination checker wrapper function."""
 
@@ -294,6 +309,7 @@ class TestMlHallucinationChecker(unittest.TestCase):
         self.assertLessEqual(len(valid_pathways), len(res_smiles))
 
 
+@unittest.skipIf(not ML_HALLUCINATION_AVAILABLE, "ML hallucination dependencies not available")
 class TestHallucinationCheckerIntegration(unittest.TestCase):
     """Test integration of ML model with hallucination_checker."""
 
