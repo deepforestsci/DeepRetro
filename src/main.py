@@ -26,7 +26,8 @@ def main(smiles: str,
          az_model: str = "USPTO",
          stability_flag: str = "False",
          hallucination_check: str = "False",
-         use_protecting_group_feature: bool = False) -> Any:
+         use_protecting_group_feature: bool = False,
+         hallucination_method: str = "rule_based") -> Any:
     """Run the retrosynthesis on specific molecule.
 
     Parameters
@@ -54,6 +55,7 @@ def main(smiles: str,
         az_model=az_model,
         stability_flag=stability_flag,
         hallucination_check=hallucination_check,
-        use_protecting_group_feature=use_protecting_group_feature)
+        use_protecting_group_feature=use_protecting_group_feature,
+        hallucination_method=hallucination_method)
     logging.info(f"Retrosynthesis result: {res}")
     return res

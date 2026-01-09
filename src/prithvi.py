@@ -22,7 +22,8 @@ def run_prithvi(molecule: str,
                 az_model: str = "USPTO",
                 stability_flag: str = "False",
                 hallucination_check: str = "False",
-                use_protecting_group_feature: bool = False) -> dict:
+                use_protecting_group_feature: bool = False,
+                hallucination_method: str = "rule_based") -> dict:
     """Run prithvi services to generate retrosynthesis on a molecule.
 
     Parameters
@@ -58,7 +59,8 @@ def run_prithvi(molecule: str,
             az_model=az_model,
             stability_flag=stability_flag,
             hallucination_check=hallucination_check,
-            use_protecting_group_feature=use_protecting_group_feature)
+            use_protecting_group_feature=use_protecting_group_feature,
+            hallucination_method=hallucination_method)
         output_data = format_output(result_dict)
         output_data = add_metadata(output_data)
         return output_data

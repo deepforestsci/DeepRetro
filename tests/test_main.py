@@ -24,7 +24,8 @@ class TestMain(unittest.TestCase):
                       az_model=self.test_az_model,
                       stability_flag=self.test_stability_flag,
                       hallucination_check=self.test_hallucination_check,
-                      use_protecting_group_feature=False)
+                      use_protecting_group_feature=False,
+                      hallucination_method="rule_based")
 
         self.assertEqual(result, {"result": "test_result"})
         mock_setup_logging.assert_called_once()
@@ -34,7 +35,8 @@ class TestMain(unittest.TestCase):
             az_model=self.test_az_model,
             stability_flag=self.test_stability_flag,
             hallucination_check=self.test_hallucination_check,
-            use_protecting_group_feature=False)
+            use_protecting_group_feature=False,
+            hallucination_method="rule_based")
 
     @patch('src.main.run_prithvi')
     @patch('src.main.setup_logging')
@@ -49,7 +51,8 @@ class TestMain(unittest.TestCase):
                  az_model=self.test_az_model,
                  stability_flag=self.test_stability_flag,
                  hallucination_check=self.test_hallucination_check,
-                 use_protecting_group_feature=False)
+                 use_protecting_group_feature=False,
+                 hallucination_method="rule_based")
 
         self.assertEqual(str(context.exception), "Test error")
         mock_setup_logging.assert_called_once()
@@ -59,7 +62,8 @@ class TestMain(unittest.TestCase):
             az_model=self.test_az_model,
             stability_flag=self.test_stability_flag,
             hallucination_check=self.test_hallucination_check,
-            use_protecting_group_feature=False)
+            use_protecting_group_feature=False,
+            hallucination_method="rule_based")
 
     @patch('src.main.run_prithvi')
     @patch('src.main.setup_logging')
@@ -74,7 +78,8 @@ class TestMain(unittest.TestCase):
                  az_model=self.test_az_model,
                  stability_flag=self.test_stability_flag,
                  hallucination_check=self.test_hallucination_check,
-                 use_protecting_group_feature=False)
+                 use_protecting_group_feature=False,
+                 hallucination_method="rule_based")
 
         self.assertEqual(str(context.exception), "Logging setup error")
         mock_setup_logging.assert_called_once()

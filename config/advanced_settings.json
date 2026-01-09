@@ -54,6 +54,7 @@
     "model_version": "USPTO",
     "stability_flag": true,
     "hallucination_check": true,
-    "use_protecting_group_feature": false
+    "use_protecting_group_feature": false,
+    "hallucination_method": "rule_based"
   }
 } 

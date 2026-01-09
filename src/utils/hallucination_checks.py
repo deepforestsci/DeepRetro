@@ -698,9 +698,10 @@ def interpret_score(score):
         return "Complete hallucination or invalid transformation"
 
 
-def hallucination_checker(product: str, res_smiles: list):
+def hallucination_checker(product: str, res_smiles: list, use_ml_model: bool = False):
     """Wrapper function to run the hallucination checks on the incoming product and reactant smiles list.
     
+    Can use either rule-based or ML model-based classification.
 
     Parameters
     ----------
@@ -708,7 +709,24 @@ def hallucination_checker(product: str, res_smiles: list):
         SMILES string of the product molecule
     res_smiles : list
         List of list of reactant SMILES strings
+    use_ml_model : bool, optional
+        If True, use ML model for classification. If False, use rule-based (default: False)
     """
+    # Import here to avoid circular imports
+    if use_ml_model:
+        try:
+            from src.utils.ml_hallucination import ml_hallucination_checker
+            return ml_hallucination_checker(product, res_smiles)
+        except ImportError as e:
+            logger = context_logger.get() if ENABLE_LOGGING else None
+            log_message(f"Error importing ML hallucination checker: {e}. Falling back to rule-based.", logger)
+            # Fall through to rule-based
+        except Exception as e:
+            logger = context_logger.get() if ENABLE_LOGGING else None
+            log_message(f"Error using ML model: {e}. Falling back to rule-based.", logger)
+            # Fall through to rule-based
+    
+    # Rule-based hallucination checking (original implementation)
     logger = context_logger.get() if ENABLE_LOGGING else None
     valid_pathways = []
     for idx, smile_list in enumerate(res_smiles):
@@ -737,7 +755,7 @@ def hallucination_checker(product: str, res_smiles: list):
         else:
             if is_valid_smiles(smile_list):
                 hallucination_report = calculate_hallucination_score(
-                    smile_list)
+                    smile_list, product)
                 log_message(f"Hallucination report: {hallucination_report}",
                             logger)
 

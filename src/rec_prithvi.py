@@ -14,6 +14,7 @@ def rec_run_prithvi(
         stability_flag: str = "False",
         hallucination_check: str = "False",
         use_protecting_group_feature: bool = False,
+        hallucination_method: str = "rule_based",
         visited=None,
         depth=0,
         max_depth=50) -> tuple[dict, bool]:
@@ -78,7 +79,8 @@ def rec_run_prithvi(
             LLM=llm,
             stability_flag=stability_flag,
             hallucination_check=hallucination_check,
-            use_protecting_group_feature=use_protecting_group_feature)
+            use_protecting_group_feature=use_protecting_group_feature,
+            hallucination_method=hallucination_method)
         result_dict = {
             'type':
             'mol',
@@ -113,6 +115,7 @@ def rec_run_prithvi(
                         hallucination_check=hallucination_check,
                         use_protecting_group_feature=
                         use_protecting_group_feature,
+                        hallucination_method=hallucination_method,
                         visited=visited,
                         depth=depth + 1,
                         max_depth=max_depth)
@@ -131,6 +134,7 @@ def rec_run_prithvi(
                     stability_flag=stability_flag,
                     hallucination_check=hallucination_check,
                     use_protecting_group_feature=use_protecting_group_feature,
+                    hallucination_method=hallucination_method,
                     visited=visited,
                     depth=depth + 1,
                     max_depth=max_depth)
@@ -181,7 +185,8 @@ def single_run_DeepRetro(
         LLM=llm,
         stability_flag=stability_flag,
         hallucination_check=hallucination_check,
-        use_protecting_group_feature=use_protecting_group_feature)
+        use_protecting_group_feature=use_protecting_group_feature,
+        hallucination_method="rule_based")  # Default for single_run_DeepRetro
     result_dict = {
         'type':
         'mol',

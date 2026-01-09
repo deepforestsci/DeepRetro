@@ -214,6 +214,11 @@ def retrosynthesis_api():
         use_protecting_group_feature = use_protecting_group_feature.lower(
         ) == "true"
 
+    # Handle hallucination method (rule_based or ml_model)
+    hallucination_method = data.get('hallucination_method', defaults.get('hallucination_method', 'rule_based'))
+    if hallucination_method not in ['rule_based', 'ml_model']:
+        hallucination_method = 'rule_based'  # Default fallback
+
     try:
         result = main(
             smiles=smiles,
@@ -221,7 +226,8 @@ def retrosynthesis_api():
             az_model=az_model,
             stability_flag=str(stability_flag),
             hallucination_check=str(hallucination_check),
-            use_protecting_group_feature=use_protecting_group_feature)
+            use_protecting_group_feature=use_protecting_group_feature,
+            hallucination_method=hallucination_method)
         save_result(smiles, result)
     except Exception as e:
         print(e)
@@ -331,6 +337,11 @@ def rerun_retrosynthesis():
         use_protecting_group_feature = use_protecting_group_feature.lower(
         ) == "true"
 
+    # Handle hallucination method (rule_based or ml_model)
+    hallucination_method = data.get('hallucination_method', defaults.get('hallucination_method', 'rule_based'))
+    if hallucination_method not in ['rule_based', 'ml_model']:
+        hallucination_method = 'rule_based'  # Default fallback
+
     # -----------------
     # Rerun retrosynthesis
     try:
@@ -340,7 +351,8 @@ def rerun_retrosynthesis():
             az_model=az_model,
             stability_flag=str(stability_flag),
             hallucination_check=str(hallucination_check),
-            use_protecting_group_feature=use_protecting_group_feature)
+            use_protecting_group_feature=use_protecting_group_feature,
+            hallucination_method=hallucination_method)
 
         # Store the result in partial.json
         save_result(molecule, result)
@@ -508,6 +520,11 @@ def partial_rerun():
         print(
             f"USING PROTECTING GROUP FEATURE: {use_protecting_group_feature}")
 
+        # Handle hallucination method (rule_based or ml_model)
+        hallucination_method = data.get('hallucination_method', defaults.get('hallucination_method', 'rule_based'))
+        if hallucination_method not in ['rule_based', 'ml_model']:
+            hallucination_method = 'rule_based'  # Default fallback
+
         # Run new synthesis on the starting molecule
         print(f"\nCALLING MAIN FUNCTION WITH PARAMETERS:")
         print(f"  SMILES: {start_molecule}")
@@ -515,6 +532,7 @@ def partial_rerun():
         print(f"  AZ MODEL: {az_model}")
         print(f"  STABILITY FLAG: {stability_flag}")
         print(f"  HALLUCINATION CHECK: {hallucination_check}")
+        print(f"  HALLUCINATION METHOD: {hallucination_method}")
         print(
             f"  USE PROTECTING GROUP FEATURE: {use_protecting_group_feature}")
 
@@ -525,7 +543,8 @@ def partial_rerun():
                 az_model=az_model,
                 stability_flag=str(stability_flag),
                 hallucination_check=str(hallucination_check),
-                use_protecting_group_feature=use_protecting_group_feature)
+                use_protecting_group_feature=use_protecting_group_feature,
+                hallucination_method=hallucination_method)
             print(
                 f"NEW RETROSYNTHESIS RESULT: {json.dumps(new_result, indent=2)}"
             )
