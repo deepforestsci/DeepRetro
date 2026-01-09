@@ -11,15 +11,36 @@ from pathlib import Path
 import numpy as np
 from typing import Optional, Dict, Tuple
 
-from deepchem.feat import CircularFingerprint
-from xgboost import XGBClassifier
-
 from src.utils.utils_molecule import is_valid_smiles
 from src.utils.job_context import logger as context_logger
 import os
 
 ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
                                     "true").lower() == "false" else True
+
+# Lazy imports - only import when needed
+_CircularFingerprint = None
+_XGBClassifier = None
+
+
+def _import_dependencies():
+    """Lazy import of deepchem and xgboost dependencies."""
+    global _CircularFingerprint, _XGBClassifier
+    if _CircularFingerprint is None:
+        try:
+            from deepchem.feat import CircularFingerprint
+            _CircularFingerprint = CircularFingerprint
+        except ImportError:
+            _CircularFingerprint = False  # Mark as unavailable
+    
+    if _XGBClassifier is None:
+        try:
+            from xgboost import XGBClassifier
+            _XGBClassifier = XGBClassifier
+        except ImportError:
+            _XGBClassifier = False  # Mark as unavailable
+    
+    return _CircularFingerprint is not False and _XGBClassifier is not False
 
 
 def log_message(message: str, logger=None):
@@ -31,8 +52,8 @@ def log_message(message: str, logger=None):
 
 
 # Global variables to cache loaded model (lazy loading)
-_ml_model: Optional[XGBClassifier] = None
-_featurizer: Optional[CircularFingerprint] = None
+_ml_model: Optional[object] = None  # XGBClassifier when loaded
+_featurizer: Optional[object] = None  # CircularFingerprint when loaded
 _optimal_threshold: Optional[float] = None
 _model_loaded: bool = False
 
@@ -93,9 +114,12 @@ def load_ml_model(force_reload: bool = False) -> Tuple[bool, Optional[str]]:
             _ml_model = pickle.load(f)
         log_message(f"ML Model: Loaded model from {model_path}", logger)
         
-        # Load featurizer
+        # Load featurizer (it should be a CircularFingerprint instance)
         with open(featurizer_path, 'rb') as f:
             _featurizer = pickle.load(f)
+        # Verify it's the right type
+        if not isinstance(_featurizer, _CircularFingerprint):
+            return False, f"Featurizer is not a CircularFingerprint instance"
         log_message(f"ML Model: Loaded featurizer from {featurizer_path}", logger)
         
         # Load metadata
@@ -135,6 +159,15 @@ def predict_hallucination_ml(product_smiles: str, reactants_smiles: str) -> Dict
         - 'error': Optional[str] - Error message if prediction failed
     """
     logger = context_logger.get() if ENABLE_LOGGING else None
+    
+    # Check if dependencies are available
+    if not _import_dependencies():
+        return {
+            'is_hallucination': None,
+            'probability': None,
+            'method': 'ml_model',
+            'error': 'Required dependencies (deepchem, xgboost) are not installed'
+        }
     
     # Try to load model if not already loaded
     success, error_msg = load_ml_model()
