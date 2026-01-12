@@ -1,4 +1,4 @@
-# load up USPTO-50k test dataset
+# Single step retrosynthesis runner for USPTO-50k test dataset
 import rootutils
 import os
 import pandas as pd
@@ -11,17 +11,14 @@ from concurrent.futures import ThreadPoolExecutor
 root_dir = rootutils.setup_root(".",
                                 indicator=".project-root",
                                 pythonpath=True)
-from src.main import main
+from src.rec_prithvi import single_run_DeepRetro
 from src.cache import clear_cache_for_molecule
 
-df = pd.read_csv(f"{root_dir}/data/drug_hunter_172.csv")
-mols_dfs = df['smiles'].to_list()
-mapper = {
-    'm0p0': 'claude-3-opus-20240229',
-    'm0p1': 'anthropic/claude-3-7-sonnet-20250219:adv',
-    'm1p0': 'fireworks_ai/accounts/fireworks/models/deepseek-r1',
-    'm1p1': 'fireworks_ai/accounts/fireworks/models/deepseek-r1:adv',
-}
+# Load USPTO-50k test dataset (250 molecules subset)
+df = pd.read_csv(f"{root_dir}/data/uspto_50k_test_250.csv")
+mols_dfs = df['input'].to_list()  # Using 'input' column for target molecules
+
+# Model mapper
 mapper_new = {
     'claude3opus': 'claude-3-opus-20240229:adv',
     'deepseekr1': 'fireworks_ai/accounts/fireworks/models/deepseek-r1',
@@ -43,11 +40,11 @@ folder_list = [
 ]
 MAX_CONCURRENT_TASKS = 5  # Process 5 molecules in parallel
 
-results_dir = f"{root_dir}/results/DH172"
+results_dir = f"{root_dir}/results/single_step"
 
 
 async def process_molecule(mol, folder, run_no):
-    """Process a single molecule asynchronously."""
+    """Process a single molecule asynchronously using single_run_DeepRetro."""
     molecule = mol
     llm = mapper_new[folder.split(":")[0]]
     az_model = folder.split(":")[1]
@@ -57,21 +54,28 @@ async def process_molecule(mol, folder, run_no):
         clear_cache_for_molecule(molecule)
         print(f"Running {molecule} with {llm} and {az_model}")
 
-        # Run the potentially blocking main function in a thread pool
+        # Run the potentially blocking single_run_DeepRetro function in a thread pool
         loop = asyncio.get_event_loop()
         with ThreadPoolExecutor() as pool:
-            res_dict = await loop.run_in_executor(
+            res_dict, solved = await loop.run_in_executor(
                 pool,
-                functools.partial(main,
+                functools.partial(single_run_DeepRetro,
                                   molecule,
                                   llm=llm,
                                   az_model=az_model,
                                   hallucination_check="True",
                                   stability_flag="True"))
 
+        # Add solved status to the result dictionary
+        result_output = {
+            "molecule": molecule,
+            "solved": solved,
+            "result": res_dict
+        }
+
         output_path = f"{results_dir}/{folder}/run_{run_no}/{mol}.json"
         with open(output_path, "w") as f:
-            json.dump(res_dict, f, indent=4)
+            json.dump(result_output, f, indent=4)
 
     except Exception as e:
         print("Error in molecule:", mol)
@@ -113,3 +117,4 @@ async def main_async():
 # Run the async main function
 if __name__ == "__main__":
     asyncio.run(main_async())
+
