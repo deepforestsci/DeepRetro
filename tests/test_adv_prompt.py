@@ -21,10 +21,6 @@ def test_claude_adv_success():
         print("res_text is empty")
         status_code = 400
     
-    # Skip if API is unavailable (common in CI environments)
-    if status_code in (400, 401, 404, 500, 503):
-        pytest.skip(f"Claude API unavailable (status_code: {status_code})")
-    
     assert status_code == 200
 
 # OpenAI tests are commented, because OpenAI models are not being used.
@@ -47,9 +43,9 @@ def test_deepseek_adv_success():
         print("res_text is empty")
         status_code = 400
 
-    # Skip if API is unavailable (common in CI environments)
-    if status_code in (400, 401, 404, 500, 503):
-        pytest.skip(f"DeepSeek API unavailable (status_code: {status_code})")
+    # Skip test if model is not available (404/400 error)
+    if status_code == 400 or status_code == 404:
+        pytest.skip(f"DeepSeek model not available or not deployed (status_code: {status_code})")
 
     assert status_code == 200
 

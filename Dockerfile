@@ -12,10 +12,19 @@ RUN apt-get update && apt-get install -y \
 # Copy environment file and create conda environment
 COPY environment.yml .
 RUN apt-get update && apt-get install -y build-essential
-RUN conda env create -f environment.yml
+
+RUN conda create -n deepretro python=3.9
+
+# install cgrtools
+RUN conda run --name deepretro pip install "Cython>=3.0.0,<3.2.0"
+RUN conda run --name deepretro pip install --no-build-isolation CGRtools
+
+# install other dependencies
+RUN conda env update -n deepretro -f environment.yml
 
 # Copy application code
 COPY src/ ./src/
+COPY config/ ./config/
 COPY viewer/ ./viewer/
 COPY data/ ./data/
 COPY config/ ./config/
@@ -24,10 +33,10 @@ COPY .project-root .
 
 # Create models directory before downloading
 RUN mkdir -p aizynthfinder/models/
+
 # Download USPTO models during build
-
-RUN conda run -n deepretro python -c "from aizynthfinder.utils.download_public_data import download_public_data; download_public_data('aizynthfinder/models/')"
-
+# (depricated) RUN conda run -n deepretro python -c "from aizynthfinder.utils.download_public_data import download_public_data; download_public_data('aizynthfinder/models/')"
+RUN conda run -n deepretro python -m aizynthfinder.tools.download_public_data aizynthfinder/models/
 
 # Create necessary directories
 RUN mkdir -p logs cache_api config

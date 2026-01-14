@@ -143,7 +143,7 @@
       let advancedConfig = null;
 
       async function loadAdvancedConfig() {
-          const response = await fetch('/config/advanced_settings.json');
+          const response = await fetch('https://raw.githubusercontent.com/deepforestsci/DeepRetro/refs/heads/main/config/advanced_settings.json'); // Update in Future with Coors
           advancedConfig = await response.json();
           populateModelDropdowns();
       }
@@ -1777,6 +1777,35 @@
             initializeServerSettings();
           }
         }
+
+        // --- API KEY + BACKEND HEALTH CHECK ON LOAD ---
+        try {
+          const apiKey = localStorage.getItem("API_KEY") || "";
+          console.log("DEBUG (index.html): API_KEY length:", apiKey.length);
+
+          if (typeof config !== "undefined" && config.instances && config.instances.length > 0) {
+            const serverConfig = config.instances[0];
+            const healthPath = (config.endpoints && config.endpoints.health) || "/api/health";
+            const healthUrl = `${serverConfig.url}${healthPath}`;
+            console.log("DEBUG (index.html): Health URL:", healthUrl);
+
+            const resp = await fetch(healthUrl, {
+              method: "GET",
+              headers: {
+                "X-API-KEY": apiKey,
+              },
+            });
+
+            console.log("DEBUG (index.html): Health status:", resp.status);
+            const data = await resp.json().catch(() => ({}));
+            console.log("DEBUG (index.html): Health response:", data);
+          } else {
+            console.warn("DEBUG (index.html): Config instances not available for health check");
+          }
+        } catch (e) {
+          console.error("DEBUG (index.html): Health check failed:", e);
+        }
+        // --- END HEALTH CHECK ---
       });
     </script>
 

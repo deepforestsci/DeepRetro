@@ -5,6 +5,8 @@ services:
     build: .
     ports:
       - "5000:5000"
+    env_file:
+      - .env
     environment:
       - API_KEY=${API_KEY:-default-test-key}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}

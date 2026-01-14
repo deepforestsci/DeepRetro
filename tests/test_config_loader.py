@@ -480,7 +480,7 @@ class TestProtectingGroupIntegrationWithVariablesTest(unittest.TestCase):
                 "simple_benzyl": "%",  # COCc1ccccc1 should become %
                 "simple_ethoxy_cco": "&",  # CCO should become &  
                 "simple_ethoxy_coc": "&",  # COC should become &
-                "no_protecting_groups": "CC(=O)O",  # Should stay unchanged
+                "no_protecting_groups": "c1ccccc1",  # Should stay unchanged
             }
 
             for name, smiles in PROTECTING_GROUP_TEST_MOLECULES.items():
