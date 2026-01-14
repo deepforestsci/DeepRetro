@@ -174,15 +174,119 @@ class TestApiFunctions(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, mock_main.return_value)
         mock_mol_from_smiles.assert_called_once_with(smiles_input)
-        mock_main.assert_called_once_with(
-            smiles=smiles_input,
-            llm="anthropic/claude-sonnet-4-20250514",
-            az_model="USPTO",
-            stability_flag="True",
-            hallucination_check="True",
-            use_protecting_group_feature=False)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], smiles_input)
+        self.assertEqual(call_kwargs['llm'], "anthropic/claude-sonnet-4-20250514")
+        self.assertEqual(call_kwargs['az_model'], "USPTO")
+        self.assertEqual(call_kwargs['stability_flag'], "True")
+        self.assertEqual(call_kwargs['hallucination_check'], "True")
+        self.assertEqual(call_kwargs['use_protecting_group_feature'], False)
         mock_save_result.assert_called_once_with(smiles_input,
                                                  mock_main.return_value)
+
+    @patch('src.api.save_result')
+    @patch('src.api.main')
+    @patch('src.api.Chem.MolFromSmiles', return_value=True)
+    def test_retrosynthesis_hallucination_method_defaults_to_rule_based(self, mock_mol_from_smiles,
+                                                                        mock_main, mock_save_result):
+        """Test that hallucination_method defaults to 'rule_based' when not provided."""
+        mock_main.return_value = {"some_result": "data"}
+        smiles_input = "CCO"
+
+        response = self.client.post('/api/retrosynthesis',
+                                    headers={'X-API-KEY': self.api_key},
+                                    json={'smiles': smiles_input, 'hallucination_check': 'True'})
+
+        self.assertEqual(response.status_code, 200)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], smiles_input)
+        self.assertEqual(call_kwargs['hallucination_method'], 'rule_based')  # Should default to rule_based
+
+    @patch('src.api.save_result')
+    @patch('src.api.main')
+    @patch('src.api.Chem.MolFromSmiles', return_value=True)
+    def test_retrosynthesis_with_rule_based_method(self, mock_mol_from_smiles,
+                                                   mock_main, mock_save_result):
+        """Test API accepts and uses 'rule_based' hallucination method."""
+        mock_main.return_value = {"some_result": "data"}
+        smiles_input = "CCO"
+
+        response = self.client.post('/api/retrosynthesis',
+                                    headers={'X-API-KEY': self.api_key},
+                                    json={
+                                        'smiles': smiles_input,
+                                        'hallucination_check': 'True',
+                                        'hallucination_method': 'rule_based'
+                                    })
+
+        self.assertEqual(response.status_code, 200)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], smiles_input)
+        self.assertEqual(call_kwargs['hallucination_method'], 'rule_based')
+
+    @patch('src.api.save_result')
+    @patch('src.api.main')
+    @patch('src.api.Chem.MolFromSmiles', return_value=True)
+    def test_retrosynthesis_with_ml_model_method(self, mock_mol_from_smiles,
+                                                   mock_main, mock_save_result):
+        """Test API accepts and uses 'ml_model' hallucination method."""
+        mock_main.return_value = {"some_result": "data"}
+        smiles_input = "CCO"
+
+        response = self.client.post('/api/retrosynthesis',
+                                    headers={'X-API-KEY': self.api_key},
+                                    json={
+                                        'smiles': smiles_input,
+                                        'hallucination_check': 'True',
+                                        'hallucination_method': 'ml_model'
+                                    })
+
+        self.assertEqual(response.status_code, 200)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], smiles_input)
+        self.assertEqual(call_kwargs['hallucination_method'], 'ml_model')
+
+    @patch('src.api.save_result')
+    @patch('src.api.main')
+    @patch('src.api.Chem.MolFromSmiles', return_value=True)
+    def test_retrosynthesis_invalid_hallucination_method_fallback(self, mock_mol_from_smiles,
+                                                                  mock_main, mock_save_result):
+        """Test that invalid hallucination_method values fall back to 'rule_based'."""
+        mock_main.return_value = {"some_result": "data"}
+        smiles_input = "CCO"
+
+        # Test various invalid values
+        invalid_values = ['invalid', 'ml', 'rule', 'both', '', None, 123]
+        
+        for invalid_value in invalid_values:
+            with self.subTest(invalid_value=invalid_value):
+                mock_main.reset_mock()
+                payload = {
+                    'smiles': smiles_input,
+                    'hallucination_check': 'True',
+                    'hallucination_method': invalid_value
+                }
+                
+                response = self.client.post('/api/retrosynthesis',
+                                            headers={'X-API-KEY': self.api_key},
+                                            json=payload)
+                
+                self.assertEqual(response.status_code, 200)
+                # Check that main was called, then verify only the parameters that matter
+                mock_main.assert_called_once()
+                call_kwargs = mock_main.call_args[1]
+                self.assertEqual(call_kwargs['smiles'], smiles_input)
+                # Should fall back to 'rule_based' for invalid values
+                self.assertEqual(call_kwargs['hallucination_method'], 'rule_based',
+                                f"Invalid value '{invalid_value}' should fallback to 'rule_based'")
 
     @patch('src.api.save_result')
     @patch('src.api.main')
@@ -207,13 +311,15 @@ class TestApiFunctions(unittest.TestCase):
                                     json=payload)
 
         self.assertEqual(response.status_code, 200)
-        mock_main.assert_called_once_with(
-            smiles=smiles_input,
-            llm="fireworks_ai/accounts/fireworks/models/deepseek-r1:adv",
-            az_model="Pistachio_100+",
-            stability_flag="True",
-            hallucination_check="True",
-            use_protecting_group_feature=False)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], smiles_input)
+        self.assertEqual(call_kwargs['llm'], "fireworks_ai/accounts/fireworks/models/deepseek-r1:adv")
+        self.assertEqual(call_kwargs['az_model'], "Pistachio_100+")
+        self.assertEqual(call_kwargs['stability_flag'], "True")
+        self.assertEqual(call_kwargs['hallucination_check'], "True")
+        self.assertEqual(call_kwargs['use_protecting_group_feature'], False)
         mock_save_result.assert_called_once_with(smiles_input,
                                                  mock_main.return_value)
 
@@ -262,14 +368,15 @@ class TestApiFunctions(unittest.TestCase):
                                     json=payload)
 
         self.assertEqual(response.status_code, 200)
-        mock_main.assert_called_once_with(
-            smiles=smiles_input,
-            llm=
-            "claude-3-opus-20240229",  # No :adv since advanced_prompt is false
-            az_model="USPTO",
-            stability_flag="False",
-            hallucination_check="False",
-            use_protecting_group_feature=False)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], smiles_input)
+        self.assertEqual(call_kwargs['llm'], "claude-3-opus-20240229")  # No :adv since advanced_prompt is false
+        self.assertEqual(call_kwargs['az_model'], "USPTO")
+        self.assertEqual(call_kwargs['stability_flag'], "False")
+        self.assertEqual(call_kwargs['hallucination_check'], "False")
+        self.assertEqual(call_kwargs['use_protecting_group_feature'], False)
         mock_save_result.assert_called_once_with(smiles_input,
                                                  mock_main.return_value)
 
@@ -329,13 +436,15 @@ class TestApiFunctions(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         mock_clear_cache.assert_called_once_with(smiles_input)
         mock_mol_from_smiles.assert_called_once_with(smiles_input)
-        mock_main.assert_called_once_with(
-            smiles=smiles_input,
-            llm="anthropic/claude-sonnet-4-20250514",
-            az_model="USPTO",
-            stability_flag="True",
-            hallucination_check="True",
-            use_protecting_group_feature=False)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], smiles_input)
+        self.assertEqual(call_kwargs['llm'], "anthropic/claude-sonnet-4-20250514")
+        self.assertEqual(call_kwargs['az_model'], "USPTO")
+        self.assertEqual(call_kwargs['stability_flag'], "True")
+        self.assertEqual(call_kwargs['hallucination_check'], "True")
+        self.assertEqual(call_kwargs['use_protecting_group_feature'], False)
         mock_save_result.assert_called_once_with(smiles_input,
                                                  mock_main.return_value)
 
@@ -363,14 +472,15 @@ class TestApiFunctions(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         mock_clear_cache.assert_called_once_with(smiles_input)
-        mock_main.assert_called_once_with(
-            smiles=smiles_input,
-            llm=
-            "anthropic/claude-3-7-sonnet-20250219:adv",  # :adv will be added by API
-            az_model="Pistachio_100+",
-            stability_flag="True",
-            hallucination_check="True",
-            use_protecting_group_feature=False)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], smiles_input)
+        self.assertEqual(call_kwargs['llm'], "anthropic/claude-3-7-sonnet-20250219:adv")  # :adv will be added by API
+        self.assertEqual(call_kwargs['az_model'], "Pistachio_100+")
+        self.assertEqual(call_kwargs['stability_flag'], "True")
+        self.assertEqual(call_kwargs['hallucination_check'], "True")
+        self.assertEqual(call_kwargs['use_protecting_group_feature'], False)
         mock_save_result.assert_called_once_with(smiles_input,
                                                  mock_main.return_value)
 
@@ -623,13 +733,11 @@ class TestApiFunctions(unittest.TestCase):
         self.assertEqual(response.status_code, 200,
                          f"Response JSON: {response.json}")
 
-        mock_main.assert_called_once_with(
-            smiles=start_molecule_for_new_synthesis,  # Should be "C"
-            llm=ANY,
-            az_model=ANY,
-            stability_flag=ANY,
-            hallucination_check=ANY,
-            use_protecting_group_feature=False)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], start_molecule_for_new_synthesis)  # Should be "C"
+        self.assertEqual(call_kwargs['use_protecting_group_feature'], False)
 
         # Kept: Step 1 (A->B). Max kept step is 1.
         # New steps (C->X, X->Y) are renumbered to 2, 3.
@@ -753,13 +861,11 @@ class TestApiFunctions(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200,
                          f"Response JSON: {response.json}")
-        mock_main.assert_called_once_with(
-            smiles=start_molecule_for_new_synthesis,  # Should be "B"
-            llm=ANY,
-            az_model=ANY,
-            stability_flag=ANY,
-            hallucination_check=ANY,
-            use_protecting_group_feature=False)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], start_molecule_for_new_synthesis)  # Should be "B"
+        self.assertEqual(call_kwargs['use_protecting_group_feature'], False)
 
         # Kept_steps is empty as step 1 is removed. Max_kept_step is 0.
         # New steps (B->Z, Z->W) are renumbered to 1, 2.
@@ -860,13 +966,11 @@ class TestApiFunctions(unittest.TestCase):
                                     json=payload)
 
         self.assertEqual(response.status_code, 200)
-        mock_main.assert_called_once_with(
-            smiles=start_molecule_for_new_synthesis,  # "C"
-            llm=ANY,
-            az_model=ANY,
-            stability_flag=ANY,
-            hallucination_check=ANY,
-            use_protecting_group_feature=False)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], start_molecule_for_new_synthesis)  # "C"
+        self.assertEqual(call_kwargs['use_protecting_group_feature'], False)
 
         # Kept step: 1 (A->B). Max kept step is 1.
         # New step (C->X) renumbered to 2.
@@ -955,13 +1059,11 @@ class TestApiFunctions(unittest.TestCase):
                                     json=payload)
 
         self.assertEqual(response.status_code, 200)
-        mock_main.assert_called_once_with(
-            smiles=start_molecule_for_new_synthesis,  # "C"
-            llm=ANY,
-            az_model=ANY,
-            stability_flag=ANY,
-            hallucination_check=ANY,
-            use_protecting_group_feature=False)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], start_molecule_for_new_synthesis)  # "C"
+        self.assertEqual(call_kwargs['use_protecting_group_feature'], False)
 
         # Kept step: 1 (A->B). Original step 2 (B->C) removed. New synthesis for C is empty.
         # Path ends at B.
@@ -1024,13 +1126,11 @@ class TestApiFunctions(unittest.TestCase):
         self.assertIn(
             f"Error running retrosynthesis on {start_molecule_for_new_synthesis}: Sub-synthesis failed",
             response.json['error'])
-        mock_main.assert_called_once_with(
-            smiles=start_molecule_for_new_synthesis,  # "B"
-            llm=ANY,
-            az_model=ANY,
-            stability_flag=ANY,
-            hallucination_check=ANY,
-            use_protecting_group_feature=False)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], start_molecule_for_new_synthesis)  # "B"
+        self.assertEqual(call_kwargs['use_protecting_group_feature'], False)
         mock_save_result.assert_not_called()
 
     @patch('src.api.save_result')
@@ -1086,14 +1186,15 @@ class TestApiFunctions(unittest.TestCase):
                                     json=payload)
 
         self.assertEqual(response.status_code, 200)
-        mock_main.assert_called_once_with(
-            smiles=start_molecule_for_new_synthesis,  # "B"
-            llm=
-            "fireworks_ai/accounts/fireworks/models/deepseek-r1:adv",  # :adv will be added
-            az_model="USPTO",
-            stability_flag="True",
-            hallucination_check="True",
-            use_protecting_group_feature=False)
+        # Check that main was called, then verify only the parameters that matter
+        mock_main.assert_called_once()
+        call_kwargs = mock_main.call_args[1]
+        self.assertEqual(call_kwargs['smiles'], start_molecule_for_new_synthesis)  # "B"
+        self.assertEqual(call_kwargs['llm'], "fireworks_ai/accounts/fireworks/models/deepseek-r1:adv")  # :adv will be added
+        self.assertEqual(call_kwargs['az_model'], "USPTO")
+        self.assertEqual(call_kwargs['stability_flag'], "True")
+        self.assertEqual(call_kwargs['hallucination_check'], "True")
+        self.assertEqual(call_kwargs['use_protecting_group_feature'], False)
         mock_save_result.assert_called_once()
 
 

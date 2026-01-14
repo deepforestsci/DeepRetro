@@ -862,11 +862,12 @@ class TestHallucinationChecker(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual(len(valid_pathways), 1)
         self.assertEqual(valid_pathways[0], [reactant_str]) # It wraps single strings in a list
-        # Based on the code, it calls calculate_hallucination_score(reactant_str) if it's a string.
-        # This is likely a bug. The mock should reflect how it's called.
-        # If `product` is not passed, `calculate_hallucination_score` will raise TypeError or behave unexpectedly.
-        # Let's test the actual call as per the code:
-        mock_calc_score.assert_called_once_with(reactant_str) # This is what the code does
+        # The code calls calculate_hallucination_score(reactant_str, product) with both parameters
+        # Check that it was called, then verify the parameters that matter
+        mock_calc_score.assert_called_once()
+        call_args = mock_calc_score.call_args[0]  # Get positional arguments
+        self.assertEqual(call_args[0], reactant_str)  # First arg: reactant
+        self.assertEqual(call_args[1], product)  # Second arg: product
         mock_is_valid.assert_called_once_with(reactant_str)
 
     @patch('src.utils.hallucination_checks.is_valid_smiles', return_value=True)
