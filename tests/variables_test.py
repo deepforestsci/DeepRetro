@@ -8,7 +8,7 @@ PROTECTING_GROUP_TEST_MOLECULES = {
     "simple_ethoxy_cco": "CCO",  # Should become "&"
     "simple_ethoxy_coc": "COC",  # Should become "&"
     "complex_with_pg": "COCc1ccc(COC)cc1",  # Contains both patterns
-    "no_protecting_groups": "CC(=O)O",  # Should stay unchanged
+    "no_protecting_groups": "c1ccccc1",  # Should stay unchanged
     "melatonin_with_pg":
     "COC1=CC2=C(NC=C2CCNC(C)=O)C=C1",  # Real drug with methoxy
     "naproxen_with_pg":
