@@ -159,6 +159,18 @@ def hallucination_compare_molecules(reactant_smiles, product_smiles):
             f"Possible unnecessary bonds formed: Reactant has {sum(reactant_bonds.values())} bonds, "
             f"Product has {sum(product_bonds.values())} bonds")
 
+    # Add molecular features for ML training data
+    results["molecular_features"] = {
+        "reactant_atom_counts": dict(reactant_atoms),
+        "product_atom_counts": dict(product_atoms),
+        "reactant_ring_sizes": reactant_ring_sizes,
+        "product_ring_sizes": product_ring_sizes,
+        "reactant_num_aromatic": len(reactant_aromatic_atoms),
+        "product_num_aromatic": len(product_aromatic_atoms),
+        "reactant_total_bonds": sum(reactant_bonds.values()),
+        "product_total_bonds": sum(product_bonds.values()),
+    }
+
     return results
 
 
@@ -737,9 +749,13 @@ def hallucination_checker(product: str, res_smiles: list, use_ml_model: bool = F
                 log_message(f"Invalid SMILES string: {smiles_combined}", logger)
             
             hallucination_report = calculate_hallucination_score(smiles_combined, product)
-            log_message(f"Hallucination report: {hallucination_report}", logger)
+            filtered_out = hallucination_report['severity'] not in ['low', 'medium']
+            log_message(
+                f"Hallucination check - pathway_idx: {idx}, product: {product}, "
+                f"reactants: {smiles_combined}, filtered_out: {filtered_out}, "
+                f"report: {hallucination_report}", logger)
             
-            if hallucination_report['severity'] in ['low', 'medium']:
+            if not filtered_out:
                 valid_pathways.append(smile_list)
             # for smiles in smile_list:
             #     if not is_valid_smiles(smiles):
@@ -756,10 +772,13 @@ def hallucination_checker(product: str, res_smiles: list, use_ml_model: bool = F
             if is_valid_smiles(smile_list):
                 hallucination_report = calculate_hallucination_score(
                     smile_list, product)
-                log_message(f"Hallucination report: {hallucination_report}",
-                            logger)
+                filtered_out = hallucination_report['severity'] not in ['low', 'medium']
+                log_message(
+                    f"Hallucination check - pathway_idx: {idx}, product: {product}, "
+                    f"reactants: {smile_list}, filtered_out: {filtered_out}, "
+                    f"report: {hallucination_report}", logger)
 
-                if hallucination_report['severity'] in ['low', 'medium']:
+                if not filtered_out:
                     valid_pathways.append([smile_list])
     log_message(f"Valid pathways: {valid_pathways}", logger)
     return 200, valid_pathways
