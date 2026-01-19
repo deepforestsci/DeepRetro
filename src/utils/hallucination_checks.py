@@ -730,125 +730,44 @@ def hallucination_checker(product: str, res_smiles: list, use_ml_model: bool = F
             from src.utils.ml_hallucination import ml_hallucination_checker
             return ml_hallucination_checker(product, res_smiles)
         except ImportError as e:
-            logger = context_logger.get() if ENABLE_LOGGING else None
-            log_message(f"Error importing ML hallucination checker: {e}. Falling back to rule-based.", logger)
+            logger = context_logger.get()
+            logger.info(f"Error importing ML hallucination checker: {e}. Falling back to rule-based.")
             # Fall through to rule-based
         except Exception as e:
-            logger = context_logger.get() if ENABLE_LOGGING else None
-            log_message(f"Error using ML model: {e}. Falling back to rule-based.", logger)
+            logger = context_logger.get()
+            logger.info(f"Error using ML model: {e}. Falling back to rule-based.")
             # Fall through to rule-based
     
     # Rule-based hallucination checking (original implementation)
-    logger = context_logger.get() if ENABLE_LOGGING else None
+    logger = context_logger.get()
     valid_pathways = []
     for idx, smile_list in enumerate(res_smiles):
         valid = []
         if isinstance(smile_list, list):
             smiles_combined = ".".join(smile_list)
             if not is_valid_smiles(smiles_combined):
-                log_message(f"Invalid SMILES string: {smiles_combined}", logger)
+                logger.info(f"Invalid SMILES string: {smiles_combined}")
             
             hallucination_report = calculate_hallucination_score(smiles_combined, product)
             filtered_out = hallucination_report['severity'] not in ['low', 'medium']
-            log_message(
+            logger.info(
                 f"Hallucination check - pathway_idx: {idx}, product: {product}, "
                 f"reactants: {smiles_combined}, filtered_out: {filtered_out}, "
-                f"report: {hallucination_report}", logger)
+                f"report: {hallucination_report}")
             
             if not filtered_out:
                 valid_pathways.append(smile_list)
-            # for smiles in smile_list:
-            #     if not is_valid_smiles(smiles):
-            #         log_message("Invalid SMILES string", logger)
-            #     hallucination_report = calculate_hallucination_score(smiles, product)
-            #     log_message(f"Hallucination report: {hallucination_report}",
-            #                 logger)
-
-            #     if hallucination_report['severity'] in ['low', 'medium']:
-            #         valid.append(smiles)
-            # if len(valid) == len(smile_list):
-            #     valid_pathways.append(valid)
         else:
             if is_valid_smiles(smile_list):
                 hallucination_report = calculate_hallucination_score(
                     smile_list, product)
                 filtered_out = hallucination_report['severity'] not in ['low', 'medium']
-                log_message(
+                logger.info(
                     f"Hallucination check - pathway_idx: {idx}, product: {product}, "
                     f"reactants: {smile_list}, filtered_out: {filtered_out}, "
-                    f"report: {hallucination_report}", logger)
+                    f"report: {hallucination_report}")
 
                 if not filtered_out:
                     valid_pathways.append([smile_list])
-    log_message(f"Valid pathways: {valid_pathways}", logger)
+    logger.info(f"Valid pathways: {valid_pathways}")
     return 200, valid_pathways
-
-
-# # Test with the provided example
-# if __name__ == "__main__":
-#     test_reactant = "c1c(CCNC)cc(C(=O)O)cc1"
-#     test_product = "c1cc(CCN(C)CC)c(C(=O)O)cc1"
-
-#     # test_reactant = "C2CC1CCCC1C2"
-#     # test_product = "C2CCC1CCCCC1C2"
-
-#     print("Testing with provided example:")
-#     print(f"Reactant: {test_reactant}")
-#     print(f"Product: {test_product}")
-
-#     results = hallucination_compare_molecules(test_reactant, test_product)
-
-#     print("\nValidation Results:")
-#     print("-------------------")
-
-#     if results['substituent_position_changes']:
-#         print("\nSubstituent Position Changes:")
-#         for change in results['substituent_position_changes']:
-#             print(
-#                 f"- {change['substituent']} moved from {', '.join(change['from_positions'])} "
-#                 f"to {', '.join(change['to_positions'])}")
-
-#     if results['detected_issues']:
-#         print("\nDetected Issues:")
-#         for issue in results['detected_issues']:
-#             print(f"- {issue}")
-
-#     print("=== Valid transformation example ===")
-#     # Simple methylation (adding a methyl group)
-#     valid_reactant = "c1ccccc1"
-#     valid_product = "c1ccccc1OC"
-#     valid_result = calculate_hallucination_score(valid_reactant, valid_product)
-#     print(f"Score: {valid_result['score']}")
-#     print(f"Severity: {valid_result['severity']}")
-#     print(f"Message: {valid_result['message']}")
-#     if 'penalties' in valid_result:
-#         print("Penalties applied:")
-#         for penalty in valid_result['penalties']:
-#             print(f"- {penalty}")
-
-#     print("\n=== Problematic transformation example ===")
-#     # Position swap example (likely hallucination)
-#     test_reactant = "c1c(CCNC)cc(C(=O)O)cc1"
-#     test_product = "c1cc(CCN(C)CC)c(C(=O)O)cc1"
-#     problem_result = calculate_hallucination_score(test_reactant, test_product)
-#     print(f"Score: {problem_result['score']}")
-#     print(f"Severity: {problem_result['severity']}")
-#     print(f"Message: {problem_result['message']}")
-#     if 'penalties' in problem_result:
-#         print("Penalties applied:")
-#         for penalty in problem_result['penalties']:
-#             print(f"- {penalty}")
-
-#     print("\n=== Invalid transformation example ===")
-#     # Complete hallucination example (atom count mismatch)
-#     invalid_reactant = "c1ccccc1.CC"
-#     invalid_product = "c1ccccc1CCC(=O)C"
-#     invalid_result = calculate_hallucination_score(invalid_reactant,
-#                                                    invalid_product)
-#     print(f"Score: {invalid_result['score']}")
-#     print(f"Severity: {invalid_result['severity']}")
-#     print(f"Message: {invalid_result['message']}")
-#     if 'penalties' in invalid_result:
-#         print("Penalties applied:")
-#         for penalty in invalid_result['penalties']:
-#             print(f"- {penalty}")
