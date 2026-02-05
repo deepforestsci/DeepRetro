@@ -4,19 +4,22 @@ from rdkit import Chem
 from src.utils.llm import llm_pipeline
 from src.utils.az import run_az
 from src.utils.job_context import logger as context_logger
+from src.protecting_group import ProtectionState
 
 
-def rec_run_prithvi(
-        molecule: str,
-        job_id: str,
-        llm: str = "claude-opus-4-20250514",
-        az_model: str = "USPTO",
-        stability_flag: str = "False",
-        hallucination_check: str = "False",
-        use_protecting_group_feature: bool = False,
-        visited=None,
-        depth=0,
-        max_depth=50) -> tuple[dict, bool]:
+def rec_run_prithvi(molecule: str,
+                    job_id: str,
+                    llm: str = "claude-opus-4-20250514",
+                    az_model: str = "USPTO",
+                    stability_flag: str = "False",
+                    hallucination_check: str = "False",
+                    use_protecting_group_feature: bool = False,
+                    protecting_group_mode: str = "auto",
+                    protecting_group_selections: dict = None,
+                    protection_state: ProtectionState = None,
+                    visited=None,
+                    depth=0,
+                    max_depth=50) -> tuple[dict, bool]:
     """Recursive function to run Prithvi on a molecule
 
     Parameters
@@ -35,6 +38,13 @@ def rec_run_prithvi(
         Hallucination check, by default "False"
     use_protecting_group_feature : bool, optional
         Use protecting group feature, by default False
+    protecting_group_mode : str, optional
+        Mode for protecting group selection: "auto" or "hitl", by default "auto"
+    protecting_group_selections : dict, optional
+        User-selected protecting groups keyed by site_id (HITL mode).
+        Only applied at depth 0; child molecules get fresh site identification.
+    protection_state : ProtectionState, optional
+        Tracks active protecting groups across the synthesis tree.
     visited : set, optional
         Set of molecules already processed (for cycle detection), by default None
     depth : int, optional
@@ -50,8 +60,10 @@ def rec_run_prithvi(
     """
     if visited is None:
         visited = set()
+    if protection_state is None and use_protecting_group_feature:
+        protection_state = ProtectionState()
     logger = context_logger.get()
-    
+
     # Canonicalize SMILES for proper cycle detection (handles different representations of same molecule)
     try:
         mol = Chem.MolFromSmiles(molecule)
@@ -61,30 +73,53 @@ def rec_run_prithvi(
             canonical_molecule = molecule
     except Exception:
         canonical_molecule = molecule
-    
+
     if depth >= max_depth:
         logger.warning(f"Max depth {max_depth} reached for {molecule}")
-        return {'type': 'mol', 'smiles': molecule, 'is_chemical': True, 'in_stock': False, 'children': []}, False
+        return {
+            'type': 'mol',
+            'smiles': molecule,
+            'is_chemical': True,
+            'in_stock': False,
+            'children': []
+        }, False
     if canonical_molecule in visited:
-        logger.warning(f"Cycle detected: {molecule} (canonical: {canonical_molecule}) already processed")
-        return {'type': 'mol', 'smiles': molecule, 'is_chemical': True, 'in_stock': False, 'children': []}, False
+        logger.warning(
+            f"Cycle detected: {molecule} (canonical: {canonical_molecule}) already processed"
+        )
+        return {
+            'type': 'mol',
+            'smiles': molecule,
+            'is_chemical': True,
+            'in_stock': False,
+            'children': []
+        }, False
     visited.add(canonical_molecule)
     solved, result_dict = run_az(smiles=molecule, az_model=az_model)
     result_dict = result_dict[0]
     if not solved:
         logger.info(f"AZ failed for {molecule}, running LLM")
+
+        # Only pass HITL selections at the root level (depth 0).
+        # Child molecules get fresh site identification with auto mode,
+        # since parent atom map numbers have no meaning on child structures.
+        current_selections = protecting_group_selections if depth == 0 else None
+        current_mode = protecting_group_mode if depth == 0 else "auto"
+
         out_pathways, out_explained, out_confidence = llm_pipeline(
             molecule=molecule,
             LLM=llm,
             stability_flag=stability_flag,
             hallucination_check=hallucination_check,
-            use_protecting_group_feature=use_protecting_group_feature)
+            use_protecting_group_feature=use_protecting_group_feature,
+            protecting_group_mode=current_mode,
+            protecting_group_selections=current_selections,
+            protection_state=protection_state)
         result_dict = {
             'type':
             'mol',
             'smiles':
             molecule,
-            # 'confidence': out_confidence,
             "is_chemical":
             True,
             "in_stock":
@@ -113,6 +148,8 @@ def rec_run_prithvi(
                         hallucination_check=hallucination_check,
                         use_protecting_group_feature=
                         use_protecting_group_feature,
+                        protecting_group_mode=protecting_group_mode,
+                        protection_state=protection_state,
                         visited=visited,
                         depth=depth + 1,
                         max_depth=max_depth)
@@ -131,6 +168,8 @@ def rec_run_prithvi(
                     stability_flag=stability_flag,
                     hallucination_check=hallucination_check,
                     use_protecting_group_feature=use_protecting_group_feature,
+                    protecting_group_mode=protecting_group_mode,
+                    protection_state=protection_state,
                     visited=visited,
                     depth=depth + 1,
                     max_depth=max_depth)
@@ -140,7 +179,6 @@ def rec_run_prithvi(
                 break
     else:
         logger.info(f"AZ solved {molecule}")
-    # print(f"Solved : {solved}, Returning {result_dict}")
     return result_dict, solved
 
 
@@ -150,7 +188,10 @@ def single_run_DeepRetro(
         az_model: str = "USPTO",
         stability_flag: str = "False",
         hallucination_check: str = "False",
-        use_protecting_group_feature: bool = False) -> tuple[dict, bool]:
+        use_protecting_group_feature: bool = False,
+        protecting_group_mode: str = "auto",
+        protecting_group_selections: dict = None,
+        protection_state: ProtectionState = None) -> tuple[dict, bool]:
     """Single run function to run DeepRetro on a molecule
 
     Parameters
@@ -165,6 +206,14 @@ def single_run_DeepRetro(
         Stability flag, by default "False"
     hallucination_check : str, optional
         Hallucination check, by default "False"
+    use_protecting_group_feature : bool, optional
+        Use protecting group feature, by default False
+    protecting_group_mode : str, optional
+        Mode for protecting group selection, by default "auto"
+    protecting_group_selections : dict, optional
+        User-selected protecting groups keyed by site_id (HITL mode), by default None
+    protection_state : ProtectionState, optional
+        Tracks active protecting groups across the synthesis tree.
 
     Returns
     -------
@@ -172,6 +221,9 @@ def single_run_DeepRetro(
         result_dict: result of retrosynthesis.
         solved: boolean value indicating if the molecule was solved.
     """
+    if protection_state is None and use_protecting_group_feature:
+        protection_state = ProtectionState()
+
     solved, result_dict = run_az(smiles=molecule, az_model=az_model)
     result_dict = result_dict[0]
     logger = context_logger.get()
@@ -181,7 +233,10 @@ def single_run_DeepRetro(
         LLM=llm,
         stability_flag=stability_flag,
         hallucination_check=hallucination_check,
-        use_protecting_group_feature=use_protecting_group_feature)
+        use_protecting_group_feature=use_protecting_group_feature,
+        protecting_group_mode=protecting_group_mode,
+        protecting_group_selections=protecting_group_selections,
+        protection_state=protection_state)
     result_dict = {
         'type':
         'mol',
