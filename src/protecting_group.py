@@ -1717,6 +1717,9 @@ class ProtectionSite:
     compatible_pgs: list = field(default_factory=list)
     """List of compatible protecting group IDs."""
 
+    also_matches: list = field(default_factory=list)
+    """Other functional group names that also matched this same site."""
+
 
 @dataclass
 class PGSuggestion:
@@ -1853,6 +1856,193 @@ class ProtectionState:
 
 
 # =============================================================================
+# SITE CONDENSATION HELPERS
+# =============================================================================
+
+
+def _get_key_atom_maps(site, mol, idx_to_map):
+    """
+    Identify the key atom map number(s) being protected at a site.
+
+    The "key atom" is the atom that actually receives the protecting group:
+    alcohols/phenols -> the -OH oxygen, amines -> the -NH nitrogen,
+    thiols -> the -SH sulfur, carbonyls -> the C=O carbon, etc.
+
+    Parameters
+    ----------
+    site : ProtectionSite
+        The protection site.
+    mol : Mol
+        The RDKit Mol object with atom map numbers.
+    idx_to_map : dict
+        Mapping from atom index to atom map number.
+
+    Returns
+    -------
+    frozenset[int]
+        Atom map numbers of the key protectable atom(s).
+    """
+    map_to_idx = {m: i for i, m in idx_to_map.items()}
+    key_maps = set()
+    category = site.category
+
+    for map_num in site.atom_map_numbers:
+        idx = map_to_idx.get(map_num)
+        if idx is None:
+            continue
+        atom = mol.GetAtomWithIdx(idx)
+        symbol = atom.GetSymbol()
+        total_hs = atom.GetTotalNumHs()
+
+        if category in ("alcohol", "phenol", "diol"):
+            # Key atom is the -OH oxygen
+            if symbol == "O" and total_hs > 0:
+                key_maps.add(map_num)
+        elif category in ("amine", "heterocyclic_nh"):
+            # Key atom is the nitrogen
+            if symbol == "N":
+                key_maps.add(map_num)
+        elif category == "carbonyl":
+            # Key atom is the C=O carbon
+            if symbol == "C":
+                for bond in atom.GetBonds():
+                    if (bond.GetBondTypeAsDouble() == 2.0
+                            and bond.GetOtherAtom(atom).GetSymbol() == "O"):
+                        key_maps.add(map_num)
+                        break
+        elif category == "carboxylic_acid":
+            # Acidic OH or amide/carbamate/urea/sulfonamide NH
+            if (symbol == "O" and total_hs > 0) or (symbol == "N"
+                                                     and total_hs > 0):
+                key_maps.add(map_num)
+        elif category == "thiol":
+            # Key atom is the sulfur
+            if symbol == "S":
+                key_maps.add(map_num)
+        elif category == "alkyne":
+            # Key atom is the terminal C≡CH
+            if symbol == "C" and total_hs > 0:
+                for bond in atom.GetBonds():
+                    if bond.GetBondTypeAsDouble() == 3.0:
+                        key_maps.add(map_num)
+                        break
+        elif category == "phosphorus":
+            if symbol == "P":
+                key_maps.add(map_num)
+        elif category in ("ester", "amide"):
+            # Carbonyl carbon or N-H
+            if symbol == "C":
+                for bond in atom.GetBonds():
+                    if (bond.GetBondTypeAsDouble() == 2.0
+                            and bond.GetOtherAtom(atom).GetSymbol() == "O"):
+                        key_maps.add(map_num)
+                        break
+            elif symbol == "N" and total_hs > 0:
+                key_maps.add(map_num)
+        elif category == "epoxide":
+            if symbol == "O":
+                key_maps.add(map_num)
+
+    # Fallback: if no key atom identified, use all matched atoms
+    return frozenset(key_maps) if key_maps else frozenset(
+        site.atom_map_numbers)
+
+
+def _condense_sites(sites, mol, idx_to_map):
+    """
+    Condense protection sites that share the same key protectable atom(s).
+
+    When multiple SMARTS patterns detect different functional-group contexts
+    around the *same* reactive atom (e.g. the same -OH matched by both
+    "secondary alcohol" and "allylic alcohol"), this merges them into a
+    single ProtectionSite entry.
+
+    The most informative match is kept as the representative (chosen by
+    highest reactivity, then longest SMARTS pattern).  Compatible PGs from
+    all merged patterns are unioned, and the ``also_matches`` field records
+    the other functional-group names that were detected.
+
+    Parameters
+    ----------
+    sites : list[ProtectionSite]
+        Sites to condense.
+    mol : Mol
+        The RDKit Mol object with atom map numbers.
+    idx_to_map : dict
+        Mapping from atom index to atom map number.
+
+    Returns
+    -------
+    list[ProtectionSite]
+        Condensed list of sites.
+    """
+    if not sites:
+        return sites
+
+    reactivity_rank = {"very_high": 4, "high": 3, "medium": 2, "low": 1}
+
+    # Compute key atoms for each site
+    site_keys = [_get_key_atom_maps(s, mol, idx_to_map) for s in sites]
+
+    # Group by (category, key_atoms), preserving insertion order
+    groups: dict[tuple, list] = {}
+    for i, site in enumerate(sites):
+        group_key = (site.category, site_keys[i])
+        groups.setdefault(group_key, []).append(site)
+
+    condensed = []
+    for group_sites in groups.values():
+        if len(group_sites) == 1:
+            condensed.append(group_sites[0])
+            continue
+
+        # Sort: highest reactivity first, then longest SMARTS (most specific)
+        group_sites.sort(
+            key=lambda s: (
+                reactivity_rank.get(s.reactivity, 0),
+                len(
+                    FUNCTIONAL_GROUPS.get(s.functional_group_id, {}).get(
+                        "smarts", "")),
+            ),
+            reverse=True,
+        )
+
+        representative = group_sites[0]
+
+        # Union compatible PGs, preserving representative's order first
+        all_pgs = list(representative.compatible_pgs)
+        seen_pgs = set(all_pgs)
+        for s in group_sites[1:]:
+            for pg in s.compatible_pgs:
+                if pg not in seen_pgs:
+                    all_pgs.append(pg)
+                    seen_pgs.add(pg)
+
+        # Highest reactivity across the group
+        best_reactivity = max(
+            (s.reactivity for s in group_sites),
+            key=lambda r: reactivity_rank.get(r, 0),
+        )
+
+        # Other matched functional-group names
+        also = [s.functional_group_name for s in group_sites[1:]]
+
+        condensed.append(
+            ProtectionSite(
+                site_id=representative.site_id,
+                atom_map_numbers=representative.atom_map_numbers,
+                functional_group_id=representative.functional_group_id,
+                functional_group_name=representative.functional_group_name,
+                category=representative.category,
+                reactivity=best_reactivity,
+                compatible_pgs=all_pgs,
+                also_matches=also,
+            ))
+
+    return condensed
+
+
+# =============================================================================
 # CORE FUNCTIONS
 # =============================================================================
 
@@ -1973,6 +2163,9 @@ def identify_protection_sites(
             sites.append(site)
             seen_exact.add(exact_key)
             seen_atoms_by_category.setdefault(category, set()).add(match_set)
+
+    # Condense sites that protect the same key atom(s) within a category
+    sites = _condense_sites(sites, mol, idx_to_map)
 
     return sites
 
@@ -2209,6 +2402,9 @@ def format_recommendations_for_prompt(
         lines.append(f"  Category: {site.category}")
         lines.append(f"  Reactivity: {site.reactivity}")
         lines.append(f"  Atom map numbers: {site.atom_map_numbers}")
+        if site.also_matches:
+            lines.append(
+                f"  Also detected as: {', '.join(site.also_matches)}")
 
         if mode == "auto" and rec.suggestions:
             sug = rec.suggestions[0]
@@ -2467,8 +2663,10 @@ def hitl_workflow_example(smiles: str) -> str:
     for i, rec in enumerate(recs):
         site = rec.site
         has_pgs = "yes" if rec.suggestions else "no"
+        also = (f" [also: {', '.join(site.also_matches)}]"
+                if site.also_matches else "")
         lines.append(
-            f"  [{i}] {site.functional_group_name} ({site.category})"
+            f"  [{i}] {site.functional_group_name}{also} ({site.category})"
             f" - {site.reactivity} reactivity"
             f" - atoms {site.atom_map_numbers}"
             f" - PGs available: {has_pgs}")
@@ -2561,6 +2759,9 @@ def format_sites_for_display(sites: list[dict]) -> str:
         lines.append(f"    Category: {s['category']}")
         lines.append(f"    Reactivity: {s['reactivity']}")
         lines.append(f"    Atom map numbers: {s['atom_map_numbers']}")
+        if s['site'].also_matches:
+            lines.append(
+                f"    Also detected as: {', '.join(s['site'].also_matches)}")
         lines.append("")
 
     return "\n".join(lines)
