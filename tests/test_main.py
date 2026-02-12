@@ -8,7 +8,7 @@ class TestMain(unittest.TestCase):
 
     def setUp(self):
         self.test_smiles = "CCO"
-        self.test_llm = "claude-3-opus-20240229"
+        self.test_llm = "claude-opus-4-20250514"
         self.test_az_model = "USPTO"
         self.test_stability_flag = "False"
         self.test_hallucination_check = "False"
