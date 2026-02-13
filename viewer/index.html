@@ -1792,10 +1792,113 @@
 
           // Close the modal
           closeEditModal();
+
+          // Show the "Save to Server" button so user can persist edits
+          showSaveToServerBtn(currentEditingPathway);
         } catch (error) {
           console.error("Error parsing or saving JSON:", error);
           errorDiv.textContent = `Error: ${error.message}`;
           errorDiv.style.display = "block";
+        }
+      }
+
+      /**
+       * Shows a "Save to Server" button after edits are applied locally.
+       * Clicking it persists the edited JSON to partial.json on the backend.
+       */
+      function showSaveToServerBtn(pathwayNumber) {
+        const btnId = `save-to-server-btn-${pathwayNumber}`;
+        let btn = document.getElementById(btnId);
+
+        // Find a container near the pathway controls to place the button
+        const rerunBtn = document.getElementById(`rerun-btn-${pathwayNumber}`);
+        const container = rerunBtn ? rerunBtn.parentElement : null;
+
+        if (!btn && container) {
+          btn = document.createElement("button");
+          btn.id = btnId;
+          btn.style.marginLeft = "10px";
+          btn.style.backgroundColor = "#28a745";
+          btn.style.color = "white";
+          btn.style.border = "none";
+          btn.style.padding = "8px 16px";
+          btn.style.borderRadius = "4px";
+          btn.style.cursor = "pointer";
+          container.appendChild(btn);
+        }
+
+        if (btn) {
+          btn.textContent = "Save Edits to Server";
+          btn.style.display = "inline-block";
+          btn.onclick = () => saveEditsToServer(pathwayNumber);
+        }
+      }
+
+      /**
+       * Sends the current in-memory pathway data to the backend
+       * to persist it in partial.json.
+       */
+      async function saveEditsToServer(pathwayNumber) {
+        const instanceKey = `instance${pathwayNumber}`;
+        const data = window.results[instanceKey];
+        const smilesInput = document.getElementById("smiles");
+        const smiles = smilesInput ? smilesInput.value.trim() : "";
+        const status = document.getElementById("status");
+        const btn = document.getElementById(`save-to-server-btn-${pathwayNumber}`);
+
+        if (!data || !smiles) {
+          alert("No pathway data or SMILES to save.");
+          return;
+        }
+
+        try {
+          if (btn) {
+            btn.disabled = true;
+            btn.textContent = "Saving...";
+          }
+
+          const serverUrl = config.instances[pathwayNumber - 1]
+            ? config.instances[pathwayNumber - 1].url
+            : config.instances[0].url;
+
+          const response = await fetch(`${serverUrl}${config.endpoints.save_edited}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-API-KEY": apiKey,
+            },
+            body: JSON.stringify({
+              smiles: smiles,
+              result: data,
+            }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            if (status) {
+              status.className = "status success";
+              status.textContent = "Edits saved to server. Partial reruns will now use your changes.";
+              status.style.display = "block";
+            }
+            if (btn) {
+              btn.textContent = "Saved!";
+              setTimeout(() => { btn.style.display = "none"; }, 2000);
+            }
+          } else {
+            throw new Error(result.error || "Failed to save edits");
+          }
+        } catch (error) {
+          console.error("Error saving edits to server:", error);
+          if (status) {
+            status.className = "status error";
+            status.textContent = `Error saving edits: ${error.message}`;
+            status.style.display = "block";
+          }
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = "Save Edits to Server";
+          }
         }
       }
       // --- End JSON Editor Modal Functions ---
@@ -1834,6 +1937,35 @@
             initializeServerSettings();
           }
         }
+
+        // --- API KEY + BACKEND HEALTH CHECK ON LOAD ---
+        try {
+          const apiKey = localStorage.getItem("API_KEY") || "";
+          console.log("DEBUG (index.html): API_KEY length:", apiKey.length);
+
+          if (typeof config !== "undefined" && config.instances && config.instances.length > 0) {
+            const serverConfig = config.instances[0];
+            const healthPath = (config.endpoints && config.endpoints.health) || "/api/health";
+            const healthUrl = `${serverConfig.url}${healthPath}`;
+            console.log("DEBUG (index.html): Health URL:", healthUrl);
+
+            const resp = await fetch(healthUrl, {
+              method: "GET",
+              headers: {
+                "X-API-KEY": apiKey,
+              },
+            });
+
+            console.log("DEBUG (index.html): Health status:", resp.status);
+            const data = await resp.json().catch(() => ({}));
+            console.log("DEBUG (index.html): Health response:", data);
+          } else {
+            console.warn("DEBUG (index.html): Config instances not available for health check");
+          }
+        } catch (e) {
+          console.error("DEBUG (index.html): Health check failed:", e);
+        }
+        // --- END HEALTH CHECK ---
       });
     </script>
 

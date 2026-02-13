@@ -230,7 +230,9 @@ def retrosynthesis_api():
             hallucination_method=hallucination_method)
         save_result(smiles, result)
     except Exception as e:
-        print(e)
+        print(f"ERROR in retrosynthesis:")
+        print(f"  EXCEPTION: {str(e)}")
+        print(f"  TRACEBACK: {traceback.format_exc()}")
         return jsonify(
             {"error":
              f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500
@@ -357,12 +359,48 @@ def rerun_retrosynthesis():
         # Store the result in partial.json
         save_result(molecule, result)
     except Exception as e:
-        print(e)
+        print(f"ERROR in rerun_retrosynthesis:")
+        print(f"  EXCEPTION: {str(e)}")
+        print(f"  TRACEBACK: {traceback.format_exc()}")
         return jsonify(
             {"error":
              f"Error in retrosynthesis: {str(e)}. Please rerun."}), 500
 
     return jsonify(result), 200
+
+
+@app.route('/api/save_edited_result', methods=['POST'])
+@require_api_key
+def save_edited_result():
+    """
+    Endpoint to persist user-edited pathway JSON to partial.json.
+    This ensures that edits made in the viewer are saved to disk
+    so that partial reruns use the edited data as their base.
+    """
+    data = request.get_json()
+
+    try:
+        smiles = data.get('smiles')
+        result = data.get('result')
+
+        if not smiles:
+            return jsonify({"error": "Missing 'smiles' in request"}), 400
+
+        if not result or not isinstance(result, dict):
+            return jsonify({"error": "Missing or invalid 'result' in request"}), 400
+
+        # Basic validation - must have steps
+        if 'steps' not in result:
+            return jsonify({"error": "Invalid result structure: missing 'steps'"}), 400
+
+        save_result(smiles, result)
+        print(f"User-edited result saved for {smiles}")
+
+        return jsonify({"message": f"Edited result saved successfully for {smiles}"}), 200
+
+    except Exception as e:
+        print(f"Error saving edited result: {str(e)}")
+        return jsonify({"error": f"Error saving edited result: {str(e)}"}), 500
 
 
 @app.route('/api/partial_rerun', methods=['POST'])

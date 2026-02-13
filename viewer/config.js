@@ -125,6 +125,7 @@ const config = {
   endpoints: {
     retrosynthesis: '/api/retrosynthesis',
     rerun: '/api/rerun_retrosynthesis',
-    partial_rerun: '/api/partial_rerun'
+    partial_rerun: '/api/partial_rerun',
+    save_edited: '/api/save_edited_result'
   }
 };
