@@ -818,9 +818,11 @@ class TestHelperFunctions(unittest.TestCase):
 
 class TestHallucinationChecker(unittest.TestCase):
 
+    @patch('src.utils.hallucination_checks.context_logger')
     @patch('src.utils.hallucination_checks.is_valid_smiles', return_value=True)
     @patch('src.utils.hallucination_checks.calculate_hallucination_score')
-    def test_hallucination_checker_empty_res_smiles(self, mock_calc_score, mock_is_valid):
+    def test_hallucination_checker_empty_res_smiles(self, mock_calc_score, mock_is_valid, mock_ctx_logger):
+        mock_ctx_logger.get.return_value = MagicMock()
         from src.utils.hallucination_checks import hallucination_checker
         product = "CCO" # Ethanol
         res_smiles = []
@@ -829,9 +831,11 @@ class TestHallucinationChecker(unittest.TestCase):
         self.assertEqual(len(valid_pathways), 0)
         mock_calc_score.assert_not_called()
 
+    @patch('src.utils.hallucination_checks.context_logger')
     @patch('src.utils.hallucination_checks.is_valid_smiles', return_value=True)
     @patch('src.utils.hallucination_checks.calculate_hallucination_score')
-    def test_hallucination_checker_single_reactant_low_severity(self, mock_calc_score, mock_is_valid):
+    def test_hallucination_checker_single_reactant_low_severity(self, mock_calc_score, mock_is_valid, mock_ctx_logger):
+        mock_ctx_logger.get.return_value = MagicMock()
         from src.utils.hallucination_checks import hallucination_checker
         product = "Cc1ccccc1" # Toluene
         reactant = "c1ccccc1.C" # Benzene + Carbon (example)
@@ -845,9 +849,11 @@ class TestHallucinationChecker(unittest.TestCase):
         mock_calc_score.assert_called_once_with(reactant, product)
         mock_is_valid.assert_called_once_with(reactant)
 
+    @patch('src.utils.hallucination_checks.context_logger')
     @patch('src.utils.hallucination_checks.is_valid_smiles', return_value=True)
     @patch('src.utils.hallucination_checks.calculate_hallucination_score')
-    def test_hallucination_checker_single_reactant_string_low_severity(self, mock_calc_score, mock_is_valid):
+    def test_hallucination_checker_single_reactant_string_low_severity(self, mock_calc_score, mock_is_valid, mock_ctx_logger):
+        mock_ctx_logger.get.return_value = MagicMock()
         from src.utils.hallucination_checks import hallucination_checker
         # This tests the 'else' branch where smile_list is a string, not a list
         product = "CCO"
@@ -870,9 +876,11 @@ class TestHallucinationChecker(unittest.TestCase):
         self.assertEqual(call_args[1], product)  # Second arg: product
         mock_is_valid.assert_called_once_with(reactant_str)
 
+    @patch('src.utils.hallucination_checks.context_logger')
     @patch('src.utils.hallucination_checks.is_valid_smiles', return_value=True)
     @patch('src.utils.hallucination_checks.calculate_hallucination_score')
-    def test_hallucination_checker_multiple_reactants_mixed_severity(self, mock_calc_score, mock_is_valid):
+    def test_hallucination_checker_multiple_reactants_mixed_severity(self, mock_calc_score, mock_is_valid, mock_ctx_logger):
+        mock_ctx_logger.get.return_value = MagicMock()
         from src.utils.hallucination_checks import hallucination_checker
         product = "ProductX"
         r1_list = ["A", "B"]
