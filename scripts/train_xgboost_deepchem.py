@@ -25,6 +25,11 @@ from deepchem.splits import RandomSplitter
 # XGBoost import (using directly, not through DeepChem wrapper)
 from xgboost import XGBClassifier
 
+# RDKit for domain-specific features
+from rdkit import Chem
+from rdkit.Chem import Descriptors
+from collections import Counter
+
 
 def load_and_prepare_data(csv_path: str):
     """
@@ -48,7 +53,80 @@ def load_and_prepare_data(csv_path: str):
     return products, reactants, labels, targets
 
 
-def featurize_smiles(products: list, reactants: list):
+def extract_domain_features(products: list, reactants: list):
+    """
+    Extract domain-specific features for hallucination detection.
+    These features capture chemical inconsistencies that fingerprints might miss.
+    """
+    domain_features_list = []
+    
+    for product_smiles, reactant_string in zip(products, reactants):
+        features = []
+        
+        try:
+            # Parse molecules
+            product_mol = Chem.MolFromSmiles(product_smiles)
+            reactant_mols = [Chem.MolFromSmiles(r) for r in reactant_string.split(".")]
+            
+            if product_mol is None:
+                # Invalid product - use zeros
+                features = [0.0] * 15
+                domain_features_list.append(features)
+                continue
+            
+            # Product features
+            product_atoms = Counter([a.GetSymbol() for a in product_mol.GetAtoms()])
+            product_bonds = product_mol.GetNumBonds()
+            product_rings = len(Chem.GetSSSR(product_mol))
+            product_aromatic = sum(1 for a in product_mol.GetAtoms() if a.GetIsAromatic())
+            product_mw = Descriptors.MolWt(product_mol)
+            
+            # Reactant features (sum across all reactants)
+            reactant_atoms = Counter()
+            reactant_bonds = 0
+            reactant_rings = 0
+            reactant_aromatic = 0
+            reactant_mw = 0
+            num_valid_reactants = 0
+            
+            for mol in reactant_mols:
+                if mol:
+                    reactant_atoms += Counter([a.GetSymbol() for a in mol.GetAtoms()])
+                    reactant_bonds += mol.GetNumBonds()
+                    reactant_rings += len(Chem.GetSSSR(mol))
+                    reactant_aromatic += sum(1 for a in mol.GetAtoms() if a.GetIsAromatic())
+                    reactant_mw += Descriptors.MolWt(mol)
+                    num_valid_reactants += 1
+            
+            # Difference features (key for hallucination detection!)
+            features = [
+                float(reactant_atoms.get('C', 0) - product_atoms.get('C', 0)),  # C difference
+                float(reactant_atoms.get('N', 0) - product_atoms.get('N', 0)),  # N difference
+                float(reactant_atoms.get('O', 0) - product_atoms.get('O', 0)),  # O difference
+                float(reactant_atoms.get('Cl', 0) - product_atoms.get('Cl', 0)),  # Cl difference
+                float(reactant_atoms.get('Br', 0) - product_atoms.get('Br', 0)),  # Br difference
+                float(reactant_bonds - product_bonds),  # Bond difference
+                float(reactant_rings - product_rings),  # Ring difference
+                float(reactant_aromatic - product_aromatic),  # Aromatic difference
+                float(reactant_mw - product_mw),  # Molecular weight difference
+                float(num_valid_reactants),  # Number of reactants
+                float(sum(reactant_atoms.values()) - sum(product_atoms.values())),  # Total atom difference
+                float(product_mw),  # Product molecular weight
+                float(reactant_mw),  # Total reactant molecular weight
+                float(product_rings),  # Product ring count
+                float(reactant_rings),  # Reactant ring count
+            ]
+            
+        except Exception as e:
+            # On error, use zeros
+            features = [0.0] * 15
+        
+        domain_features_list.append(features)
+    
+    return np.array(domain_features_list)
+
+
+def featurize_smiles(products: list, reactants: list, use_domain_features: bool = True):
     """
     Step 2: Convert SMILES strings to molecular fingerprints.
     
@@ -59,7 +137,8 @@ def featurize_smiles(products: list, reactants: list):
     For each sample:
     - Product SMILES → product fingerprint (2048 features)
     - Reactants SMILES → reactant fingerprint (2048 features)
-    - Concatenate → combined fingerprint (4096 features)
+    - Domain features → 15 chemical consistency features (optional)
+    - Concatenate → combined fingerprint (4096 or 4111 features)
     """
     print("\nStep 2: Featurizing SMILES strings...")
     
@@ -74,9 +153,18 @@ def featurize_smiles(products: list, reactants: list):
     print("  Featurizing reactants...")
     reactant_features = featurizer.featurize(reactants)
     
-    # Combine: concatenate product and reactant fingerprints
-    print("  Combining features...")
-    combined_features = np.concatenate([product_features, reactant_features], axis=1)
+    # Combine fingerprints
+    print("  Combining fingerprints...")
+    fingerprint_features = np.concatenate([product_features, reactant_features], axis=1)
+    
+    # Add domain-specific features
+    if use_domain_features:
+        print("  Extracting domain-specific features (atom/bond/ring differences)...")
+        domain_features = extract_domain_features(products, reactants)
+        combined_features = np.concatenate([fingerprint_features, domain_features], axis=1)
+        print(f"  Domain features shape: {domain_features.shape}")
+    else:
+        combined_features = fingerprint_features
     
     print(f"  Product features shape: {product_features.shape}")
     print(f"  Reactant features shape: {reactant_features.shape}")
@@ -179,10 +267,23 @@ def create_deepchem_dataset(features: np.ndarray, labels: list, targets: list):
     print(f"  Validation samples: {len(valid_dataset)}")
     print(f"  Test samples: {len(test_dataset)}")
     
+    # Report class distribution in each split
+    train_labels = dataset.y[train_indices].flatten()
+    valid_labels = dataset.y[valid_indices].flatten()
+    test_labels = dataset.y[test_indices].flatten()
+    
+    print(f"\n  Class distribution in splits:")
+    print(f"    Train: Label 0={np.sum(train_labels == 0)} ({np.sum(train_labels == 0)/len(train_labels)*100:.1f}%), "
+          f"Label 1={np.sum(train_labels == 1)} ({np.sum(train_labels == 1)/len(train_labels)*100:.1f}%)")
+    print(f"    Valid: Label 0={np.sum(valid_labels == 0)} ({np.sum(valid_labels == 0)/len(valid_labels)*100:.1f}%), "
+          f"Label 1={np.sum(valid_labels == 1)} ({np.sum(valid_labels == 1)/len(valid_labels)*100:.1f}%)")
+    print(f"    Test:  Label 0={np.sum(test_labels == 0)} ({np.sum(test_labels == 0)/len(test_labels)*100:.1f}%), "
+          f"Label 1={np.sum(test_labels == 1)} ({np.sum(test_labels == 1)/len(test_labels)*100:.1f}%)")
+    
     return train_dataset, valid_dataset, test_dataset, split_indices
 
 
-def train_xgboost_model(train_dataset, valid_dataset):
+def train_xgboost_model(train_dataset, valid_dataset, use_domain_features: bool = True):
     """
     Step 4: Train XGBoost classifier directly (using DeepChem for featurization only).
     
@@ -258,7 +359,86 @@ def train_xgboost_model(train_dataset, valid_dataset):
     else:
         print(f"    → Reached maximum iterations ({max_iterations})")
     
+    # Analyze feature importance
+    print(f"\n  Analyzing feature importance...")
+    analyze_feature_importance(model, use_domain_features=use_domain_features)
+    
     return model
+
+
+def analyze_feature_importance(model, use_domain_features: bool = True):
+    """
+    Analyze and display feature importance from the trained XGBoost model.
+    
+    Parameters
+    ----------
+    model : XGBClassifier
+        Trained XGBoost model
+    use_domain_features : bool
+        Whether domain features were used
+    """
+    # Get feature importance (gain-based)
+    feature_importance = model.feature_importances_
+    n_features = len(feature_importance)
+    
+    # Create feature names
+    feature_names = []
+    
+    # Product fingerprint features (0-2047)
+    for i in range(2048):
+        feature_names.append(f"Product_FP_{i}")
+    
+    # Reactant fingerprint features (2048-4095)
+    for i in range(2048):
+        feature_names.append(f"Reactant_FP_{i}")
+    
+    # Domain features (4096-4110)
+    if use_domain_features:
+        domain_feature_names = [
+            "C_diff", "N_diff", "O_diff", "Cl_diff", "Br_diff",
+            "Bond_diff", "Ring_diff", "Aromatic_diff", "MW_diff",
+            "Num_reactants", "Total_atom_diff",
+            "Product_MW", "Reactant_MW", "Product_rings", "Reactant_rings"
+        ]
+        feature_names.extend(domain_feature_names)
+    
+    # Get top features
+    feature_importance_with_names = list(zip(feature_names, feature_importance))
+    feature_importance_with_names.sort(key=lambda x: x[1], reverse=True)
+    
+    print(f"\n  Top 20 Most Important Features:")
+    print(f"    {'Rank':<6} {'Feature Name':<30} {'Importance':<12}")
+    print(f"    {'-'*6} {'-'*30} {'-'*12}")
+    
+    for rank, (name, importance) in enumerate(feature_importance_with_names[:20], 1):
+        print(f"    {rank:<6} {name:<30} {importance:<12.6f}")
+    
+    # Analyze domain features specifically
+    if use_domain_features:
+        print(f"\n  Domain Features Importance:")
+        print(f"    {'Feature':<25} {'Importance':<12} {'% of Total':<12}")
+        print(f"    {'-'*25} {'-'*12} {'-'*12}")
+        
+        domain_start_idx = 4096
+        total_importance = sum(feature_importance)
+        domain_total = sum(feature_importance[domain_start_idx:])
+        
+        for i, name in enumerate(domain_feature_names):
+            idx = domain_start_idx + i
+            importance = feature_importance[idx]
+            pct = (importance / total_importance * 100) if total_importance > 0 else 0
+            print(f"    {name:<25} {importance:<12.6f} {pct:<12.2f}%")
+        
+        print(f"\n    Domain features total importance: {domain_total:.6f} ({domain_total/total_importance*100:.2f}% of all features)")
+        print(f"    Fingerprint features total: {sum(feature_importance[:4096]):.6f} ({sum(feature_importance[:4096])/total_importance*100:.2f}% of all features)")
+    
+    # Fingerprint analysis
+    product_fp_importance = sum(feature_importance[0:2048])
+    reactant_fp_importance = sum(feature_importance[2048:4096])
+    
+    print(f"\n  Fingerprint Features Breakdown:")
+    print(f"    Product fingerprints: {product_fp_importance:.6f} ({product_fp_importance/sum(feature_importance)*100:.2f}%)")
+    print(f"    Reactant fingerprints: {reactant_fp_importance:.6f} ({reactant_fp_importance/sum(feature_importance)*100:.2f}%)")
 
 
 def evaluate_model(model, train_dataset, valid_dataset, test_dataset, products=None, reactants=None, targets=None, split_indices=None):
@@ -436,7 +616,8 @@ def save_model_artifacts(model: XGBClassifier, featurizer: CircularFingerprint, 
         'featurizer_type': 'CircularFingerprint',
         'featurizer_radius': 2,
         'featurizer_size': 2048,
-        'feature_dimension': 4096  # product (2048) + reactant (2048)
+        'feature_dimension': 4111,  # product (2048) + reactant (2048) + domain (15)
+        'domain_features': True  # Includes atom/bond/ring difference features
     }
     metadata_path = models_dir / "xgboost_metadata.json"
     with open(metadata_path, 'w') as f:
@@ -714,7 +895,7 @@ def main():
     Main function: Orchestrates the entire training pipeline.
     """
     # Paths
-    csv_path = "data/xgboost_dataset.csv"
+    csv_path = "data/xgboost_dataset_merged.csv"  # Use merged dataset with all training data
     
     print("=" * 60)
     print("XGBoost Hallucination Classifier Training")
@@ -725,7 +906,8 @@ def main():
     products, reactants, labels, targets = load_and_prepare_data(csv_path)
     
     # Step 2: Featurize SMILES
-    features, featurizer = featurize_smiles(products, reactants)
+    use_domain_features = True  # Set to False to disable domain features
+    features, featurizer = featurize_smiles(products, reactants, use_domain_features=use_domain_features)
     
     # Step 3: Create dataset and split by target (stratified)
     train_dataset, valid_dataset, test_dataset, split_indices = create_deepchem_dataset(features, labels, targets)
@@ -734,7 +916,7 @@ def main():
     check_data_leakage(train_dataset, valid_dataset, test_dataset, split_indices, products, reactants)
     
     # Step 4: Train model
-    model = train_xgboost_model(train_dataset, valid_dataset)
+    model = train_xgboost_model(train_dataset, valid_dataset, use_domain_features=use_domain_features)
     
     # Step 5: Evaluate
     test_scores = evaluate_model(model, train_dataset, valid_dataset, test_dataset,

@@ -10,6 +10,9 @@ import json
 from pathlib import Path
 import numpy as np
 from typing import Optional, Dict, Tuple
+from collections import Counter
+from rdkit import Chem
+from rdkit.Chem import Descriptors
 
 from src.utils.utils_molecule import is_valid_smiles
 from src.utils.job_context import logger as context_logger
@@ -45,7 +48,7 @@ def _import_dependencies():
 
 def log_message(message: str, logger=None):
     """Log a message using the context logger if available, otherwise print."""
-    if ENABLE_LOGGING and logger:
+    if logger is not None:
         logger.info(message)
     else:
         print(message)
@@ -55,6 +58,7 @@ def log_message(message: str, logger=None):
 _ml_model: Optional[object] = None  # XGBClassifier when loaded
 _featurizer: Optional[object] = None  # CircularFingerprint when loaded
 _optimal_threshold: Optional[float] = None
+_use_domain_features: bool = True
 _model_loaded: bool = False
 
 
@@ -76,13 +80,16 @@ def load_ml_model(force_reload: bool = False) -> Tuple[bool, Optional[str]]:
         - success: True if model loaded successfully, False otherwise
         - error_message: Error description if loading failed, None if successful
     """
-    global _ml_model, _featurizer, _optimal_threshold, _model_loaded
+    global _ml_model, _featurizer, _optimal_threshold, _use_domain_features, _model_loaded
     
     # Return cached model if already loaded and not forcing reload
     if _model_loaded and not force_reload:
         return True, None
     
-    logger = context_logger.get() if ENABLE_LOGGING else None
+    try:
+        logger = context_logger.get() if ENABLE_LOGGING else None
+    except LookupError:
+        logger = None
     
     try:
         # Get root directory (assuming we're in src/utils/)
@@ -126,7 +133,10 @@ def load_ml_model(force_reload: bool = False) -> Tuple[bool, Optional[str]]:
         with open(metadata_path, 'r') as f:
             metadata = json.load(f)
         _optimal_threshold = metadata.get('optimal_threshold', 0.5)
+        global _use_domain_features
+        _use_domain_features = metadata.get('domain_features', True)  # Default to True for backward compatibility
         log_message(f"ML Model: Loaded metadata, optimal threshold = {_optimal_threshold:.4f}", logger)
+        log_message(f"ML Model: Domain features enabled = {_use_domain_features}", logger)
         
         _model_loaded = True
         return True, None
@@ -136,6 +146,69 @@ def load_ml_model(force_reload: bool = False) -> Tuple[bool, Optional[str]]:
         log_message(f"ML Model: {error_msg}", logger)
         _model_loaded = False
         return False, error_msg
+
+
+def _extract_domain_features_single(product_smiles: str, reactants_smiles: str) -> np.ndarray:
+    """
+    Extract domain-specific features for a single product-reactant pair.
+    Returns a 1D array of 15 features.
+    """
+    try:
+        # Parse molecules
+        product_mol = Chem.MolFromSmiles(product_smiles)
+        reactant_mols = [Chem.MolFromSmiles(r) for r in reactants_smiles.split(".")]
+        
+        if product_mol is None:
+            return np.array([0.0] * 15)
+        
+        # Product features
+        product_atoms = Counter([a.GetSymbol() for a in product_mol.GetAtoms()])
+        product_bonds = product_mol.GetNumBonds()
+        product_rings = len(Chem.GetSSSR(product_mol))
+        product_aromatic = sum(1 for a in product_mol.GetAtoms() if a.GetIsAromatic())
+        product_mw = Descriptors.MolWt(product_mol)
+        
+        # Reactant features (sum across all reactants)
+        reactant_atoms = Counter()
+        reactant_bonds = 0
+        reactant_rings = 0
+        reactant_aromatic = 0
+        reactant_mw = 0
+        num_valid_reactants = 0
+        
+        for mol in reactant_mols:
+            if mol:
+                reactant_atoms += Counter([a.GetSymbol() for a in mol.GetAtoms()])
+                reactant_bonds += mol.GetNumBonds()
+                reactant_rings += len(Chem.GetSSSR(mol))
+                reactant_aromatic += sum(1 for a in mol.GetAtoms() if a.GetIsAromatic())
+                reactant_mw += Descriptors.MolWt(mol)
+                num_valid_reactants += 1
+        
+        # Difference features (same as training)
+        features = [
+            float(reactant_atoms.get('C', 0) - product_atoms.get('C', 0)),  # C difference
+            float(reactant_atoms.get('N', 0) - product_atoms.get('N', 0)),  # N difference
+            float(reactant_atoms.get('O', 0) - product_atoms.get('O', 0)),  # O difference
+            float(reactant_atoms.get('Cl', 0) - product_atoms.get('Cl', 0)),  # Cl difference
+            float(reactant_atoms.get('Br', 0) - product_atoms.get('Br', 0)),  # Br difference
+            float(reactant_bonds - product_bonds),  # Bond difference
+            float(reactant_rings - product_rings),  # Ring difference
+            float(reactant_aromatic - product_aromatic),  # Aromatic difference
+            float(reactant_mw - product_mw),  # Molecular weight difference
+            float(num_valid_reactants),  # Number of reactants
+            float(sum(reactant_atoms.values()) - sum(product_atoms.values())),  # Total atom difference
+            float(product_mw),  # Product molecular weight
+            float(reactant_mw),  # Total reactant molecular weight
+            float(product_rings),  # Product ring count
+            float(reactant_rings),  # Reactant ring count
+        ]
+        
+        return np.array(features)
+        
+    except Exception as e:
+        # On error, return zeros
+        return np.array([0.0] * 15)
 
 
 def predict_hallucination_ml(product_smiles: str, reactants_smiles: str) -> Dict:
@@ -158,7 +231,10 @@ def predict_hallucination_ml(product_smiles: str, reactants_smiles: str) -> Dict
         - 'method': str - Always 'ml_model'
         - 'error': Optional[str] - Error message if prediction failed
     """
-    logger = context_logger.get() if ENABLE_LOGGING else None
+    try:
+        logger = context_logger.get() if ENABLE_LOGGING else None
+    except LookupError:
+        logger = None
     
     # Check if dependencies are available
     if not _import_dependencies():
@@ -201,8 +277,17 @@ def predict_hallucination_ml(product_smiles: str, reactants_smiles: str) -> Dict
         product_features = _featurizer.featurize([product_smiles])
         reactant_features = _featurizer.featurize([reactants_smiles])
         
-        # Combine features (same as training)
-        combined_features = np.concatenate([product_features, reactant_features], axis=1)
+        # Combine fingerprint features
+        fingerprint_features = np.concatenate([product_features, reactant_features], axis=1)
+        
+        # Add domain features if enabled (same as training)
+        if _use_domain_features:
+            domain_features = _extract_domain_features_single(product_smiles, reactants_smiles)
+            # Reshape to (1, 15) for concatenation
+            domain_features = domain_features.reshape(1, -1)
+            combined_features = np.concatenate([fingerprint_features, domain_features], axis=1)
+        else:
+            combined_features = fingerprint_features
         
         # Get probability predictions
         probabilities = _ml_model.predict_proba(combined_features)[0]
@@ -250,7 +335,19 @@ def ml_hallucination_checker(product: str, res_smiles: list) -> Tuple[int, list]
         - status_code: 200 if successful, 500 if error
         - valid_pathways: List of pathways that passed ML hallucination check
     """
-    logger = context_logger.get() if ENABLE_LOGGING else None
+    try:
+        logger = context_logger.get() if ENABLE_LOGGING else None
+    except LookupError:
+        logger = None
+    
+    # Log INPUT clearly
+    log_message(f"=== ML Model INPUT ===", logger)
+    log_message(f"Product: {product}", logger)
+    log_message(f"Number of pathways to check: {len(res_smiles)}", logger)
+    for idx, pathway in enumerate(res_smiles):
+        reactants_str = ".".join(pathway) if isinstance(pathway, list) else pathway
+        log_message(f"  Pathway {idx}: {reactants_str}", logger)
+    
     valid_pathways = []
     
     for idx, smile_list in enumerate(res_smiles):
@@ -274,12 +371,12 @@ def ml_hallucination_checker(product: str, res_smiles: list) -> Tuple[int, list]
             if not prediction['is_hallucination']:
                 valid_pathways.append(smile_list)
                 log_message(
-                    f"ML Model: Pathway {idx} passed (probability={prediction['probability']:.3f})",
+                    f"ML Model: Pathway {idx} PASSED - Reactants: {smiles_combined}, Probability: {prediction['probability']:.3f}",
                     logger
                 )
             else:
                 log_message(
-                    f"ML Model: Pathway {idx} filtered out (hallucination probability={prediction['probability']:.3f})",
+                    f"ML Model: Pathway {idx} REJECTED - Reactants: {smiles_combined}, Hallucination Probability: {prediction['probability']:.3f}",
                     logger
                 )
         else:
@@ -294,6 +391,13 @@ def ml_hallucination_checker(product: str, res_smiles: list) -> Tuple[int, list]
                 if not prediction['is_hallucination']:
                     valid_pathways.append([smile_list])
     
+    # Log OUTPUT clearly
+    log_message(f"=== ML Model OUTPUT ===", logger)
+    log_message(f"Valid pathways: {len(valid_pathways)}/{len(res_smiles)}", logger)
+    log_message(f"Rejected pathways: {len(res_smiles) - len(valid_pathways)}/{len(res_smiles)}", logger)
+    if valid_pathways:
+        log_message(f"Valid pathway details: {valid_pathways}", logger)
     log_message(f"ML Model: Valid pathways after filtering: {len(valid_pathways)}", logger)
+    
     return 200, valid_pathways
 

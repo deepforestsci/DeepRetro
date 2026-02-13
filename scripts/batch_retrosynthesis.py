@@ -26,6 +26,7 @@ import rootutils
 root_dir = rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
 from src.main import main as run_retrosynthesis
+from src.cache import clear_cache_for_molecule
 
 
 PROGRESS_DIR = Path(root_dir) / "data" / ".batch_progress"
@@ -105,7 +106,8 @@ def run_batch(
     use_protecting_groups: bool = False,
     limit: int = None,
     skip: int = 0,
-    reset: bool = False
+    reset: bool = False,
+    clear_cache: bool = False
 ):
     """Run batch retrosynthesis on SMILES file with auto-resume."""
     
@@ -123,6 +125,13 @@ def run_batch(
     total_smiles = len(smiles_list)
     print(f"Loaded {total_smiles} SMILES from {input_file}")
     print(f"Results will be saved to: {results_subdir}")
+    
+    # Clear cache for all molecules if requested
+    if clear_cache:
+        print(f"\n*** CLEARING CACHE for {total_smiles} molecules ***")
+        for smiles in smiles_list:
+            clear_cache_for_molecule(smiles)
+        print("Cache cleared!\n")
     
     # Load progress
     progress = load_progress(input_file)
@@ -265,6 +274,7 @@ if __name__ == "__main__":
     parser.add_argument('--limit', type=int, help='Limit number of SMILES to process')
     parser.add_argument('--skip', type=int, default=0, help='Skip first N SMILES')
     parser.add_argument('--reset', action='store_true', help='Reset progress and start fresh')
+    parser.add_argument('--clear-cache', action='store_true', help='Clear cache for all molecules before running')
     
     args = parser.parse_args()
     
@@ -278,6 +288,7 @@ if __name__ == "__main__":
         use_protecting_groups=args.protecting_groups,
         limit=args.limit,
         skip=args.skip,
-        reset=args.reset
+        reset=args.reset,
+        clear_cache=args.clear_cache
     )
 
