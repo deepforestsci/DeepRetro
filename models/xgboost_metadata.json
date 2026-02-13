@@ -1,0 +1,9 @@
+{
+  "optimal_threshold": 0.3661865293979645,
+  "model_type": "XGBoost",
+  "featurizer_type": "CircularFingerprint",
+  "featurizer_radius": 2,
+  "featurizer_size": 2048,
+  "feature_dimension": 4111,
+  "domain_features": true
+}
