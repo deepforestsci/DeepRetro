@@ -1,17 +1,20 @@
 """ML-based hallucination detection using trained XGBoost model."""
 
 import os
+import io
 import json
 import pickle
-from pathlib import Path
 from typing import Dict, Optional, Tuple
 
+import boto3
 import numpy as np
 
 from src.utils.ml_utils import extract_domain_features_single
 from src.utils.utils_molecule import is_valid_smiles
 from src.utils.job_context import logger as context_logger
 
+_S3_BUCKET = os.getenv("ML_MODEL_S3_BUCKET", "recursivellm")
+_S3_PREFIX = os.getenv("ML_MODEL_S3_PREFIX", "models")
 ENABLE_LOGGING = os.getenv("ENABLE_LOGGING", "true").lower() != "false"
 
 
@@ -52,10 +55,11 @@ def _log(message, logger=None):
 
 class HallucinationModel:
     """
-    Lazy-loaded XGBoost hallucination detector with cached model state.
+    Lazy-loaded XGBoost hallucination detector.
 
-    The model, featurizer, and metadata are loaded from disk on first
-    use and kept in memory for subsequent calls.
+    On first use, downloads model artifacts from S3 directly into memory
+    (no local file caching). Kept in memory for subsequent calls within
+    the same process.
     """
 
     def __init__(self):
@@ -63,37 +67,34 @@ class HallucinationModel:
         self._featurizer = None
         self._threshold: float = 0.5
         self._use_domain: bool = True
-        self._loaded: bool = False
-        self._CircularFingerprint = None  # lazy-imported type
 
-    def _import_dependencies(self):
+    def _download_s3(self, filename):
         """
-        Lazy-import deepchem's CircularFingerprint.
-
-        Returns
-        -------
-        bool
-            True if the import succeeded; False otherwise.
-        """
-        if self._CircularFingerprint is None:
-            try:
-                from deepchem.feat import CircularFingerprint
-                self._CircularFingerprint = CircularFingerprint
-            except ImportError:
-                self._CircularFingerprint = False
-        return self._CircularFingerprint is not False
-
-    def load(self, force=False):
-        """
-        Load model, featurizer, and metadata from ``models/`` directory.
-
-        Results are cached; subsequent calls return immediately unless
-        *force* is True.
+        Download a file from S3 into memory using AWS credentials.
 
         Parameters
         ----------
-        force : bool, optional
-            Reload even if already cached. Default False.
+        filename : str
+            Object key under ``_S3_PREFIX`` (e.g. 'xgboost_model.pkl').
+
+        Returns
+        -------
+        data : bytes
+            Raw file contents.
+        """
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+        )
+        buf = io.BytesIO()
+        s3.download_fileobj(_S3_BUCKET, f"{_S3_PREFIX}/{filename}", buf)
+        buf.seek(0)
+        return buf
+
+    def load(self):
+        """
+        Load model, featurizer, and metadata from S3 into memory.
 
         Returns
         -------
@@ -101,26 +102,22 @@ class HallucinationModel:
         error : str or None
             Human-readable error message on failure.
         """
-        if self._loaded and not force:
+        if self._model is not None:
             return True, None
-        if not self._import_dependencies():
-            return False, "Dependencies (deepchem, xgboost) not installed"
 
         try:
-            d = Path(__file__).parent.parent.parent / "models"
-            with open(d / "xgboost_hallucination_model.pkl", 'rb') as f:
-                self._model = pickle.load(f)
-            with open(d / "xgboost_featurizer.pkl", 'rb') as f:
-                self._featurizer = pickle.load(f)
-            with open(d / "xgboost_metadata.json", 'r') as f:
-                meta = json.load(f)
+            _log("ML Model: Downloading from S3...", _get_logger())
+
+            self._model = pickle.load(self._download_s3("xgboost_hallucination_model.pkl"))
+            self._featurizer = pickle.load(self._download_s3("xgboost_featurizer.pkl"))
+            meta = json.load(self._download_s3("xgboost_metadata.json"))
+
             self._threshold = meta.get('optimal_threshold', 0.5)
             self._use_domain = meta.get('domain_features', True)
-            self._loaded = True
             _log(f"ML Model: Loaded (threshold={self._threshold:.4f})", _get_logger())
             return True, None
         except Exception as e:
-            self._loaded = False
+            self._model = None
             return False, f"Error loading ML model: {e}"
 
     def predict(self, product_smiles, reactants_smiles):
@@ -225,7 +222,7 @@ class HallucinationModel:
         return 200, valid_pathways
 
 
-# Module-level singleton — cached model, zero mutable globals
+# Module-level singleton
 _model = HallucinationModel()
 
 # Public API — unchanged signatures for existing callers
