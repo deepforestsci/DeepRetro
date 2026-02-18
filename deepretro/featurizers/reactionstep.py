@@ -79,6 +79,9 @@ class ReactionStepFeaturizer(Featurizer):
             product_smiles, reactants_smiles = datapoint
             prod_fp = self._fp.featurize([product_smiles])[0]
             reac_fp = self._fp.featurize([reactants_smiles])[0]
+            # CircularFingerprint returns an empty array (shape (0,)) rather than raising an error when SMILES is invalid. We detect that here so we always return a well-shaped zero-vector on bad input.
+            if prod_fp.shape != (self.size,) or reac_fp.shape != (self.size,):
+                return np.zeros(self.feature_dim)
             parts = [prod_fp, reac_fp]
             if self.use_domain_features:
                 parts.append(

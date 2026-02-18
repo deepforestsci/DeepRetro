@@ -1,0 +1,36 @@
+name: deepretro tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "deepretro/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.9]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install deepretro
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -e "deepretro/[dev]"
+
+      - name: Run tests
+        run: |
+          pytest deepretro/tests/ -v
+

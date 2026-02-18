@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deepretro"
+version = "0.1.0"
+description = "DeepRetro package for retrosynthesis"
+requires-python = ">=3.9"
+dependencies = [
+    "deepchem",
+    "rdkit-pypi",
+    "numpy",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+]
+
+[project.urls]
+Repository = "https://github.com/deepforestsci/DeepRetro"
+
+[tool.setuptools.packages.find]
+where = [".."]
+include = ["deepretro*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
