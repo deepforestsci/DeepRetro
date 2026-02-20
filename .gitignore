@@ -11,3 +11,5 @@ pistachio/
 results/
 node_modules/
 coverage/
+
+*cache*/
