@@ -7,17 +7,18 @@
 
 	"settings": {
 		"editor.formatOnSave": true,
-		"editor.defaultFormatter": "ms-python.pylint",
-		"pylint.importStrategy": "useBundled",
 		"autoDocstring.docstringFormat": "numpy",
 		"pythonIndent.trimLinesWithOnlyWhitespace": true,
-		"python.languageServer": "Pylance",
+		"python.languageServer": "None",
 		"python.autoComplete.extraPaths": [],
-		// "python.linting.enabled": true,
-		// "python.linting.pylintPath": "pylint",
-		"python.formatting.provider": "yapf",
-		// "python.linting.pylintEnabled": true,
-		"python.analysis.extraPaths": [],
+		"[python]": {
+			"editor.defaultFormatter": "charliermarsh.ruff",
+			"editor.formatOnSave": true,
+			"editor.codeActionsOnSave": {
+				"source.organizeImports": "explicit",
+				"source.fixAll": "explicit"
+			}
+		},
 		"files.watcherExclude": {
 			"**/.conda": true
 		},
@@ -27,7 +28,7 @@
 		},
 		"notebook.formatOnCellExecution": false,
 		"notebook.formatOnSave.enabled": true,
-		"notebook.defaultFormatter": "eeyore.yapf",
+		"notebook.defaultFormatter": "charliermarsh.ruff",
 		"[javascript]": {
 			"editor.defaultFormatter": "vscode.typescript-language-features"
 		},

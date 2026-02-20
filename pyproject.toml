@@ -25,6 +25,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+dev = [
+    "pre-commit>=4.0.0",
+]
 docs = [
     "sphinx>=4.5.0",
     "sphinx-rtd-theme>=1.0.0",
@@ -37,4 +40,7 @@ Documentation = "https://DeepRetro.readthedocs.io/"
 Repository = "https://github.com/deepforestsci/DeepRetro"
 
 [tool.setuptools.packages.find]
-where = ["src"] 
+where = ["src"]
+
+[tool.ty.rules]
+unresolved-import = "ignore" 
