@@ -64,7 +64,19 @@ def _get_logger():
 
 
 def _log(message: str, logger=None):
-    """Log via the provided logger, falling back to print."""
+    """Log via the provided logger, falling back to print.
+
+    Parameters
+    ----------
+    message : str
+        The message to be logged
+    logger : Logger, optional
+        The logger object, by default None
+
+    Returns
+    -------
+    None
+    """
     if logger is not None:
         logger.info(message)
     else:
@@ -72,14 +84,36 @@ def _log(message: str, logger=None):
 
 
 def _log_error(status_code: int):
-    """Log a descriptive error message for the given status code."""
+    """Log a descriptive error message for the given status code.
+
+    Parameters
+    ----------
+    status_code : int
+        The status code to log
+
+    Returns
+    -------
+    None
+    """
     logger = _get_logger()
     description = ERROR_MAP.get(status_code, "Unrecognized error")
     _log(f"Error {status_code}: {description}", logger)
 
 
 def _extract_tag(text: str, tag: str) -> str | None:
-    """Extract content between ``<tag>`` and ``</tag>``. Returns *None* if not found."""
+    """Extract content between ``<tag>`` and ``</tag>``. Returns *None* if not found.
+
+    Parameters
+    ----------
+    text : str
+        The text to extract the tag from
+    tag : str
+        The tag to extract
+
+    Returns
+    -------
+    str | None
+    """
     match = re.search(
         rf"<{re.escape(tag)}\b[^>]*>\s*(.*?)\s*</{re.escape(tag)}>",
         text,
@@ -89,7 +123,17 @@ def _extract_tag(text: str, tag: str) -> str | None:
 
 
 def _classify_model(model: str) -> str:
-    """Classify a model identifier into 'deepseek', 'openai', or 'default'."""
+    """Classify a model identifier into 'deepseek', 'openai', or 'default'.
+
+    Parameters
+    ----------
+    model : str
+        The model identifier to classify
+
+    Returns
+    -------
+    str
+    """
     if model in DEEPSEEK_MODELS:
         return "deepseek"
     if model in OPENAI_MODELS:
@@ -107,6 +151,16 @@ def obtain_prompt(model: str) -> tuple[str, str, int]:
 
     Append ``:adv`` to the model string (e.g. ``claude-opus-4-6:adv``) to
     select the advanced prompt variant.
+
+    Parameters
+    ----------
+    model : str
+        The model identifier to classify
+
+    Returns
+    -------
+    tuple[str, str, int]
+        The system prompt, user prompt, and max tokens
     """
     parts = model.split(":")
     advanced = len(parts) > 1 and parts[1] == "adv"
@@ -124,7 +178,22 @@ def _build_addon_prompt(
     use_protecting_group_feature: bool,
     logger,
 ) -> str:
-    """Build supplementary prompt text for seven-member rings / protecting groups."""
+    """Build supplementary prompt text for seven-member rings / protecting groups.
+
+    Parameters
+    ----------
+    molecule : str
+        The molecule to build the addon prompt for
+    use_protecting_group_feature : bool
+        Whether to use the protecting group feature
+    logger : Logger
+        The logger to use
+
+    Returns
+    -------
+    str
+        The addon prompt
+    """
     parts: list[str] = []
 
     if detect_seven_member_rings(molecule):
@@ -148,7 +217,24 @@ def _build_completion_params(
     max_completion_tokens: int,
     temperature: float,
 ) -> dict:
-    """Assemble the kwargs dict for ``litellm.completion``."""
+    """Assemble the kwargs dict for ``litellm.completion``.
+
+    Parameters
+    ----------
+    model : str
+        The model to build the completion parameters for
+    messages : list[dict]
+        The messages to build the completion parameters for
+    max_completion_tokens : int
+        The max completion tokens to build the completion parameters for
+    temperature : float
+        The temperature to build the completion parameters for
+
+    Returns
+    -------
+    dict
+        The completion parameters
+    """
     params: dict = {
         "model": model,
         "messages": messages,
@@ -179,7 +265,25 @@ def call_LLM(
 ) -> tuple[int, str]:
     """Call an LLM to predict retrosynthetic precursors for *molecule*.
 
-    Returns ``(status_code, response_text)`` — 200 on success, 400 on failure.
+    Returns 200 on success, 400 on failure.
+
+    Parameters
+    ----------
+    molecule : str
+        The molecule to call the LLM for
+    model : str
+        The model to call the LLM for
+    temperature : float
+        The temperature to call the LLM for
+    messages : list[dict], optional
+        The messages to call the LLM for
+    use_protecting_group_feature : bool, optional
+        Whether to use the protecting group feature
+
+    Returns
+    -------
+    tuple[int, str]
+        The status code and the response text
     """
     logger = _get_logger()
     _log(f"Calling {model} with molecule: {molecule}", logger)
@@ -226,7 +330,18 @@ def call_LLM(
 
 
 def _parse_cot(res_text: str) -> tuple[int, list[str], str]:
-    """Parse a chain-of-thought response (``<cot>`` / ``<thinking>`` / ``<json>``)."""
+    """Parse a chain-of-thought response (``<cot>`` / ``<thinking>`` / ``<json>``).
+
+    Parameters
+    ----------
+    res_text : str
+        The response text to parse
+
+    Returns
+    -------
+    tuple[int, list[str], str]
+        The status code, the thinking steps, and the JSON content
+    """
     cot_content = _extract_tag(res_text, "cot")
     if not cot_content:
         return 501, [], ""
@@ -246,7 +361,18 @@ def _parse_cot(res_text: str) -> tuple[int, list[str], str]:
 
 
 def _parse_deepseek(res_text: str) -> tuple[int, list[str], str]:
-    """Parse a DeepSeek response (``<think>`` / ``<json>``)."""
+    """Parse a DeepSeek response (``<think>`` / ``<json>``).
+
+    Parameters
+    ----------
+    res_text : str
+        The response text to parse
+
+    Returns
+    -------
+    tuple[int, list[str], str]
+        The status code, the thinking content, and the JSON content
+    """
     thinking_content = _extract_tag(res_text, "think")
     if not thinking_content:
         return 503, [], ""
@@ -262,6 +388,18 @@ def parse_response(res_text: str, model: str) -> tuple[int, list[str], str]:
     """Parse an LLM response into ``(status_code, thinking_steps, json_content)``.
 
     Dispatches to the correct strategy based on model family.
+
+    Parameters
+    ----------
+    res_text : str
+        The response text to parse
+    model : str
+        The model to parse the response for
+
+    Returns
+    -------
+    tuple[int, list[str], str]
+        The status code, the thinking steps, and the JSON content
     """
     logger = _get_logger()
     family = _classify_model(model)
@@ -285,7 +423,18 @@ def parse_response(res_text: str, model: str) -> tuple[int, list[str], str]:
 def validate_json_response(
     json_content: str,
 ) -> tuple[int, list[str], list[str], list[int]]:
-    """Parse JSON content and extract molecules, explanations, and confidence scores."""
+    """Parse JSON content and extract molecules, explanations, and confidence scores.
+
+    Parameters
+    ----------
+    json_content : str
+        The JSON content to validate
+
+    Returns
+    -------
+    tuple[int, list[str], list[str], list[int]]
+        The status code, the molecules, the explanations, and the confidence scores
+    """
     logger = _get_logger()
     try:
         result = ast.literal_eval(json_content)
@@ -313,6 +462,26 @@ def llm_pipeline(
     Calls the LLM, parses and validates the response, and optionally runs
     stability / hallucination checks.  Retries with increasing temperature on
     failure, falling back to Claude when DeepSeek models fail on retry.
+
+    Parameters
+    ----------
+    molecule : str
+        The molecule to run the pipeline for
+    model : str
+        The model to run the pipeline for
+    messages : list[dict], optional
+        The messages to run the pipeline for
+    stability_check : bool, optional
+        Whether to run the stability check
+    hallucination_check : bool, optional
+        Whether to run the hallucination check
+    use_protecting_group_feature : bool, optional
+        Whether to use the protecting group feature
+
+    Returns
+    -------
+    tuple[list[list[str]], list[str], list[float]]
+        The output pathways, explanations, and confidence scores
     """
     logger = _get_logger()
     max_attempts = 15 if (stability_check or hallucination_check) else 6
