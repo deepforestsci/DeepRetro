@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from deepretro.featurizers.reactionstep import ReactionStepFeaturizer
-from deepretro.utils import NUM_DOMAIN_FEATURES
+from deepretro.utils.feat_extract import NUM_DOMAIN_FEATURES
 
 # Fixtures
 
@@ -28,7 +28,9 @@ def feat_no_domain():
     """Featurizer without domain features."""
     return ReactionStepFeaturizer(use_domain_features=False)
 
+
 # feature_dim property
+
 
 class TestFeatureDim:
     def test_with_domain_features(self, feat):
@@ -41,7 +43,9 @@ class TestFeatureDim:
         f = ReactionStepFeaturizer(size=1024, use_domain_features=True)
         assert f.feature_dim == 2 * 1024 + NUM_DOMAIN_FEATURES
 
+
 # Single featurization (_featurize)
+
 
 class TestFeaturizeSingle:
     def test_returns_numpy_array(self, feat):
@@ -73,7 +77,9 @@ class TestFeaturizeSingle:
         v2 = feat._featurize((BENZENE, CHLOROBENZENE))
         assert not np.array_equal(v1, v2)
 
+
 # Batch featurization (featurize)
+
 
 class TestFeaturizeBatch:
     def test_batch_shape(self, feat):
@@ -95,11 +101,12 @@ class TestFeaturizeBatch:
         reactions = [(ETHANOL, ETHANE_WATER), (INVALID_SMILES, ETHANE_WATER)]
         X = feat.featurize(reactions)
         assert X.shape == (2, feat.feature_dim)
-        assert X[0].sum() != 0.0   # valid row is non-zero
-        assert np.all(X[1] == 0.0) # invalid row is zeros
+        assert X[0].sum() != 0.0  # valid row is non-zero
+        assert np.all(X[1] == 0.0)  # invalid row is zeros
 
 
 # Reproducibility
+
 
 class TestReproducibility:
     def test_same_input_same_output(self, feat):

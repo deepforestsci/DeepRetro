@@ -3,7 +3,10 @@
 import numpy as np
 from deepchem.feat import Featurizer, CircularFingerprint
 
-from deepretro.utils import extract_domain_features_single, NUM_DOMAIN_FEATURES
+from deepretro.utils.feat_extract import (
+    extract_domain_features_single,
+    NUM_DOMAIN_FEATURES,
+)
 
 
 class ReactionStepFeaturizer(Featurizer):
@@ -39,8 +42,9 @@ class ReactionStepFeaturizer(Featurizer):
     (2, 4111)
     """
 
-    def __init__(self, radius: int = 2, size: int = 2048,
-                 use_domain_features: bool = True) -> None:
+    def __init__(
+        self, radius: int = 2, size: int = 2048, use_domain_features: bool = True
+    ) -> None:
         self.radius = radius
         self.size = size
         self.use_domain_features = use_domain_features
@@ -90,4 +94,3 @@ class ReactionStepFeaturizer(Featurizer):
             return np.concatenate(parts)
         except Exception:
             return np.zeros(self.feature_dim)
-
