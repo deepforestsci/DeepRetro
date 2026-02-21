@@ -9,7 +9,7 @@ Welcome to the DeepRetro tutorial! This section focuses on using the DeepRetro G
    :width: 800px
 
 Getting Started
---------------
+---------------
 
 Prerequisites
 ~~~~~~~~~~~~~
@@ -26,7 +26,7 @@ Setup
   - Choose your analysis mode (Smart Retrosynthesis or View Pathway)
 
 Advanced Settings Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: _static/advanced.png
    :alt: Advanced Settings Panel
@@ -48,7 +48,7 @@ Validation Checks::
    Stability validation enable/disable, Hallucination detection settings, Chemical feasibility assessment
 
 SMILES Input and Configuration
------------------------------
+------------------------------
 
 Target Molecule Entry
 ~~~~~~~~~~~~~~~~~~~~~
@@ -72,7 +72,7 @@ Visualization
 -------------
 
 Pathway Visualization
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: _static/tut11.png
    :alt: Pathway Visualization
@@ -89,7 +89,7 @@ Pathway Visualization
      - **Step 2 (Suzuki Coupling)**: Connects the donor and acceptor aromatic units
 
 Molecular Information
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 The visualization provides several interactive elements to help you explore and analyze retrosynthesis pathways. When examining molecule nodes, you can hover on any node to view detailed structural information, including molecular weight, chemical formula, and access the SMILES notation along with the step metrics. 
 
@@ -113,10 +113,10 @@ To effectively navigate complex reaction networks, the interface offers several 
    :width: 700px
 
 Interactive Editing
-------------------
+-------------------
 
 Partial Re-run Analysis
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: _static/partial.png
    :alt: Partial Re-run Feature
@@ -128,7 +128,7 @@ Partial Re-run Analysis
   The expert chemist can select a specific reaction step that needs modification and generate new pathway branches starting from that modified step. This allows for targeted refinement of problematic reactions while preserving successful parts of the route.
 
 Manual Pathway Editing
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: _static/edit.png
    :alt: Pathway Modification
@@ -142,7 +142,7 @@ File Management
 ---------------
 
 Pathway File Management
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: _static/view.png
    :alt: File Upload Interface
@@ -152,18 +152,17 @@ Pathway File Management
 To upload and visualize existing pathways, first click on the "View Pathway" tab in the interface. From there, you can select your JSON file containing the pathway data. The system will automatically load and validate the pathway information. Once loaded, you can easily view the full molecular pathway.
 
 JSON Data Export
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. image:: _static/json.png
    :alt: JSON Data Export
    :align: center
    :width: 600px
-|
 
 To export and manage pathway data, click the "JSON Result" button to view the raw data in JSON format. You can then save this data for further analysis or storage by using the download JSON button provided in the interface.
 
 Multiple Pathway Support
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: _static/pathways.png
    :alt: Multiple Pathway Support
@@ -173,13 +172,13 @@ Multiple Pathway Support
 The interface supports handling complex syntheses through pathway switching functionality. You can easily navigate between different proposed routes, compare their efficiency metrics, and evaluate the synthetic complexity of each pathway. This allows you to systematically assess multiple synthetic strategies and select the most promising approach for your target molecule.
 
 Troubleshooting and Best Practices
----------------------------------
+----------------------------------
 
 Troubleshooting
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 Common Issues and Solutions
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   - **API Connection**
     - Solution: Verify server running and API key correct
@@ -202,10 +201,10 @@ Common Issues and Solutions
     - Verification: Valid JSON structure
 
 Best Practices
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 Optimization Guidelines
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 When working with DeepRetro, it's important to follow best practices for optimal results. For input validation, start with simple molecules to get familiar with the system. Always verify your SMILES syntax and check chemical validity before proceeding.
 

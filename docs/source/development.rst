@@ -15,7 +15,7 @@ Setup
    pip install -r tests/requirements_tests.txt
 
 Project Structure
-----------------
+-----------------
 
 .. code-block:: text
 
@@ -33,7 +33,7 @@ Project Structure
    └── docs/                  # Documentation
 
 Development Workflow
--------------------
+--------------------
 
 1. **Create feature branch:**
 
@@ -109,7 +109,7 @@ Testing
        assert result is not None
 
 Adding Features
---------------
+---------------
 
 **New LLM Model:**
 

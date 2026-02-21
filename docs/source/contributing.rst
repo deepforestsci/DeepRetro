@@ -1,10 +1,10 @@
 Contributing Guide
-=================
+==================
 
 How to contribute to DeepRetro.
 
 Getting Started
---------------
+---------------
 
 1. **Fork the repository**
 2. **Create a feature branch:**
@@ -32,7 +32,7 @@ Code Standards
 * Write tests for new features
 
 Commit Messages
---------------
+---------------
 
 Use conventional commit format:
 
@@ -45,7 +45,7 @@ Use conventional commit format:
    refactor: simplify molecule validation
 
 Pull Request Process
--------------------
+--------------------
 
 1. **Update documentation** if needed
 2. **Add tests** for new functionality
@@ -54,7 +54,7 @@ Pull Request Process
 5. **Request review** from maintainers
 
 Issue Reporting
---------------
+---------------
 
 When reporting issues:
 
@@ -80,7 +80,7 @@ Run tests before submitting:
    python -m pytest tests/ --cov=src
 
 Code Review
-----------
+-----------
 
 All PRs require:
 
@@ -90,7 +90,7 @@ All PRs require:
 * No merge conflicts
 
 Release Process
---------------
+---------------
 
 1. **Update version** in `pyproject.toml`
 2. **Update changelog**

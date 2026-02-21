@@ -16,14 +16,14 @@ Prerequisites
 * Git
 
 System Requirements
-------------------
+-------------------
 
 * **OS**: Windows 10+, macOS 10.14+, Ubuntu 18.04+
 * **Memory**: 16GB recommended
 * **Storage**: 5GB free space
 
 Installation Steps
------------------
+------------------
 
 **Option 1: Docker Installation (Recommended)**
 
