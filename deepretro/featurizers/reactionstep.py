@@ -1,4 +1,11 @@
-"""DeepChem-compatible featurizer for reaction-step (product + reactants) pairs."""
+"""DeepChem-compatible featurizer for reaction-step (product + reactants) pairs.
+
+Converts ``(product_smiles, reactants_smiles)`` tuples into fixed-size
+fingerprint vectors for ML models. Uses Morgan fingerprints and optional
+domain features.
+"""
+
+from typing import Any
 
 import numpy as np
 from deepchem.feat import Featurizer, CircularFingerprint
@@ -45,6 +52,17 @@ class ReactionStepFeaturizer(Featurizer):
     def __init__(
         self, radius: int = 2, size: int = 2048, use_domain_features: bool = True
     ) -> None:
+        """Initialize the featurizer. See class docstring for parameter details.
+
+        Parameters
+        ----------
+        radius : int, optional (default 2)
+            Morgan fingerprint radius.  radius=2 corresponds to ECFP4.
+        size : int, optional (default 2048)
+            Fingerprint bit length for each molecule.
+        use_domain_features : bool, optional (default True)
+            If True, appends 15 domain features (atom/bond/ring/MW deltas).
+        """
         self.radius = radius
         self.size = size
         self.use_domain_features = use_domain_features
@@ -63,7 +81,7 @@ class ReactionStepFeaturizer(Featurizer):
         """
         return 2 * self.size + (NUM_DOMAIN_FEATURES if self.use_domain_features else 0)
 
-    def _featurize(self, datapoint: tuple) -> np.ndarray:
+    def _featurize(self, datapoint: tuple, **kwargs: Any) -> np.ndarray:
         """
         Featurize a single reaction step.
 

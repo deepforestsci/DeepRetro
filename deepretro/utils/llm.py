@@ -1,3 +1,10 @@
+"""LLM-based retrosynthesis: prompts, completion, and response parsing.
+
+Calls LLMs (Claude, GPT, DeepSeek via LiteLLM) to predict retrosynthetic
+precursors. Parses chain-of-thought and JSON responses, validates outputs,
+and runs optional stability/hallucination checks.
+"""
+
 import ast
 import os
 import re
@@ -36,11 +43,13 @@ load_dotenv()
 litellm.success_callback = ["langfuse"]
 litellm.drop_params = True
 
-ENABLE_LOGGING = os.getenv("ENABLE_LOGGING", "true").lower() != "false"
+ENABLE_LOGGING = (
+    True if os.getenv("ENABLE_LOGGING", "false").lower() == "true" else False
+)
 
-_MAX_API_RETRIES = 2
-_TEMPERATURE_STEP = 0.1
-_FALLBACK_MODEL = "claude-opus-4-6"
+_MAX_API_RETRIES = 2  # Number of API attempts before returning 400
+_TEMPERATURE_STEP = 0.1  # Temperature increment per retry attempt
+_FALLBACK_MODEL = "claude-opus-4-6"  # Fallback when DeepSeek fails on retry
 
 # (model_family, advanced) -> (sys_prompt, user_prompt, max_completion_tokens)
 _PROMPT_CONFIG = {
@@ -60,7 +69,9 @@ _PROMPT_CONFIG = {
 
 def _get_logger():
     """Return the context logger if logging is enabled, else None."""
-    return context_logger.get() if ENABLE_LOGGING else None
+    if ENABLE_LOGGING:
+        return context_logger.get(None)
+    return None
 
 
 def _log(message: str, logger=None):
@@ -77,10 +88,13 @@ def _log(message: str, logger=None):
     -------
     None
     """
-    if logger is not None:
-        logger.info(message)
+    if ENABLE_LOGGING:
+        if logger is not None:
+            logger.info(message)
+        else:
+            print(message)
     else:
-        print(message)
+        pass
 
 
 def _log_error(status_code: int):
@@ -95,12 +109,13 @@ def _log_error(status_code: int):
     -------
     None
     """
-    logger = _get_logger()
-    description = ERROR_MAP.get(status_code, "Unrecognized error")
-    _log(f"Error {status_code}: {description}", logger)
+    if ENABLE_LOGGING:
+        logger = _get_logger()
+        description = ERROR_MAP.get(status_code, "Unrecognized error")
+        _log(f"Error {status_code}: {description}", logger)
 
 
-def _extract_tag(text: str, tag: str) -> str | None:
+def extract_tag_content(text: str, tag: str) -> str | None:
     """Extract content between ``<tag>`` and ``</tag>``. Returns *None* if not found.
 
     Parameters
@@ -113,6 +128,15 @@ def _extract_tag(text: str, tag: str) -> str | None:
     Returns
     -------
     str | None
+
+    Examples
+    --------
+    >>> extract_tag_content("<json>hello</json>", "json")
+    'hello'
+    >>> extract_tag_content("<tag id='x'>content</tag>", "tag")
+    'content'
+    >>> extract_tag_content("no tags here", "json") is None
+    True
     """
     match = re.search(
         rf"<{re.escape(tag)}\b[^>]*>\s*(.*?)\s*</{re.escape(tag)}>",
@@ -161,6 +185,17 @@ def obtain_prompt(model: str) -> tuple[str, str, int]:
     -------
     tuple[str, str, int]
         The system prompt, user prompt, and max tokens
+
+    Examples
+    --------
+    >>> sys_prompt, user_prompt, max_tokens = obtain_prompt("gpt-4o")
+    >>> max_tokens
+    8192
+    >>> len(sys_prompt) > 0 and len(user_prompt) > 0
+    True
+    >>> _, _, tokens = obtain_prompt("claude-opus-4-6:adv")
+    >>> tokens
+    4096
     """
     parts = model.split(":")
     advanced = len(parts) > 1 and parts[1] == "adv"
@@ -173,12 +208,15 @@ def obtain_prompt(model: str) -> tuple[str, str, int]:
 # ---------------------------------------------------------------------------
 
 
-def _build_addon_prompt(
+def build_addon_prompt(
     molecule: str,
     use_protecting_group_feature: bool,
     logger,
 ) -> str:
     """Build supplementary prompt text for seven-member rings / protecting groups.
+
+    Appends extra instructions when the molecule contains seven-member rings
+    or when protecting-group masking is enabled.
 
     Parameters
     ----------
@@ -211,13 +249,16 @@ def _build_addon_prompt(
     return "".join(parts)
 
 
-def _build_completion_params(
+def build_completion_params(
     model: str,
     messages: list[dict],
     max_completion_tokens: int,
     temperature: float,
 ) -> dict:
     """Assemble the kwargs dict for ``litellm.completion``.
+
+    Adds seed, and Langfuse metadata. Special handling for
+    extended-thinking models (e.g. ``3-7`` in model name).
 
     Parameters
     ----------
@@ -241,14 +282,12 @@ def _build_completion_params(
         "max_completion_tokens": max_completion_tokens,
         "temperature": temperature,
         "seed": 42,
-        "top_p": 0.9,
         "metadata": get_langfuse_metadata("retrosynthesis"),
     }
 
     if "3-7" in model:
         params["max_tokens"] = 18192
         params["temperature"] = 1
-        params.pop("top_p", None)
         params.pop("max_completion_tokens", None)
         params["thinking"] = {"type": "enabled", "budget_tokens": 5000}
 
@@ -266,6 +305,15 @@ def call_LLM(
     """Call an LLM to predict retrosynthetic precursors for *molecule*.
 
     Returns 200 on success, 400 on failure.
+
+    Example
+    -------
+    >>> from deepretro.utils.llm import call_LLM
+    >>> from src.cache import clear_cache_for_molecule
+    >>> clear_cache_for_molecule("C1CCCCC1")
+    >>> status, res_text = call_LLM("C1CCCCC1", model="claude-haiku-4-5-20251001")
+    >>> print(status)
+    200
 
     Parameters
     ----------
@@ -288,7 +336,7 @@ def call_LLM(
     logger = _get_logger()
     _log(f"Calling {model} with molecule: {molecule}", logger)
 
-    addon = _build_addon_prompt(molecule, use_protecting_group_feature, logger)
+    addon = build_addon_prompt(molecule, use_protecting_group_feature, logger)
     sys_prompt, user_prompt, max_tokens = obtain_prompt(model)
     model_name = model.split(":")[0]
 
@@ -306,7 +354,7 @@ def call_LLM(
             },
         ]
 
-    params = _build_completion_params(model_name, messages, max_tokens, temperature)
+    params = build_completion_params(model_name, messages, max_tokens, temperature)
 
     for attempt in range(1, _MAX_API_RETRIES + 1):
         try:
@@ -342,7 +390,7 @@ def _parse_cot(res_text: str) -> tuple[int, list[str], str]:
     tuple[int, list[str], str]
         The status code, the thinking steps, and the JSON content
     """
-    cot_content = _extract_tag(res_text, "cot")
+    cot_content = extract_tag_content(res_text, "cot")
     if not cot_content:
         return 501, [], ""
 
@@ -353,7 +401,7 @@ def _parse_cot(res_text: str) -> tuple[int, list[str], str]:
     if not thinking_steps:
         return 501, [], ""
 
-    json_content = _extract_tag(res_text, "json")
+    json_content = extract_tag_content(res_text, "json")
     if not json_content:
         return 501, [], ""
 
@@ -373,11 +421,11 @@ def _parse_deepseek(res_text: str) -> tuple[int, list[str], str]:
     tuple[int, list[str], str]
         The status code, the thinking content, and the JSON content
     """
-    thinking_content = _extract_tag(res_text, "think")
+    thinking_content = extract_tag_content(res_text, "think")
     if not thinking_content:
         return 503, [], ""
 
-    json_content = _extract_tag(res_text, "json")
+    json_content = extract_tag_content(res_text, "json")
     if not json_content:
         return 503, [], ""
 
@@ -400,6 +448,25 @@ def parse_response(res_text: str, model: str) -> tuple[int, list[str], str]:
     -------
     tuple[int, list[str], str]
         The status code, the thinking steps, and the JSON content
+
+    Examples
+    --------
+    >>> res = '<cot><thinking>Step 1</thinking></cot><json>{"data":[["CC"]],"explanation":["x"],"confidence_scores":[0.9]}</json>'
+    >>> status, steps, json_str = parse_response(res, "claude-opus-4-6")
+    >>> status
+    200
+    >>> steps
+    ['Step 1']
+    >>> 'CC' in json_str
+    True
+    >>> res_openai = '<json>{"data":[["CC"]],"explanation":["x"],"confidence_scores":[0.9]}</json>'
+    >>> status, steps, _ = parse_response(res_openai, "gpt-4o")
+    >>> status
+    200
+    >>> steps
+    []
+    >>> parse_response("", "claude-opus-4-6")[0]
+    501
     """
     logger = _get_logger()
     family = _classify_model(model)
@@ -409,7 +476,7 @@ def parse_response(res_text: str, model: str) -> tuple[int, list[str], str]:
             return _parse_deepseek(res_text)
 
         if family == "openai":
-            json_content = _extract_tag(res_text, "json")
+            json_content = extract_tag_content(res_text, "json")
             if not json_content:
                 return 502, [], ""
             return 200, [], json_content
@@ -434,6 +501,19 @@ def validate_json_response(
     -------
     tuple[int, list[str], list[str], list[int]]
         The status code, the molecules, the explanations, and the confidence scores
+
+    Examples
+    --------
+    >>> json_str = '{"data":[["CC(=O)C","CC=O"],["CC(O)CC"]],"explanation":["Aldol","Oxidation"],"confidence_scores":[0.9,0.8]}'
+    >>> status, data, expl, conf = validate_json_response(json_str)
+    >>> status
+    200
+    >>> data
+    [['CC(=O)C', 'CC=O'], ['CC(O)CC']]
+    >>> expl
+    ['Aldol', 'Oxidation']
+    >>> conf
+    [0.9, 0.8]
     """
     logger = _get_logger()
     try:
@@ -453,8 +533,8 @@ def llm_pipeline(
     molecule: str,
     model: str = "claude-opus-4-6",
     messages: Optional[list[dict]] = None,
-    stability_check: bool = False,
-    hallucination_check: bool = False,
+    stability_check: str = "False",
+    hallucination_check: str = "False",
     use_protecting_group_feature: bool = False,
 ) -> tuple[list[list[str]], list[str], list[float]]:
     """End-to-end retrosynthesis pipeline.
@@ -462,6 +542,13 @@ def llm_pipeline(
     Calls the LLM, parses and validates the response, and optionally runs
     stability / hallucination checks.  Retries with increasing temperature on
     failure, falling back to Claude when DeepSeek models fail on retry.
+
+    Example
+    -------
+    >>> from deepretro.utils.llm import llm_pipeline
+    >>> pathways, explanations, confidence = llm_pipeline("C1CCCCC1")  # doctest: +SKIP
+    >>> isinstance(pathways, list) and isinstance(explanations, list)  # doctest: +SKIP
+    True
 
     Parameters
     ----------
@@ -471,9 +558,9 @@ def llm_pipeline(
         The model to run the pipeline for
     messages : list[dict], optional
         The messages to run the pipeline for
-    stability_check : bool, optional
+    stability_check : str, optional
         Whether to run the stability check
-    hallucination_check : bool, optional
+    hallucination_check : str, optional
         Whether to run the hallucination check
     use_protecting_group_feature : bool, optional
         Whether to use the protecting group feature
@@ -484,7 +571,11 @@ def llm_pipeline(
         The output pathways, explanations, and confidence scores
     """
     logger = _get_logger()
-    max_attempts = 15 if (stability_check or hallucination_check) else 6
+    max_attempts = (
+        15
+        if (stability_check.lower() == "true" or hallucination_check.lower() == "true")
+        else 6
+    )
 
     output_pathways: list[list[str]] = []
     output_explanations: list[str] = []
@@ -495,12 +586,6 @@ def llm_pipeline(
         current_model = model
         if model in DEEPSEEK_MODELS and attempt > 0:
             current_model = _FALLBACK_MODEL
-
-        _log(
-            f"Pipeline attempt {attempt + 1}/{max_attempts}, "
-            f"temp={temperature:.1f}, model={current_model}",
-            logger,
-        )
 
         status, res_text = call_LLM(
             molecule,
@@ -529,7 +614,7 @@ def llm_pipeline(
             molecule, res_molecules, res_explanations, res_confidence
         )
 
-        if stability_check and output_pathways:
+        if stability_check.lower() == "true" and output_pathways:
             status, stable_pathways = stability_checker(output_pathways)
             if status != 200:
                 _log_error(status)
@@ -537,7 +622,7 @@ def llm_pipeline(
                 continue
             output_pathways = stable_pathways
 
-        if hallucination_check and output_pathways:
+        if hallucination_check.lower() == "true" and output_pathways:
             _log(
                 f"Running hallucination check on {len(output_pathways)} pathways",
                 logger,

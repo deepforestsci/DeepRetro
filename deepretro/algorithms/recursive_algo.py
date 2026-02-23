@@ -1,25 +1,59 @@
-"""Recursive retrosynthesis using DeepRetro."""
+"""Recursive retrosynthesis using DeepRetro.
+
+Attempts AiZynthFinder (template-based) first; falls back to an LLM pipeline
+when the molecule cannot be solved. Recurses on proposed reactants until
+all leaves are commercially available or depth/cycle limits are hit.
+"""
 
 from __future__ import annotations
-from rdkit.Chem.rdchem import Mol
 
 from typing import TypedDict, cast
 
 from rdkit import Chem
+from rdkit.Chem.rdchem import Mol
 
-from src.utils.az import run_az
+from deepretro.utils.az import run_az
 from src.utils.job_context import logger as context_logger
-from src.utils.llm import llm_pipeline
+from deepretro.utils.llm import llm_pipeline
+
+
+def _get_logger():
+    """Return the context logger if set, else None. Safe for doctest/standalone use."""
+    return context_logger.get(None)
+
+
+def _log(level: str, message: str, logger=None):
+    """Log message at level if logger is set, else no-op."""
+    if logger is not None:
+        getattr(logger, level)(message)
 
 
 class ReactionMetadata(TypedDict):
-    """Metadata attached to a reaction node."""
+    """Metadata attached to a reaction node.
+
+    Attributes
+    ----------
+    policy_probability : list[float]
+        Confidence scores for each proposed precursor in the reaction.
+    """
 
     policy_probability: list[float]
 
 
 class ReactionNode(TypedDict):
-    """A single retrosynthetic reaction step."""
+    """A single retrosynthetic reaction step.
+
+    Attributes
+    ----------
+    type : str
+        Node type, typically ``"reaction"``.
+    is_reaction : bool
+        Always ``True`` for reaction nodes.
+    metadata : ReactionMetadata
+        Confidence and policy information.
+    children : list[MolNode]
+        Precursor molecule nodes produced by this reaction.
+    """
 
     type: str
     is_reaction: bool
@@ -28,7 +62,21 @@ class ReactionNode(TypedDict):
 
 
 class MolNode(TypedDict):
-    """A molecule in the retrosynthesis tree."""
+    """A molecule in the retrosynthesis tree.
+
+    Attributes
+    ----------
+    type : str
+        Node type, typically ``"mol"``.
+    smiles : str
+        SMILES string of the molecule.
+    is_chemical : bool
+        Whether the molecule is a valid chemical structure.
+    in_stock : bool
+        Whether the molecule is commercially available.
+    children : list[ReactionNode]
+        Retrosynthetic reactions that produce this molecule.
+    """
 
     type: str
     smiles: str
@@ -38,6 +86,7 @@ class MolNode(TypedDict):
 
 
 ResultPair = tuple[MolNode, bool]
+"""Type alias: ``(result_tree, solved)`` - retrosynthesis sub-tree and solved status."""
 
 
 def _make_mol_node(
@@ -58,7 +107,22 @@ def _make_mol_node(
 
     Returns
     -------
-    MolNode: Molecule node.
+    MolNode
+        Molecule node dict with type, smiles, is_chemical, in_stock, children.
+
+    Examples
+    --------
+    >>> from deepretro.algorithms.recursive_algo import _make_mol_node
+    >>> node = _make_mol_node("CCO")
+    >>> node["smiles"]
+    'CCO'
+    >>> node["type"]
+    'mol'
+    >>> node["in_stock"]
+    False
+    >>> node = _make_mol_node("CC", in_stock=True)
+    >>> node["in_stock"]
+    True
     """
     return {
         "type": "mol",
@@ -84,7 +148,19 @@ def _make_reaction_node(
 
     Returns
     -------
-    ReactionNode: Reaction node.
+    ReactionNode
+        Reaction node dict with type, is_reaction, metadata, children.
+
+    Examples
+    --------
+    >>> from deepretro.algorithms.recursive_algo import _make_reaction_node
+    >>> node = _make_reaction_node([0.9, 0.8])
+    >>> node["type"]
+    'reaction'
+    >>> node["metadata"]["policy_probability"]
+    [0.9, 0.8]
+    >>> node["is_reaction"]
+    True
     """
     return {
         "type": "reaction",
@@ -104,7 +180,18 @@ def _canonicalize(smiles: str) -> str:
 
     Returns
     -------
-    str: Canonical SMILES string.
+    str
+        Canonical SMILES string, or original on parse failure.
+
+    Examples
+    --------
+    >>> from deepretro.algorithms.recursive_algo import _canonicalize
+    >>> _canonicalize("c1ccccc1")
+    'c1ccccc1'
+    >>> _canonicalize("CCO")
+    'CCO'
+    >>> _canonicalize("invalid")
+    'invalid'
     """
     try:
         mol: Mol = Chem.MolFromSmiles(smiles)
@@ -161,20 +248,33 @@ def rec_run_DeepRetro(
     ResultPair
         ``(result_dict, solved)`` — the retrosynthesis sub-tree rooted at
         *molecule* and whether a complete route was found.
+
+    Examples
+    --------
+    >>> from deepretro.algorithms.recursive_algo import rec_run_DeepRetro
+    >>> from src.cache import clear_cache_for_molecule
+    >>> clear_cache_for_molecule("CCO")
+    >>> tree, solved = rec_run_DeepRetro("CCO", "job-1", llm='claude-haiku-4-5-20251001') # doctest: +SKIP
+    >>> isinstance(tree, dict) and "smiles" in tree # doctest: +SKIP
+    True
+    >>> tree["smiles"] # doctest: +SKIP
+    'CCO'
     """
     if visited is None:
         visited = set()
-    logger = context_logger.get()
+    logger = _get_logger()
 
     canonical = _canonicalize(molecule)
 
     if depth >= max_depth:
-        logger.warning(f"Max depth {max_depth} reached for {molecule}")
+        _log("warning", f"Max depth {max_depth} reached for {molecule}", logger)
         return _make_mol_node(molecule), False
 
     if canonical in visited:
-        logger.warning(
-            f"Cycle detected: {molecule} (canonical: {canonical}) already processed"
+        _log(
+            "warning",
+            f"Cycle detected: {molecule} (canonical: {canonical}) already processed",
+            logger,
         )
         return _make_mol_node(molecule), False
 
@@ -184,14 +284,14 @@ def rec_run_DeepRetro(
     result_dict = cast(MolNode, az_results[0])
 
     if solved:
-        logger.info(f"AZ solved {molecule}")
+        _log("info", f"AZ solved {molecule}", logger)
         return result_dict, bool(solved)
 
-    logger.info(f"AZ failed for {molecule}, running LLM")
+    _log("info", f"AZ failed for {molecule}, running LLM", logger)
     out_pathways, out_explained, out_confidence = llm_pipeline(
         molecule=molecule,
-        LLM=llm,
-        stability_flag=stability_flag,
+        model=llm,
+        stability_check=stability_flag,
         hallucination_check=hallucination_check,
         use_protecting_group_feature=use_protecting_group_feature,
     )
@@ -199,8 +299,8 @@ def rec_run_DeepRetro(
     reaction = _make_reaction_node(out_confidence)
     result_dict = _make_mol_node(molecule, children=[reaction])
 
-    logger.info(f"LLM returned {out_pathways}")
-    logger.info(f"LLM explained {out_explained}")
+    _log("info", f"LLM returned {out_pathways}", logger)
+    _log("info", f"LLM explained {out_explained}", logger)
 
     next_depth = depth + 1
 
@@ -223,7 +323,7 @@ def rec_run_DeepRetro(
                 if stat:
                     temp_stat.append(True)
                     reaction["children"].append(res)
-            logger.info(f"temp_stat: {temp_stat}")
+            _log("info", f"temp_stat: {temp_stat}", logger)
             if all(temp_stat):
                 solved = True
         else:
@@ -242,7 +342,7 @@ def rec_run_DeepRetro(
             reaction["children"].append(res)
 
         if solved:
-            logger.info("breaking")
+            _log("info", "breaking", logger)
             break
 
     return result_dict, bool(solved)
@@ -281,16 +381,27 @@ def single_run_DeepRetro(
     ResultPair
         ``(result_dict, solved)`` — the LLM-produced retrosynthesis node
         and the AZ solved status.
+
+    Examples
+    --------
+    >>> from deepretro.algorithms.recursive_algo import single_run_DeepRetro
+    >>> from src.cache import clear_cache_for_molecule
+    >>> clear_cache_for_molecule("CCO")
+    >>> tree, solved = single_run_DeepRetro("CCO", llm="claude-haiku-4-5-20251001") # doctest: +SKIP
+    >>> isinstance(tree, dict) and "children" in tree # doctest: +SKIP
+    True
+    >>> tree["smiles"] # doctest: +SKIP
+    'CCO'
     """
-    logger = context_logger.get()
+    logger = _get_logger()
 
     solved, _az_results = run_az(smiles=molecule, az_model=az_model)
 
-    logger.info(f"AZ failed for {molecule}, running LLM")
+    _log("info", f"AZ failed for {molecule}, running LLM", logger)
     out_pathways, out_explained, out_confidence = llm_pipeline(
         molecule=molecule,
-        LLM=llm,
-        stability_flag=stability_flag,
+        model=llm,
+        stability_check=stability_flag,
         hallucination_check=hallucination_check,
         use_protecting_group_feature=use_protecting_group_feature,
     )
@@ -298,7 +409,7 @@ def single_run_DeepRetro(
     reaction = _make_reaction_node(out_confidence)
     result_dict = _make_mol_node(molecule, children=[reaction])
 
-    logger.info(f"LLM returned {out_pathways}")
-    logger.info(f"LLM explained {out_explained}")
+    _log("info", f"LLM returned {out_pathways}", logger)
+    _log("info", f"LLM explained {out_explained}", logger)
 
     return result_dict, bool(solved)
