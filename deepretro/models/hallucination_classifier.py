@@ -13,6 +13,7 @@ import numpy as np
 from deepchem.data import NumpyDataset
 from deepchem.metrics import Metric, accuracy_score, f1_score, roc_auc_score
 from deepchem.models import GBDTModel
+from rdkit import Chem
 from xgboost import XGBClassifier
 
 from deepretro.featurizers import ReactionStepFeaturizer
@@ -78,7 +79,8 @@ class HallucinationClassifier:
         Train the model on a DeepChem ``NumpyDataset``.
 
         ``GBDTModel`` automatically performs an internal 80/20
-        train/validation split for early stopping.
+        train/validation split for early stopping.  The model is
+        auto-saved to ``model_dir`` after training.
 
         Parameters
         ----------
@@ -90,6 +92,7 @@ class HallucinationClassifier:
         >>> clf.fit(train_ds)  # doctest: +SKIP
         """
         self.dc_model.fit(train_dataset)
+        self.dc_model.save()
 
     # Evaluation
 
@@ -98,7 +101,8 @@ class HallucinationClassifier:
         Evaluate using DeepChem ``Metric`` objects.
 
         Returns label-based accuracy and F1, plus probability-based
-        ROC-AUC and the optimal threshold.
+        ROC-AUC and the optimal threshold.  Updates ``self.threshold``
+        to the optimal value and auto-saves model + metadata.
 
         Parameters
         ----------
@@ -133,13 +137,17 @@ class HallucinationClassifier:
         opt_thr, opt_f1 = find_optimal_threshold(y_true, proba)
         self.threshold = opt_thr
 
-        return {
+        # Auto-save with updated threshold
+        self.save(self.dc_model.model_dir)
+
+        scores = {
             "roc_auc": auc,
             "accuracy": label_scores["accuracy"],
             "f1": label_scores["f1"],
             "optimal_threshold": opt_thr,
             "optimal_f1": opt_f1,
         }
+        return scores
 
     # Prediction
 
@@ -201,7 +209,18 @@ class HallucinationClassifier:
         >>> clf.load("saved_model/")                     # doctest: +SKIP
         >>> clf.predict_single("CCO", "CC.O")            # doctest: +SKIP
         {'is_hallucination': False, 'probability': 0.12}
+        >>> clf.predict_single("GARBAGE", "CC.O")        # doctest: +SKIP
+        {'error': 'Invalid SMILES', 'is_hallucination': None, 'probability': None}
         """
+        # Validate SMILES before featurizing
+        if Chem.MolFromSmiles(product_smiles) is None or \
+           Chem.MolFromSmiles(reactants_smiles) is None:
+            return {
+                "error": "Invalid SMILES",
+                "is_hallucination": None,
+                "probability": None,
+            }
+
         if self.featurizer is None:
             self.featurizer = ReactionStepFeaturizer()
 
