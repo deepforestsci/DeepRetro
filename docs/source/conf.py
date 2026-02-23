@@ -77,8 +77,8 @@ html_theme_options = {
     "sticky_navigation": True,
     "includehidden": True,
     "logo_only": False,
-    "display_version": True,
-    "sidebar_width": "300px",
+    # "display_version": True,
+    # "sidebar_width": "300px",
     "body_max_width": "1200px",
 }
 
