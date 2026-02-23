@@ -22,6 +22,6 @@ dependencies:
     - flask_cors
     - structlog
     - diskcache
-    - langfuse
+    - langfuse>=2,<3
     - joblib
     - requests
