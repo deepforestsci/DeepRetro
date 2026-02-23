@@ -1,8 +1,16 @@
 """Data loading and splitting utilities for reaction datasets."""
 
-from .loader import ReactionDataLoader, split_dataset
+from .loader import (
+    load_reaction_csv,
+    featurize_reactions,
+    create_dataset,
+    split_dataset,
+)
 
 __all__ = [
-    "ReactionDataLoader",
+    "load_reaction_csv",
+    "featurize_reactions",
+    "create_dataset",
     "split_dataset",
 ]
+
