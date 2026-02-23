@@ -10,21 +10,25 @@ from src.variables import REACTION_ENCODING_NAMES, ENCODING_SCALABILITY
 from src.cache import cache_results
 from src.utils.job_context import logger as context_logger
 
-root_dir = rootutils.setup_root(__file__,
-                                indicator=".project-root",
-                                pythonpath=True)
+root_dir = rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
-RXN_CLASSIFICATION_MODEL_PATH = f"{root_dir}/{os.getenv('RXN_CLASSIFICATION_MODEL_PATH')}"
-ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
-                                    "true").lower() == "false" else True
+RXN_CLASSIFICATION_MODEL_PATH = (
+    f"{root_dir}/{os.getenv('RXN_CLASSIFICATION_MODEL_PATH')}"
+)
+ENABLE_LOGGING = (
+    False if os.getenv("ENABLE_LOGGING", "true").lower() == "false" else True
+)
 
 
 def log_message(message: str, logger=None):
     """Log the message"""
-    if logger is not None:
-        log_message(message)
+    if ENABLE_LOGGING:
+        if logger is not None:
+            logger.info(message)
+        else:
+            print(message)
     else:
-        print(message)
+        pass
 
 
 def is_valid_smiles(smiles: str) -> bool:
@@ -42,7 +46,7 @@ def is_valid_smiles(smiles: str) -> bool:
     """
     try:
         mol = Chem.MolFromSmiles(smiles)
-    except:
+    except Exception:
         return False
     if mol is None:
         return False
@@ -69,13 +73,12 @@ def substructure_matching(target_smiles: str, query_smiles: str) -> int:
     # Convert SMILES to RDKit molecule objects
     try:
         target_molecule = Chem.MolFromSmiles(target_smiles)
-    except:
-        log_message(f"Error in parsing target molecule: {target_smiles}",
-                    logger)
+    except Exception:
+        log_message(f"Error in parsing target molecule: {target_smiles}", logger)
 
     try:
         query_molecule = Chem.MolFromSmiles(query_smiles)
-    except:
+    except Exception:
         log_message(f"Error in parsing query molecule: {query_smiles}", logger)
 
     # Check if the query substructure is present in the target molecule
@@ -84,7 +87,7 @@ def substructure_matching(target_smiles: str, query_smiles: str) -> int:
             return 1
         else:
             return 0
-    except:
+    except Exception:
         return 0
 
 
@@ -123,18 +126,19 @@ def validity_check(molecule, res_molecules, res_explanations, res_confidence):
                 if is_valid_smiles(smiles):
                     if are_molecules_same(molecule, smiles):
                         log_message(
-                            f"Molecule : {molecule} is same as target molecule",
-                            logger)
+                            f"Molecule : {molecule} is same as target molecule", logger
+                        )
                     elif substructure_matching(smiles, molecule):
                         log_message(
                             f"Molecule : {molecule} is substructure of target molecule",
-                            logger)
+                            logger,
+                        )
                     else:
                         valid.append(smiles)
                 else:
                     log_message(
-                        f"Molecule : {molecule} is invalid or cannot be parsed",
-                        logger)
+                        f"Molecule : {molecule} is invalid or cannot be parsed", logger
+                    )
             if len(valid) == len(smile_list):
                 valid_pathways.append(valid)
                 valid_explanations.append(res_explanations[idx])
@@ -146,7 +150,8 @@ def validity_check(molecule, res_molecules, res_explanations, res_confidence):
                 elif substructure_matching(smile_list, molecule):
                     log_message(
                         f"Molecule : {molecule} is substructure of target molecule {smile_list}",
-                        logger)
+                        logger,
+                    )
                 else:
                     valid_pathways.append([smile_list])
                     valid_explanations.append(res_explanations[idx])
@@ -155,7 +160,8 @@ def validity_check(molecule, res_molecules, res_explanations, res_confidence):
                 log_message("Molecule is invalid or cannot be parsed", logger)
     log_message(
         f"Obtained {len(valid_pathways)} valid pathways after validity test: {valid_pathways}",
-        logger)
+        logger,
+    )
     return valid_pathways, valid_explanations, valid_confidence
 
 
@@ -175,7 +181,7 @@ def calc_mol_wt(mol: str) -> float:
     logger = context_logger.get() if ENABLE_LOGGING else None
     try:
         mol_wt = ExactMolWt(Chem.MolFromSmiles(mol))
-    except:
+    except Exception:
         mol_wt = 0.0
         log_message(f"Error in calculating molecular weight: {mol}", logger)
     return mol_wt
@@ -197,7 +203,7 @@ def calc_chemical_formula(mol: str):
     logger = context_logger.get() if ENABLE_LOGGING else None
     try:
         formula = CalcMolFormula(Chem.MolFromSmiles(mol))
-    except:
+    except Exception:
         formula = "N/A"
         log_message(f"Error in calculating formula: {mol}", logger)
     return formula
@@ -216,12 +222,12 @@ def are_molecules_same(smiles1: str, smiles2: str) -> bool:
     canonical_smiles2 = Chem.MolToSmiles(mol2, canonical=True)
 
     # Alternatively, compare molecular fingerprints
-    fingerprint1 = rdMolDescriptors.GetMorganFingerprintAsBitVect(mol1,
-                                                                  radius=2,
-                                                                  nBits=1024)
-    fingerprint2 = rdMolDescriptors.GetMorganFingerprintAsBitVect(mol2,
-                                                                  radius=2,
-                                                                  nBits=1024)
+    fingerprint1 = rdMolDescriptors.GetMorganFingerprintAsBitVect(
+        mol1, radius=2, nBits=1024
+    )
+    fingerprint2 = rdMolDescriptors.GetMorganFingerprintAsBitVect(
+        mol2, radius=2, nBits=1024
+    )
 
     # Check if canonical SMILES or fingerprints match
     if canonical_smiles1 == canonical_smiles2:
@@ -236,9 +242,7 @@ def compute_fingerprint(smiles, radius=2, nBits=2048):
     mol = Chem.MolFromSmiles(smiles)
     if mol is None:
         return None
-    fingerprint = AllChem.GetMorganFingerprintAsBitVect(mol,
-                                                        radius,
-                                                        nBits=nBits)
+    fingerprint = AllChem.GetMorganFingerprintAsBitVect(mol, radius, nBits=nBits)
     return list(fingerprint)
 
 
