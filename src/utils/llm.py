@@ -10,14 +10,16 @@ from src.variables import USER_PROMPT_V4, SYS_PROMPT_V4
 from src.variables import USER_PROMPT_OPENAI, SYS_PROMPT_OPENAI
 from src.variables import USER_PROMPT_DEEPSEEK, SYS_PROMPT_DEEPSEEK
 from src.variables import ADDON_PROMPT_7_MEMBER, USER_PROMPT_DEEPSEEK_V4
-from src.variables import ERROR_MAP, PROTECTING_GROUP_CONTEXT
+from src.variables import ERROR_MAP
 from src.cache import cache_results
 from src.utils.utils_molecule import validity_check, detect_seven_member_rings
 from src.utils.job_context import logger as context_logger
 from src.utils.stability_checks import stability_checker
 from src.utils.hallucination_checks import hallucination_checker
-from src.protecting_group import mask_protecting_groups_multisymbol
-from src.deprotecting_group import unmask_protecting_groups_multisymbol, get_protecting_group_info
+from src.protecting_group import (canonicalize_and_map_atoms,
+                                  get_protection_recommendations,
+                                  format_recommendations_for_prompt,
+                                  ProtectionState)
 
 load_dotenv()
 
@@ -26,6 +28,7 @@ litellm.success_callback = ["langfuse"]
 litellm.drop_params = True
 
 from src.utils.langfuse_config import get_langfuse_metadata
+
 ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
                                     "true").lower() == "false" else True
 
@@ -98,11 +101,15 @@ def obtain_prompt(LLM: str):
 
 
 @cache_results
-def call_LLM(molecule: str,
-             LLM: str = "claude-opus-4-20250514",
-             temperature: float = 0.0,
-             messages: Optional[list[dict]] = None,
-             use_protecting_group_feature: bool = False) -> tuple[int, str]:
+def call_LLM(
+        molecule: str,
+        LLM: str = "claude-opus-4-20250514",
+        temperature: float = 0.0,
+        messages: Optional[list[dict]] = None,
+        use_protecting_group_feature: bool = False,
+        protecting_group_mode: str = "auto",
+        protecting_group_selections: Optional[dict] = None,
+        protection_state: Optional[ProtectionState] = None) -> tuple[int, str]:
     """Calls the LLM model to predict the next step
 
     Parameters
@@ -115,6 +122,14 @@ def call_LLM(molecule: str,
         The temperature for sampling, by default 0.0
     messages : Optional[list[dict]], optional
         The conversation history, by default None
+    use_protecting_group_feature : bool, optional
+        Whether to use protecting group feature, by default False
+    protecting_group_mode : str, optional
+        Mode for protecting group selection: "auto" or "hitl", by default "auto"
+    protecting_group_selections : Optional[dict], optional
+        User-selected protecting groups keyed by site_id (HITL mode), by default None
+    protection_state : Optional[ProtectionState], optional
+        Current protection state tracking active PGs across the synthesis tree.
 
     Returns
     -------
@@ -134,14 +149,94 @@ def call_LLM(molecule: str,
 
     # Check for protecting groups and add context
     if use_protecting_group_feature:
-        masked_smiles = mask_protecting_groups_multisymbol(molecule)
-        if masked_smiles != molecule and masked_smiles != "INVALID_SMILES":
+        # Canonicalize and atom-map the molecule for stable site identification
+        mapped_smiles, atom_map, mapped_mol = canonicalize_and_map_atoms(
+            molecule)
+
+        # Extract existing active PG IDs from state for orthogonality scoring
+        existing_pg_ids = protection_state.get_active_pg_ids() if protection_state else []
+
+        # Identify potential protection sites and suggest PGs (single call)
+        recommendations = get_protection_recommendations(
+            molecule,
+            mode=protecting_group_mode,
+            existing_pgs=existing_pg_ids,
+            mapped_mol=mapped_mol,
+            atom_map=atom_map)
+
+        if recommendations:
             log_message(
-                f"Detected protecting groups in molecule: {molecule} -> {masked_smiles}",
+                f"Identified {len(recommendations)} protection sites in molecule: {molecule}",
                 logger)
-            protecting_group_context = PROTECTING_GROUP_CONTEXT.format(
-                molecule=molecule, masked_smiles=masked_smiles)
-            add_on += protecting_group_context
+
+            # If user has made HITL selections, add context about their choices
+            if protecting_group_mode == "hitl" and protecting_group_selections:
+                log_message(
+                    f"Using HITL protecting group selections: {protecting_group_selections}",
+                    logger)
+
+                # Build custom context with user selections (keyed by site_id)
+                pg_context_lines = [
+                    "\nUSER-SELECTED PROTECTING GROUPS:",
+                    "The user has selected the following protecting groups for each site:",
+                    ""
+                ]
+
+                for rec in recommendations:
+                    # Look up selection by site_id (stable hash key)
+                    selected_pg_id = protecting_group_selections.get(
+                        rec.site.site_id)
+
+                    if selected_pg_id:
+                        # Find the selected PG in suggestions
+                        selected_sug = next(
+                            (s for s in rec.suggestions
+                             if s.protecting_group_id == selected_pg_id),
+                            rec.suggestions[0]
+                            if rec.suggestions else None)
+                        if selected_sug:
+                            pg_context_lines.append(
+                                f"- {rec.site.functional_group_name} "
+                                f"(atoms {rec.site.atom_map_numbers}): "
+                                f"{selected_sug.name} ({selected_sug.abbreviation})"
+                            )
+                            pg_context_lines.append(
+                                f"  Protection: {selected_sug.protection_reagent}"
+                            )
+                    else:
+                        # Use auto recommendation for this site
+                        if rec.suggestions:
+                            sug = rec.suggestions[0]
+                            pg_context_lines.append(
+                                f"- {rec.site.functional_group_name} "
+                                f"(atoms {rec.site.atom_map_numbers}): "
+                                f"{sug.name} ({sug.abbreviation}) [auto-selected]"
+                            )
+
+                pg_context_lines.append("")
+                pg_context_lines.append(
+                    "IMPORTANT: Please consider these protecting group choices in your retrosynthesis plan."
+                )
+                add_on += "\n".join(pg_context_lines)
+            else:
+                # Auto mode: use standard formatting (includes atom map numbers)
+                protection_context = format_recommendations_for_prompt(
+                    recommendations, mode="auto")
+                add_on += "\n\n" + protection_context
+
+        # Add context about currently active PGs from upstream steps
+        if protection_state and protection_state.get_currently_active():
+            active_lines = [
+                "\nCURRENTLY ACTIVE PROTECTING GROUPS (from upstream steps):"
+            ]
+            for p in protection_state.get_currently_active():
+                active_lines.append(
+                    f"- PG: {p.protecting_group_id} on atoms {p.atom_map_numbers} (added at step {p.step_added})"
+                )
+            active_lines.append(
+                "Consider orthogonality with these existing protections."
+            )
+            add_on += "\n".join(active_lines)
 
     sys_prompt_final, user_prompt_final, max_completion_tokens = obtain_prompt(
         LLM)
@@ -364,7 +459,10 @@ def llm_pipeline(
     messages: Optional[list[dict]] = None,
     stability_flag: str = "False",
     hallucination_check: str = "False",
-    use_protecting_group_feature: bool = False
+    use_protecting_group_feature: bool = False,
+    protecting_group_mode: str = "auto",
+    protecting_group_selections: Optional[dict] = None,
+    protection_state: Optional[ProtectionState] = None
 ) -> tuple[list[list[str]], list[str], list[float]]:
     """Pipeline to call LLM and validate the results
 
@@ -376,6 +474,18 @@ def llm_pipeline(
         LLM to be used for retrosynthesis , by default "claude-opus-4-20250514"
     messages : Optional[list[dict]], optional
         Conversation history, by default None
+    stability_flag : str, optional
+        Enable stability checking, by default "False"
+    hallucination_check : str, optional
+        Enable hallucination checking, by default "False"
+    use_protecting_group_feature : bool, optional
+        Enable protecting group feature, by default False
+    protecting_group_mode : str, optional
+        Mode for protecting group selection: "auto" or "hitl", by default "auto"
+    protecting_group_selections : Optional[dict], optional
+        User-selected protecting groups keyed by site_id (HITL mode), by default None
+    protection_state : Optional[ProtectionState], optional
+        Current protection state tracking active PGs, by default None
 
     Returns
     -------
@@ -408,7 +518,10 @@ def llm_pipeline(
             current_model,
             messages=messages,
             temperature=run,
-            use_protecting_group_feature=use_protecting_group_feature)
+            use_protecting_group_feature=use_protecting_group_feature,
+            protecting_group_mode=protecting_group_mode,
+            protecting_group_selections=protecting_group_selections,
+            protection_state=protection_state)
         if status_code != 200:
             log_message(f"Error in calling LLM: {res_text}", logger)
             run += 0.1
@@ -440,6 +553,26 @@ def llm_pipeline(
         # Check the validity of the molecules obtained from LLM
         output_pathways, output_explanations, output_confidence = validity_check(
             molecule, res_molecules, res_explanations, res_confidence)
+
+        # --------------------
+        # Protecting group validation (lightweight, warn-only)
+        if use_protecting_group_feature and protecting_group_selections and output_pathways:
+            from rdkit import Chem as _Chem
+            pg_found_in_any = False
+            for pathway in output_pathways:
+                if isinstance(pathway, list):
+                    for mol_smiles in pathway:
+                        test_mol = _Chem.MolFromSmiles(mol_smiles)
+                        if test_mol and test_mol.GetNumAtoms() > 5:
+                            pg_found_in_any = True
+                            break
+                if pg_found_in_any:
+                    break
+            if not pg_found_in_any:
+                log_message(
+                    "WARNING: Protecting groups were requested but LLM output "
+                    "pathways may not incorporate them. The LLM may have valid "
+                    "reasons to skip protection for this step.", logger)
 
         # --------------------
         # Stability check

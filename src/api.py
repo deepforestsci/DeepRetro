@@ -9,6 +9,13 @@ import os
 import json
 import traceback
 
+from src.protecting_group import (
+    canonicalize_and_map_atoms,
+    get_protection_recommendations,
+    format_recommendations_for_prompt,
+    ProtectionState,
+)
+
 root_dir = rootutils.setup_root(__file__,
                                 indicator=".project-root",
                                 pythonpath=True)
@@ -214,6 +221,14 @@ def retrosynthesis_api():
         use_protecting_group_feature = use_protecting_group_feature.lower(
         ) == "true"
 
+    # Handle protecting group mode (auto or hitl)
+    protecting_group_mode = data.get('protecting_group_mode', 'auto')
+    if protecting_group_mode not in ['auto', 'hitl']:
+        protecting_group_mode = 'auto'
+
+    # Handle protecting group selections (for HITL mode)
+    protecting_group_selections = data.get('protecting_group_selections', None)
+
     try:
         result = main(
             smiles=smiles,
@@ -221,7 +236,9 @@ def retrosynthesis_api():
             az_model=az_model,
             stability_flag=str(stability_flag),
             hallucination_check=str(hallucination_check),
-            use_protecting_group_feature=use_protecting_group_feature)
+            use_protecting_group_feature=use_protecting_group_feature,
+            protecting_group_mode=protecting_group_mode,
+            protecting_group_selections=protecting_group_selections)
         save_result(smiles, result)
     except Exception as e:
         print(f"ERROR in retrosynthesis:")
@@ -240,6 +257,110 @@ def health():
     Endpoint to check the health of the API.
     """
     return jsonify({"status": "healthy"}), 200
+
+
+@app.route('/api/preview_protection_sites', methods=['POST'])
+@require_api_key
+def preview_protection_sites():
+    """
+    Endpoint to preview protection sites and get protecting group recommendations.
+    
+    This endpoint analyzes a molecule and returns the identified functional groups
+    that may need protection, along with ranked protecting group recommendations
+    for each site.
+    
+    Request body:
+        - smiles (str): SMILES string of the molecule
+        - mode (str): "auto" for top recommendation only, "hitl" for all ranked options
+        - max_suggestions_per_site (int, optional): Maximum suggestions per site (default: 5)
+    
+    Returns:
+        - sites (list): List of protection site information with recommendations
+        - formatted_text (str): Human-readable formatted recommendations
+    """
+    data = request.get_json()
+    if not data or 'smiles' not in data:
+        return jsonify({
+            "error":
+            "SMILES string is required. Please include a 'smiles' field"
+        }), 400
+
+    smiles = data['smiles']
+    if not Chem.MolFromSmiles(smiles):
+        return jsonify({"error": "Invalid SMILES string"}), 400
+
+    mode = data.get('mode', 'auto')
+    if mode not in ['auto', 'hitl']:
+        return jsonify({"error": "Mode must be 'auto' or 'hitl'"}), 400
+
+    max_suggestions = data.get('max_suggestions_per_site', 5)
+
+    try:
+        # Canonicalize and atom-map the molecule first
+        mapped_smiles, atom_map, mapped_mol = canonicalize_and_map_atoms(
+            smiles)
+
+        recommendations = get_protection_recommendations(
+            smiles=smiles,
+            mode=mode,
+            max_suggestions_per_site=max_suggestions,
+            mapped_mol=mapped_mol,
+            atom_map=atom_map)
+
+        # Convert recommendations to JSON-serializable format
+        sites = []
+        for rec in recommendations:
+            site_data = {
+                "site_id":
+                rec.site.site_id,
+                "atom_map_numbers":
+                list(rec.site.atom_map_numbers),
+                "functional_group_id":
+                rec.site.functional_group_id,
+                "functional_group_name":
+                rec.site.functional_group_name,
+                "category":
+                rec.site.category,
+                "reactivity":
+                rec.site.reactivity,
+                "compatible_pgs":
+                rec.site.compatible_pgs,
+                "suggestions": [
+                    {
+                        "pg_id": sug.protecting_group_id,
+                        "name": sug.name,
+                        "abbreviation": sug.abbreviation,
+                        "score": round(sug.score, 3),
+                        "protection_reagent": sug.protection_reagent,
+                        "deprotection_conditions":
+                        sug.deprotection_conditions[:3],  # Limit to top 3
+                        "stability": sug.stability,
+                        "orthogonality_score": round(sug.orthogonality_score,
+                                                     3)
+                    } for sug in rec.suggestions
+                ]
+            }
+            sites.append(site_data)
+
+        # Get formatted text for display
+        formatted_text = format_recommendations_for_prompt(recommendations,
+                                                           mode=mode)
+
+        return jsonify({
+            "smiles": smiles,
+            "mapped_smiles": mapped_smiles,
+            "mode": mode,
+            "site_count": len(sites),
+            "sites": sites,
+            "formatted_text": formatted_text
+        }), 200
+
+    except Exception as e:
+        print(f"ERROR in preview_protection_sites:")
+        print(f"  EXCEPTION: {str(e)}")
+        print(f"  TRACEBACK: {traceback.format_exc()}")
+        return jsonify(
+            {"error": f"Error analyzing protection sites: {str(e)}"}), 500
 
 
 @app.route('/api/clear_molecule_cache', methods=['POST'])
@@ -333,6 +454,14 @@ def rerun_retrosynthesis():
         use_protecting_group_feature = use_protecting_group_feature.lower(
         ) == "true"
 
+    # Handle protecting group mode (auto or hitl)
+    protecting_group_mode = data.get('protecting_group_mode', 'auto')
+    if protecting_group_mode not in ['auto', 'hitl']:
+        protecting_group_mode = 'auto'
+
+    # Handle protecting group selections (for HITL mode)
+    protecting_group_selections = data.get('protecting_group_selections', None)
+
     # -----------------
     # Rerun retrosynthesis
     try:
@@ -342,7 +471,9 @@ def rerun_retrosynthesis():
             az_model=az_model,
             stability_flag=str(stability_flag),
             hallucination_check=str(hallucination_check),
-            use_protecting_group_feature=use_protecting_group_feature)
+            use_protecting_group_feature=use_protecting_group_feature,
+            protecting_group_mode=protecting_group_mode,
+            protecting_group_selections=protecting_group_selections)
 
         # Store the result in partial.json
         save_result(molecule, result)
@@ -546,6 +677,30 @@ def partial_rerun():
         print(
             f"USING PROTECTING GROUP FEATURE: {use_protecting_group_feature}")
 
+        # Handle protecting group mode (auto or hitl)
+        protecting_group_mode = data.get('protecting_group_mode', 'auto')
+        if protecting_group_mode not in ['auto', 'hitl']:
+            protecting_group_mode = 'auto'
+        print(f"USING PROTECTING GROUP MODE: {protecting_group_mode}")
+
+        # Handle protecting group selections (for HITL mode, keyed by site_id)
+        protecting_group_selections = data.get('protecting_group_selections',
+                                               None)
+        if protecting_group_selections:
+            print(
+                f"USING PROTECTING GROUP SELECTIONS: {protecting_group_selections}"
+            )
+
+        # Load protection state from stored results if available
+        stored_protection_state = None
+        if use_protecting_group_feature and original_result.get(
+                'protection_state'):
+            stored_protection_state = ProtectionState.from_dict(
+                original_result['protection_state'])
+            print(
+                f"LOADED PROTECTION STATE WITH {len(stored_protection_state.active_protections)} ACTIVE PROTECTIONS"
+            )
+
         # Run new synthesis on the starting molecule
         print(f"\nCALLING MAIN FUNCTION WITH PARAMETERS:")
         print(f"  SMILES: {start_molecule}")
@@ -555,6 +710,7 @@ def partial_rerun():
         print(f"  HALLUCINATION CHECK: {hallucination_check}")
         print(
             f"  USE PROTECTING GROUP FEATURE: {use_protecting_group_feature}")
+        print(f"  PROTECTING GROUP MODE: {protecting_group_mode}")
 
         try:
             new_result = main(
@@ -563,7 +719,10 @@ def partial_rerun():
                 az_model=az_model,
                 stability_flag=str(stability_flag),
                 hallucination_check=str(hallucination_check),
-                use_protecting_group_feature=use_protecting_group_feature)
+                use_protecting_group_feature=use_protecting_group_feature,
+                protecting_group_mode=protecting_group_mode,
+                protecting_group_selections=protecting_group_selections,
+                protection_state=stored_protection_state)
             print(
                 f"NEW RETROSYNTHESIS RESULT: {json.dumps(new_result, indent=2)}"
             )

@@ -22,7 +22,10 @@ def run_prithvi(molecule: str,
                 az_model: str = "USPTO",
                 stability_flag: str = "False",
                 hallucination_check: str = "False",
-                use_protecting_group_feature: bool = False) -> dict:
+                use_protecting_group_feature: bool = False,
+                protecting_group_mode: str = "auto",
+                protecting_group_selections: dict = None,
+                protection_state=None) -> dict:
     """Run prithvi services to generate retrosynthesis on a molecule.
 
     Parameters
@@ -31,6 +34,20 @@ def run_prithvi(molecule: str,
         SMILE String of the molecule.
     llm : str, optional
         LLM Model, by default "claude-opus-4-20250514"
+    az_model : str, optional
+        AZ model to use, by default "USPTO"
+    stability_flag : str, optional
+        Enable stability checking, by default "False"
+    hallucination_check : str, optional
+        Enable hallucination checking, by default "False"
+    use_protecting_group_feature : bool, optional
+        Enable protecting group feature, by default False
+    protecting_group_mode : str, optional
+        Mode for protecting group selection: "auto" or "hitl", by default "auto"
+    protecting_group_selections : dict, optional
+        User-selected protecting groups keyed by site_id (HITL mode), by default None
+    protection_state : ProtectionState, optional
+        Tracks active protecting groups across the synthesis tree.
 
     Returns
     -------
@@ -58,8 +75,12 @@ def run_prithvi(molecule: str,
             az_model=az_model,
             stability_flag=stability_flag,
             hallucination_check=hallucination_check,
-            use_protecting_group_feature=use_protecting_group_feature)
-        output_data = format_output(result_dict)
+            use_protecting_group_feature=use_protecting_group_feature,
+            protecting_group_mode=protecting_group_mode,
+            protecting_group_selections=protecting_group_selections,
+            protection_state=protection_state)
+        output_data = format_output(result_dict,
+                                    protection_state=protection_state)
         output_data = add_metadata(output_data)
         return output_data
     finally:

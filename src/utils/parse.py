@@ -166,10 +166,27 @@ def fix_dependencies(dependencies, step_list):
     return fixed_dependencies
 
 
-def format_output(data):
-    """Format the output data for visualization"""
+def format_output(data, protection_state=None):
+    """Format the output data for visualization.
+
+    Parameters
+    ----------
+    data : dict
+        Raw retrosynthesis tree from rec_run_prithvi.
+    protection_state : ProtectionState, optional
+        Active protecting group state to include in output.
+
+    Returns
+    -------
+    dict
+        Formatted output with steps, dependencies, and optionally protection_state.
+    """
     output_data = parse_step(data)
-    # fix_dependencies(output_data['dependencies'], output_data['steps'])
     output_data['dependencies'] = fix_dependencies(output_data['dependencies'],
                                                    output_data['steps'])
+
+    # Include protection state if available
+    if protection_state is not None:
+        output_data['protection_state'] = protection_state.to_dict()
+
     return output_data

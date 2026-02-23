@@ -1389,24 +1389,46 @@ AZ_MODEL_LIST = [
     "USPTO", "Pistachio_25", "Pistachio_50", "Pistachio_100", "Pistachio_100+"
 ]
 
-PROTECTING_GROUP_CONTEXT = """
+PROTECTING_GROUP_STRATEGY_CONTEXT = """
 
-PROTECTING GROUP CONTEXT:
-The molecule contains protecting groups that have been masked:
-Original SMILES: {molecule}
-Masked SMILES: {masked_smiles}
+PROTECTING GROUP STRATEGY GUIDANCE:
 
-Symbol mapping:
-- '$' represents OMe (methoxy) groups
-- '%' represents OBn (benzyl ether) groups
-- '&' represents OEt (ethoxy) groups
+When planning retrosynthetic routes involving protection:
 
-IMPORTANT: In your retrosynthetic analysis:
-1. Return ACTUAL SMILES strings (not the masked symbols) in the 'data' field
-2. Include deprotection steps in your explanations when appropriate
-3. Consider the protecting groups as synthetic handles that may need removal
-4. Suggest specific deprotection conditions:
-   - OMe ($): Acidic hydrolysis (HCl/MeOH, TFA)
-   - OBn (%): Hydrogenolysis (H2/Pd-C), Birch reduction
-   - OEt (&): Acidic hydrolysis (HCl/EtOH), basic hydrolysis (NaOH/EtOH)
-5. Consider protecting group compatibility and orthogonal deprotection strategies"""
+1. ORTHOGONALITY: Select protecting groups that can be removed independently.
+   Common orthogonal pairs include:
+   - Silyl ethers (TBS, TBDPS) vs Benzyl ethers (Bn, PMB)
+   - Boc vs Cbz vs Fmoc for amines
+   - Acetals vs Silyl ethers for alcohols
+
+2. STABILITY CONSIDERATIONS:
+   - Acid-labile: TBS, TES, Boc, acetonide, THP
+   - Base-labile: Ac, Fmoc, esters
+   - Hydrogenation-labile: Bn, Cbz, PMB
+   - Fluoride-labile: TBS, TIPS, TBDPS, TES
+
+3. SELECTIVITY:
+   - TBDPS: Highly selective for primary alcohols
+   - Trt: Selective for primary alcohols/thiols
+   - Piv: Selective for primary alcohols (steric)
+   - Acetonide: Selective for 1,2- and 1,3-diols
+
+4. COMMON PROTECTION STRATEGIES BY FUNCTIONAL GROUP:
+   - Primary alcohols: TBS, TBDPS, Bn, Ac, PMB
+   - Secondary alcohols: TBS, Bn, Ac
+   - Phenols: Bn, MOM, Ac, TBS
+   - Primary amines: Boc, Cbz, Fmoc
+   - Carboxylic acids: Me ester, tBu ester, Bn ester
+   - Aldehydes/Ketones: Acetal, dithiane
+   - Thiols: Trt, Acm, STbu
+   - Diols: Acetonide (1,2-diol), Benzylidene (1,3-diol)
+
+5. DEPROTECTION CONDITIONS SUMMARY:
+   - TFA/DCM: Boc, tBu ester, Trt, PMB (strong acid)
+   - TBAF/THF: TBS, TIPS, TBDPS, SEM (fluoride)
+   - H2/Pd-C: Bn, Cbz, PMB (hydrogenation)
+   - K2CO3/MeOH: Ac, Fmoc, TMS ester (mild base)
+   - Dilute HCl: Acetals, THP, MOM (mild acid)
+   - DDQ: PMB (oxidative)
+   - Piperidine/DMF: Fmoc (base)
+"""
