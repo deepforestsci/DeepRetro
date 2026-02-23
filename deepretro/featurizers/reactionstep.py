@@ -94,16 +94,17 @@ class ReactionStepFeaturizer(Featurizer):
         Returns
         -------
         features : np.ndarray, shape (feature_dim,)
-            Flat feature vector.  Returns a zero vector if either SMILES
-            cannot be parsed.
+            Flat feature vector.  Returns a NaN vector if either SMILES
+            cannot be parsed, so invalid rows are distinguishable from
+            real data downstream.
         """
         try:
             product_smiles, reactants_smiles = datapoint
             prod_fp = self._fp.featurize([product_smiles])[0]
             reac_fp = self._fp.featurize([reactants_smiles])[0]
-            # CircularFingerprint returns an empty array (shape (0,)) rather than raising an error when SMILES is invalid. We detect that here so we always return a well-shaped zero-vector on bad input.
+            # CircularFingerprint returns an empty array (shape (0,)) rather than raising an error when SMILES is invalid. We detect that here so we always return a well-shaped NaN vector on bad input.
             if prod_fp.shape != (self.size,) or reac_fp.shape != (self.size,):
-                return np.zeros(self.feature_dim)
+                return np.full(self.feature_dim, np.nan)
             parts = [prod_fp, reac_fp]
             if self.use_domain_features:
                 parts.append(
@@ -111,4 +112,4 @@ class ReactionStepFeaturizer(Featurizer):
                 )
             return np.concatenate(parts)
         except Exception:
-            return np.zeros(self.feature_dim)
+            return np.full(self.feature_dim, np.nan)

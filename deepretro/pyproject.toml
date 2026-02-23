@@ -6,10 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "deepretro"
 version = "0.1.0"
 description = "DeepRetro package for retrosynthesis"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "deepchem",
-    "rdkit-pypi",
+    "rdkit",
     "numpy",
 ]
 
