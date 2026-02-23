@@ -1,8 +1,16 @@
 """Data loading and splitting utilities for reaction datasets."""
 
-from deepretro.data.loader import ReactionDataLoader, stratified_split
+from .loader import (
+    load_reaction_csv,
+    featurize_reactions,
+    create_dataset,
+    split_dataset,
+)
 
 __all__ = [
-    "ReactionDataLoader",
-    "stratified_split",
+    "load_reaction_csv",
+    "featurize_reactions",
+    "create_dataset",
+    "split_dataset",
 ]
+
