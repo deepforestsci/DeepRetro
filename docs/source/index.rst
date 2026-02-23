@@ -74,8 +74,6 @@ Why DeepRetro?
      - Usage instructions, tips, and troubleshooting.
    * - :doc:`api_reference`
      - HTTP API endpoints, models, and error codes.
-   * - :doc:`deepretro`
-     - ``deepretro`` package: featurizers and domain utilities.
    * - :doc:`development`
      - Developer setup, contribution guidelines, and code structure.
    * - :doc:`contributing`
@@ -91,7 +89,6 @@ Why DeepRetro?
    installation
    user_guide
    api_reference
-   deepretro
    development
    contributing
    tutorial
