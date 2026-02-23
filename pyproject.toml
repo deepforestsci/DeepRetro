@@ -44,3 +44,7 @@ where = ["src"]
 
 [tool.ty.rules]
 unresolved-import = "ignore" 
+
+[tool.ty.src]
+include = ["deepretro", "src"]
+exclude = ["notebooks/**", "*.ipynb"]
