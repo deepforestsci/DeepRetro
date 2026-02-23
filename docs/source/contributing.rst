@@ -76,6 +76,9 @@ Run tests before submitting:
    # Run specific test file
    python -m pytest tests/test_api.py
 
+   # Run doctests in deepretro utils
+   pytest deepretro/utils/llm.py deepretro/utils/az.py --doctest-modules -v
+
    # Run with coverage
    python -m pytest tests/ --cov=src
 

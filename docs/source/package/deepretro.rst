@@ -1,16 +1,15 @@
-deepretro
+DeepRetro
 =========
 
-.. automodule:: deepretro
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Retrosynthesis ML utilities: featurizers for reaction-step data, recursive planning
+algorithms, and LLM/AiZynthFinder integration.
+
 
 Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 1
 
    deepretro.featurizers
    deepretro.algorithms
