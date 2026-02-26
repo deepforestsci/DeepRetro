@@ -4,6 +4,8 @@ Converts a reaction CSV (product, reactants, label) into DeepChem
 ``NumpyDataset`` objects with stratified train/valid/test splits.
 """
 
+import warnings
+
 import numpy as np
 import pandas as pd
 from deepchem.data import Dataset, DiskDataset
@@ -110,7 +112,15 @@ def create_dataset(X, y):
     >>> len(ds)
     5
     """
-    return NumpyDataset(X=X, y=np.array(y).reshape(-1, 1))
+    y = np.array(y).reshape(-1, 1)
+    nan_mask = np.isnan(X).all(axis=1)
+    if nan_mask.any():
+        warnings.warn(
+            f"Dropped {nan_mask.sum()} rows with NaN features (invalid SMILES)."
+        )
+        X = X[~nan_mask]
+        y = y[~nan_mask]
+    return NumpyDataset(X=X, y=y)
 
 
 def split_dataset(dataset, frac_train=0.7, frac_valid=0.15, frac_test=0.15, seed=42):
