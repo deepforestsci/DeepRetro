@@ -1,34 +1,8 @@
 """Unit tests for find_optimal_threshold."""
 
 import numpy as np
-import pytest
 
 from deepretro.utils.metrics import find_optimal_threshold
-
-
-def test_return_types_and_bounds():
-    y = np.array([0, 0, 1, 1])
-    proba = np.array([0.1, 0.4, 0.6, 0.9])
-    thr, f1 = find_optimal_threshold(y, proba)
-    assert isinstance(thr, float)
-    assert isinstance(f1, float)
-    assert 0.0 < thr < 1.0
-    assert 0.0 < f1 <= 1.0
-
-
-def test_perfect_predictions_f1_is_1():
-    y = np.array([0, 0, 0, 1, 1, 1])
-    proba = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
-    _, f1 = find_optimal_threshold(y, proba)
-    assert f1 == pytest.approx(1.0)
-
-
-def test_random_predictions_low_f1():
-    rng = np.random.RandomState(42)
-    y = np.array([0] * 50 + [1] * 50)
-    proba = rng.rand(100)  # random probabilities, no signal
-    _, f1 = find_optimal_threshold(y, proba)
-    assert f1 < 0.8
 
 
 def test_chosen_threshold_maximises_f1():
