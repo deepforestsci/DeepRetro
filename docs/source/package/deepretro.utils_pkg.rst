@@ -17,8 +17,6 @@ Utility Overview
 
    * - Utility
      - Purpose
-   * - ``extract_domain_features_single``
-     - Compute a fixed 15-feature chemistry descriptor vector from product/reactants.
    * - ``run_az``
      - Execute AiZynthFinder and return solved flag + route dictionaries.
    * - ``run_az_with_img``
