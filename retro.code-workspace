@@ -11,7 +11,7 @@
 		"pylint.importStrategy": "useBundled",
 		"autoDocstring.docstringFormat": "numpy",
 		"pythonIndent.trimLinesWithOnlyWhitespace": true,
-		"python.languageServer": "Pylance",
+		"python.languageServer": "None",
 		"python.autoComplete.extraPaths": [],
 		// "python.linting.enabled": true,
 		// "python.linting.pylintPath": "pylint",
