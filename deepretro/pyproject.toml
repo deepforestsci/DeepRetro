@@ -12,6 +12,7 @@ dependencies = [
     "rdkit",
     "numpy",
     "xgboost<2.0",
+    "lightgbm",
     "scikit-learn",
     "pandas",
 ]
