@@ -1,7 +1,8 @@
 """Dataset loading pipeline using DeepChem data structures.
 
-Converts a reaction CSV (product, reactants, label) into DeepChem
-``NumpyDataset`` objects with stratified train/valid/test splits.
+Provides :class:`ReactionDataLoader`, a class-based loader modelled after
+DeepChem's ``CSVLoader`` that converts a reaction CSV (product, reactants,
+label) into ``NumpyDataset`` objects with optional stratified splitting.
 """
 
 import warnings
@@ -14,117 +15,94 @@ from deepchem.splits import SingletaskStratifiedSplitter
 from deepretro.featurizers import ReactionStepFeaturizer
 
 
-def load_reaction_csv(
-    csv_path,
-    product_col="product",
-    reactants_col="reactants",
-    label_col="label",
-):
-    """
-    Read a reaction CSV into parallel lists.
+class ReactionDataLoader:
+    """Load a two-column reaction CSV into a DeepChem ``NumpyDataset``.
+
+    Mirrors the ``CSVLoader`` pattern: configuration is stored in
+    ``__init__`` and the actual work happens in :meth:`create_dataset`.
+    Unlike ``CSVLoader``, this loader accepts **two** SMILES columns
+    (product + reactants) and returns an in-memory ``NumpyDataset``
+    instead of a ``DiskDataset``.
 
     Parameters
     ----------
-    csv_path : str
-        Path to CSV file.
-    product_col : str, optional
-        Column name for product SMILES. Default ``"product"``.
-    reactants_col : str, optional
-        Column name for reactant SMILES. Default ``"reactants"``.
-    label_col : str, optional
-        Column name for binary labels. Default ``"label"``.
-
-    Returns
-    -------
-    products : list of str
-    reactants : list of str
-    labels : list of int
-
-    Examples
-    --------
-    >>> from deepretro.data import load_reaction_csv
-    >>> products, reactants, labels = load_reaction_csv("data/dataset.csv")
-    """
-    df = pd.read_csv(csv_path)
-    return (
-        df[product_col].tolist(),
-        df[reactants_col].tolist(),
-        df[label_col].tolist(),
-    )
-
-
-def featurize_reactions(products, reactants, featurizer=None):
-    """
-    Featurize product-reactant pairs using ``ReactionStepFeaturizer``.
-
-    Parameters
-    ----------
-    products : list of str
-        Product SMILES strings.
-    reactants : list of str
-        Reactant SMILES strings (dot-separated when multiple).
     featurizer : ReactionStepFeaturizer, optional
         Pre-configured featurizer.  A default one (radius=2, size=2048,
         domain features on) is created when ``None``.
-
-    Returns
-    -------
-    X : np.ndarray, shape (n_samples, feature_dim)
-        Feature matrix.
-    featurizer : ReactionStepFeaturizer
-        The featurizer instance (useful for saving alongside the model).
-
-    Examples
-    --------
-    >>> from deepretro.data import featurize_reactions
-    >>> X, feat = featurize_reactions(["CCO"], ["CC.O"])
-    >>> X.shape[1]
-    4111
-    """
-    if featurizer is None:
-        featurizer = ReactionStepFeaturizer()
-    pairs = list(zip(products, reactants))
-    X = featurizer.featurize(pairs)
-    return X, featurizer
-
-
-def create_dataset(X, y):
-    """
-    Wrap a feature matrix and labels into a DeepChem ``NumpyDataset``.
-
-    Parameters
-    ----------
-    X : np.ndarray, shape (n_samples, n_features)
-        Feature matrix.
-    y : array-like, shape (n_samples,)
-        Binary labels.
-
-    Returns
-    -------
-    dataset : NumpyDataset
+    product_col : str, optional
+        Column name for product SMILES.  Default ``"product"``.
+    reactants_col : str, optional
+        Column name for reactant SMILES.  Default ``"reactants"``.
+    label_col : str, optional
+        Column name for binary labels.  Default ``"label"``.
 
     Examples
     --------
-    >>> import numpy as np
-    >>> from deepretro.data import create_dataset
-    >>> ds = create_dataset(np.zeros((5, 10)), [0, 1, 0, 1, 0])
-    >>> len(ds)
-    5
+    >>> from deepretro.data import ReactionDataLoader
+    >>> loader = ReactionDataLoader()
+    >>> ds = loader.create_dataset("data/dataset.csv")  # doctest: +SKIP
+    >>> len(ds)                                          # doctest: +SKIP
+    808
     """
-    y = np.array(y).reshape(-1, 1)
-    nan_mask = np.isnan(X).all(axis=1)
-    if nan_mask.any():
-        warnings.warn(
-            f"Dropped {nan_mask.sum()} rows with NaN features (invalid SMILES)."
-        )
-        X = X[~nan_mask]
-        y = y[~nan_mask]
-    return NumpyDataset(X=X, y=y)
+
+    def __init__(
+        self,
+        featurizer=None,
+        product_col="product",
+        reactants_col="reactants",
+        label_col="label",
+    ):
+        self.featurizer = featurizer or ReactionStepFeaturizer()
+        self.product_col = product_col
+        self.reactants_col = reactants_col
+        self.label_col = label_col
+
+    def create_dataset(self, csv_path):
+        """Read, featurize, and wrap a reaction CSV into a ``NumpyDataset``.
+
+        Rows where featurization fails (invalid SMILES) are automatically
+        dropped with a warning.
+
+        Parameters
+        ----------
+        csv_path : str
+            Path to the CSV file.
+
+        Returns
+        -------
+        dataset : NumpyDataset
+            In-memory DeepChem dataset ready for splitting / training.
+
+        Examples
+        --------
+        >>> loader = ReactionDataLoader()
+        >>> ds = loader.create_dataset("data/dataset.csv")  # doctest: +SKIP
+        """
+        # 1. Read CSV
+        df = pd.read_csv(csv_path)
+        products = df[self.product_col].tolist()
+        reactants = df[self.reactants_col].tolist()
+        y = np.array(df[self.label_col]).reshape(-1, 1)
+
+        # 2. Featurize
+        pairs = list(zip(products, reactants))
+        X = self.featurizer.featurize(pairs)
+
+        # 3. Drop NaN rows (invalid SMILES)
+        nan_mask = np.isnan(X).all(axis=1)
+        if nan_mask.any():
+            warnings.warn(
+                f"Dropped {nan_mask.sum()} rows with NaN features "
+                f"(invalid SMILES)."
+            )
+            X = X[~nan_mask]
+            y = y[~nan_mask]
+
+        return NumpyDataset(X=X, y=y)
 
 
 def split_dataset(dataset, frac_train=0.7, frac_valid=0.15, frac_test=0.15, seed=42):
-    """
-    Stratified split into train / valid / test sets.
+    """Stratified split into train / valid / test sets.
 
     Uses DeepChem's ``SingletaskStratifiedSplitter`` to preserve class
     balance across all three splits.
@@ -151,8 +129,9 @@ def split_dataset(dataset, frac_train=0.7, frac_valid=0.15, frac_test=0.15, seed
     Examples
     --------
     >>> import numpy as np
-    >>> from deepretro.data import create_dataset, split_dataset
-    >>> ds = create_dataset(np.random.rand(100, 10), [0]*50 + [1]*50)
+    >>> from deepchem.data import NumpyDataset
+    >>> from deepretro.data import split_dataset
+    >>> ds = NumpyDataset(X=np.random.rand(100, 10), y=np.array([0]*50 + [1]*50).reshape(-1,1))
     >>> train, valid, test = split_dataset(ds)
     >>> len(train) + len(valid) + len(test) == 100
     True
@@ -170,4 +149,3 @@ def split_dataset(dataset, frac_train=0.7, frac_valid=0.15, frac_test=0.15, seed
         dataset.select(valid_inds.astype(int)),
         dataset.select(test_inds.astype(int)),
     )
-

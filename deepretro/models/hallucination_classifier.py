@@ -8,6 +8,7 @@ and adds automatic early-stopping with an 80/20 internal split.
 
 import json
 from pathlib import Path
+from urllib.request import urlretrieve
 
 import numpy as np
 from deepchem.data import NumpyDataset
@@ -18,6 +19,10 @@ from xgboost import XGBClassifier
 
 from deepretro.featurizers import ReactionStepFeaturizer
 from deepretro.utils.metrics import find_optimal_threshold
+
+_S3_URL = "https://xyz/models"
+_CACHE_DIR = Path.home() / ".deepretro" / "models"
+_MODEL_FILES = ("model.joblib", "metadata.json")
 
 
 class HallucinationClassifier:
@@ -71,6 +76,46 @@ class HallucinationClassifier:
         )
         self.threshold: float = 0.5
         self.featurizer: ReactionStepFeaturizer | None = None
+
+    # classmethod: called on the class directly (HallucinationClassifier.from_pretrained()) instead of on an instance, so the user doesn't need to create one first.
+    @classmethod
+    def from_pretrained(cls, url=None, cache_dir=None):
+        """
+        Download a pre-trained model from S3 and load it.
+
+        Files are cached locally so subsequent calls skip the download.
+
+        Parameters
+        ----------
+        url : str, optional
+            Base URL where ``model.joblib`` and ``metadata.json`` live.
+            Default: RecursiveLLM S3 bucket.
+        cache_dir : str or Path, optional
+            Local directory to cache model files.
+            Default: ``~/.deepretro/models/``.
+
+        Returns
+        -------
+        clf : HallucinationClassifier
+            Ready-to-use classifier.
+
+        Examples
+        --------
+        >>> clf = HallucinationClassifier.from_pretrained()  # doctest: +SKIP
+        >>> clf.predict_single("CCO", "CC.O")                # doctest: +SKIP
+        """
+        base_url = url or _S3_URL
+        cache = Path(cache_dir) if cache_dir else _CACHE_DIR
+        cache.mkdir(parents=True, exist_ok=True)
+
+        for fname in _MODEL_FILES:
+            local = cache / fname
+            if not local.exists():
+                urlretrieve(f"{base_url}/{fname}", str(local))
+
+        clf = cls(model_dir=str(cache))
+        clf.load(str(cache))
+        return clf
 
     # Training
 
