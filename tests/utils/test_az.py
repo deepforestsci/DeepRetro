@@ -2,6 +2,9 @@
 
 These tests run only when aizynthfinder is installed. They use real AiZynthFinder
 with models downloaded to a temporary directory at session start. No mocking.
+
+Speed optimizations:
+- Tests that run full inference are marked @pytest.mark.slow; skip with -m "not slow"
 """
 
 from __future__ import annotations
@@ -98,6 +101,7 @@ def test_is_basic_molecule_chemical_thresholds(az_module, smiles, expected):
     assert az_module.is_basic_molecule(smiles) is expected
 
 
+@pytest.mark.slow
 def test_run_az_returns_valid_result(az_module_with_models):
     """Test run_az with real AiZynthFinder returns (bool, list) with valid structure."""
     run_az = _get_run_az_impl(az_module_with_models)
@@ -110,6 +114,7 @@ def test_run_az_returns_valid_result(az_module_with_models):
         assert "type" in route or "smiles" in route
 
 
+@pytest.mark.slow
 def test_run_az_uses_fallback_config_when_model_missing(az_module_with_models):
     """Test run_az falls back to AZ_MODEL_CONFIG_PATH when model-specific config missing."""
     run_az = _get_run_az_impl(az_module_with_models)
@@ -149,6 +154,7 @@ def test_run_az_short_circuits_for_feedstock_smiles(az_module_with_models):
     }]
 
 
+@pytest.mark.slow
 def test_run_az_with_img_returns_valid_result(az_module_with_models):
     """Test run_az_with_img with real AiZynthFinder returns (bool, list, images)."""
     run_az_with_img = _get_run_az_with_img_impl(az_module_with_models)
