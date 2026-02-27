@@ -15,12 +15,6 @@ The package currently provides:
 - Domain-feature extraction helpers for product/reactant SMILES pairs.
 - AiZynthFinder wrappers for template-based route search.
 
-Primary Use Cases
------------------
-
-- Train scoring/ranking models on reaction-step data.
-- Build hybrid systems that mix template search with ML/LLM decision layers.
-- Generate reproducible numerical features from retrosynthesis candidates.
 
 Input and Output Conventions
 ----------------------------
@@ -33,11 +27,6 @@ Reaction steps are represented as:
 
 where ``reactants_smiles`` may contain multiple molecules separated by ``.``.
 
-For featurization, output dimensionality is:
-
-.. math::
-
-   \text{feature\_dim} = 2 * \text{size} + (15 \text{ if use\_domain\_features else } 0)
 
 Quickstart
 ----------
@@ -53,12 +42,6 @@ Quickstart
    ])
    print(X.shape)  # (2, 4111)
 
-Reliability Contract
---------------------
-
-- Deterministic vectors for identical inputs.
-- Invalid SMILES produce all-``NaN`` rows rather than silent coercion.
-- Domain feature order is fixed and documented in :doc:`deepretro.utils_pkg`.
 
 Top-Level API
 -------------
