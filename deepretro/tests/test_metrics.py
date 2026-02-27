@@ -6,10 +6,6 @@ import pytest
 from deepretro.utils.metrics import find_optimal_threshold
 
 
-<<<<<<< HEAD
-def test_chosen_threshold_maximises_f1():
-    """Brute-force verify no other threshold gives a higher F1."""
-=======
 def test_return_types_and_bounds():
     y = np.array([0, 0, 1, 1])
     proba = np.array([0.1, 0.4, 0.6, 0.9])
@@ -36,8 +32,7 @@ def test_random_predictions_low_f1():
 
 
 def test_chosen_threshold_maximises_f1():
-    """Verify that no other threshold gives a higher F1."""
->>>>>>> e47da88 (building ml halucinatiton checker)
+    """Brute-force verify no other threshold gives a higher F1."""
     rng = np.random.RandomState(99)
     y = np.array([0] * 80 + [1] * 20)
     proba = np.where(y == 1, rng.uniform(0.5, 1.0, 100), rng.uniform(0.0, 0.5, 100))
@@ -68,10 +63,7 @@ def test_imbalanced_data_threshold_below_05():
 
 
 def test_all_same_probability_does_not_crash():
-<<<<<<< HEAD
     """Degenerate input — all probabilities identical — should not error."""
-=======
->>>>>>> e47da88 (building ml halucinatiton checker)
     y = np.array([0, 0, 1, 1])
     proba = np.array([0.5, 0.5, 0.5, 0.5])
     thr, f1 = find_optimal_threshold(y, proba)
