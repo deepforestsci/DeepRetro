@@ -1,17 +1,28 @@
 """Heuristic hallucination checker for retrosynthetic reaction steps.
 
-Compares reactant and product molecules to detect structural inconsistencies
-that may indicate an LLM hallucination. This includes atom-count mismatches, ring changes,
-substituent position swaps, aromaticity shifts, and unnecessary bond formations.
+When a retrosynthetic step (product → reactant) is proposed, the
+predicted reactant may contain structural mistakes: atoms appearing or vanishing, rings changing size,
+substituents jumping to a different position on an aromatic ring, and so on.
+
+This module catches those mistakes automatically by comparing the
+reactant and product. Two main entry points are provided:
+
+* `hallucination_compare_molecules` — runs every check and returns a
+  detailed breakdown of what (if anything) looks wrong.
+* `calculate_hallucination_score` — distils the breakdown into a single
+  0–100 score (100 = looks fine, 0 = almost certainly hallucinated) with
+  a severity label (low / medium / high / critical).
 """
+
+from collections import Counter
+from typing import Any
 
 from rdkit import Chem
 from rdkit.Chem import rdmolops
-from collections import Counter
 
 
 # Position mapping for consistent naming
-pos_map = {
+pos_map: dict[str, str] = {
     "1": "position 1",
     "2": "position 2",
     "3": "position 3",
@@ -24,11 +35,13 @@ pos_map = {
 }
 
 
-def hallucination_compare_molecules(reactant_smiles, product_smiles):
-    """
-    Compare reactant and product molecules to detect potential hallucinations.
+def hallucination_compare_molecules(
+    reactant_smiles: str,
+    product_smiles: str,
+) -> dict[str, Any]:
+    """Compare a reactant and product molecule to detect potential hallucinations.
 
-    Checks atom-count consistency, ring-size changes, substituent position
+    Given two SMILES strings, this function parses both molecules and checks atom-count consistency, ring-size changes, substituent position
     swaps, aromaticity shifts, and unnecessary bond formations.
 
     Parameters
@@ -40,10 +53,13 @@ def hallucination_compare_molecules(reactant_smiles, product_smiles):
 
     Returns
     -------
-    results : dict
-        Dictionary with keys ``valid_reactant``, ``valid_product``,
-        ``atom_count_consistent``, ``ring_size_changes``,
-        ``substituent_position_changes``, and ``detected_issues``.
+    results : dict[str, Any]
+        * ``valid_reactant`` (bool) — reactant SMILES parsed OK.
+        * ``valid_product`` (bool) — product SMILES parsed OK.
+        * ``atom_count_consistent`` (bool) — all elements match.
+        * ``ring_size_changes`` (list[str]) — rings added/removed.
+        * ``substituent_position_changes`` (list[dict]) — position swaps.
+        * ``detected_issues`` (list[str]) — all issues found (empty if clean).
 
     Examples
     --------
@@ -159,9 +175,20 @@ def hallucination_compare_molecules(reactant_smiles, product_smiles):
     return results
 
 
-def check_ring_substituent_positions(reactant_mol, product_mol, results):
-    """
-    Detect changes in the position of substituents on aromatic rings.
+def check_ring_substituent_positions(
+    reactant_mol: Chem.Mol,
+    product_mol: Chem.Mol,
+    results: dict[str, Any],
+) -> None:
+    """Detect changes in the position of substituents on aromatic rings.
+
+    For each aromatic ring that appears in both the reactant and the
+    product, this function figures out what groups are attached and
+    where (ortho / meta / para).  If the same group shows up at a
+    different position in the product, that is flagged, it almost
+    always means the LLM hallucinated the position.
+
+    Findings are written directly into *results*.
 
     Parameters
     ----------
@@ -255,9 +282,14 @@ def check_ring_substituent_positions(reactant_mol, product_mol, results):
                 })
 
 
-def identify_ring_systems(mol):
-    """
-    Identify all ring systems in a molecule and their properties.
+def identify_ring_systems(mol: Chem.Mol) -> list[dict[str, Any]]:
+    """Identify all ring systems in a molecule and their properties.
+
+    Walks the SSSR (Smallest Set of Smallest Rings) that RDKit computes
+    and, for each ring, notes how many atoms it has, which atom indices
+    belong to it, and whether every atom in the ring is aromatic.  The
+    ``matched`` flag starts as ``False`` and is used later when pairing
+    up rings between reactant and product.
 
     Parameters
     ----------
@@ -303,16 +335,23 @@ def identify_ring_systems(mol):
     return rings
 
 
-def identify_substituents(mol, ring_info):
-    """
-    Identify all substituents attached to a ring and their positions.
+def identify_substituents(
+    mol: Chem.Mol,
+    ring_info: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Identify all substituents attached to a ring and their positions.
+
+    Walks the atoms of the ring and, for every neighbour that is *not*
+    part of the ring, traces out the full substituent group and labels
+    its attachment point as ortho / meta / para (for 6-membered rings)
+    or a numbered position (for other ring sizes).
 
     Parameters
     ----------
     mol : rdkit.Chem.Mol
         RDKit molecule object.
     ring_info : dict
-        Dictionary containing ring information.
+        Ring descriptor as returned by `identify_ring_systems`.
 
     Returns
     -------
@@ -362,7 +401,12 @@ def identify_substituents(mol, ring_info):
     return substituents
 
 
-def determine_ring_position(mol, atom_idx, ring_atoms, ring_size):
+def determine_ring_position(
+    mol: Chem.Mol,
+    atom_idx: int,
+    ring_atoms: set[int],
+    ring_size: int,
+) -> str:
     """
     Determine the position of a substituent on a ring.
 
@@ -374,9 +418,9 @@ def determine_ring_position(mol, atom_idx, ring_atoms, ring_size):
     mol : rdkit.Chem.Mol
         RDKit molecule object.
     atom_idx : int
-        Index of the ring atom where the substituent is attached.
-    ring_atoms : set
-        Set of atom indices that form the ring.
+        Index of the ring atom the substituent is bonded to.
+    ring_atoms : set[int]
+        All atom indices that belong to the ring.
     ring_size : int
         Size of the ring.
 
@@ -451,21 +495,28 @@ def determine_ring_position(mol, atom_idx, ring_atoms, ring_size):
     return "1"  # Default for now
 
 
-def get_connected_atoms(mol, start_idx, exclude_atoms):
+def get_connected_atoms(
+    mol: Chem.Mol,
+    start_idx: int,
+    exclude_atoms: set[int],
+) -> list[int]:
     """
     Get all atoms connected to a starting atom, excluding a set of atoms.
 
-    Uses BFS to find the connected component starting from ``start_idx``,
-    not traversing into ``exclude_atoms`` (typically ring atoms).
+    Starting from *start_idx* (typically the first atom outside a ring),
+    this does a breadth-first walk along bonds and collects every atom
+    it reaches. It will *not* cross into any atom listed in
+    *exclude_atoms*, this is how we stop at the ring boundary and only
+    get the substituent itself.
 
     Parameters
     ----------
     mol : rdkit.Chem.Mol
         RDKit molecule object.
     start_idx : int
-        Index of the starting atom.
-    exclude_atoms : set
-        Set of atom indices to exclude.
+        Atom index to start the walk from.
+    exclude_atoms : set[int]
+        Atom indices to treat as barriers (usually the ring atoms).
 
     Returns
     -------
@@ -499,7 +550,10 @@ def get_connected_atoms(mol, start_idx, exclude_atoms):
     return list(visited)
 
 
-def get_substituent_signature(mol, substituent):
+def get_substituent_signature(
+    mol: Chem.Mol,
+    substituent: dict[str, Any],
+) -> str:
     """
     Generate a signature for a substituent to identify similar groups.
 
@@ -511,7 +565,8 @@ def get_substituent_signature(mol, substituent):
     mol : rdkit.Chem.Mol
         RDKit molecule object.
     substituent : dict
-        Dictionary containing substituent information (must have ``atoms`` key).
+        Substituent descriptor (must contain an ``atoms`` key with
+        a list of atom indices).
 
     Returns
     -------
@@ -549,14 +604,14 @@ def get_substituent_signature(mol, substituent):
     return signature
 
 
-def get_friendly_substituent_name(signature):
+def get_friendly_substituent_name(signature: str) -> str:
     """
     Convert a substituent signature to a friendly name when possible.
 
     Parameters
     ----------
     signature : str
-        Signature string for the substituent (e.g. ``"C1"``).
+        Element-count signature (e.g. ``"C1"``, ``"N1.O2"``).
 
     Returns
     -------
@@ -597,12 +652,26 @@ def get_friendly_substituent_name(signature):
     return common_substituents.get(signature, f"Group ({signature})")
 
 
-def calculate_hallucination_score(reactant_smiles, product_smiles):
+def calculate_hallucination_score(
+    reactant_smiles: str,
+    product_smiles: str,
+) -> dict[str, Any]:
     """
     Calculate a hallucination score for a chemical transformation.
 
-    Starts at 100 (no hallucination) and subtracts penalty points for each
-    structural inconsistency detected between reactant and product.
+    This is the high-level entry point.  It runs
+    `hallucination_compare_molecules` under the hood and then converts
+    each kind of issue into a point deduction from a perfect score of 100.
+    Bigger problems cost more points (e.g. a substituent jumping position
+    costs 60, while one extra bond costs only 5).  The final score is
+    clamped to 0–100 and labelled with a severity:
+
+    * **≥ 80** → ``"low"`` — looks plausible
+    * **40–79** → ``"medium"`` — worth a second look
+    * **20–39** → ``"high"`` — likely hallucinated
+    * **< 20** → ``"critical"`` — almost certainly wrong
+
+    If either SMILES string cannot be parsed, the score is 0 / critical.
 
     Parameters
     ----------
@@ -744,19 +813,22 @@ def calculate_hallucination_score(reactant_smiles, product_smiles):
     }
 
 
-def interpret_score(score):
-    """
-    Provide a human-readable interpretation of the hallucination score.
+def interpret_score(score: int) -> str:
+    """Turn a numeric hallucination score into a sentence a non-expert can read.
+
+    This is called automatically by `calculate_hallucination_score` to
+    fill the ``message`` field, but you can also use it standalone if
+    you already have a score.
 
     Parameters
     ----------
     score : int
-        Hallucination score (0–100).
+        Hallucination score (0 = worst, 100 = best).
 
     Returns
     -------
     message : str
-        Plain-English interpretation of the score.
+        One-sentence plain-English interpretation.
 
     Examples
     --------
