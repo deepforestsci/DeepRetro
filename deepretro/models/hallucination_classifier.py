@@ -8,7 +8,6 @@ and adds automatic early-stopping with an 80/20 internal split.
 
 import json
 from pathlib import Path
-from urllib.request import urlretrieve
 
 import numpy as np
 from deepchem.data import NumpyDataset
@@ -20,8 +19,7 @@ from xgboost import XGBClassifier
 from deepretro.featurizers import ReactionStepFeaturizer
 from deepretro.utils.metrics import find_optimal_threshold
 
-_S3_URL = "https://xyz/models"
-_CACHE_DIR = Path.home() / ".deepretro" / "models"
+_LOCAL_MODEL_DIR = Path(__file__).resolve().parents[2] / "model_out"
 _MODEL_FILES = ("model.joblib", "metadata.json")
 
 
@@ -34,10 +32,41 @@ class HallucinationClassifier:
     split.  The training pipeline uses DeepChem datasets, splitters,
     and metrics end-to-end.
 
+    Training data
+    -------------
+    Place a CSV file at ``data/hallucination_dataset.csv`` (relative to
+    the repo root) with at least these columns:
+
+    * ``product`` — SMILES of the target product.
+    * ``reactants`` — SMILES of proposed reactants (dot-separated for
+      multiple reactants, e.g. ``"CC.O"``).
+    * ``label`` — ``1`` if the reaction is hallucinated, ``0`` if real.
+
+    Then load and train:
+
+    .. code-block:: python
+
+       from deepretro.data import ReactionDataLoader, split_dataset
+       from deepretro.models import HallucinationClassifier
+
+       loader = ReactionDataLoader()
+       ds = loader.create_dataset("data/hallucination_dataset.csv")
+       train, valid, test = split_dataset(ds)
+
+       clf = HallucinationClassifier(model_dir="model_out")
+       clf.fit(train)
+       scores = clf.evaluate(test)   # saves model + optimal threshold
+       print(scores)
+
+    The trained model is saved to ``model_out/`` (``model.joblib`` +
+    ``metadata.json``).  For inference, just call
+    ``HallucinationClassifier.from_pretrained()``.
+
     Parameters
     ----------
     model_dir : str, optional
-        Directory for DeepChem model checkpoints.  Default ``"model_dir"``.
+        Directory for DeepChem model checkpoints.  Default: ``model_out/``
+        next to the package root.
     early_stopping_rounds : int, optional
         Rounds for early stopping during ``fit()``.  Default ``50``.
     **xgb_kwargs
@@ -64,8 +93,10 @@ class HallucinationClassifier:
         random_state=42,
     )
 
-    def __init__(self, model_dir="model_dir", early_stopping_rounds=50,
+    def __init__(self, model_dir=None, early_stopping_rounds=50,
                  **xgb_kwargs):
+        if model_dir is None:
+            model_dir = str(_LOCAL_MODEL_DIR)
         params = {**self._DEFAULT_XGB, **xgb_kwargs}
         xgb = XGBClassifier(**params)
         self.dc_model = GBDTModel(
@@ -77,44 +108,46 @@ class HallucinationClassifier:
         self.threshold: float = 0.5
         self.featurizer: ReactionStepFeaturizer | None = None
 
-    # classmethod: called on the class directly (HallucinationClassifier.from_pretrained()) instead of on an instance, so the user doesn't need to create one first.
     @classmethod
-    def from_pretrained(cls, url=None, cache_dir=None):
+    def from_pretrained(cls, model_dir=None):
         """
-        Download a pre-trained model from S3 and load it.
+        Load a pre-trained model from a local directory.
 
-        Files are cached locally so subsequent calls skip the download.
+        Resolution order:
+
+        1. *model_dir* (if supplied explicitly).
+        2. ``model_out/`` next to the package root (ships with the repo).
 
         Parameters
         ----------
-        url : str, optional
-            Base URL where ``model.joblib`` and ``metadata.json`` live.
-            Default: RecursiveLLM S3 bucket.
-        cache_dir : str or Path, optional
-            Local directory to cache model files.
-            Default: ``~/.deepretro/models/``.
+        model_dir : str or Path, optional
+            Directory containing ``model.joblib`` and ``metadata.json``.
 
         Returns
         -------
         clf : HallucinationClassifier
             Ready-to-use classifier.
 
+        Raises
+        ------
+        FileNotFoundError
+            If no model files are found at the resolved path.
+
         Examples
         --------
         >>> clf = HallucinationClassifier.from_pretrained()  # doctest: +SKIP
         >>> clf.predict_single("CCO", "CC.O")                # doctest: +SKIP
         """
-        base_url = url or _S3_URL
-        cache = Path(cache_dir) if cache_dir else _CACHE_DIR
-        cache.mkdir(parents=True, exist_ok=True)
+        path = Path(model_dir) if model_dir else _LOCAL_MODEL_DIR
 
-        for fname in _MODEL_FILES:
-            local = cache / fname
-            if not local.exists():
-                urlretrieve(f"{base_url}/{fname}", str(local))
+        if not all((path / f).exists() for f in _MODEL_FILES):
+            raise FileNotFoundError(
+                f"Model files not found in {path}. "
+                f"Expected: {', '.join(_MODEL_FILES)}"
+            )
 
-        clf = cls(model_dir=str(cache))
-        clf.load(str(cache))
+        clf = cls(model_dir=str(path))
+        clf.load(str(path))
         return clf
 
     # Training

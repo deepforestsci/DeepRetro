@@ -1,0 +1,7 @@
+{
+  "model_type": "XGBoost (via dc.models.GBDTModel)",
+  "wrapper": "dc.models.GBDTModel",
+  "optimal_threshold": 0.3757144808769226,
+  "feature_dimension": null,
+  "domain_features": true
+}
