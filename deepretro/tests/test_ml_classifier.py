@@ -55,10 +55,10 @@ def test_evaluate_keys_and_scores(trained_clf, toy_dataset):
 # predict
 
 
-def test_predict_proba_shape_and_range(trained_clf, toy_dataset):
-    proba = trained_clf.predict_proba(toy_dataset)
-    assert proba.shape == (len(toy_dataset),)
-    assert np.all((proba >= 0.0) & (proba <= 1.0))
+def test_predict_probability_shape_and_range(trained_clf, toy_dataset):
+    probability = trained_clf.predict_probability(toy_dataset)
+    assert probability.shape == (len(toy_dataset),)
+    assert np.all((probability >= 0.0) & (probability <= 1.0))
 
 
 def test_predict_single_invalid_smiles(trained_clf):
@@ -73,7 +73,7 @@ def test_predict_single_invalid_smiles(trained_clf):
 
 def test_save_load_roundtrip(trained_clf, toy_dataset, tmp_path):
     trained_clf.evaluate(toy_dataset)
-    proba_before = trained_clf.predict_proba(toy_dataset)
+    probability_before = trained_clf.predict_probability(toy_dataset)
     saved_threshold = trained_clf.threshold
 
     save_dir = str(tmp_path / "saved")
@@ -83,7 +83,7 @@ def test_save_load_roundtrip(trained_clf, toy_dataset, tmp_path):
     new_clf.load(save_dir)
     assert new_clf.threshold == saved_threshold
     np.testing.assert_array_almost_equal(
-        proba_before, new_clf.predict_proba(toy_dataset)
+        probability_before, new_clf.predict_probability(toy_dataset)
     )
 
 
@@ -98,6 +98,6 @@ def test_from_pretrained_loads_from_local_dir(trained_clf, toy_dataset, tmp_path
     clf = HallucinationClassifier.from_pretrained(model_dir=str(save_dir))
     assert clf.threshold == trained_clf.threshold
 
-    proba_orig = trained_clf.predict_proba(toy_dataset)
-    proba_loaded = clf.predict_proba(toy_dataset)
-    np.testing.assert_array_almost_equal(proba_orig, proba_loaded)
+    probability_orig = trained_clf.predict_probability(toy_dataset)
+    probability_loaded = clf.predict_probability(toy_dataset)
+    np.testing.assert_array_almost_equal(probability_orig, probability_loaded)
