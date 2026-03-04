@@ -90,12 +90,12 @@ def test_save_load_roundtrip(trained_clf, toy_dataset, tmp_path):
 # from_pretrained
 
 
-def test_from_pretrained_loads_from_cache(trained_clf, toy_dataset, tmp_path):
-    """Save model to a dir, then from_pretrained loads from cache (no download)."""
-    cache_dir = tmp_path / "pretrained_cache"
-    trained_clf.save(str(cache_dir))
+def test_from_pretrained_loads_from_local_dir(trained_clf, toy_dataset, tmp_path):
+    """Save model to a dir, then from_pretrained loads it back."""
+    save_dir = tmp_path / "pretrained_local"
+    trained_clf.save(str(save_dir))
 
-    clf = HallucinationClassifier.from_pretrained(cache_dir=str(cache_dir))
+    clf = HallucinationClassifier.from_pretrained(model_dir=str(save_dir))
     assert clf.threshold == trained_clf.threshold
 
     proba_orig = trained_clf.predict_proba(toy_dataset)
