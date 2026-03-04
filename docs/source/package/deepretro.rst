@@ -14,6 +14,7 @@ The package currently provides:
   handcrafted chemistry descriptors.
 - Domain-feature extraction helpers for product/reactant SMILES pairs.
 - AiZynthFinder wrappers for template-based route search.
+- Heuristic hallucination detection and scoring for retrosynthetic steps.
 
 
 Input and Output Conventions
@@ -56,5 +57,6 @@ Subpackages
 .. toctree::
    :maxdepth: 2
 
+   deepretro.algorithms.hallucination_checker
    deepretro.featurizers
    deepretro.utils_pkg
