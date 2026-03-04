@@ -58,5 +58,6 @@ Subpackages
    :maxdepth: 2
 
    deepretro.algorithms.hallucination_checker
+   deepretro.algorithms.stability_checker
    deepretro.featurizers
    deepretro.utils_pkg
