@@ -6,8 +6,11 @@ DeepChem APIs end-to-end.  ``GBDTModel`` wraps an ``XGBClassifier``
 and adds automatic early-stopping with an 80/20 internal split.
 """
 
+from __future__ import annotations
+
 import json
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 from deepchem.data import NumpyDataset
@@ -93,8 +96,9 @@ class HallucinationClassifier:
         random_state=42,
     )
 
-    def __init__(self, model_dir=None, early_stopping_rounds=50,
-                 **xgb_kwargs):
+    def __init__(self, model_dir: str | None = None,
+                 early_stopping_rounds: int = 50,
+                 **xgb_kwargs: Any) -> None:
         if model_dir is None:
             model_dir = str(_LOCAL_MODEL_DIR)
         params = {**self._DEFAULT_XGB, **xgb_kwargs}
@@ -109,7 +113,7 @@ class HallucinationClassifier:
         self.featurizer: ReactionStepFeaturizer | None = None
 
     @classmethod
-    def from_pretrained(cls, model_dir=None):
+    def from_pretrained(cls, model_dir: str | Path | None = None) -> HallucinationClassifier:
         """
         Load a pre-trained model from a local directory.
 
@@ -152,7 +156,7 @@ class HallucinationClassifier:
 
     # Training
 
-    def fit(self, train_dataset):
+    def fit(self, train_dataset: NumpyDataset) -> None:
         """
         Train the model on a DeepChem ``NumpyDataset``.
 
@@ -174,7 +178,7 @@ class HallucinationClassifier:
 
     # Evaluation
 
-    def evaluate(self, test_dataset):
+    def evaluate(self, test_dataset: NumpyDataset) -> dict[str, float]:
         """
         Evaluate using DeepChem ``Metric`` objects.
 
@@ -206,13 +210,13 @@ class HallucinationClassifier:
         ]
         label_scores = self.dc_model.evaluate(test_dataset, dc_metrics)
 
-        # Probability-based metrics (need predict_proba from underlying XGB)
+        # Probability-based metrics (via the underlying XGB model)
         y_true = test_dataset.y.flatten()
-        proba = self.dc_model.model.predict_proba(test_dataset.X)[:, 1]
-        auc = roc_auc_score(y_true, proba)
+        probabilities = self.dc_model.model.predict_proba(test_dataset.X)[:, 1]
+        auc = roc_auc_score(y_true, probabilities)
 
         # Optimal threshold
-        opt_thr, opt_f1 = find_optimal_threshold(y_true, proba)
+        opt_thr, opt_f1 = find_optimal_threshold(y_true, probabilities)
         self.threshold = opt_thr
 
         # Auto-save with updated threshold
@@ -229,7 +233,7 @@ class HallucinationClassifier:
 
     # Prediction
 
-    def predict_proba(self, dataset):
+    def predict_probability(self, dataset: NumpyDataset) -> np.ndarray:
         """
         Return hallucination probabilities for each sample.
 
@@ -240,12 +244,12 @@ class HallucinationClassifier:
 
         Returns
         -------
-        proba : np.ndarray, shape (n_samples,)
+        probabilities : np.ndarray, shape (n_samples,)
             Probability of the positive class (hallucination).
         """
         return self.dc_model.model.predict_proba(dataset.X)[:, 1]
 
-    def predict(self, dataset):
+    def predict(self, dataset: NumpyDataset) -> tuple[np.ndarray, np.ndarray]:
         """
         Predict binary labels using the current threshold.
 
@@ -258,13 +262,13 @@ class HallucinationClassifier:
         -------
         labels : np.ndarray, shape (n_samples,)
             Binary predictions (0 or 1).
-        proba : np.ndarray, shape (n_samples,)
+        probabilities : np.ndarray, shape (n_samples,)
             Hallucination probabilities.
         """
-        proba = self.predict_proba(dataset)
-        return (proba >= self.threshold).astype(int), proba
+        probabilities = self.predict_probability(dataset)
+        return (probabilities >= self.threshold).astype(int), probabilities
 
-    def predict_single(self, product_smiles, reactants_smiles):
+    def predict_single(self, product_smiles: str, reactants_smiles: str) -> dict[str, Any]:
         """
         Predict whether a single reaction step is hallucinated.
 
@@ -304,15 +308,15 @@ class HallucinationClassifier:
 
         X = self.featurizer.featurize([(product_smiles, reactants_smiles)])
         ds = NumpyDataset(X=X)
-        proba = self.predict_proba(ds)[0]
+        probability = self.predict_probability(ds)[0]
         return {
-            "is_hallucination": bool(proba >= self.threshold),
-            "probability": float(proba),
+            "is_hallucination": bool(probability >= self.threshold),
+            "probability": float(probability),
         }
 
     # Persistence
 
-    def save(self, save_dir):
+    def save(self, save_dir: str) -> None:
         """
         Save model, featurizer reference, and metadata.
 
@@ -343,7 +347,7 @@ class HallucinationClassifier:
         with open(save_path / "metadata.json", "w") as f:
             json.dump(meta, f, indent=2)
 
-    def load(self, save_dir):
+    def load(self, save_dir: str) -> None:
         """
         Reload a previously saved model and metadata.
 
