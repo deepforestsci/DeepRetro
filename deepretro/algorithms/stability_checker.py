@@ -336,13 +336,13 @@ def check_molecule_stability(smiles: str) -> dict[str, Any]:
     score -= len(results["issues"]) * 15
 
     # carbocations
-    score = _check_carbocations(mol, results, score)
+    score = check_carbocations(mol, results, score)
 
     # carbenes
-    score = _check_carbenes(mol, results, score)
+    score = check_carbenes(mol, results, score)
 
     # fused cyclopentane + small hetero ring
-    score = _check_fused_cyclopentane(mol, atom_rings, results, score)
+    score = check_fused_cyclopentane(mol, atom_rings, results, score)
 
     # physicochemical penalties
     if abs(logp) > 10:
@@ -393,16 +393,15 @@ def check_molecule_stability(smiles: str) -> dict[str, Any]:
 
     return results
 
-# Internal checkers (keep the main function readable)
 
-def _check_carbocations(
+def check_carbocations(
     mol: Chem.Mol,
     results: dict[str, Any],
     score: int,
 ) -> int:
     """Detect carbocation intermediates and apply score penalties.
 
-    Carbocations are positively charged carbon centres — reactive
+    Carbocations are positively charged carbon centres i.e. reactive
     intermediates that cannot be bottled.  The function uses SMARTS
     pattern matching to find them and then checks whether the charge
     is stabilised by resonance (allylic or benzylic position) or by
@@ -422,6 +421,18 @@ def _check_carbocations(
     -------
     int
         Updated stability score after carbocation penalties / bonuses.
+
+    Examples
+    --------
+    >>> from rdkit import Chem
+    >>> from deepretro.algorithms import check_carbocations
+    >>> mol = Chem.MolFromSmiles("[CH2+]C")  # ethyl cation
+    >>> results = {"issues": []}
+    >>> new_score = check_carbocations(mol, results, 100)
+    >>> "Contains primary carbocation (highly unstable)" in results["issues"]
+    True
+    >>> new_score < 100
+    True
     """
     if _SP2_CARBOCATION and mol.HasSubstructMatch(_SP2_CARBOCATION):
         for match in mol.GetSubstructMatches(_SP2_CARBOCATION):
@@ -469,7 +480,7 @@ def _check_carbocations(
     return score
 
 
-def _check_carbenes(
+def check_carbenes(
     mol: Chem.Mol,
     results: dict[str, Any],
     score: int,
@@ -477,7 +488,7 @@ def _check_carbenes(
     """Detect carbene intermediates and apply score penalties.
 
     A carbene is a neutral carbon with only two bonds and no hydrogens
-    — an extremely reactive species that usually exists only as a
+    i.e. an extremely reactive species that usually exists only as a
     fleeting intermediate.  Additional penalties stack if the carbene
     is inside a strained 3- or 4-membered ring, or sits next to an
     electron-withdrawing group (halogens, charged heteroatoms).
@@ -495,6 +506,18 @@ def _check_carbenes(
     -------
     int
         Updated stability score after carbene penalties.
+
+    Examples
+    --------
+    >>> from rdkit import Chem
+    >>> from deepretro.algorithms import check_carbenes
+    >>> mol = Chem.MolFromSmiles("[C]1CC1")  # carbene in 3-membered ring
+    >>> results = {"issues": []}
+    >>> new_score = check_carbenes(mol, results, 100)
+    >>> any("carbene" in i for i in results["issues"])
+    True
+    >>> new_score < 100
+    True
     """
     if _SINGLET_CARBENE and mol.HasSubstructMatch(_SINGLET_CARBENE):
         results["issues"].append(
@@ -520,7 +543,7 @@ def _check_carbenes(
     return score
 
 
-def _check_fused_cyclopentane(
+def check_fused_cyclopentane(
     mol: Chem.Mol,
     atom_rings: tuple,
     results: dict[str, Any],
@@ -530,7 +553,7 @@ def _check_fused_cyclopentane(
 
     A cyclopentane ring sharing atoms with a 3- or 4-membered ring
     that contains a heteroatom (N, O, S …) creates significant angle
-    strain — for example 1,2-epoxycyclopentane.  Each such fusion
+    strain, for example 1,2-epoxycyclopentane.  Each such fusion
     incurs a heavy penalty (-40).
 
     Parameters
@@ -548,6 +571,19 @@ def _check_fused_cyclopentane(
     -------
     int
         Updated stability score after fused-ring penalties.
+
+    Examples
+    --------
+    >>> from rdkit import Chem
+    >>> from deepretro.algorithms import check_fused_cyclopentane
+    >>> mol = Chem.MolFromSmiles("C1CC2OCC12")  # epoxycyclopentane
+    >>> rings = mol.GetRingInfo().AtomRings()
+    >>> results = {"issues": []}
+    >>> new_score = check_fused_cyclopentane(mol, rings, results, 100)
+    >>> any("strained system" in i for i in results["issues"])
+    True
+    >>> new_score < 100
+    True
     """
     if not (_CYCLOPENTANE and mol.HasSubstructMatch(_CYCLOPENTANE)):
         return score

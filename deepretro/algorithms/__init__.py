@@ -7,6 +7,9 @@ from .hallucination_checker import (
 from .stability_checker import (
     check_molecule_stability,
     is_valid_smiles,
+    check_carbocations,
+    check_carbenes,
+    check_fused_cyclopentane,
 )
 
 __all__ = [
@@ -15,4 +18,7 @@ __all__ = [
     "interpret_score",
     "check_molecule_stability",
     "is_valid_smiles",
+    "check_carbocations",
+    "check_carbenes",
+    "check_fused_cyclopentane",
 ]
