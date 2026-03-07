@@ -10,6 +10,10 @@ import type {
 export type StepFlowNode = Node<{
   stepNode: NormalizedStepNode;
   highlighted: boolean;
+  cardWidth: number;
+  cardHeight: number;
+  previewWidth: number;
+  previewHeight: number;
   onInspect: (stepId: string) => void;
   onEdit: (stepId: string) => void;
   onPartialRerun: (stepId: string) => void;
@@ -17,10 +21,52 @@ export type StepFlowNode = Node<{
 
 const elk = new ELK();
 
-function getDimensions(stepNode: NormalizedStepNode) {
+function getMoleculeSizing(stepNode: NormalizedStepNode) {
+  const smiles = stepNode.products[0]?.smiles ?? "";
+  const atomCount = (smiles.match(/[A-Z][a-z]?/g) ?? []).length;
+  const complexity = Math.max(smiles.length, atomCount * 4);
+
+  if (stepNode.isVirtualRoot) {
+    if (complexity > 110) {
+      return {
+        cardWidth: 500,
+        cardHeight: 460,
+        previewWidth: 420,
+        previewHeight: 380,
+      };
+    }
+
+    return {
+      cardWidth: 430,
+      cardHeight: 390,
+      previewWidth: 360,
+      previewHeight: 320,
+    };
+  }
+
+  if (complexity > 110) {
+    return {
+      cardWidth: 430,
+      cardHeight: 390,
+      previewWidth: 360,
+      previewHeight: 320,
+    };
+  }
+
+  if (complexity > 75) {
+    return {
+      cardWidth: 370,
+      cardHeight: 340,
+      previewWidth: 310,
+      previewHeight: 275,
+    };
+  }
+
   return {
-    width: stepNode.isVirtualRoot ? 250 : 230,
-    height: stepNode.isVirtualRoot ? 250 : 230,
+    cardWidth: stepNode.isVirtualRoot ? 430 : 290,
+    cardHeight: stepNode.isVirtualRoot ? 390 : 290,
+    previewWidth: stepNode.isVirtualRoot ? 360 : 235,
+    previewHeight: stepNode.isVirtualRoot ? 320 : 210,
   };
 }
 
@@ -33,12 +79,13 @@ function toFlowEdges(graph: NormalizedPathwayGraph) {
       type: MarkerType.ArrowClosed,
       width: 24,
       height: 24,
-      color: "#9bd8ff",
+      color: "#ffffff",
     },
     style: {
-      stroke: "#9bd8ff",
-      strokeOpacity: 0.85,
-      strokeWidth: 3,
+      stroke: "#ffffff",
+      strokeOpacity: 1,
+      strokeWidth: 4,
+      filter: "drop-shadow(0 0 10px rgba(255, 255, 255, 0.55))",
     },
   }));
 }
@@ -76,6 +123,7 @@ function buildFallbackFlowGraph(
       const depth = depthMap.get(stepNode.id) ?? 0;
       const row = rowsByDepth.get(depth) ?? 0;
       rowsByDepth.set(depth, row + 1);
+      const sizing = getMoleculeSizing(stepNode);
 
       return {
         id: stepNode.id,
@@ -89,6 +137,7 @@ function buildFallbackFlowGraph(
         data: {
           stepNode,
           highlighted: options.matchesSearch(stepNode),
+          ...sizing,
           onInspect: options.onInspect,
           onEdit: options.onEdit,
           onPartialRerun: options.onPartialRerun,
@@ -118,16 +167,16 @@ export async function buildFlowGraph(
       layoutOptions: {
         "elk.algorithm": "layered",
         "elk.direction": "RIGHT",
-        "elk.layered.spacing.nodeNodeBetweenLayers": "180",
-        "elk.spacing.nodeNode": "120",
-        "elk.padding": "[top=56,left=56,bottom=56,right=120]",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "280",
+        "elk.spacing.nodeNode": "210",
+        "elk.padding": "[top=72,left=72,bottom=72,right=140]",
       },
       children: graph.nodes.map((stepNode) => {
-        const { width, height } = getDimensions(stepNode);
+        const sizing = getMoleculeSizing(stepNode);
         return {
           id: stepNode.id,
-          width,
-          height,
+          width: sizing.cardWidth,
+          height: sizing.cardHeight,
         };
       }),
       edges: graph.edges.map((edge) => ({
@@ -148,6 +197,7 @@ export async function buildFlowGraph(
     return {
       nodes: graph.nodes.map((stepNode) => {
         const layoutNode = layoutNodes.get(stepNode.id);
+        const sizing = getMoleculeSizing(stepNode);
         return {
           id: stepNode.id,
           type: "step",
@@ -160,6 +210,7 @@ export async function buildFlowGraph(
           data: {
             stepNode,
             highlighted: options.matchesSearch(stepNode),
+            ...sizing,
             onInspect: options.onInspect,
             onEdit: options.onEdit,
             onPartialRerun: options.onPartialRerun,

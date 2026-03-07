@@ -1,4 +1,4 @@
-import type { NodeProps } from "@xyflow/react";
+import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { Beaker, FlaskConical, Pencil, RefreshCcw } from "lucide-react";
 
 import { formatConfidence } from "../../lib/pathway";
@@ -19,14 +19,31 @@ export function StepNode({
       onClick={() => data.onInspect(stepNode.stepId)}
       role="button"
       tabIndex={0}
+      style={{
+        width: `${data.cardWidth}px`,
+        minHeight: `${data.cardHeight}px`,
+      }}
     >
+      <Handle
+        className="step-node__handle"
+        isConnectable={false}
+        position={Position.Left}
+        type="target"
+      />
+      <Handle
+        className="step-node__handle"
+        isConnectable={false}
+        position={Position.Right}
+        type="source"
+      />
+
       {product ? (
         <div className="step-node__product solo">
           <MoleculePreview
             smiles={product.smiles}
             label={product.label}
-            width={stepNode.isVirtualRoot ? 210 : 190}
-            height={stepNode.isVirtualRoot ? 170 : 150}
+            width={data.previewWidth}
+            height={data.previewHeight}
             compact
           />
         </div>

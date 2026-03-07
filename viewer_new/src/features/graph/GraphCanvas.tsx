@@ -41,7 +41,21 @@ function GraphCanvasInner({
   const [edges, setEdges] = useState<Edge[]>([]);
   const [search, setSearch] = useState("");
   const shellRef = useRef<HTMLDivElement | null>(null);
+  const handlersRef = useRef({
+    onSelectStep,
+    onEditStep,
+    onPartialRerunStep,
+  });
+  const lastFitSignatureRef = useRef("");
   const reactFlow = useReactFlow();
+
+  useEffect(() => {
+    handlersRef.current = {
+      onSelectStep,
+      onEditStep,
+      onPartialRerunStep,
+    };
+  }, [onEditStep, onPartialRerunStep, onSelectStep]);
 
   const searchQuery = search.trim().toLowerCase();
 
@@ -86,10 +100,10 @@ function GraphCanvasInner({
     }
 
     buildFlowGraph(run.graph, {
-      onInspect: onSelectStep,
-      onEdit: onEditStep,
-      onPartialRerun: onPartialRerunStep,
-      matchesSearch,
+      onInspect: (stepId) => handlersRef.current.onSelectStep(stepId),
+      onEdit: (stepId) => handlersRef.current.onEditStep(stepId),
+      onPartialRerun: (stepId) => handlersRef.current.onPartialRerunStep(stepId),
+      matchesSearch: () => true,
     }).then((flow) => {
       if (!cancelled) {
         setNodes(flow.nodes);
@@ -100,22 +114,32 @@ function GraphCanvasInner({
     return () => {
       cancelled = true;
     };
-  }, [matchesSearch, onEditStep, onPartialRerunStep, onSelectStep, run]);
+  }, [run?.graph]);
 
   useEffect(() => {
     if (!nodes.length) {
       return;
     }
 
+    const signature = `${run?.key ?? "no-run"}:${searchQuery}:${Array.from(visibleNodeIds)
+      .sort()
+      .join(",")}`;
+    if (signature === lastFitSignatureRef.current) {
+      return;
+    }
+    lastFitSignatureRef.current = signature;
+
     const targetNodes = searchQuery
       ? nodes.filter((node) => visibleNodeIds.has(node.id))
       : nodes;
 
     const timeout = window.setTimeout(() => {
+      const minClarityZoom = searchQuery ? 0.82 : 0.72;
       const options: FitViewOptions = {
         duration: 350,
-        padding: 0.16,
+        padding: 0.08,
         includeHiddenNodes: true,
+        minZoom: minClarityZoom,
       };
       if (targetNodes.length) {
         options.nodes = targetNodes;
@@ -203,11 +227,14 @@ function GraphCanvasInner({
       </div>
       <div className="canvas-flow">
         <ReactFlow
-          fitView
           nodes={nodes.map((node) => ({
             ...node,
             hidden: !visibleNodeIds.has(node.id),
             selected: node.data.stepNode.stepId === selectedStepId,
+            data: {
+              ...node.data,
+              highlighted: visibleNodeIds.has(node.id),
+            },
           }))}
           edges={edges.map((edge) => ({
             ...edge,
@@ -215,8 +242,14 @@ function GraphCanvasInner({
               !visibleNodeIds.has(edge.source) || !visibleNodeIds.has(edge.target),
           }))}
           nodeTypes={nodeTypes}
-          minZoom={0.2}
-          maxZoom={1.8}
+          minZoom={0.35}
+          maxZoom={2.2}
+          defaultEdgeOptions={{
+            style: {
+              stroke: "#ffffff",
+              strokeWidth: 4,
+            },
+          }}
           onNodeClick={(_, node) => onSelectStep(node.data.stepNode.stepId)}
           proOptions={{ hideAttribution: true }}
         >

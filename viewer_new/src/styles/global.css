@@ -512,16 +512,22 @@ textarea {
   position: relative;
   display: grid;
   place-items: center;
-  width: 230px;
-  min-height: 230px;
   padding: 14px;
   border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background:
     radial-gradient(circle at top, rgba(255, 255, 255, 0.92), rgba(244, 249, 255, 0.96)),
     linear-gradient(180deg, rgba(250, 252, 255, 0.98), rgba(245, 248, 252, 0.96));
-  box-shadow: 0 24px 56px rgba(10, 16, 24, 0.16);
+  box-shadow: 0 12px 24px rgba(10, 16, 24, 0.12);
   overflow: hidden;
+}
+
+.step-node__handle {
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  border: 0;
+  background: transparent;
 }
 
 .step-node.root {
@@ -530,7 +536,7 @@ textarea {
 
 .step-node.selected {
   border-color: rgba(255, 134, 99, 0.58);
-  box-shadow: 0 20px 44px rgba(255, 134, 99, 0.18);
+  box-shadow: 0 12px 24px rgba(255, 134, 99, 0.12);
 }
 
 .step-node.muted {
@@ -547,7 +553,7 @@ textarea {
 .step-node__product.solo .molecule-loading,
 .step-node__product.solo .molecule-fallback {
   width: 100%;
-  min-height: 170px;
+  min-height: 220px;
 }
 
 .step-node__placeholder,
@@ -574,6 +580,7 @@ textarea {
   overflow: hidden;
   border-radius: 16px;
   background: white;
+  padding: 8px;
 }
 
 .molecule-svg.compact {
@@ -581,8 +588,13 @@ textarea {
 }
 
 .molecule-svg svg {
-  max-width: 100%;
+  display: block;
+  width: auto;
   height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
 }
 
 .molecule-chip-group {
@@ -595,11 +607,15 @@ textarea {
   position: absolute;
   inset: 0;
   display: grid;
-  align-content: space-between;
-  gap: 14px;
-  padding: 16px;
-  background: linear-gradient(180deg, rgba(7, 18, 31, 0.08), rgba(7, 18, 31, 0.82));
-  color: white;
+  grid-template-rows: auto auto 1fr;
+  align-content: start;
+  gap: 16px;
+  padding: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(122, 210, 172, 0.22), transparent 34%),
+    radial-gradient(circle at bottom left, rgba(255, 134, 99, 0.18), transparent 32%),
+    linear-gradient(180deg, rgba(18, 47, 79, 0.86), rgba(12, 33, 56, 0.9));
+  color: #f8fbff;
   opacity: 0;
   transform: translateY(8px);
   transition:
@@ -608,7 +624,8 @@ textarea {
 }
 
 .step-node:hover .step-node__overlay,
-.step-node.selected .step-node__overlay {
+.step-node:focus-visible .step-node__overlay,
+.step-node:focus-within .step-node__overlay {
   opacity: 1;
   transform: translateY(0);
 }
@@ -616,6 +633,11 @@ textarea {
 .step-node__overlay-header {
   display: grid;
   gap: 10px;
+}
+
+.step-node__overlay .badge-row {
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .step-node__overlay .eyebrow,
@@ -626,29 +648,55 @@ textarea {
 }
 
 .step-node__overlay .badge {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .step-node__overlay .badge.subtle,
 .step-node__overlay .molecule-chip {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .step-node__overlay-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .step-node__actions {
+  align-self: end;
   justify-content: flex-start;
   flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .step-node__actions .ghost-button {
-  color: white;
+  min-height: 40px;
+  padding: 10px 14px;
+  color: #f8fbff;
   background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow: none;
+}
+
+.step-node__actions .ghost-button:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.react-flow__edges {
+  z-index: 2;
+}
+
+.react-flow__edge-path {
+  stroke: white;
+  stroke-width: 4;
+  stroke-opacity: 1;
+}
+
+.react-flow__arrowhead path,
+.react-flow__marker path {
+  fill: white;
+  stroke: white;
 }
 
 .inspector {
