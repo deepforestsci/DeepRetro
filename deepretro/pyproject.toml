@@ -9,8 +9,9 @@ description = "DeepRetro package for retrosynthesis"
 requires-python = ">=3.10"
 dependencies = [
     "deepchem",
-    "rdkit",
+    "diskcache",
     "numpy",
+    "rdkit",
     "structlog",
 ]
 
@@ -33,3 +34,5 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
 
+[tool.ty.analysis]
+replace-imports-with-any = ["rdkit.**"]
