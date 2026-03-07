@@ -136,16 +136,22 @@ export function buildPathwayGraph(result: PathwayResult): NormalizedPathwayGraph
   }
 
   nodes[0].childIds = dependencyMap[VIRTUAL_ROOT_STEP] ?? [];
+  const validNodeIds = new Set(nodes.map((node) => node.id));
 
   for (const [parent, children] of Object.entries(dependencyMap)) {
     for (const child of children) {
       if (parent === child) {
         continue;
       }
+      const source = `step-${parent}`;
+      const target = `step-${child}`;
+      if (!validNodeIds.has(source) || !validNodeIds.has(target)) {
+        continue;
+      }
       edges.push({
         id: `edge-${parent}-${child}`,
-        source: `step-${parent}`,
-        target: `step-${child}`,
+        source,
+        target,
       });
     }
   }

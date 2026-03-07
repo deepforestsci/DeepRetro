@@ -72,7 +72,9 @@ export const useViewerStore = create<ViewerStore>((set, get) => ({
   setActiveRun: (runKey) => {
     storage.setActiveRun(runKey ?? "");
     const nextRun = runKey ? get().runs[runKey] : undefined;
-    const nextStepId = nextRun?.graph?.virtualRoot.stepId;
+    const nextStepId =
+      nextRun?.graph?.nodes.find((node) => !node.isVirtualRoot)?.stepId ??
+      nextRun?.graph?.virtualRoot.stepId;
     set({
       activeRunKey: runKey,
       selectedStepId: nextStepId,

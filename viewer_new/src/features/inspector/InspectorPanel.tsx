@@ -1,4 +1,4 @@
-import { Pencil, RefreshCcw, Save } from "lucide-react";
+import { ChevronDown, Pencil, RefreshCcw, Save } from "lucide-react";
 
 import {
   canPartialRerunStep,
@@ -12,6 +12,7 @@ import type { ViewerRun } from "../../types/viewer";
 type InspectorPanelProps = {
   run?: ViewerRun;
   selectedStepId?: string;
+  onSelectStep: (stepId: string) => void;
   onEdit: () => void;
   onPartialRerun: () => void;
   onSaveEdits: () => void;
@@ -41,8 +42,8 @@ function MoleculeSection({
             <MoleculePreview
               smiles={molecule.smiles}
               label={molecule.label}
-              width={240}
-              height={160}
+              width={220}
+              height={140}
             />
             <strong>{molecule.label}</strong>
             <p>{molecule.smiles}</p>
@@ -59,9 +60,50 @@ function MoleculeSection({
   );
 }
 
+function ConditionCards({
+  conditions,
+}: {
+  conditions: Record<string, unknown> | unknown[] | undefined;
+}) {
+  if (!conditions || Array.isArray(conditions)) {
+    return (
+      <div className="conditions-grid">
+        <div className="condition-card">
+          <span>Conditions</span>
+          <strong>{conditions ? "Unstructured payload" : "Not provided"}</strong>
+        </div>
+      </div>
+    );
+  }
+
+  const entries = Object.entries(conditions);
+  if (!entries.length) {
+    return (
+      <div className="conditions-grid">
+        <div className="condition-card">
+          <span>Conditions</span>
+          <strong>Not provided</strong>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="conditions-grid">
+      {entries.map(([key, value]) => (
+        <div className="condition-card" key={key}>
+          <span>{key.replaceAll("_", " ")}</span>
+          <strong>{typeof value === "string" ? value : JSON.stringify(value)}</strong>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function InspectorPanel({
   run,
   selectedStepId,
+  onSelectStep,
   onEdit,
   onPartialRerun,
   onSaveEdits,
@@ -158,6 +200,24 @@ export function InspectorPanel({
               </div>
             </div>
 
+            <section className="inspector-section">
+              <div className="section-heading">
+                <h3>Steps</h3>
+              </div>
+              <div className="molecule-chip-group">
+                {run.graph.nodes.map((node) => (
+                  <button
+                    className={`molecule-chip action-chip${node.stepId === activeStepId ? " active" : ""}`}
+                    key={node.id}
+                    onClick={() => onSelectStep(node.stepId)}
+                    type="button"
+                  >
+                    {node.isVirtualRoot ? "Target" : `Step ${node.stepId}`}
+                  </button>
+                ))}
+              </div>
+            </section>
+
             <MoleculeSection title="Products" molecules={stepNode.products} />
             <MoleculeSection title="Reactants" molecules={stepNode.reactants} />
             <MoleculeSection title="Reagents" molecules={stepNode.reagents} />
@@ -166,26 +226,26 @@ export function InspectorPanel({
               <div className="section-heading">
                 <h3>Conditions</h3>
               </div>
-              <pre className="json-block">
-                {JSON.stringify(stepNode.conditions ?? {}, null, 2)}
-              </pre>
+              <ConditionCards conditions={stepNode.conditions} />
             </section>
 
-            <section className="inspector-section">
-              <div className="section-heading">
-                <h3>Raw step JSON</h3>
-              </div>
+            <details className="json-details">
+              <summary>
+                <span>Raw step JSON</span>
+                <ChevronDown size={14} />
+              </summary>
               <pre className="json-block">
                 {JSON.stringify(rawStep ?? stepNode.rawStep ?? {}, null, 2)}
               </pre>
-            </section>
+            </details>
 
-            <section className="inspector-section">
-              <div className="section-heading">
-                <h3>Run JSON</h3>
-              </div>
+            <details className="json-details">
+              <summary>
+                <span>Run JSON</span>
+                <ChevronDown size={14} />
+              </summary>
               <pre className="json-block tall">{stringifyResult(run.rawResult)}</pre>
-            </section>
+            </details>
           </>
         ) : (
           <p>The selected step is not available in the active run.</p>

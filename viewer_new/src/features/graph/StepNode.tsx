@@ -11,6 +11,7 @@ export function StepNode({
 }: NodeProps<StepFlowNode>) {
   const stepNode = data.stepNode;
   const product = stepNode.products[0];
+  const primaryFormula = product?.formula ?? product?.label;
 
   return (
     <div
@@ -19,60 +20,54 @@ export function StepNode({
       role="button"
       tabIndex={0}
     >
-      <div className="step-node__header">
-        <div>
-          <p className="eyebrow">{stepNode.isVirtualRoot ? "Target" : "Synthesis step"}</p>
-          <h3>{stepNode.title}</h3>
-        </div>
-        <div className="badge-row">
-          {stepNode.metrics?.confidenceestimate !== undefined ? (
-            <span className="badge">
-              <Beaker size={12} />
-              {formatConfidence(stepNode.metrics.confidenceestimate)}
-            </span>
-          ) : null}
-          {stepNode.metrics?.scalabilityindex !== undefined ? (
-            <span className="badge subtle">
-              <FlaskConical size={12} />
-              Scale {stepNode.metrics.scalabilityindex}
-            </span>
-          ) : null}
-        </div>
-      </div>
-
       {product ? (
-        <div className="step-node__product">
+        <div className="step-node__product solo">
           <MoleculePreview
             smiles={product.smiles}
             label={product.label}
-            width={stepNode.isVirtualRoot ? 220 : 180}
-            height={stepNode.isVirtualRoot ? 150 : 110}
+            width={stepNode.isVirtualRoot ? 210 : 190}
+            height={stepNode.isVirtualRoot ? 170 : 150}
             compact
           />
-          <div>
-            <strong>{product.label}</strong>
-            <p>{product.smiles}</p>
-          </div>
         </div>
       ) : (
         <div className="step-node__placeholder">No product data available</div>
       )}
 
-      {!stepNode.isVirtualRoot ? (
-        <>
-          <div className="molecule-chip-group">
-            {stepNode.reactants.slice(0, 4).map((reactant) => (
-              <span className="molecule-chip" key={reactant.key}>
-                {reactant.label}
+      <div className="step-node__overlay">
+        <div className="step-node__overlay-header">
+          <div>
+            <p className="eyebrow">{stepNode.isVirtualRoot ? "Target" : "Synthesis step"}</p>
+            <h3>{stepNode.isVirtualRoot ? "Target" : `Step ${stepNode.stepId}`}</h3>
+          </div>
+          <div className="badge-row">
+            {stepNode.metrics?.confidenceestimate !== undefined ? (
+              <span className="badge">
+                <Beaker size={12} />
+                {formatConfidence(stepNode.metrics.confidenceestimate)}
               </span>
-            ))}
-            {stepNode.reactants.length > 4 ? (
-              <span className="molecule-chip more">
-                +{stepNode.reactants.length - 4} more reactants
+            ) : null}
+            {stepNode.metrics?.scalabilityindex !== undefined ? (
+              <span className="badge subtle">
+                <FlaskConical size={12} />
+                Scale {stepNode.metrics.scalabilityindex}
               </span>
             ) : null}
           </div>
+        </div>
 
+        <div className="step-node__overlay-meta">
+          {primaryFormula ? (
+            <span className="badge subtle">{primaryFormula}</span>
+          ) : null}
+          <span className="molecule-chip">{stepNode.products.length} product</span>
+          <span className="molecule-chip">{stepNode.reactants.length} reactants</span>
+          {stepNode.reagents.length ? (
+            <span className="molecule-chip">{stepNode.reagents.length} reagents</span>
+          ) : null}
+        </div>
+
+        {!stepNode.isVirtualRoot ? (
           <div className="step-node__actions">
             <button
               className="ghost-button"
@@ -107,8 +102,8 @@ export function StepNode({
               Partial rerun
             </button>
           </div>
-        </>
-      ) : null}
+        ) : null}
+      </div>
     </div>
   );
 }

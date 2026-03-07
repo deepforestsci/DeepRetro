@@ -9,9 +9,15 @@ describe("UploadPanel", () => {
     const onLoad = vi.fn();
     const user = userEvent.setup();
 
-    render(<UploadPanel onLoad={onLoad} />);
+    render(
+      <UploadPanel
+        onLoadFiles={(files) => {
+          files.forEach(({ fileName, input }) => onLoad(fileName, input));
+        }}
+      />,
+    );
 
-    const input = screen.getByLabelText(/choose a `.json` pathway export/i);
+    const input = screen.getByLabelText(/choose one or more `.json` pathway exports/i);
     const file = new File([JSON.stringify({ steps: [] })], "pathway.json", {
       type: "application/json",
     });
@@ -25,9 +31,15 @@ describe("UploadPanel", () => {
     const onLoad = vi.fn();
     const user = userEvent.setup();
 
-    render(<UploadPanel onLoad={onLoad} />);
+    render(
+      <UploadPanel
+        onLoadFiles={(files) => {
+          files.forEach(({ fileName, input }) => onLoad(fileName, input));
+        }}
+      />,
+    );
 
-    const input = screen.getByLabelText(/choose a `.json` pathway export/i);
+    const input = screen.getByLabelText(/choose one or more `.json` pathway exports/i);
     const file = new File(["not-json"], "broken.json", {
       type: "application/json",
     });

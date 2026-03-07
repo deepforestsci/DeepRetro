@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { Activity, CheckCircle2, CircleAlert, LoaderCircle, Upload } from "lucide-react";
 
 import type {
@@ -16,6 +17,7 @@ type RunSidebarProps = {
   runs: Record<string, ViewerRun>;
   activeRunKey?: string;
   onRunSelect: (runKey: string) => void;
+  onUploadFiles: (files: Array<{ fileName: string; input: unknown }>) => void;
   onUpdateSetting: (
     instanceId: string,
     patch: Partial<InstanceRequestSettings>,
@@ -51,13 +53,17 @@ function ToggleRow({
 }) {
   return (
     <label className={`toggle-row${disabled ? " disabled" : ""}`}>
-      <span>{label}</span>
+      <span className="toggle-row__label">{label}</span>
       <input
+        className="toggle-switch__input"
         checked={checked}
         disabled={disabled}
         type="checkbox"
         onChange={(event) => onChange(event.target.checked)}
       />
+      <span className="toggle-switch" aria-hidden="true">
+        <span className="toggle-switch__thumb" />
+      </span>
     </label>
   );
 }
@@ -70,8 +76,10 @@ export function RunSidebar({
   runs,
   activeRunKey,
   onRunSelect,
+  onUploadFiles,
   onUpdateSetting,
 }: RunSidebarProps) {
+  const uploadInputId = useId();
   const uploadedRuns = Object.values(runs).filter((run) => run.source === "file");
 
   return (
@@ -219,7 +227,37 @@ export function RunSidebar({
               <p className="eyebrow">Local runs</p>
               <h2>Uploaded pathways</h2>
             </div>
-            <Upload size={16} />
+            <label className="ghost-button upload-trigger" htmlFor={uploadInputId}>
+              <Upload size={16} />
+              Add files
+            </label>
+            <input
+              id={uploadInputId}
+              accept=".json,application/json"
+              className="sr-only"
+              type="file"
+              multiple
+              onChange={async (event) => {
+                const files = Array.from(event.target.files ?? []);
+                if (!files.length) {
+                  return;
+                }
+
+                try {
+                  const parsedFiles = await Promise.all(
+                    files.map(async (file) => ({
+                      fileName: file.name,
+                      input: JSON.parse(await file.text()),
+                    })),
+                  );
+                  onUploadFiles(parsedFiles);
+                } catch (error) {
+                  console.error("Failed to load uploaded files from sidebar.", error);
+                } finally {
+                  event.target.value = "";
+                }
+              }}
+            />
           </div>
           <div className="stack">
             {uploadedRuns.map((run) => (

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { loadAdvancedSettings, loadRuntimeConfig } from "../../config/loaders";
@@ -70,56 +70,59 @@ export function useViewerActions() {
   const setHealth = useViewerStore((state) => state.setHealth);
   const setActiveRun = useViewerStore((state) => state.setActiveRun);
   const setSelectedStep = useViewerStore((state) => state.setSelectedStep);
+  const healthAttemptRef = useRef(0);
+  const healthTimeoutRef = useRef<number | null>(null);
 
-  const healthMutation = useMutation({
-    mutationFn: async () => {
-      if (!runtimeConfig) {
-        return {};
+  const runHealthCheck = useCallback(async () => {
+    if (!runtimeConfig) {
+      return {} as HealthStatusMap;
+    }
+
+    const statusMap: HealthStatusMap = {};
+
+    if (!apiKey) {
+      for (const instance of runtimeConfig.instances) {
+        statusMap[instance.id] = {
+          state: "unauthorized",
+          message: "API key required",
+        };
       }
+      setHealth(statusMap);
+      return statusMap;
+    }
 
-      const statusMap: HealthStatusMap = {};
+    await Promise.all(
+      runtimeConfig.instances.map(async (instance) => {
+        const client = createFlaskClient({
+          baseUrl: instance.baseUrl,
+          endpoints: runtimeConfig.endpoints,
+          apiKey,
+        });
 
-      if (!apiKey) {
-        for (const instance of runtimeConfig.instances) {
+        try {
+          await client.health();
           statusMap[instance.id] = {
-            state: "unauthorized",
-            message: "API key required",
+            state: "healthy",
+            message: "Healthy",
+          };
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "Health check failed";
+          statusMap[instance.id] = {
+            state: message.toLowerCase().includes("unauthorized")
+              ? "unauthorized"
+              : "error",
+            message,
           };
         }
-        return statusMap;
-      }
+      }),
+    );
 
-      await Promise.all(
-        runtimeConfig.instances.map(async (instance) => {
-          const client = createFlaskClient({
-            baseUrl: instance.baseUrl,
-            endpoints: runtimeConfig.endpoints,
-            apiKey,
-          });
+    setHealth(statusMap);
+    return statusMap;
+  }, [apiKey, runtimeConfig, setHealth]);
 
-          try {
-            await client.health();
-            statusMap[instance.id] = {
-              state: "healthy",
-              message: "Healthy",
-            };
-          } catch (error) {
-            const message = error instanceof Error ? error.message : "Health check failed";
-            statusMap[instance.id] = {
-              state: message.toLowerCase().includes("unauthorized")
-                ? "unauthorized"
-                : "error",
-              message,
-            };
-          }
-        }),
-      );
-
-      return statusMap;
-    },
-    onSuccess: (health) => {
-      setHealth(health);
-    },
+  const healthMutation = useMutation({
+    mutationFn: runHealthCheck,
   });
 
   const analyzeMutation = useMutation({
@@ -333,8 +336,53 @@ export function useViewerActions() {
     if (!runtimeConfig) {
       return;
     }
-    void healthMutation.mutateAsync();
-  }, [apiKey, runtimeConfig, healthMutation]);
+
+    if (healthTimeoutRef.current) {
+      window.clearTimeout(healthTimeoutRef.current);
+      healthTimeoutRef.current = null;
+    }
+
+    if (!apiKey) {
+      void runHealthCheck();
+      return;
+    }
+
+    let cancelled = false;
+
+    const scheduleNext = (delayMs: number) => {
+      if (cancelled) {
+        return;
+      }
+
+      healthTimeoutRef.current = window.setTimeout(async () => {
+        const statusMap = await runHealthCheck();
+        const hasRecoverableError = Object.values(statusMap).some(
+          (status) => status.state === "error",
+        );
+
+        healthAttemptRef.current = hasRecoverableError
+          ? healthAttemptRef.current + 1
+          : 0;
+
+        const nextDelay = hasRecoverableError
+          ? Math.min(30_000, 1_000 * 2 ** healthAttemptRef.current)
+          : 15_000;
+
+        scheduleNext(nextDelay);
+      }, delayMs);
+    };
+
+    healthAttemptRef.current = 0;
+    scheduleNext(0);
+
+    return () => {
+      cancelled = true;
+      if (healthTimeoutRef.current) {
+        window.clearTimeout(healthTimeoutRef.current);
+        healthTimeoutRef.current = null;
+      }
+    };
+  }, [apiKey, runHealthCheck, runtimeConfig]);
 
   return {
     runtimeConfig,

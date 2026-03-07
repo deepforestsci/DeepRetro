@@ -63,6 +63,19 @@ export function App() {
     partialRerun,
   } = useViewerActions();
 
+  const handleUploadedFiles = (files: Array<{ fileName: string; input: unknown }>) => {
+    const loadedRunKeys = files.map(({ fileName, input }) =>
+      loadUploadedResult(fileName, input),
+    );
+    const latestRunKey = loadedRunKeys[loadedRunKeys.length - 1];
+    if (latestRunKey) {
+      setActiveRun(latestRunKey);
+    }
+    setFeedback(
+      `Loaded ${files.length} file${files.length === 1 ? "" : "s"} into the new viewer.`,
+    );
+  };
+
   const selectedStep = useMemo(
     () =>
       activeRun?.rawResult && selectedStepId
@@ -241,20 +254,26 @@ export function App() {
           runs={runs}
           activeRunKey={activeRunKey}
           onRunSelect={setActiveRun}
+          onUploadFiles={(files) => {
+            try {
+              setError("");
+              setFeedback("");
+              handleUploadedFiles(files);
+            } catch (nextError) {
+              setError(nextError instanceof Error ? nextError.message : "Upload failed.");
+            }
+          }}
           onUpdateSetting={updateInstanceSetting}
         />
 
         <section className="main-column">
           {mode === "upload" ? (
             <UploadPanel
-              onLoad={(fileName, input) => {
+              onLoadFiles={(files) => {
                 try {
                   setError("");
                   setFeedback("");
-                  const runKey = loadUploadedResult(fileName, input);
-                  setMode("analyze");
-                  setActiveRun(runKey);
-                  setFeedback(`Loaded ${fileName} into the new viewer.`);
+                  handleUploadedFiles(files);
                 } catch (nextError) {
                   setError(nextError instanceof Error ? nextError.message : "Upload failed.");
                 }
@@ -302,6 +321,7 @@ export function App() {
         <InspectorPanel
           run={activeRun}
           selectedStepId={selectedStepId}
+          onSelectStep={setSelectedStep}
           onEdit={() => setEditorOpen(true)}
           onPartialRerun={async () => {
             if (!activeRunKey || !selectedStepId || !partialRerunState.enabled) {

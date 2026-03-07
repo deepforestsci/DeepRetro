@@ -37,6 +37,146 @@ function makeBlankMolecule(): MoleculeRecord {
   };
 }
 
+function serializeConditionValue(value: unknown) {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (value === undefined) {
+    return "";
+  }
+  return JSON.stringify(value);
+}
+
+function parseConditionValue(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return "";
+  }
+
+  const shouldParseAsJson =
+    trimmed.startsWith("{") ||
+    trimmed.startsWith("[") ||
+    trimmed.startsWith('"') ||
+    trimmed === "true" ||
+    trimmed === "false" ||
+    trimmed === "null" ||
+    /^-?\d+(\.\d+)?$/.test(trimmed);
+
+  if (!shouldParseAsJson) {
+    return value;
+  }
+
+  const parsed = safeJsonParse(trimmed);
+  if (parsed.data !== undefined) {
+    return parsed.data;
+  }
+
+  return value;
+}
+
+function ConditionEditor({
+  conditions,
+  onChange,
+}: {
+  conditions: PathwayStep["conditions"];
+  onChange: (next: PathwayStep["conditions"]) => void;
+}) {
+  const entries = Array.isArray(conditions)
+    ? []
+    : Object.entries(conditions ?? {}).map(([key, value]) => ({
+        key,
+        value: serializeConditionValue(value),
+      }));
+
+  const updateEntries = (
+    nextEntries: Array<{
+      key: string;
+      value: string;
+    }>,
+  ) => {
+    const nextConditions: Record<string, unknown> = {};
+    nextEntries.forEach((entry) => {
+      if (!entry.key.trim()) {
+        return;
+      }
+      nextConditions[entry.key] = parseConditionValue(entry.value);
+    });
+    onChange(nextConditions);
+  };
+
+  return (
+    <section className="editor-section">
+      <div className="section-heading">
+        <h3>Conditions</h3>
+        <button
+          className="ghost-button"
+          onClick={() =>
+            updateEntries([
+              ...entries,
+              {
+                key: "",
+                value: "",
+              },
+            ])
+          }
+          type="button"
+        >
+          Add
+        </button>
+      </div>
+      {Array.isArray(conditions) ? (
+        <p className="inline-warning">
+          This step stores conditions as an array. Switch to raw JSON to edit that payload safely.
+        </p>
+      ) : null}
+      <div className="editor-condition-list">
+        {entries.map((entry, index) => (
+          <div className="editor-condition-row" key={`condition-${index}`}>
+            <label>
+              <span>Field</span>
+              <input
+                value={entry.key}
+                onChange={(event) => {
+                  const next = [...entries];
+                  next[index] = {
+                    ...next[index],
+                    key: event.target.value,
+                  };
+                  updateEntries(next);
+                }}
+              />
+            </label>
+            <label>
+              <span>Value</span>
+              <input
+                value={entry.value}
+                onChange={(event) => {
+                  const next = [...entries];
+                  next[index] = {
+                    ...next[index],
+                    value: event.target.value,
+                  };
+                  updateEntries(next);
+                }}
+              />
+            </label>
+            <button
+              className="ghost-button danger"
+              onClick={() => updateEntries(entries.filter((_, candidate) => candidate !== index))}
+              type="button"
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        {!entries.length && !Array.isArray(conditions) ? (
+          <p className="empty-note">No structured conditions yet. Add fields above.</p>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
 function MoleculeEditor({
   label,
   molecules,
@@ -253,30 +393,15 @@ export function EditorDrawer({
               }
             />
 
-            <section className="editor-section">
-              <div className="section-heading">
-                <h3>Conditions</h3>
-              </div>
-              <label>
-                <span>Conditions JSON</span>
-                <textarea
-                  rows={6}
-                  value={JSON.stringify(draft.conditions ?? {}, null, 2)}
-                  onChange={(event) => {
-                    const parsed = safeJsonParse(event.target.value);
-                    if (parsed.data && typeof parsed.data === "object") {
-                      setDraft((current) => ({
-                        ...current,
-                        conditions: parsed.data as PathwayStep["conditions"],
-                      }));
-                      setError("");
-                    } else if (parsed.error) {
-                      setError(parsed.error);
-                    }
-                  }}
-                />
-              </label>
-            </section>
+            <ConditionEditor
+              conditions={draft.conditions}
+              onChange={(conditions) =>
+                setDraft((current) => ({
+                  ...current,
+                  conditions,
+                }))
+              }
+            />
 
             <section className="editor-section">
               <div className="section-heading">

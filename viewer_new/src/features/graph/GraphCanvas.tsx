@@ -3,6 +3,7 @@ import {
   Background,
   Controls,
   type Edge,
+  type FitViewOptions,
   MiniMap,
   ReactFlow,
   ReactFlowProvider,
@@ -61,6 +62,18 @@ function GraphCanvasInner({
     };
   }, [searchQuery]);
 
+  const visibleNodeIds = useMemo(() => {
+    if (!searchQuery) {
+      return new Set(nodes.map((node) => node.id));
+    }
+
+    return new Set(
+      nodes
+        .filter((node) => matchesSearch(node.data.stepNode))
+        .map((node) => node.id),
+    );
+  }, [matchesSearch, nodes, searchQuery]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -93,18 +106,37 @@ function GraphCanvasInner({
     if (!nodes.length) {
       return;
     }
+
+    const targetNodes = searchQuery
+      ? nodes.filter((node) => visibleNodeIds.has(node.id))
+      : nodes;
+
     const timeout = window.setTimeout(() => {
-      reactFlow.fitView({
+      const options: FitViewOptions = {
         duration: 350,
         padding: 0.16,
         includeHiddenNodes: true,
-      });
+      };
+      if (targetNodes.length) {
+        options.nodes = targetNodes;
+      }
+      reactFlow.fitView(options);
     }, 40);
 
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [nodes, reactFlow]);
+  }, [nodes, reactFlow, searchQuery, visibleNodeIds]);
+
+  useEffect(() => {
+    if (!searchQuery) {
+      return;
+    }
+    const firstMatch = nodes.find((node) => visibleNodeIds.has(node.id));
+    if (firstMatch) {
+      onSelectStep(firstMatch.data.stepNode.stepId);
+    }
+  }, [nodes, onSelectStep, searchQuery, visibleNodeIds]);
 
   if (!run) {
     return (
@@ -147,8 +179,21 @@ function GraphCanvasInner({
         </label>
         <button
           className="ghost-button"
-          onClick={() => {
-            void shellRef.current?.requestFullscreen?.();
+          onClick={async () => {
+            const element = shellRef.current;
+            if (!element) {
+              return;
+            }
+
+            try {
+              if (document.fullscreenElement) {
+                await document.exitFullscreen();
+              } else if (element.requestFullscreen) {
+                await element.requestFullscreen();
+              }
+            } catch (error) {
+              console.error("Fullscreen toggle failed.", error);
+            }
           }}
           type="button"
         >
@@ -156,29 +201,36 @@ function GraphCanvasInner({
           Fullscreen
         </button>
       </div>
-      <ReactFlow
-        fitView
-        nodes={nodes.map((node) => ({
-          ...node,
-          selected: node.data.stepNode.stepId === selectedStepId,
-        }))}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        minZoom={0.2}
-        maxZoom={1.8}
-        onNodeClick={(_, node) => onSelectStep(node.data.stepNode.stepId)}
-        proOptions={{ hideAttribution: true }}
-      >
-        <MiniMap
-          pannable
-          zoomable
-          nodeColor={(node) =>
-            node.id === "step-0" ? "#7ad2ac" : node.selected ? "#ff8663" : "#8fa7ca"
-          }
-        />
-        <Controls position="bottom-left" showInteractive={false} />
-        <Background gap={24} size={1.2} color="#213043" />
-      </ReactFlow>
+      <div className="canvas-flow">
+        <ReactFlow
+          fitView
+          nodes={nodes.map((node) => ({
+            ...node,
+            hidden: !visibleNodeIds.has(node.id),
+            selected: node.data.stepNode.stepId === selectedStepId,
+          }))}
+          edges={edges.map((edge) => ({
+            ...edge,
+            hidden:
+              !visibleNodeIds.has(edge.source) || !visibleNodeIds.has(edge.target),
+          }))}
+          nodeTypes={nodeTypes}
+          minZoom={0.2}
+          maxZoom={1.8}
+          onNodeClick={(_, node) => onSelectStep(node.data.stepNode.stepId)}
+          proOptions={{ hideAttribution: true }}
+        >
+          <MiniMap
+            pannable
+            zoomable
+            nodeColor={(node) =>
+              node.id === "step-0" ? "#7ad2ac" : node.selected ? "#ff8663" : "#8fa7ca"
+            }
+          />
+          <Controls position="bottom-left" showInteractive={false} />
+          <Background gap={24} size={1.2} color="#213043" />
+        </ReactFlow>
+      </div>
     </div>
   );
 }
