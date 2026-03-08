@@ -134,13 +134,14 @@ function GraphCanvasInner({
       : nodes;
 
     const timeout = window.setTimeout(() => {
-      const minClarityZoom = searchQuery ? 0.82 : 0.72;
       const options: FitViewOptions = {
         duration: 350,
-        padding: 0.08,
+        padding: searchQuery ? 0.08 : 0.14,
         includeHiddenNodes: true,
-        minZoom: minClarityZoom,
       };
+      if (searchQuery) {
+        options.minZoom = 0.82;
+      }
       if (targetNodes.length) {
         options.nodes = targetNodes;
       }
