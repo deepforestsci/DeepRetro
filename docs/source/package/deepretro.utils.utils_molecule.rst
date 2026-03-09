@@ -27,8 +27,6 @@ Function Overview
      - Check if a SMILES string parses to a valid molecule.
    * - ``substructure_matching``
      - Return 1 if query is a substructure of target, 0 otherwise.
-   * - ``sub_structure_matching``
-     - Boolean variant of substructure matching.
    * - ``are_molecules_same``
      - Compare two SMILES (canonical form or fingerprint).
    * - ``validity_check``

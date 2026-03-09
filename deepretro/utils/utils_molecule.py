@@ -7,7 +7,6 @@ from rdkit.Chem import AllChem, rdMolDescriptors
 from rdkit.Chem.Descriptors import ExactMolWt
 from rdkit.Chem.rdMolDescriptors import CalcMolFormula
 
-
 logger = structlog.get_logger()
 
 root_dir = rootutils.setup_root(__file__,
@@ -252,30 +251,6 @@ def compute_fingerprint(smiles, radius=2, nBits=2048):
                                                         radius,
                                                         nBits=nBits)
     return list(fingerprint)
-
-
-def sub_structure_matching(target_smiles: str, query_smiles: str) -> bool:
-    """Check if the query substructure is present in the target molecule
-
-    Parameters
-    ----------
-    target_smiles : str
-        SMILES string of the target molecule
-    query_smiles : str
-        SMILES string of the query molecule
-
-    Returns
-    -------
-    bool
-        True if the query substructure is present in the target molecule, False otherwise
-    """
-    target_molecule = Chem.MolFromSmiles(target_smiles)
-    query_molecule = Chem.MolFromSmiles(query_smiles)
-
-    if target_molecule.HasSubstructMatch(query_molecule):
-        return True
-    else:
-        return False
 
 
 def detect_seven_member_rings(smiles) -> bool:
