@@ -60,5 +60,6 @@ Subpackages
 
    deepretro.algorithms.hallucination_checker
    deepretro.data.loader
+   deepretro.algorithms.stability_checker
    deepretro.featurizers
    deepretro.utils_pkg
