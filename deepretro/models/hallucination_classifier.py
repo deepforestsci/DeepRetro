@@ -1,7 +1,7 @@
-"""XGBoost hallucination classifier using DeepChem's GBDTModel.
+"""XGBoost hallucination classifier built on DeepChem's GBDTModel.
 
 Provides a single class that handles training, evaluation, threshold
-optimisation, single-reaction prediction, and persistence — using
+optimisation, single-reaction prediction, and persistence using
 DeepChem APIs end-to-end.  ``GBDTModel`` wraps an ``XGBClassifier``
 and adds automatic early-stopping with an 80/20 internal split.
 """
@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from deepchem.data import NumpyDataset
+from deepchem.data import Dataset, NumpyDataset
 from deepchem.metrics import Metric, accuracy_score, f1_score, roc_auc_score
 from deepchem.models import GBDTModel
 from rdkit import Chem
@@ -22,23 +22,101 @@ from xgboost import XGBClassifier
 from deepretro.featurizers import ReactionStepFeaturizer
 from deepretro.utils.metrics import find_optimal_threshold
 
-_LOCAL_MODEL_DIR = Path(__file__).resolve().parents[2] / "model_out"
-_MODEL_FILES = ("model.joblib", "metadata.json")
+
+# Helper functions (kept outside the class per DeepChem convention)
+
+def _probability_scores(dataset: Dataset, model) -> dict[str, float]:
+    """Compute ROC-AUC and optimal threshold from probabilities.
+
+    Parameters
+    ----------
+    dataset : Dataset
+        Labelled dataset with ``y`` ground-truth.
+    model : XGBClassifier
+        Fitted sklearn-compatible model with ``predict_proba``.
+
+    Returns
+    -------
+    dict
+        Keys: ``roc_auc``, ``optimal_threshold``, ``optimal_f1``.
+    """
+    y_true = dataset.y.flatten()
+    probabilities = model.predict_proba(dataset.X)[:, 1]
+    auc = roc_auc_score(y_true, probabilities)
+    opt_thr, opt_f1 = find_optimal_threshold(y_true, probabilities)
+    return {
+        "roc_auc": auc,
+        "optimal_threshold": opt_thr,
+        "optimal_f1": opt_f1,
+    }
 
 
-class HallucinationClassifier:
+def predict_single_reaction(
+    clf: "HallucinationClassifier",
+    product_smiles: str,
+    reactants_smiles: str,
+) -> dict[str, Any]:
+    """Predict whether a single reaction step is hallucinated.
+
+    This is a module-level helper so it can be used independently of the
+    class method.
+
+    Parameters
+    ----------
+    clf : HallucinationClassifier
+        A fitted classifier instance.
+    product_smiles : str
+        SMILES of the target product.
+    reactants_smiles : str
+        SMILES of the proposed reactants (dot-separated).
+
+    Returns
+    -------
+    result : dict
+        Keys: ``is_hallucination`` (bool), ``probability`` (float).
+        On invalid SMILES an ``error`` key is added instead.
+
+    Examples
+    --------
+    >>> from deepretro.models import HallucinationClassifier
+    >>> clf = HallucinationClassifier()
+    >>> clf.load("saved_model/")                              # doctest: +SKIP
+    >>> predict_single_reaction(clf, "CCO", "CC.O")           # doctest: +SKIP
+    {'is_hallucination': False, 'probability': 0.12}
+    >>> predict_single_reaction(clf, "GARBAGE", "CC.O")       # doctest: +SKIP
+    {'error': 'Invalid SMILES', 'is_hallucination': None, 'probability': None}
+    """
+    if Chem.MolFromSmiles(product_smiles) is None or \
+       Chem.MolFromSmiles(reactants_smiles) is None:
+        return {
+            "error": "Invalid SMILES",
+            "is_hallucination": None,
+            "probability": None,
+        }
+
+    if clf.featurizer is None:
+        clf.featurizer = ReactionStepFeaturizer()
+
+    X = clf.featurizer.featurize([(product_smiles, reactants_smiles)])
+    ds = NumpyDataset(X=X)
+    probability = clf.predict_probability(ds)[0]
+    return {
+        "is_hallucination": bool(probability >= clf.threshold),
+        "probability": float(probability),
+    }
+
+
+class HallucinationClassifier(GBDTModel):
     """
     Binary classifier for detecting hallucinated retrosynthesis reactions.
 
-    Wraps ``XGBClassifier`` inside DeepChem's ``GBDTModel`` which adds
-    automatic early-stopping via an internal 80/20 train/validation
-    split.  The training pipeline uses DeepChem datasets, splitters,
-    and metrics end-to-end.
+    Inherits from DeepChem's ``GBDTModel`` which wraps an
+    ``XGBClassifier`` and adds automatic early-stopping via an
+    internal 80/20 train/validation split.
 
     Training data
     -------------
-    Place a CSV file at ``data/hallucination_dataset.csv`` (relative to
-    the repo root) with at least these columns:
+    Prepare a CSV with at least these columns:
 
     * ``product`` — SMILES of the target product.
     * ``reactants`` — SMILES of proposed reactants (dot-separated for
@@ -49,27 +127,29 @@ class HallucinationClassifier:
 
     .. code-block:: python
 
-       from deepretro.data import ReactionDataLoader, split_dataset
+       from deepretro.data import ReactionDataLoader, stratified_split
        from deepretro.models import HallucinationClassifier
 
        loader = ReactionDataLoader()
-       ds = loader.create_dataset("data/hallucination_dataset.csv")
-       train, valid, test = split_dataset(ds)
+       ds = loader.create_dataset("path/to/your_dataset.csv")
+       train, valid, test = stratified_split(ds)
 
-       clf = HallucinationClassifier(model_dir="model_out")
+       clf = HallucinationClassifier(model_dir="my_models/")
        clf.fit(train)
-       scores = clf.evaluate(test)   # saves model + optimal threshold
+       scores = clf.evaluate(test)
        print(scores)
 
-    The trained model is saved to ``model_out/`` (``model.joblib`` +
-    ``metadata.json``).  For inference, just call
-    ``HallucinationClassifier.from_pretrained()``.
+    The trained model is saved to *model_dir* (``model.joblib`` +
+    ``metadata.json``).  To reload later::
+
+       clf = HallucinationClassifier(model_dir="my_models/")
+       clf.load("my_models/")
 
     Parameters
     ----------
     model_dir : str, optional
-        Directory for DeepChem model checkpoints.  Default: ``model_out/``
-        next to the package root.
+        Directory for DeepChem model checkpoints.  If ``None``, a
+        temporary directory is used (see ``deepchem.models.Model``).
     early_stopping_rounds : int, optional
         Rounds for early stopping during ``fit()``.  Default ``50``.
     **xgb_kwargs
@@ -99,11 +179,9 @@ class HallucinationClassifier:
     def __init__(self, model_dir: str | None = None,
                  early_stopping_rounds: int = 50,
                  **xgb_kwargs: Any) -> None:
-        if model_dir is None:
-            model_dir = str(_LOCAL_MODEL_DIR)
         params = {**self._DEFAULT_XGB, **xgb_kwargs}
         xgb = XGBClassifier(**params)
-        self.dc_model = GBDTModel(
+        super().__init__(
             model=xgb,
             model_dir=model_dir,
             early_stopping_rounds=early_stopping_rounds,
@@ -112,53 +190,11 @@ class HallucinationClassifier:
         self.threshold: float = 0.5
         self.featurizer: ReactionStepFeaturizer | None = None
 
-    @classmethod
-    def from_pretrained(cls, model_dir: str | Path | None = None) -> HallucinationClassifier:
-        """
-        Load a pre-trained model from a local directory.
-
-        Resolution order:
-
-        1. *model_dir* (if supplied explicitly).
-        2. ``model_out/`` next to the package root (ships with the repo).
-
-        Parameters
-        ----------
-        model_dir : str or Path, optional
-            Directory containing ``model.joblib`` and ``metadata.json``.
-
-        Returns
-        -------
-        clf : HallucinationClassifier
-            Ready-to-use classifier.
-
-        Raises
-        ------
-        FileNotFoundError
-            If no model files are found at the resolved path.
-
-        Examples
-        --------
-        >>> clf = HallucinationClassifier.from_pretrained()  # doctest: +SKIP
-        >>> clf.predict_single("CCO", "CC.O")                # doctest: +SKIP
-        """
-        path = Path(model_dir) if model_dir else _LOCAL_MODEL_DIR
-
-        if not all((path / f).exists() for f in _MODEL_FILES):
-            raise FileNotFoundError(
-                f"Model files not found in {path}. "
-                f"Expected: {', '.join(_MODEL_FILES)}"
-            )
-
-        clf = cls(model_dir=str(path))
-        clf.load(str(path))
-        return clf
-
     # Training
 
-    def fit(self, train_dataset: NumpyDataset) -> None:
+    def fit(self, train_dataset: Dataset) -> None:
         """
-        Train the model on a DeepChem ``NumpyDataset``.
+        Train the model on a DeepChem ``Dataset``.
 
         ``GBDTModel`` automatically performs an internal 80/20
         train/validation split for early stopping.  The model is
@@ -166,36 +202,41 @@ class HallucinationClassifier:
 
         Parameters
         ----------
-        train_dataset : NumpyDataset
+        train_dataset : Dataset
             Training data produced by ``deepretro.data.loader``.
 
         Examples
         --------
         >>> clf.fit(train_ds)  # doctest: +SKIP
         """
-        self.dc_model.fit(train_dataset)
-        self.dc_model.save()
+        super().fit(train_dataset)
+        super().save()
 
     # Evaluation
 
-    def evaluate(self, test_dataset: NumpyDataset) -> dict[str, float]:
+    def evaluate(self, test_dataset: Dataset, metrics=None) -> dict[str, float]:
         """
         Evaluate using DeepChem ``Metric`` objects.
 
-        Returns label-based accuracy and F1, plus probability-based
-        ROC-AUC and the optimal threshold.  Updates ``self.threshold``
-        to the optimal value and auto-saves model + metadata.
+        Returns label-based metrics, plus probability-based ROC-AUC
+        and the optimal threshold.  Updates ``self.threshold`` to the
+        optimal value and auto-saves model + metadata.
 
         Parameters
         ----------
-        test_dataset : NumpyDataset
+        test_dataset : Dataset
             Held-out test data.
+        metrics : list of dc.metrics.Metric, optional
+            Label-based metrics to compute.  Defaults to accuracy and F1.
+            Any ``sklearn.metrics`` function that accepts ``(y_true, y_pred)``
+            can be wrapped with ``dc.metrics.Metric``, e.g.
+            ``Metric(precision_score, name="precision")``.
 
         Returns
         -------
         scores : dict
-            Keys: ``roc_auc``, ``accuracy``, ``f1``,
-            ``optimal_threshold``, ``optimal_f1``.
+            Contains each metric name, plus ``roc_auc``,
+            ``optimal_threshold``, and ``optimal_f1``.
 
         Examples
         --------
@@ -203,43 +244,32 @@ class HallucinationClassifier:
         >>> scores["roc_auc"]               # doctest: +SKIP
         0.92
         """
-        # Label-based metrics via DeepChem
-        dc_metrics = [
-            Metric(accuracy_score, name="accuracy"),
-            Metric(f1_score, name="f1"),
-        ]
-        label_scores = self.dc_model.evaluate(test_dataset, dc_metrics)
+        if metrics is None:
+            metrics = [
+                Metric(accuracy_score, name="accuracy"),
+                Metric(f1_score, name="f1"),
+            ]
+        label_scores = super().evaluate(test_dataset, metrics)
 
-        # Probability-based metrics (via the underlying XGB model)
-        y_true = test_dataset.y.flatten()
-        probabilities = self.dc_model.model.predict_proba(test_dataset.X)[:, 1]
-        auc = roc_auc_score(y_true, probabilities)
-
-        # Optimal threshold
-        opt_thr, opt_f1 = find_optimal_threshold(y_true, probabilities)
-        self.threshold = opt_thr
+        prob_scores = _probability_scores(test_dataset, self.model)
+        self.threshold = prob_scores["optimal_threshold"]
 
         # Auto-save with updated threshold
-        self.save(self.dc_model.model_dir)
+        self.save(self.model_dir)
 
-        scores = {
-            "roc_auc": auc,
-            "accuracy": label_scores["accuracy"],
-            "f1": label_scores["f1"],
-            "optimal_threshold": opt_thr,
-            "optimal_f1": opt_f1,
-        }
+        scores = dict(label_scores)
+        scores.update(prob_scores)
         return scores
 
     # Prediction
 
-    def predict_probability(self, dataset: NumpyDataset) -> np.ndarray:
+    def predict_probability(self, dataset: Dataset) -> np.ndarray:
         """
         Return hallucination probabilities for each sample.
 
         Parameters
         ----------
-        dataset : NumpyDataset
+        dataset : Dataset
             Data to score.
 
         Returns
@@ -247,15 +277,18 @@ class HallucinationClassifier:
         probabilities : np.ndarray, shape (n_samples,)
             Probability of the positive class (hallucination).
         """
-        return self.dc_model.model.predict_proba(dataset.X)[:, 1]
+        return self.model.predict_proba(dataset.X)[:, 1]
 
-    def predict(self, dataset: NumpyDataset) -> tuple[np.ndarray, np.ndarray]:
+    def predict_with_threshold(self, dataset: Dataset) -> tuple[np.ndarray, np.ndarray]:
         """
         Predict binary labels using the current threshold.
 
+        Unlike the inherited ``predict()`` (which returns raw model
+        output), this applies ``self.threshold`` to produce binary labels.
+
         Parameters
         ----------
-        dataset : NumpyDataset
+        dataset : Dataset
             Data to classify.
 
         Returns
@@ -269,50 +302,8 @@ class HallucinationClassifier:
         return (probabilities >= self.threshold).astype(int), probabilities
 
     def predict_single(self, product_smiles: str, reactants_smiles: str) -> dict[str, Any]:
-        """
-        Predict whether a single reaction step is hallucinated.
-
-        Parameters
-        ----------
-        product_smiles : str
-            SMILES of the target product.
-        reactants_smiles : str
-            SMILES of the proposed reactants (dot-separated).
-
-        Returns
-        -------
-        result : dict
-            Keys: ``is_hallucination`` (bool), ``probability`` (float).
-
-        Examples
-        --------
-        >>> from deepretro.models import HallucinationClassifier
-        >>> clf = HallucinationClassifier()
-        >>> clf.load("saved_model/")                     # doctest: +SKIP
-        >>> clf.predict_single("CCO", "CC.O")            # doctest: +SKIP
-        {'is_hallucination': False, 'probability': 0.12}
-        >>> clf.predict_single("GARBAGE", "CC.O")        # doctest: +SKIP
-        {'error': 'Invalid SMILES', 'is_hallucination': None, 'probability': None}
-        """
-        # Validate SMILES before featurizing
-        if Chem.MolFromSmiles(product_smiles) is None or \
-           Chem.MolFromSmiles(reactants_smiles) is None:
-            return {
-                "error": "Invalid SMILES",
-                "is_hallucination": None,
-                "probability": None,
-            }
-
-        if self.featurizer is None:
-            self.featurizer = ReactionStepFeaturizer()
-
-        X = self.featurizer.featurize([(product_smiles, reactants_smiles)])
-        ds = NumpyDataset(X=X)
-        probability = self.predict_probability(ds)[0]
-        return {
-            "is_hallucination": bool(probability >= self.threshold),
-            "probability": float(probability),
-        }
+        """Thin wrapper around :func:`predict_single_reaction`."""
+        return predict_single_reaction(self, product_smiles, reactants_smiles)
 
     # Persistence
 
@@ -332,14 +323,12 @@ class HallucinationClassifier:
         save_path = Path(save_dir)
         save_path.mkdir(parents=True, exist_ok=True)
 
-        # DeepChem model checkpoint
-        self.dc_model.model_dir = str(save_path)
-        self.dc_model.save()
+        self.model_dir = str(save_path)
+        super().save()
 
         # Metadata JSON
         meta = {
             "model_type": "XGBoost (via dc.models.GBDTModel)",
-            "wrapper": "dc.models.GBDTModel",
             "optimal_threshold": self.threshold,
             "feature_dimension": self.featurizer.feature_dim if self.featurizer else None,
             "domain_features": True,
@@ -363,8 +352,8 @@ class HallucinationClassifier:
         """
         save_path = Path(save_dir)
 
-        self.dc_model.model_dir = str(save_path)
-        self.dc_model.reload()
+        self.model_dir = str(save_path)
+        self.reload()
 
         meta_file = save_path / "metadata.json"
         if meta_file.exists():
