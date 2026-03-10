@@ -11,7 +11,7 @@ dependencies = [
     "deepchem",
     "rdkit",
     "numpy",
-    "xgboost<2.0",
+    "xgboost<2.0",  # DeepChem GBDTModel uses XGBoost's sklearn wrapper; >=2.0 has breaking API changes
     "lightgbm",
     "scikit-learn",
     "pandas",
