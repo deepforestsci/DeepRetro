@@ -5,10 +5,10 @@ Dataset loading pipeline for reaction-step data, built on DeepChem's
 :class:`~deepchem.data.DataLoader` base class.
 
 ``ReactionDataLoader`` reads a CSV with product SMILES, reactant SMILES,
-and a binary label column, featurizes each row with
-:class:`~deepretro.featurizers.ReactionStepFeaturizer`, and writes the
-result to a :class:`~deepchem.data.DiskDataset` with automatic sharding
-for memory-efficient handling of large files.
+and a binary label column, featurizes each row with a reaction featurizer
+(by default :class:`~deepretro.featurizers.ReactionStepFeaturizer`), and
+writes the result to a :class:`~deepchem.data.DiskDataset` with automatic
+sharding for memory-efficient handling of large files.
 
 A convenience function ``stratified_split`` wraps DeepChem's
 ``SingletaskStratifiedSplitter`` to split any ``Dataset`` into
