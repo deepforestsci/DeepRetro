@@ -169,6 +169,9 @@ class ReactionDataLoader(DataLoader):
 
         total_dropped = 0
 
+        # Generator that streams featurized shards (X, y, w, ids) into
+        # ``DiskDataset.create_dataset`` while tracking how many rows are
+        # dropped due to all-NaN features from failed featurization.
         def shard_generator():
             nonlocal total_dropped
             for shard in self._get_shards(inputs, shard_size):
