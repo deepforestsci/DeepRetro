@@ -1,10 +1,15 @@
 """Threshold optimization utilities for binary classification."""
 
+from typing import Sequence
+
 import numpy as np
 from sklearn.metrics import precision_recall_curve
 
 
-def find_optimal_threshold(y_true, probabilities):
+def find_optimal_threshold(
+    y_true: Sequence[float],
+    probabilities: Sequence[float],
+) -> tuple[float, float]:
     """
     Find the classification threshold that maximises F1-score.
 
