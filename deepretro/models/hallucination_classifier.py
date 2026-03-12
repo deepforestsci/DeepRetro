@@ -8,7 +8,6 @@ and adds automatic early-stopping with an 80/20 internal split.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
@@ -25,7 +24,7 @@ from deepretro.utils.metrics import find_optimal_threshold
 
 # Helper functions (kept outside the class per DeepChem convention)
 
-def _probability_scores(dataset: Dataset, model) -> dict[str, float]:
+def probability_scores(dataset: Dataset, model) -> dict[str, float]:
     """Compute ROC-AUC and optimal threshold from probabilities.
 
     Parameters
@@ -139,8 +138,8 @@ class HallucinationClassifier(GBDTModel):
        scores = clf.evaluate(test)
        print(scores)
 
-    The trained model is saved to *model_dir* (``model.joblib`` +
-    ``metadata.json``).  To reload later::
+    The trained model is persisted via DeepChem's standard joblib
+    serialisation.  To reload later::
 
        clf = HallucinationClassifier(model_dir="my_models/")
        clf.load("my_models/")
@@ -251,7 +250,7 @@ class HallucinationClassifier(GBDTModel):
             ]
         label_scores = super().evaluate(test_dataset, metrics)
 
-        prob_scores = _probability_scores(test_dataset, self.model)
+        prob_scores = probability_scores(test_dataset, self.model)
         self.threshold = prob_scores["optimal_threshold"]
 
         # Auto-save with updated threshold
@@ -309,7 +308,7 @@ class HallucinationClassifier(GBDTModel):
 
     def save(self, save_dir: str) -> None:
         """
-        Save model, featurizer reference, and metadata.
+        Save model and threshold via DeepChem's joblib persistence.
 
         Parameters
         ----------
@@ -323,22 +322,13 @@ class HallucinationClassifier(GBDTModel):
         save_path = Path(save_dir)
         save_path.mkdir(parents=True, exist_ok=True)
 
+        self.model.optimal_threshold_ = self.threshold
         self.model_dir = str(save_path)
         super().save()
 
-        # Metadata JSON
-        meta = {
-            "model_type": "XGBoost (via dc.models.GBDTModel)",
-            "optimal_threshold": self.threshold,
-            "feature_dimension": self.featurizer.feature_dim if self.featurizer else None,
-            "domain_features": True,
-        }
-        with open(save_path / "metadata.json", "w") as f:
-            json.dump(meta, f, indent=2)
-
     def load(self, save_dir: str) -> None:
         """
-        Reload a previously saved model and metadata.
+        Reload a previously saved model.
 
         Parameters
         ----------
@@ -350,15 +340,7 @@ class HallucinationClassifier(GBDTModel):
         >>> clf = HallucinationClassifier()
         >>> clf.load("saved_model/")  # doctest: +SKIP
         """
-        save_path = Path(save_dir)
-
-        self.model_dir = str(save_path)
+        self.model_dir = str(Path(save_dir))
         self.reload()
-
-        meta_file = save_path / "metadata.json"
-        if meta_file.exists():
-            with open(meta_file) as f:
-                meta = json.load(f)
-            self.threshold = meta.get("optimal_threshold", 0.5)
-
+        self.threshold = getattr(self.model, "optimal_threshold_", 0.5)
         self.featurizer = ReactionStepFeaturizer()
