@@ -38,3 +38,6 @@ Repository = "https://github.com/deepforestsci/DeepRetro"
 
 [tool.setuptools.packages.find]
 where = ["src"] 
+
+[tool.ty.analysis]
+replace-imports-with-any = ["rdkit.**"]
