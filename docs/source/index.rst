@@ -79,7 +79,9 @@ Why DeepRetro?
    * - :doc:`contributing`
      - How to contribute to the project.
    * - :doc:`tutorial`
-     - Step-by-step tutorial for using the DeepRetro GUI.
+     - Tutorial 1: Step-by-step tutorial for using the DeepRetro GUI.
+   * - :doc:`tutorial_new_molecule`
+     - Tutorial 2
 
 .. toctree::
    :maxdepth: 2
@@ -92,3 +94,4 @@ Why DeepRetro?
    development
    contributing
    tutorial
+   tutorial2
