@@ -15,6 +15,7 @@ The package currently provides:
 - Domain-feature extraction helpers for product/reactant SMILES pairs.
 - AiZynthFinder wrappers for template-based route search.
 - Heuristic hallucination detection and scoring for retrosynthetic steps.
+- Dataset loading with DeepChem ``DiskDataset`` sharding and stratified splitting.
 
 
 Input and Output Conventions
@@ -58,6 +59,7 @@ Subpackages
    :maxdepth: 2
 
    deepretro.algorithms.hallucination_checker
+   deepretro.data.loader
    deepretro.algorithms.stability_checker
    deepretro.featurizers
    deepretro.utils_pkg
