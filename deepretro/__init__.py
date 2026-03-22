@@ -1,7 +1,8 @@
 """
 deepretro — retrosynthesis ML utilities.
 
-Provides DeepChem-compatible featurizers for reaction-step data.
+Provides DeepChem-compatible featurizers, dataset loaders, algorithms,
+and model wrappers for reaction-step data.
 """
 
 __all__ = ["ReactionStepFeaturizer", "configure_logging"]
