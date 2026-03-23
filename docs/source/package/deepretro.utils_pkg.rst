@@ -66,9 +66,8 @@ API Reference
 .. automodule:: deepretro.utils
    :members:
 
-deepretro.utils.domain\features
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+deepretro.utils.domain_features
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: deepretro.utils.domain_features
    :members:
-

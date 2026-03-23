@@ -98,3 +98,4 @@ Why DeepRetro?
    development
    contributing
    tutorial
+   modules

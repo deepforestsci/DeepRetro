@@ -1,7 +1,8 @@
-src
-===
+Module Index
+============
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
-   src
+   package/deepretro
+   src.utils.hallucination_checks
