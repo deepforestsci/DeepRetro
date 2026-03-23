@@ -24,6 +24,21 @@ def configure_logging(
         ``"CRITICAL"``).
     json_output : bool
         If ``True``, render logs as JSON. Otherwise, use console output.
+
+    Examples
+    --------
+    Configure console logging once at process startup, then emit structured
+    events from application code.
+
+    >>> import structlog
+    >>> from deepretro.logging import configure_logging
+    >>> configure_logging(level="INFO")
+    >>> logger = structlog.get_logger(__name__)
+    >>> logger.info("Starting retrosynthesis", molecule="CCO")
+
+    Switch to JSON output when logs are consumed by an external aggregator.
+
+    >>> configure_logging(level="DEBUG", json_output=True)
     """
     renderer: structlog.types.Processor = (
         structlog.processors.JSONRenderer()

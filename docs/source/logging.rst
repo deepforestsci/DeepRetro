@@ -33,6 +33,29 @@ If you already call ``structlog.configure()`` in your application (e.g. in
 ``src/main.py``), that configuration applies automatically — you do not need
 ``configure_logging``.
 
+Minimal application example
+---------------------------
+
+Use ``configure_logging()`` once near your entry point, then create module
+loggers with ``structlog.get_logger()``:
+
+.. code-block:: python
+
+   import structlog
+
+   from deepretro.logging import configure_logging
+
+   configure_logging(level="INFO")
+
+   logger = structlog.get_logger(__name__)
+   logger.info("Starting retrosynthesis", molecule="CCO")
+
+For production log pipelines, switch the same helper to JSON output:
+
+.. code-block:: python
+
+   configure_logging(level="DEBUG", json_output=True)
+
 How to log in a new module
 --------------------------
 
