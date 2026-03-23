@@ -10,9 +10,11 @@ Setup
 
    git clone <repository-url>
    cd DeepRetro
-   conda env create -f environment.yml
-   conda activate deepretro
-   pip install -r tests/requirements_tests.txt
+   uv sync --project deepretro --extra dev --extra docs
+
+The ``deepretro`` package metadata is the source of truth for CI and local
+developer environments. The docs workflow installs the package with its
+``docs`` extra and builds documentation with ``uv run --project deepretro``.
 
 Project Structure
 -----------------
