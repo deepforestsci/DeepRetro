@@ -74,6 +74,8 @@ Why DeepRetro?
      - Usage instructions, tips, and troubleshooting.
    * - :doc:`api_reference`
      - HTTP API endpoints, models, and error codes.
+   * - :doc:`logging`
+     - Logging conventions, configuration, and context propagation.
    * - :doc:`prompts`
      - Prompt templates, runtime selection, and modifier strategy.
    * - :doc:`development`
@@ -91,6 +93,7 @@ Why DeepRetro?
    installation
    user_guide
    api_reference
+   logging
    prompts
    development
    contributing
