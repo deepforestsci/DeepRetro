@@ -58,6 +58,7 @@ Submodules
    :maxdepth: 1
 
    deepretro.utils.az
+   deepretro.utils.metrics
 
 API Reference
 -------------
