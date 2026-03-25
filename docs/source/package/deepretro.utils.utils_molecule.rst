@@ -1,5 +1,5 @@
 deepretro.utils.utils_molecule
-=============================
+==============================
 
 Molecule utilities for SMILES validation, substructure matching, molecular properties, and ring detection.
 
@@ -11,7 +11,8 @@ The ``utils_molecule`` module provides chemistry-focused helpers used throughout
 - **SMILES validation** — Check validity and compare molecules
 - **Substructure matching** — Query whether one molecule is a substructure of another
 - **Molecular properties** — Weight, formula, fingerprints
-- **Validity checks** — Filter LLM-proposed pathways for chemical validity
+- **Validity checks** — Filter LLM-proposed pathways for chemical validity and
+  reject target-matching fragments
 - **Ring detection** — Detect 7- and 8-member rings in molecules
 
 Function Overview
@@ -74,7 +75,7 @@ Usage
 
    # Molecular properties
    assert calc_mol_wt("CCO") > 0
-   assert calc_chemical_formula("CH4") == "CH4"
+   assert calc_chemical_formula("C") == "CH4"
 
    # Ring detection
    assert detect_seven_member_rings("C1CCCCCC1") is True

@@ -156,13 +156,13 @@ class TestValidityCheck:
     """Tests for ``utils_molecule.validity_check``."""
 
     def test_valid_pathways_preserved(self) -> None:
-        molecule = ETHANOL
-        res_molecules = [["CC", "O"]]  # ethane + oxygen-like; CC is valid
+        molecule = BENZENE
+        res_molecules = [["CC(=O)O"]]
         res_explanations = ["test explanation"]
         res_confidence = [0.8]
         pathways, explanations, confidence = utils_molecule.validity_check(
             molecule, res_molecules, res_explanations, res_confidence)
-        assert len(pathways) >= 0
+        assert pathways == [["CC(=O)O"]]
         assert len(explanations) == len(pathways)
         assert len(confidence) == len(pathways)
 
@@ -185,6 +185,19 @@ class TestValidityCheck:
         pathways, explanations, confidence = utils_molecule.validity_check(
             molecule, res_molecules, res_explanations, res_confidence)
         assert len(pathways) == 0
+        assert explanations == []
+        assert confidence == []
+
+    def test_substructure_of_target_filtered_out(self) -> None:
+        molecule = ETHANOL
+        res_molecules = [["CC"]]
+        res_explanations = ["ethyl fragment"]
+        res_confidence = [0.6]
+        pathways, explanations, confidence = utils_molecule.validity_check(
+            molecule, res_molecules, res_explanations, res_confidence)
+        assert pathways == []
+        assert explanations == []
+        assert confidence == []
 
     def test_single_smiles_string_instead_of_list(self) -> None:
         molecule = BENZENE

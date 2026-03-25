@@ -1,6 +1,9 @@
-import os
+"""Molecule helpers for validation, filtering, and simple descriptors."""
 
-import rootutils
+from __future__ import annotations
+
+from collections.abc import Sequence
+
 import structlog
 from rdkit import Chem
 from rdkit.Chem import AllChem, rdMolDescriptors
@@ -9,253 +12,276 @@ from rdkit.Chem.rdMolDescriptors import CalcMolFormula
 
 logger = structlog.get_logger()
 
-root_dir = rootutils.setup_root(__file__,
-                                indicator=".project-root",
-                                pythonpath=True)
+_INVALID_SMILES_ERROR = "Invalid SMILES string provided."
 
-RXN_CLASSIFICATION_MODEL_PATH = (
-    f"{root_dir}/{os.getenv('RXN_CLASSIFICATION_MODEL_PATH')}")
+
+def _parse_molecule(smiles: str, *, message: str | None = None):
+    """Parse a SMILES string into an RDKit molecule."""
+
+    try:
+        molecule = Chem.MolFromSmiles(smiles)
+    except Exception:
+        molecule = None
+
+    if molecule is None and message is not None:
+        logger.warning(message, smiles=smiles)
+
+    return molecule
 
 
 def is_valid_smiles(smiles: str) -> bool:
-    """Check if the SMILES string is valid
+    """Check whether a SMILES string can be parsed successfully.
 
     Parameters
     ----------
     smiles : str
-        smiles string
+        SMILES string to validate.
 
     Returns
     -------
     bool
-        True if the smiles is valid, False otherwise
+        ``True`` when the SMILES string parses to an RDKit molecule,
+        otherwise ``False``.
     """
-    try:
-        mol = Chem.MolFromSmiles(smiles)
-    except Exception:
-        return False
-    if mol is None:
-        return False
-    return True
+
+    return _parse_molecule(smiles) is not None
 
 
 def substructure_matching(target_smiles: str, query_smiles: str) -> int:
-    """Check if the query substructure is present in the target molecule
+    """Check whether a query molecule is a substructure of a target molecule.
 
     Parameters
     ----------
     target_smiles : str
-        SMILES string of the target molecule
+        SMILES string of the target molecule.
     query_smiles : str
-        SMILES string of the query molecule
+        SMILES string of the query molecule.
 
     Returns
     -------
     int
-        1 if the query substructure is present in the target molecule, 0 otherwise
+        ``1`` if the query is a substructure of the target, otherwise ``0``.
     """
-    try:
-        target_molecule = Chem.MolFromSmiles(target_smiles)
-    except Exception:
-        logger.error("Error parsing target molecule", smiles=target_smiles)
 
-    try:
-        query_molecule = Chem.MolFromSmiles(query_smiles)
-    except Exception:
-        logger.error("Error parsing query molecule", smiles=query_smiles)
-
-    # Check if the query substructure is present in the target molecule
-    try:
-        if target_molecule.HasSubstructMatch(query_molecule):
-            return 1
-        else:
-            return 0
-    except Exception:
+    target_molecule = _parse_molecule(
+        target_smiles,
+        message="Unable to parse target molecule for substructure matching",
+    )
+    query_molecule = _parse_molecule(
+        query_smiles,
+        message="Unable to parse query molecule for substructure matching",
+    )
+    if target_molecule is None or query_molecule is None:
         return 0
 
+    return int(target_molecule.HasSubstructMatch(query_molecule))
 
-def validity_check(molecule, res_molecules, res_explanations, res_confidence):
-    """Check the validity of the molecules obtained from LLM
+
+def validity_check(
+    molecule: str,
+    res_molecules: Sequence[Sequence[str] | str],
+    res_explanations: Sequence[str],
+    res_confidence: Sequence[float],
+) -> tuple[list[list[str]], list[str], list[float]]:
+    """Filter proposed retrosynthesis pathways down to valid precursor sets.
 
     Parameters
     ----------
     molecule : str
-        Target molecule for retrosynthesis
-    res_molecules : list
-        List of molecules obtained from LLM
-    res_explanations : list
-        List of explanations obtained from LLM
-    res_confidence : list
-        List of confidence scores obtained from LLM
+        Target molecule for retrosynthesis.
+    res_molecules : Sequence[Sequence[str] | str]
+        Candidate precursor pathways returned by the model.
+    res_explanations : Sequence[str]
+        Explanation for each candidate pathway.
+    res_confidence : Sequence[float]
+        Confidence score for each candidate pathway.
 
     Returns
     -------
-    list
-        List of valid pathways
-    list
-        List of valid explanations
-    list
-        List of valid confidence scores
+    tuple[list[list[str]], list[str], list[float]]
+        Valid precursor pathways, explanations, and confidence scores. A
+        pathway is kept only when every precursor is valid, is not identical
+        to the target molecule, and is not a substructure of the target.
     """
-    valid_pathways = []
-    valid_explanations = []
-    valid_confidence = []
-    for idx, smile_list in enumerate(res_molecules):
-        valid = []
-        if isinstance(smile_list, list):
-            for smiles in smile_list:
-                if is_valid_smiles(smiles):
-                    if are_molecules_same(molecule, smiles):
-                        logger.warning("Molecule is same as target",
-                                       molecule=molecule,
-                                       smiles=smiles)
-                    elif substructure_matching(smiles, molecule):
-                        logger.warning("Molecule is substructure of target",
-                                       molecule=molecule,
-                                       smiles=smiles)
-                    else:
-                        valid.append(smiles)
-                else:
-                    logger.warning("Invalid SMILES in pathway",
-                                   molecule=molecule,
-                                   smiles=smiles)
-            if len(valid) == len(smile_list):
-                valid_pathways.append(valid)
-                valid_explanations.append(res_explanations[idx])
-                valid_confidence.append(res_confidence[idx])
-        else:
-            if is_valid_smiles(smile_list):
-                if are_molecules_same(molecule, smile_list):
-                    logger.warning("Molecule is same as target",
-                                   molecule=molecule,
-                                   smiles=smile_list)
-                elif substructure_matching(smile_list, molecule):
-                    logger.warning("Molecule is substructure of target",
-                                   molecule=molecule,
-                                   smiles=smile_list)
-                else:
-                    valid_pathways.append([smile_list])
-                    valid_explanations.append(res_explanations[idx])
-                    valid_confidence.append(res_confidence[idx])
-            else:
-                logger.warning("Invalid SMILES", smiles=smile_list)
+
+    valid_pathways: list[list[str]] = []
+    valid_explanations: list[str] = []
+    valid_confidence: list[float] = []
+
+    for smiles_group, explanation, confidence in zip(
+        res_molecules,
+        res_explanations,
+        res_confidence,
+    ):
+        candidate_pathway = (
+            [smiles_group] if isinstance(smiles_group, str) else list(smiles_group)
+        )
+        valid_candidates: list[str] = []
+
+        for smiles in candidate_pathway:
+            if not is_valid_smiles(smiles):
+                logger.warning("Invalid SMILES in pathway", molecule=molecule, smiles=smiles)
+                continue
+
+            if are_molecules_same(molecule, smiles):
+                logger.warning("Molecule is same as target", molecule=molecule, smiles=smiles)
+                continue
+
+            if substructure_matching(molecule, smiles):
+                logger.warning(
+                    "Molecule is substructure of target",
+                    molecule=molecule,
+                    smiles=smiles,
+                )
+                continue
+
+            valid_candidates.append(smiles)
+
+        if len(valid_candidates) == len(candidate_pathway):
+            valid_pathways.append(valid_candidates)
+            valid_explanations.append(explanation)
+            valid_confidence.append(confidence)
+
     logger.info("Validity check complete", valid_pathways=len(valid_pathways))
     return valid_pathways, valid_explanations, valid_confidence
 
 
 def calc_mol_wt(mol: str) -> float:
-    """Calculate the molecular weight of a molecule
+    """Calculate the exact molecular weight for a SMILES string.
 
     Parameters
     ----------
     mol : str
-        SMILES string of the molecule
+        SMILES string of the molecule.
 
     Returns
     -------
     float
-        molecular weight of the molecule
+        Exact molecular weight. Returns ``0.0`` for invalid SMILES.
     """
-    try:
-        mol_wt = ExactMolWt(Chem.MolFromSmiles(mol))
-    except Exception:
-        mol_wt = 0.0
+
+    molecule = _parse_molecule(mol)
+    if molecule is None:
         logger.error("Error calculating molecular weight", smiles=mol)
-    return mol_wt
+        return 0.0
+
+    return ExactMolWt(molecule)
 
 
-def calc_chemical_formula(mol: str):
-    """Calculate the chemical formula of a molecule
+def calc_chemical_formula(mol: str) -> str:
+    """Calculate the molecular formula for a SMILES string.
 
     Parameters
     ----------
     mol : str
-        SMILES string of the molecule
+        SMILES string of the molecule.
 
     Returns
     -------
     str
-        molecular formula of the molecule
+        Molecular formula. Returns ``"N/A"`` for invalid SMILES.
     """
-    try:
-        formula = CalcMolFormula(Chem.MolFromSmiles(mol))
-    except Exception:
-        formula = "N/A"
+
+    molecule = _parse_molecule(mol)
+    if molecule is None:
         logger.error("Error calculating chemical formula", smiles=mol)
-    return formula
+        return "N/A"
+
+    return CalcMolFormula(molecule)
 
 
 def are_molecules_same(smiles1: str, smiles2: str) -> bool:
-    """Check if two molecules are the same
+    """Check whether two SMILES strings describe the same molecule.
 
     Parameters
     ----------
     smiles1 : str
-        SMILES string of the first molecule
+        SMILES string of the first molecule.
     smiles2 : str
-        SMILES string of the second molecule
+        SMILES string of the second molecule.
 
     Returns
     -------
     bool
-        True if the molecules are the same, False otherwise
+        ``True`` when the molecules are equivalent, otherwise ``False``.
+
+    Raises
+    ------
+    ValueError
+        If either SMILES string is invalid.
     """
-    # Convert SMILES strings to RDKit molecule objects
-    mol1 = Chem.MolFromSmiles(smiles1)
-    mol2 = Chem.MolFromSmiles(smiles2)
 
+    mol1 = _parse_molecule(smiles1)
+    mol2 = _parse_molecule(smiles2)
     if mol1 is None or mol2 is None:
-        raise ValueError("Invalid SMILES string provided.")
+        raise ValueError(_INVALID_SMILES_ERROR)
 
-    # Get canonical SMILES for both molecules
-    canonical_smiles1 = Chem.MolToSmiles(mol1, canonical=True)
-    canonical_smiles2 = Chem.MolToSmiles(mol2, canonical=True)
-
-    # Alternatively, compare molecular fingerprints
-    fingerprint1 = rdMolDescriptors.GetMorganFingerprintAsBitVect(mol1,
-                                                                  radius=2,
-                                                                  nBits=1024)
-    fingerprint2 = rdMolDescriptors.GetMorganFingerprintAsBitVect(mol2,
-                                                                  radius=2,
-                                                                  nBits=1024)
-
-    # Check if canonical SMILES or fingerprints match
-    if canonical_smiles1 == canonical_smiles2:
+    if Chem.MolToSmiles(mol1, canonical=True) == Chem.MolToSmiles(
+        mol2,
+        canonical=True,
+    ):
         return True
-    elif fingerprint1 == fingerprint2:
-        return True
-    else:
-        return False
+
+    fingerprint1 = rdMolDescriptors.GetMorganFingerprintAsBitVect(
+        mol1,
+        radius=2,
+        nBits=1024,
+    )
+    fingerprint2 = rdMolDescriptors.GetMorganFingerprintAsBitVect(
+        mol2,
+        radius=2,
+        nBits=1024,
+    )
+    return fingerprint1 == fingerprint2
 
 
-def compute_fingerprint(smiles, radius=2, nBits=2048):
-    """Compute the fingerprint of a molecule
+def compute_fingerprint(
+    smiles: str,
+    radius: int = 2,
+    nBits: int = 2048,
+) -> list[int] | None:
+    """Compute a Morgan fingerprint for a molecule.
 
     Parameters
     ----------
     smiles : str
-        SMILES string of the molecule
+        SMILES string of the molecule.
     radius : int, optional
+        Fingerprint radius, by default ``2``.
     nBits : int, optional
-        Number of bits in the fingerprint
+        Number of bits in the fingerprint, by default ``2048``.
 
     Returns
     -------
-    list
-        Fingerprint of the molecule
+    list[int] | None
+        Fingerprint bit vector as integers, or ``None`` when the SMILES is
+        invalid.
     """
-    mol = Chem.MolFromSmiles(smiles)
-    if mol is None:
+
+    molecule = _parse_molecule(smiles)
+    if molecule is None:
         return None
-    fingerprint = AllChem.GetMorganFingerprintAsBitVect(mol,
-                                                        radius,
-                                                        nBits=nBits)
+
+    fingerprint = AllChem.GetMorganFingerprintAsBitVect(
+        molecule,
+        radius,
+        nBits=nBits,
+    )
     return list(fingerprint)
 
 
-def detect_seven_member_rings(smiles) -> bool:
-    """
-    Detects 7-member rings in a molecule given its SMILES string.
+def _has_ring_of_size(smiles: str, ring_size: int) -> bool:
+    """Check whether a molecule contains a ring of the requested size."""
+
+    molecule = _parse_molecule(smiles)
+    if molecule is None:
+        raise ValueError(_INVALID_SMILES_ERROR)
+
+    return any(len(ring) == ring_size for ring in molecule.GetRingInfo().AtomRings())
+
+
+def detect_seven_member_rings(smiles: str) -> bool:
+    """Detect whether a molecule contains a seven-membered ring.
 
     Parameters
     ----------
@@ -265,27 +291,19 @@ def detect_seven_member_rings(smiles) -> bool:
     Returns
     -------
     bool
-        True if 7-member rings are present, False otherwise.
+        ``True`` when at least one seven-membered ring is present.
+
+    Raises
+    ------
+    ValueError
+        If the SMILES string is invalid.
     """
-    mol = Chem.MolFromSmiles(smiles)
-    if mol is None:
-        raise ValueError("Invalid SMILES string provided.")
 
-    # Retrieve ring information as tuples of atom indices.
-    ring_info = mol.GetRingInfo()
-    atom_rings = ring_info.AtomRings()
-
-    # Filter rings by the number of atoms.
-    rings_7 = [ring for ring in atom_rings if len(ring) == 7]
-
-    if len(rings_7) > 0:
-        return True
-    return False
+    return _has_ring_of_size(smiles, ring_size=7)
 
 
-def detect_eight_member_rings(smiles) -> bool:
-    """
-    Detects 8-member rings in a molecule given its SMILES string.
+def detect_eight_member_rings(smiles: str) -> bool:
+    """Detect whether a molecule contains an eight-membered ring.
 
     Parameters
     ----------
@@ -295,19 +313,12 @@ def detect_eight_member_rings(smiles) -> bool:
     Returns
     -------
     bool
-        True if 8-member rings are present, False otherwise.
+        ``True`` when at least one eight-membered ring is present.
+
+    Raises
+    ------
+    ValueError
+        If the SMILES string is invalid.
     """
-    mol = Chem.MolFromSmiles(smiles)
-    if mol is None:
-        raise ValueError("Invalid SMILES string provided.")
 
-    # Retrieve ring information as tuples of atom indices.
-    ring_info = mol.GetRingInfo()
-    atom_rings = ring_info.AtomRings()
-
-    # Filter rings by the number of atoms.
-    rings_8 = [ring for ring in atom_rings if len(ring) == 8]
-
-    if len(rings_8) > 0:
-        return True
-    return False
+    return _has_ring_of_size(smiles, ring_size=8)
