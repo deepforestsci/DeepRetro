@@ -35,4 +35,5 @@ jobs:
           uv sync --project deepretro --extra docs
 
       - name: Build HTML docs
-        run: uv run --project deepretro --directory docs --no-sync sphinx-build -b html source _build/html -W --keep-going
+        working-directory: docs
+        run: uv run --project ../deepretro --no-sync sphinx-build -b html source _build/html -W --keep-going

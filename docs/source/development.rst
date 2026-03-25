@@ -14,7 +14,8 @@ Setup
 
 The ``deepretro`` package metadata is the source of truth for CI and local
 developer environments. The docs workflow installs the package with its
-``docs`` extra and builds documentation with ``uv run --project deepretro``.
+``docs`` extra and builds documentation from ``docs/`` with
+``uv run --project ../deepretro``.
 
 Project Structure
 -----------------
