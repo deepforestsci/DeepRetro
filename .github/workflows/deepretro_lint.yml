@@ -1,0 +1,53 @@
+name: deepretro lint & type check
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/deepretro_lint.yml"
+      - "deepretro/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/deepretro_lint.yml"
+      - "deepretro/**"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          python-version: "3.10"
+          enable-cache: true
+
+      - name: Run ruff check
+        run: |
+          uv run --with ruff ruff check deepretro \
+            --exclude 'deepretro/tests/**' \
+            --extend-per-file-ignores 'deepretro/data/loader.py:F401'
+
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          python-version: "3.10"
+          enable-cache: true
+
+      - name: Run ty check
+        run: |
+          uv run --project deepretro --with ty ty check deepretro \
+            --python-version 3.10 \
+            --ignore unresolved-import \
+            --ignore invalid-method-override \
+            --exclude 'deepretro/models/**' \
+            --exclude 'deepretro/tests/**'
