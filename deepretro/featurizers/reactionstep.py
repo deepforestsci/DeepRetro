@@ -39,8 +39,9 @@ class ReactionStepFeaturizer(Featurizer):
     (2, 4111)
     """
 
-    def __init__(self, radius: int = 2, size: int = 2048,
-                 use_domain_features: bool = True) -> None:
+    def __init__(
+        self, radius: int = 2, size: int = 2048, use_domain_features: bool = True
+    ) -> None:
         self.radius = radius
         self.size = size
         self.use_domain_features = use_domain_features
@@ -91,4 +92,3 @@ class ReactionStepFeaturizer(Featurizer):
             return np.concatenate(parts)
         except Exception:
             return np.full(self.feature_dim, np.nan)
-

@@ -153,11 +153,15 @@ def validity_check(
 
         for smiles in candidate_pathway:
             if not is_valid_smiles(smiles):
-                logger.warning("Invalid SMILES in pathway", molecule=molecule, smiles=smiles)
+                logger.warning(
+                    "Invalid SMILES in pathway", molecule=molecule, smiles=smiles
+                )
                 continue
 
             if are_molecules_same(molecule, smiles):
-                logger.warning("Molecule is same as target", molecule=molecule, smiles=smiles)
+                logger.warning(
+                    "Molecule is same as target", molecule=molecule, smiles=smiles
+                )
                 continue
 
             if substructure_matching(molecule, smiles):

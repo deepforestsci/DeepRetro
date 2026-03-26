@@ -76,7 +76,11 @@ def test_load_missing_model_dir(tmp_path):
 def test_evaluate_keys_and_scores(trained_clf, toy_dataset):
     scores = trained_clf.evaluate(toy_dataset)
     assert set(scores.keys()) == {
-        "roc_auc", "accuracy", "f1", "optimal_threshold", "optimal_f1",
+        "roc_auc",
+        "accuracy",
+        "f1",
+        "optimal_threshold",
+        "optimal_f1",
     }
     for key in ("roc_auc", "accuracy", "f1", "optimal_f1"):
         assert 0.0 <= scores[key] <= 1.0

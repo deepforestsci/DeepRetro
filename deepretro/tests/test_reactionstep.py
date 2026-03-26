@@ -18,6 +18,7 @@ INVALID_SMILES = "not_a_smiles!!!"
 
 # feature_dim property
 
+
 def test_feature_dim():
     feat = ReactionStepFeaturizer()
     assert feat.feature_dim == 2 * 2048 + NUM_DOMAIN_FEATURES
@@ -30,6 +31,7 @@ def test_feature_dim():
 
 
 # Single featurization (_featurize)
+
 
 def test_featurize_single_valid():
     for use_domain in (True, False):
@@ -57,6 +59,7 @@ def test_featurize_single_distinct_reactions():
 
 # Batch featurization (featurize)
 
+
 def test_featurize_batch_shape():
     feat = ReactionStepFeaturizer()
     X = feat.featurize([(ETHANOL, ETHANE_WATER)])
@@ -81,10 +84,11 @@ def test_featurize_batch_mixed_valid_invalid():
     X = feat.featurize(reactions)
     assert X.shape == (2, feat.feature_dim)
     assert not np.any(np.isnan(X[0]))  # valid row has no NaNs
-    assert np.all(np.isnan(X[1]))      # invalid row is all NaN
+    assert np.all(np.isnan(X[1]))  # invalid row is all NaN
 
 
 # Reproducibility
+
 
 def test_reproducibility():
     feat = ReactionStepFeaturizer()

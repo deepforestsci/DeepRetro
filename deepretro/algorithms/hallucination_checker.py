@@ -31,7 +31,7 @@ pos_map: dict[str, str] = {
     "6": "position 6",
     "ortho": "ortho",
     "meta": "meta",
-    "para": "para"
+    "para": "para",
 }
 
 
@@ -74,7 +74,7 @@ def hallucination_compare_molecules(
         "atom_count_consistent": False,
         "ring_size_changes": [],
         "substituent_position_changes": [],
-        "detected_issues": []
+        "detected_issues": [],
     }
 
     # Check if SMILES strings are valid
@@ -94,23 +94,19 @@ def hallucination_compare_molecules(
         results["valid_product"] = True
 
     # Get basic molecule properties
-    reactant_atoms = Counter(
-        [atom.GetSymbol() for atom in reactant_mol.GetAtoms()])
-    product_atoms = Counter(
-        [atom.GetSymbol() for atom in product_mol.GetAtoms()])
+    reactant_atoms = Counter([atom.GetSymbol() for atom in reactant_mol.GetAtoms()])
+    product_atoms = Counter([atom.GetSymbol() for atom in product_mol.GetAtoms()])
 
     # Check atom count consistency
-    for atom_symbol in set(
-            list(reactant_atoms.keys()) + list(product_atoms.keys())):
-        if reactant_atoms.get(atom_symbol,
-                              0) != product_atoms.get(atom_symbol, 0):
+    for atom_symbol in set(list(reactant_atoms.keys()) + list(product_atoms.keys())):
+        if reactant_atoms.get(atom_symbol, 0) != product_atoms.get(atom_symbol, 0):
             results["detected_issues"].append(
                 f"Atom count mismatch for {atom_symbol}: "
                 f"Reactant has {reactant_atoms.get(atom_symbol, 0)}, "
-                f"Product has {product_atoms.get(atom_symbol, 0)}")
+                f"Product has {product_atoms.get(atom_symbol, 0)}"
+            )
 
-    if not any("Atom count mismatch" in issue
-               for issue in results["detected_issues"]):
+    if not any("Atom count mismatch" in issue for issue in results["detected_issues"]):
         results["atom_count_consistent"] = True
 
     # Check for ring size changes
@@ -127,50 +123,45 @@ def hallucination_compare_molecules(
     if reactant_ring_sizes != product_ring_sizes:
         results["detected_issues"].append(
             f"Ring size change detected: Reactant rings {reactant_ring_sizes}, "
-            f"Product rings {product_ring_sizes}")
+            f"Product rings {product_ring_sizes}"
+        )
 
         # Report specific ring changes
         for r_size in reactant_ring_sizes:
-            if reactant_ring_sizes.count(r_size) > product_ring_sizes.count(
-                    r_size):
-                results["ring_size_changes"].append(
-                    f"{r_size}-membered ring removed")
+            if reactant_ring_sizes.count(r_size) > product_ring_sizes.count(r_size):
+                results["ring_size_changes"].append(f"{r_size}-membered ring removed")
 
         for p_size in product_ring_sizes:
-            if product_ring_sizes.count(p_size) > reactant_ring_sizes.count(
-                    p_size):
-                results["ring_size_changes"].append(
-                    f"{p_size}-membered ring added")
+            if product_ring_sizes.count(p_size) > reactant_ring_sizes.count(p_size):
+                results["ring_size_changes"].append(f"{p_size}-membered ring added")
 
     # Check for aromatic ring changes
-    reactant_aromatic_atoms = set([
-        atom.GetIdx() for atom in reactant_mol.GetAtoms()
-        if atom.GetIsAromatic()
-    ])
-    product_aromatic_atoms = set([
-        atom.GetIdx() for atom in product_mol.GetAtoms()
-        if atom.GetIsAromatic()
-    ])
+    reactant_aromatic_atoms = set(
+        [atom.GetIdx() for atom in reactant_mol.GetAtoms() if atom.GetIsAromatic()]
+    )
+    product_aromatic_atoms = set(
+        [atom.GetIdx() for atom in product_mol.GetAtoms() if atom.GetIsAromatic()]
+    )
 
     # Check if the number of aromatic atoms changed significantly
     if abs(len(reactant_aromatic_atoms) - len(product_aromatic_atoms)) > 2:
         results["detected_issues"].append(
             f"Significant change in aromaticity: Reactant has {len(reactant_aromatic_atoms)} "
-            f"aromatic atoms, Product has {len(product_aromatic_atoms)}")
+            f"aromatic atoms, Product has {len(product_aromatic_atoms)}"
+        )
 
     # Advanced check for substituent position changes on rings
     check_ring_substituent_positions(reactant_mol, product_mol, results)
 
     # Check for unnecessary bond formations
-    reactant_bonds = Counter(
-        [bond.GetBondType() for bond in reactant_mol.GetBonds()])
-    product_bonds = Counter(
-        [bond.GetBondType() for bond in product_mol.GetBonds()])
+    reactant_bonds = Counter([bond.GetBondType() for bond in reactant_mol.GetBonds()])
+    product_bonds = Counter([bond.GetBondType() for bond in product_mol.GetBonds()])
 
     if sum(reactant_bonds.values()) < sum(product_bonds.values()):
         results["detected_issues"].append(
             f"Possible unnecessary bonds formed: Reactant has {sum(reactant_bonds.values())} bonds, "
-            f"Product has {sum(product_bonds.values())} bonds")
+            f"Product has {sum(product_bonds.values())} bonds"
+        )
 
     return results
 
@@ -219,24 +210,26 @@ def check_ring_substituent_positions(
 
     # For each aromatic ring, identify and compare substituent patterns
     for r_idx, reactant_ring in enumerate(reactant_ring_info):
-        if not reactant_ring['is_aromatic']:
+        if not reactant_ring["is_aromatic"]:
             continue
 
         # Find a matching aromatic ring in the product
         matching_rings = [
-            p for p in product_ring_info if p['is_aromatic']
-            and p['size'] == reactant_ring['size'] and not p['matched']
+            p
+            for p in product_ring_info
+            if p["is_aromatic"]
+            and p["size"] == reactant_ring["size"]
+            and not p["matched"]
         ]
 
         if not matching_rings:
             continue
 
         product_ring = matching_rings[0]
-        product_ring['matched'] = True  # Mark this ring as matched
+        product_ring["matched"] = True  # Mark this ring as matched
 
         # Identify substituents and their positions for both rings
-        reactant_substituents = identify_substituents(reactant_mol,
-                                                      reactant_ring)
+        reactant_substituents = identify_substituents(reactant_mol, reactant_ring)
         product_substituents = identify_substituents(product_mol, product_ring)
 
         # Create signature of each substituent
@@ -256,10 +249,9 @@ def check_ring_substituent_positions(
             product_sig[sig].append(subst)
 
         # Check for position changes of similar substituents
-        for sig in set(reactant_sig.keys()).intersection(
-                set(product_sig.keys())):
-            r_positions = [pos_map[s['position']] for s in reactant_sig[sig]]
-            p_positions = [pos_map[s['position']] for s in product_sig[sig]]
+        for sig in set(reactant_sig.keys()).intersection(set(product_sig.keys())):
+            r_positions = [pos_map[s["position"]] for s in reactant_sig[sig]]
+            p_positions = [pos_map[s["position"]] for s in product_sig[sig]]
 
             # Sort positions for easier comparison
             r_positions.sort()
@@ -272,14 +264,13 @@ def check_ring_substituent_positions(
                     f"Substituent position change detected: {subst_name} moved from "
                     f"{', '.join(r_positions)} to {', '.join(p_positions)} position(s)"
                 )
-                results["substituent_position_changes"].append({
-                    "substituent":
-                    subst_name,
-                    "from_positions":
-                    r_positions,
-                    "to_positions":
-                    p_positions
-                })
+                results["substituent_position_changes"].append(
+                    {
+                        "substituent": subst_name,
+                        "from_positions": r_positions,
+                        "to_positions": p_positions,
+                    }
+                )
 
 
 def identify_ring_systems(mol: Chem.Mol) -> list[dict[str, Any]]:
@@ -320,17 +311,18 @@ def identify_ring_systems(mol: Chem.Mol) -> list[dict[str, Any]]:
     for idx, ring in enumerate(ring_info):
         ring_atoms = list(ring)
         is_aromatic = all(
-            mol.GetAtomWithIdx(atom_idx).GetIsAromatic()
-            for atom_idx in ring_atoms)
+            mol.GetAtomWithIdx(atom_idx).GetIsAromatic() for atom_idx in ring_atoms
+        )
 
-        rings.append({
-            'id': idx,
-            'atoms': ring_atoms,
-            'size': len(ring_atoms),
-            'is_aromatic': is_aromatic,
-            'matched':
-            False  # Used later for matching rings between reactant and product
-        })
+        rings.append(
+            {
+                "id": idx,
+                "atoms": ring_atoms,
+                "size": len(ring_atoms),
+                "is_aromatic": is_aromatic,
+                "matched": False,  # Used later for matching rings between reactant and product
+            }
+        )
 
     return rings
 
@@ -371,7 +363,7 @@ def identify_substituents(
     True
     """
     substituents = []
-    ring_atoms = set(ring_info['atoms'])
+    ring_atoms = set(ring_info["atoms"])
 
     # Get connections from ring atoms to non-ring atoms
     for ring_atom_idx in ring_atoms:
@@ -385,18 +377,21 @@ def identify_substituents(
                 continue
 
             # Determine the position (ortho, meta, para) relative to other substituents
-            position = determine_ring_position(mol, ring_atom_idx, ring_atoms,
-                                               ring_info['size'])
+            position = determine_ring_position(
+                mol, ring_atom_idx, ring_atoms, ring_info["size"]
+            )
 
             # Find the entire substituent group connected to this point
             subst_atoms = get_connected_atoms(mol, neighbor_idx, ring_atoms)
 
-            substituents.append({
-                'attachment_point': ring_atom_idx,
-                'first_atom': neighbor_idx,
-                'atoms': subst_atoms,
-                'position': position
-            })
+            substituents.append(
+                {
+                    "attachment_point": ring_atom_idx,
+                    "first_atom": neighbor_idx,
+                    "atoms": subst_atoms,
+                    "position": position,
+                }
+            )
 
     return substituents
 
@@ -462,9 +457,9 @@ def determine_ring_position(
             # Use shortest path through the ring
             path = rdmolops.GetShortestPath(mol, atom_idx, other)
             if path:
-                path_len = len(
-                    path
-                ) - 1  # Subtract 1 because path includes both endpoints
+                path_len = (
+                    len(path) - 1
+                )  # Subtract 1 because path includes both endpoints
 
                 # Convert distance to position name
                 if path_len == 1:
@@ -582,7 +577,7 @@ def get_substituent_signature(
     'O1'
     """
     # Create a fragment of just the substituent
-    atoms = substituent['atoms']
+    atoms = substituent["atoms"]
     if not atoms:
         return ""
 
@@ -595,8 +590,9 @@ def get_substituent_signature(
 
     # Count elements as a basic signature
     elem_counts = Counter(atom_symbols)
-    signature = ".".join(f"{elem}{count}"
-                         for elem, count in sorted(elem_counts.items()))
+    signature = ".".join(
+        f"{elem}{count}" for elem, count in sorted(elem_counts.items())
+    )
 
     # For more complex substituents, we could use a more sophisticated approach
     # like a Morgan fingerprint or a proper SMILES fragment
@@ -646,7 +642,7 @@ def get_friendly_substituent_name(signature: str) -> str:
         "C1.N1": "Aminomethyl",
         "N1.O1": "Nitro",
         "N1.O2": "Nitro",
-        "S1": "Thiol"
+        "S1": "Thiol",
     }
 
     return common_substituents.get(signature, f"Group ({signature})")
@@ -698,7 +694,8 @@ def calculate_hallucination_score(
     """
     # Get the detailed comparison results first
     comparison_results = hallucination_compare_molecules(
-        reactant_smiles, product_smiles)
+        reactant_smiles, product_smiles
+    )
 
     # Initialize the score at 100 (no hallucinations)
     base_score = 100
@@ -706,13 +703,14 @@ def calculate_hallucination_score(
     penalty_descriptions = []
 
     # Check if molecules are valid - severe penalty if not
-    if not comparison_results["valid_reactant"] or not comparison_results[
-            "valid_product"]:
+    if (
+        not comparison_results["valid_reactant"]
+        or not comparison_results["valid_product"]
+    ):
         return {
             "score": 0,
             "severity": "critical",
-            "message":
-            "Invalid SMILES string detected - cannot assess transformation",
+            "message": "Invalid SMILES string detected - cannot assess transformation",
         }
 
     # Apply penalties based on detected issues
@@ -724,9 +722,9 @@ def calculate_hallucination_score(
         for issue in comparison_results["detected_issues"]:
             if "Atom count mismatch" in issue:
                 # Extract the difference in atom counts
-                parts = issue.split(':')[1].strip()
-                reactant_count = int(parts.split(',')[0].split()[-1])
-                product_count = int(parts.split(',')[1].split()[-1])
+                parts = issue.split(":")[1].strip()
+                reactant_count = int(parts.split(",")[0].split()[-1])
+                product_count = int(parts.split(",")[1].split()[-1])
                 difference = abs(reactant_count - product_count)
 
                 # Penalty: 5 points per atom mismatch
@@ -734,7 +732,8 @@ def calculate_hallucination_score(
                 atom_mismatch_penalties.append(penalty)
 
                 penalty_descriptions.append(
-                    f"Atom count inconsistency: -{penalty} points")
+                    f"Atom count inconsistency: -{penalty} points"
+                )
 
         # Take the maximum penalty from atom mismatches
         if atom_mismatch_penalties:
@@ -748,20 +747,19 @@ def calculate_hallucination_score(
         # Penalty: 25 points per ring change
         ring_penalty = min(25 * num_ring_changes, 50)
         penalty_factors.append(ring_penalty)
-        penalty_descriptions.append(
-            f"Ring structure changes: -{ring_penalty} points")
+        penalty_descriptions.append(f"Ring structure changes: -{ring_penalty} points")
 
     # 3. Substituent position changes - Usually suspicious
     if comparison_results["substituent_position_changes"]:
         # Check how many substituent position changes
-        num_position_changes = len(
-            comparison_results["substituent_position_changes"])
+        num_position_changes = len(comparison_results["substituent_position_changes"])
 
         # Penalty: 60 points per substituent position change
         position_penalty = min(60 * num_position_changes, 100)
         penalty_factors.append(position_penalty)
         penalty_descriptions.append(
-            f"Substituent position changes: -{position_penalty} points")
+            f"Substituent position changes: -{position_penalty} points"
+        )
 
     # 4. Aromaticity changes - Significant structural change
     for issue in comparison_results["detected_issues"]:
@@ -776,16 +774,17 @@ def calculate_hallucination_score(
     for issue in comparison_results["detected_issues"]:
         if "Possible unnecessary bonds formed" in issue:
             # Extract number of additional bonds
-            parts = issue.split(':')[1].strip()
-            reactant_bonds = int(parts.split(',')[0].split()[-2])
-            product_bonds = int(parts.split(',')[1].split()[-2])
+            parts = issue.split(":")[1].strip()
+            reactant_bonds = int(parts.split(",")[0].split()[-2])
+            product_bonds = int(parts.split(",")[1].split()[-2])
             additional_bonds = product_bonds - reactant_bonds
 
             # Penalty: 5 points per additional bond
             bond_penalty = min(5 * additional_bonds, 30)
             penalty_factors.append(bond_penalty)
             penalty_descriptions.append(
-                f"Unnecessary bond formations: -{bond_penalty} points")
+                f"Unnecessary bond formations: -{bond_penalty} points"
+            )
 
     # Calculate the final score by applying all penalties
     final_score = base_score
@@ -850,4 +849,3 @@ def interpret_score(score: int) -> str:
         return "Severe hallucination with critical structural inconsistencies"
     else:
         return "Complete hallucination or invalid transformation"
-

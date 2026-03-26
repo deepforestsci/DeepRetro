@@ -6,4 +6,3 @@ from deepretro.models.hallucination_classifier import (
 )
 
 __all__ = ["HallucinationClassifier", "predict_single_reaction"]
-

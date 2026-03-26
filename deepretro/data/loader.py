@@ -20,6 +20,7 @@ from deepchem.splits import SingletaskStratifiedSplitter
 
 from deepretro.featurizers import ReactionStepFeaturizer
 
+
 class ReactionDataLoader(DataLoader):
     """Load a two-column reaction CSV into a DeepChem ``DiskDataset``.
 
@@ -193,14 +194,11 @@ class ReactionDataLoader(DataLoader):
 
                 yield X, y, w, ids
 
-        dataset = DiskDataset.create_dataset(
-            shard_generator(), data_dir, self.tasks
-        )
+        dataset = DiskDataset.create_dataset(shard_generator(), data_dir, self.tasks)
 
         if total_dropped > 0:
             warnings.warn(
-                f"Dropped {total_dropped} rows with NaN features "
-                f"(invalid SMILES)."
+                f"Dropped {total_dropped} rows with NaN features (invalid SMILES)."
             )
 
         return dataset

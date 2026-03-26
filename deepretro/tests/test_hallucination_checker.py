@@ -24,6 +24,7 @@ INVALID_SMILES = "not_a_smiles!!!"
 
 # hallucination_compare_molecules
 
+
 def test_compare_valid_molecules_returns_both_valid():
     res = hallucination_compare_molecules(BENZENE, METHOXYBENZENE)
     assert res["valid_reactant"] is True
@@ -69,6 +70,7 @@ def test_compare_real_reaction_has_issues():
 
 # calculate_hallucination_score
 
+
 def test_score_returns_dict_with_required_keys():
     result = calculate_hallucination_score(BENZENE, METHOXYBENZENE)
     assert "score" in result
@@ -111,6 +113,7 @@ def test_score_severity_values():
 
 # interpret_score
 
+
 def test_interpret_score_high():
     msg = interpret_score(95)
     assert "reliable" in msg.lower()
@@ -130,4 +133,3 @@ def test_interpret_score_boundary():
 def test_interpret_score_mid():
     msg = interpret_score(50)
     assert "questionable" in msg.lower()
-
