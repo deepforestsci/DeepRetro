@@ -27,7 +27,7 @@ jobs:
 
       - name: Run ruff check
         run: |
-          uv run --with ruff ruff check deepretro \
+          uvx ruff check deepretro \
             --exclude 'deepretro/tests/**' \
             --extend-per-file-ignores 'deepretro/data/loader.py:F401'
 
@@ -64,7 +64,7 @@ jobs:
           fi
 
           printf 'Checking formatting for:\n%s\n' "${files[@]}"
-          uv run --with ruff ruff format --check "${files[@]}"
+          uvx ruff format --check "${files[@]}"
 
   type-check:
     runs-on: ubuntu-latest
