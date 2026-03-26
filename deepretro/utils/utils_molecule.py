@@ -42,6 +42,13 @@ def is_valid_smiles(smiles: str) -> bool:
     bool
         ``True`` when the SMILES string parses to an RDKit molecule,
         otherwise ``False``.
+
+    Examples
+    --------
+    >>> is_valid_smiles("CCO")
+    True
+    >>> is_valid_smiles("not_a_smiles")
+    False
     """
 
     return _parse_molecule(smiles) is not None
@@ -61,6 +68,13 @@ def substructure_matching(target_smiles: str, query_smiles: str) -> int:
     -------
     int
         ``1`` if the query is a substructure of the target, otherwise ``0``.
+
+    Examples
+    --------
+    >>> substructure_matching("CCc1ccccc1", "c1ccccc1")
+    1
+    >>> substructure_matching("CCO", "c1ccccc1")
+    0
     """
 
     target_molecule = _parse_molecule(
@@ -102,6 +116,25 @@ def validity_check(
         Valid precursor pathways, explanations, and confidence scores. A
         pathway is kept only when every precursor is valid, is not identical
         to the target molecule, and is not a substructure of the target.
+
+    Examples
+    --------
+    >>> original_logger = validity_check.__globals__["logger"]
+    >>> class _SilentLogger:
+    ...     def info(self, *args, **kwargs):
+    ...         pass
+    ...
+    ...     def warning(self, *args, **kwargs):
+    ...         pass
+    >>> validity_check.__globals__["logger"] = _SilentLogger()
+    >>> validity_check(
+    ...     molecule="c1ccccc1",
+    ...     res_molecules=[["CCO", "CCCl"]],
+    ...     res_explanations=["valid pathway"],
+    ...     res_confidence=[0.9],
+    ... )
+    ([['CCO', 'CCCl']], ['valid pathway'], [0.9])
+    >>> validity_check.__globals__["logger"] = original_logger
     """
 
     valid_pathways: list[list[str]] = []
@@ -158,6 +191,13 @@ def calc_mol_wt(mol: str) -> float:
     -------
     float
         Exact molecular weight. Returns ``0.0`` for invalid SMILES.
+
+    Examples
+    --------
+    >>> round(calc_mol_wt("CCO"), 3)
+    46.042
+    >>> round(calc_mol_wt("C"), 3)
+    16.031
     """
 
     molecule = _parse_molecule(mol)
@@ -180,6 +220,13 @@ def calc_chemical_formula(mol: str) -> str:
     -------
     str
         Molecular formula. Returns ``"N/A"`` for invalid SMILES.
+
+    Examples
+    --------
+    >>> calc_chemical_formula("C")
+    'CH4'
+    >>> calc_chemical_formula("CCO")
+    'C2H6O'
     """
 
     molecule = _parse_molecule(mol)
@@ -209,6 +256,13 @@ def are_molecules_same(smiles1: str, smiles2: str) -> bool:
     ------
     ValueError
         If either SMILES string is invalid.
+
+    Examples
+    --------
+    >>> are_molecules_same("CCO", "OCC")
+    True
+    >>> are_molecules_same("CCO", "c1ccccc1")
+    False
     """
 
     mol1 = _parse_molecule(smiles1)
@@ -256,6 +310,14 @@ def compute_fingerprint(
     list[int] | None
         Fingerprint bit vector as integers, or ``None`` when the SMILES is
         invalid.
+
+    Examples
+    --------
+    >>> fingerprint = compute_fingerprint("CCO", radius=2, nBits=16)
+    >>> len(fingerprint)
+    16
+    >>> compute_fingerprint("not_a_smiles") is None
+    True
     """
 
     molecule = _parse_molecule(smiles)
@@ -297,6 +359,13 @@ def detect_seven_member_rings(smiles: str) -> bool:
     ------
     ValueError
         If the SMILES string is invalid.
+
+    Examples
+    --------
+    >>> detect_seven_member_rings("C1CCCCCC1")
+    True
+    >>> detect_seven_member_rings("C1CCCCC1")
+    False
     """
 
     return _has_ring_of_size(smiles, ring_size=7)
@@ -319,6 +388,13 @@ def detect_eight_member_rings(smiles: str) -> bool:
     ------
     ValueError
         If the SMILES string is invalid.
+
+    Examples
+    --------
+    >>> detect_eight_member_rings("C1CCCCCCC1")
+    True
+    >>> detect_eight_member_rings("C1CCCCCC1")
+    False
     """
 
     return _has_ring_of_size(smiles, ring_size=8)
