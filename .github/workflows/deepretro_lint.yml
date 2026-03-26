@@ -23,13 +23,48 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v4
         with:
-          python-version: "3.10"
+          python-version: "3.12"
 
       - name: Run ruff check
         run: |
           uv run --with ruff ruff check deepretro \
             --exclude 'deepretro/tests/**' \
             --extend-per-file-ignores 'deepretro/data/loader.py:F401'
+
+  format-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          python-version: "3.12"
+
+      - name: Run ruff format check on changed files
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}" --depth=1
+            diff_range="origin/${{ github.base_ref }}...HEAD"
+          else
+            diff_range="${{ github.event.before }}..${{ github.sha }}"
+          fi
+
+          mapfile -t files < <(
+            git diff --name-only "$diff_range" \
+              | rg '^deepretro/.*\.py$' \
+              | rg -v '^deepretro/tests/'
+          )
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No non-test Python files changed under deepretro/"
+            exit 0
+          fi
+
+          printf 'Checking formatting for:\n%s\n' "${files[@]}"
+          uv run --with ruff ruff format --check "${files[@]}"
 
   type-check:
     runs-on: ubuntu-latest
@@ -39,12 +74,12 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v4
         with:
-          python-version: "3.10"
+          python-version: "3.12"
 
       - name: Run ty check
         run: |
           uv run --project deepretro --with ty ty check deepretro \
-            --python-version 3.10 \
+            --python-version 3.12 \
             --ignore unresolved-import \
             --ignore invalid-method-override \
             --exclude 'deepretro/models/**' \
