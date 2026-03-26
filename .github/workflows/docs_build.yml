@@ -32,7 +32,12 @@ jobs:
 
       - name: Sync docs environment
         run: |
+<<<<<<< docs-build-fix
           uv sync --project deepretro --extra docs
+=======
+          python -m pip install --upgrade pip
+          pip install sphinx sphinx-rtd-theme myst-parser structlog diskcache rdkit numpy
+>>>>>>> main
 
       - name: Build HTML docs
         working-directory: docs

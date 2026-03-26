@@ -3,10 +3,11 @@ deepretro.utils
 
 Utility layer for domain features and template-based retrosynthesis integration.
 
-This module group supports two major workflows:
+This module group supports three major workflows:
 
 - Feature engineering utilities for ML-ready reaction-step vectors.
 - AiZynthFinder orchestration helpers for template route generation.
+- Molecule utilities for SMILES validation, substructure matching, and pathway filtering (``deepretro.utils.utils_molecule``).
 
 Utility Overview
 ----------------
@@ -59,6 +60,7 @@ Submodules
 
    deepretro.utils.az
    deepretro.utils.metrics
+   deepretro.utils.utils_molecule
 
 API Reference
 -------------
