@@ -219,14 +219,16 @@ class HallucinationClassifier(GBDTModel):
 
         Returns label-based metrics, plus probability-based ROC-AUC
         and the optimal threshold.  Updates ``self.threshold`` to the
-        optimal value and auto-saves model + metadata.
+        optimal value and auto-saves the model state.
 
         Parameters
         ----------
         test_dataset : Dataset
             Held-out test data.
         metrics : list of dc.metrics.Metric, optional
-            Label-based metrics to compute.  Defaults to accuracy and F1.
+            Label-based metrics to compute.  If ``None``, defaults to:
+            ``[Metric(accuracy_score, name="accuracy"),``
+            ``Metric(f1_score, name="f1")]``.
             Any ``sklearn.metrics`` function that accepts ``(y_true, y_pred)``
             can be wrapped with ``dc.metrics.Metric``, e.g.
             ``Metric(precision_score, name="precision")``.
@@ -234,8 +236,9 @@ class HallucinationClassifier(GBDTModel):
         Returns
         -------
         scores : dict
-            Contains each metric name, plus ``roc_auc``,
-            ``optimal_threshold``, and ``optimal_f1``.
+            Contains each requested metric name (or ``accuracy``/``f1`` when
+            defaults are used), plus ``roc_auc``, ``optimal_threshold``,
+            and ``optimal_f1``.
 
         Examples
         --------
