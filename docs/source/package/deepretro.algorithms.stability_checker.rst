@@ -58,8 +58,9 @@ Checks performed
    ring sharing atoms with a 3- or 4-membered hetero ring creates
    significant ring strain.
 
-8. **Physicochemical outliers** — extreme logP (|logP| > 10) or too
-   many rotatable bonds (> 15) each incur a small penalty.
+8. **Physicochemical outliers** — extreme ``logP`` values with
+   ``abs(logP) > 10`` or too many rotatable bonds (``> 15``) each
+   incur a small penalty.
 
 9. **Aromatic bonus** — aromatic rings stabilise a molecule, so each
    one adds a small bonus (capped at +15 total).

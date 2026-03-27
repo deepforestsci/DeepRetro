@@ -139,7 +139,7 @@ LLM Models
    providing both fast responses and deep analytical thinking.
 
 AiZynthFinder Models
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 .. list-table::
    :widths: 25 15 60

@@ -35,7 +35,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
-    'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
@@ -77,8 +76,6 @@ html_theme_options = {
     'sticky_navigation': True,
     'includehidden': True,
     'logo_only': False,
-    'display_version': True,
-    'sidebar_width': '300px',
     'body_max_width': '1200px',
 }
 
@@ -172,13 +169,16 @@ napoleon_use_rtype = True
 napoleon_use_keyword = True
 
 # Intersphinx mapping
-intersphinx_mapping = {
-    'python': ('https://docs.python.org/3/', None),
-    'rdkit': ('https://www.rdkit.org/docs/', None),
-    'flask': ('https://flask.palletsprojects.com/', None),
-    'numpy': ('https://numpy.org/doc/stable/', None),
-    'pandas': ('https://pandas.pydata.org/docs/', None),
-}
+autodoc_mock_imports = [
+    'aizynthfinder',
+    'deepchem',
+    'dotenv',
+    'jax',
+    'PIL',
+    'rootutils',
+    'tensorflow',
+    'torch',
+]
 
 # Todo settings
 todo_include_todos = True

@@ -24,6 +24,12 @@ dev = [
     "pytest",
     "pytest-cov",
 ]
+docs = [
+    "sphinx>=8.0",
+    "sphinx-rtd-theme>=3.0",
+    "sphinx-autodoc-typehints>=3.0",
+    "myst-parser>=4.0",
+]
 
 [project.urls]
 Repository = "https://github.com/deepforestsci/DeepRetro"
