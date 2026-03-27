@@ -20,4 +20,6 @@ __all__ = [
     "extract_domain_features_single",
     "NUM_DOMAIN_FEATURES",
     "find_optimal_threshold",
+    "autosolve",
+    "autosolve_async",
 ]
