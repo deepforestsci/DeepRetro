@@ -28,10 +28,7 @@ def test_chosen_threshold_maximises_f1():
 def test_imbalanced_data_threshold_below_05():
     """With rare positives, optimal threshold should shift below 0.5."""
     y = np.array([0] * 90 + [1] * 10)
-    proba = np.array(
-        [0.1] * 85 + [0.4] * 5
-        + [0.3] * 3 + [0.45] * 4 + [0.9] * 3
-    )
+    proba = np.array([0.1] * 85 + [0.4] * 5 + [0.3] * 3 + [0.45] * 4 + [0.9] * 3)
     thr, _ = find_optimal_threshold(y, proba)
     assert thr < 0.5
 

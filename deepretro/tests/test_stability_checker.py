@@ -1,7 +1,10 @@
 """Tests for deepretro.algorithms.stability_checker."""
 
 import unittest
-from deepretro.algorithms.stability_checker import check_molecule_stability, is_valid_smiles
+from deepretro.algorithms.stability_checker import (
+    check_molecule_stability,
+    is_valid_smiles,
+)
 
 
 class TestIsValidSmiles(unittest.TestCase):
@@ -13,7 +16,6 @@ class TestIsValidSmiles(unittest.TestCase):
 
 
 class TestStabilityChecker(unittest.TestCase):
-
     def test_invalid_smiles(self):
         res = check_molecule_stability("bad")
         self.assertFalse(res["valid_structure"])

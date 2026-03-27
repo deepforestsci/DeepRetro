@@ -57,8 +57,7 @@ def az_models_dir(tmp_path_factory):
 def az_module():
     """Load the az module from source."""
     sys.modules.pop(AZ_MODULE_NAME, None)
-    spec = importlib.util.spec_from_file_location(AZ_MODULE_NAME,
-                                                  AZ_MODULE_PATH)
+    spec = importlib.util.spec_from_file_location(AZ_MODULE_NAME, AZ_MODULE_PATH)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     sys.modules[AZ_MODULE_NAME] = module
@@ -82,8 +81,7 @@ def _get_run_az_impl(az_module):
 
 def _get_run_az_with_img_impl(az_module):
     """Get the underlying run_az_with_img implementation (bypassing cache)."""
-    return getattr(az_module.run_az_with_img, "__wrapped__",
-                   az_module.run_az_with_img)
+    return getattr(az_module.run_az_with_img, "__wrapped__", az_module.run_az_with_img)
 
 
 @pytest.mark.parametrize(
@@ -124,19 +122,16 @@ def test_run_az_uses_fallback_config_when_model_missing(az_module_with_models):
     assert isinstance(routes, list)
 
 
-def test_run_az_raises_if_no_config_available(tmp_path, monkeypatch,
-                                              az_module):
+def test_run_az_raises_if_no_config_available(tmp_path, monkeypatch, az_module):
     """Test run_az raises FileNotFoundError when no config exists."""
     missing_models_root = tmp_path / "models"
     missing_fallback = tmp_path / "missing.yml"
     monkeypatch.setattr(az_module, "AZ_MODELS_PATH", str(missing_models_root))
-    monkeypatch.setattr(az_module, "AZ_MODEL_CONFIG_PATH",
-                        str(missing_fallback))
+    monkeypatch.setattr(az_module, "AZ_MODEL_CONFIG_PATH", str(missing_fallback))
     monkeypatch.setattr(az_module, "BASIC_MOLECULES", [])
 
     run_az = _get_run_az_impl(az_module)
-    with pytest.raises(FileNotFoundError,
-                       match=re.escape(str(missing_fallback))):
+    with pytest.raises(FileNotFoundError, match=re.escape(str(missing_fallback))):
         run_az("CCCCC", az_model="MISSING_MODEL")
 
 
@@ -145,13 +140,15 @@ def test_run_az_short_circuits_for_feedstock_smiles(az_module_with_models):
     run_az = _get_run_az_impl(az_module_with_models)
     status, routes = run_az("CCO", az_model="USPTO")
     assert status is True
-    assert routes == [{
-        "type": "mol",
-        "hide": False,
-        "smiles": "CCO",
-        "is_chemical": True,
-        "in_stock": True,
-    }]
+    assert routes == [
+        {
+            "type": "mol",
+            "hide": False,
+            "smiles": "CCO",
+            "is_chemical": True,
+            "in_stock": True,
+        }
+    ]
 
 
 @pytest.mark.slow
@@ -166,17 +163,18 @@ def test_run_az_with_img_returns_valid_result(az_module_with_models):
         assert isinstance(images, (list, tuple))
 
 
-def test_run_az_with_img_short_circuits_for_basic_molecules(
-        az_module_with_models):
+def test_run_az_with_img_short_circuits_for_basic_molecules(az_module_with_models):
     """Test run_az_with_img returns early for basic molecules."""
     run_az_with_img = _get_run_az_with_img_impl(az_module_with_models)
     status, routes, images = run_az_with_img("CCO")
     assert status is True
-    assert routes == [{
-        "type": "mol",
-        "hide": False,
-        "smiles": "CCO",
-        "is_chemical": True,
-        "in_stock": True,
-    }]
+    assert routes == [
+        {
+            "type": "mol",
+            "hide": False,
+            "smiles": "CCO",
+            "is_chemical": True,
+            "in_stock": True,
+        }
+    ]
     assert images is None

@@ -31,8 +31,7 @@ class TestIsValidSmiles:
             ("CCOC(=O)C", True),  # ethyl acetate
         ],
     )
-    def test_valid_smiles_returns_true(self, smiles: str,
-                                       expected: bool) -> None:
+    def test_valid_smiles_returns_true(self, smiles: str, expected: bool) -> None:
         assert utils_molecule.is_valid_smiles(smiles) is expected
 
     @pytest.mark.parametrize(
@@ -141,9 +140,7 @@ class TestComputeFingerprint:
         assert all(b in (0, 1) for b in result)
 
     def test_custom_radius_and_nbits(self) -> None:
-        result = utils_molecule.compute_fingerprint(ETHANOL,
-                                                    radius=3,
-                                                    nBits=1024)
+        result = utils_molecule.compute_fingerprint(ETHANOL, radius=3, nBits=1024)
         assert isinstance(result, list)
         assert len(result) == 1024
 
@@ -161,7 +158,8 @@ class TestValidityCheck:
         res_explanations = ["test explanation"]
         res_confidence = [0.8]
         pathways, explanations, confidence = utils_molecule.validity_check(
-            molecule, res_molecules, res_explanations, res_confidence)
+            molecule, res_molecules, res_explanations, res_confidence
+        )
         assert pathways == [["CC(=O)O"]]
         assert len(explanations) == len(pathways)
         assert len(confidence) == len(pathways)
@@ -172,7 +170,8 @@ class TestValidityCheck:
         res_explanations = ["bad pathway"]
         res_confidence = [0.5]
         pathways, explanations, confidence = utils_molecule.validity_check(
-            molecule, res_molecules, res_explanations, res_confidence)
+            molecule, res_molecules, res_explanations, res_confidence
+        )
         assert len(pathways) == 0
         assert len(explanations) == 0
         assert len(confidence) == 0
@@ -183,7 +182,8 @@ class TestValidityCheck:
         res_explanations = ["same molecule"]
         res_confidence = [0.9]
         pathways, explanations, confidence = utils_molecule.validity_check(
-            molecule, res_molecules, res_explanations, res_confidence)
+            molecule, res_molecules, res_explanations, res_confidence
+        )
         assert len(pathways) == 0
         assert explanations == []
         assert confidence == []
@@ -194,19 +194,20 @@ class TestValidityCheck:
         res_explanations = ["ethyl fragment"]
         res_confidence = [0.6]
         pathways, explanations, confidence = utils_molecule.validity_check(
-            molecule, res_molecules, res_explanations, res_confidence)
+            molecule, res_molecules, res_explanations, res_confidence
+        )
         assert pathways == []
         assert explanations == []
         assert confidence == []
 
     def test_single_smiles_string_instead_of_list(self) -> None:
         molecule = BENZENE
-        res_molecules = ["CC(=O)O"
-                         ]  # acetic acid - valid, not same, not substructure
+        res_molecules = ["CC(=O)O"]  # acetic acid - valid, not same, not substructure
         res_explanations = ["test"]
         res_confidence = [0.7]
         pathways, explanations, confidence = utils_molecule.validity_check(
-            molecule, res_molecules, res_explanations, res_confidence)
+            molecule, res_molecules, res_explanations, res_confidence
+        )
         assert len(pathways) == 1
         assert pathways[0] == ["CC(=O)O"]
         assert explanations[0] == "test"

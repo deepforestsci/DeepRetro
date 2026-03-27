@@ -85,6 +85,7 @@ from typing import Any
 
 # Helpers
 
+
 def is_valid_smiles(smiles: str) -> bool:
     """Check whether a SMILES string can be parsed by RDKit.
 
@@ -116,10 +117,11 @@ def is_valid_smiles(smiles: str) -> bool:
 
 _ANTI_AROMATIC_PATTERNS: list[tuple[Chem.Mol | None, str]] = [
     (Chem.MolFromSmarts("c1ccc1"), "cyclobutadiene-like (anti-aromatic)"),
-    (Chem.MolFromSmarts("C1=CC=CC=CC=C1"),
-     "cyclooctatetraene-like (potential anti-aromatic)"),
-    (Chem.MolFromSmarts("c1cc2cccc2c1"),
-     "pentalene-like (potential anti-aromatic)"),
+    (
+        Chem.MolFromSmarts("C1=CC=CC=CC=C1"),
+        "cyclooctatetraene-like (potential anti-aromatic)",
+    ),
+    (Chem.MolFromSmarts("c1cc2cccc2c1"), "pentalene-like (potential anti-aromatic)"),
 ]
 
 _SP2_CARBOCATION = Chem.MolFromSmarts("[C+;X3]")
@@ -138,6 +140,7 @@ _RING4_CARBENE = Chem.MolFromSmarts("[C;X2;H0;+0]1[C,N,O][C,N,O][C,N,O]1")
 _CYCLOPENTANE = Chem.MolFromSmarts("C1CCCC1")
 
 # Core
+
 
 def check_molecule_stability(smiles: str) -> dict[str, Any]:
     """Assess the stability of a molecule from its SMILES string.
@@ -258,16 +261,17 @@ def check_molecule_stability(smiles: str) -> dict[str, Any]:
     # strained small rings
     for ring in atom_rings:
         if len(ring) < 3:
-            results["issues"].append(
-                f"Highly strained ring of size {len(ring)}")
+            results["issues"].append(f"Highly strained ring of size {len(ring)}")
         elif len(ring) == 3 and any(
-                mol.GetAtomWithIdx(i).GetSymbol() != "C" for i in ring):
+            mol.GetAtomWithIdx(i).GetSymbol() != "C" for i in ring
+        ):
             results["issues"].append(
-                "Three-membered heterocycle (potentially unstable)")
+                "Three-membered heterocycle (potentially unstable)"
+            )
         elif len(ring) == 4 and any(
-                mol.GetAtomWithIdx(i).GetSymbol() != "C" for i in ring):
-            results["issues"].append(
-                "Four-membered heterocycle (potentially unstable)")
+            mol.GetAtomWithIdx(i).GetSymbol() != "C" for i in ring
+        ):
+            results["issues"].append("Four-membered heterocycle (potentially unstable)")
 
     # anti-aromatic motifs
     for patt, name in _ANTI_AROMATIC_PATTERNS:
@@ -289,7 +293,8 @@ def check_molecule_stability(smiles: str) -> dict[str, Any]:
             if pi_electrons > 0 and pi_electrons % 4 == 0:
                 results["issues"].append(
                     f"{len(ring)}-membered ring with {pi_electrons} "
-                    f"\u03c0 electrons (potential anti-aromatic)")
+                    f"\u03c0 electrons (potential anti-aromatic)"
+                )
 
     # fused small rings
     small_rings = [set(r) for r in atom_rings if len(r) <= 4]
@@ -301,35 +306,36 @@ def check_molecule_stability(smiles: str) -> dict[str, Any]:
                 results["issues"].append(
                     f"Fused {len(small_rings[i])} and "
                     f"{len(small_rings[j])}-membered rings "
-                    f"(highly strained system)")
+                    f"(highly strained system)"
+                )
 
     if fused_small_rings_detected:
         results["issues"].append(
             "WARNING: Fused small rings create highly strained "
-            "and potentially explosive compounds")
+            "and potentially explosive compounds"
+        )
 
-    # large heterocycles 
+    # large heterocycles
     for ring in atom_rings:
         if len(ring) >= 7:
             ring_atoms_obj = [mol.GetAtomWithIdx(i) for i in ring]
-            heteroatoms = [a for a in ring_atoms_obj
-                          if a.GetSymbol() not in ("C", "H")]
+            heteroatoms = [a for a in ring_atoms_obj if a.GetSymbol() not in ("C", "H")]
             if heteroatoms:
                 symbols = {a.GetSymbol() for a in heteroatoms}
                 results["issues"].append(
                     f"Large ({len(ring)}-membered) heterocycle with "
-                    f"{', '.join(symbols)} (potentially unstable)")
+                    f"{', '.join(symbols)} (potentially unstable)"
+                )
                 if len(ring) > 10 and len(heteroatoms) >= 3:
                     results["issues"].append(
                         "Very large heterocycle with multiple heteroatoms "
-                        "(significant stability concern)")
+                        "(significant stability concern)"
+                    )
 
-    # bridgehead strain 
+    # bridgehead strain
     if num_bridgehead_atoms > 0:
-        if (any(len(r) <= 4 for r in atom_rings)
-                and num_bridgehead_atoms >= 2):
-            results["issues"].append(
-                "Strained polycyclic system with bridgehead atoms")
+        if any(len(r) <= 4 for r in atom_rings) and num_bridgehead_atoms >= 2:
+            results["issues"].append("Strained polycyclic system with bridgehead atoms")
 
     # scoring (base 100, subtract penalties)
     score = 100
@@ -350,37 +356,38 @@ def check_molecule_stability(smiles: str) -> dict[str, Any]:
     if rotatable_bonds > 15:
         score -= 10
 
-    # aromatic bonus 
+    # aromatic bonus
     if num_aromatic_rings > 0:
         score += min(num_aromatic_rings * 5, 15)
 
-    # aliphatic heterocycle penalty 
+    # aliphatic heterocycle penalty
     if num_aliphatic_heterocycles > 0 and num_aliphatic_rings <= 3:
         score -= 5 * num_aliphatic_heterocycles
 
     # bridgehead penalty
-    if num_bridgehead_atoms > 0 and any(
-            len(r) <= 5 for r in atom_rings):
+    if num_bridgehead_atoms > 0 and any(len(r) <= 5 for r in atom_rings):
         score -= num_bridgehead_atoms * 5
 
     if fused_small_rings_detected:
         score -= 30
 
-    # anti-aromatic penalty 
+    # anti-aromatic penalty
     for issue in results["issues"]:
         if "anti-aromatic" in issue:
             score -= 25
         elif "\u03c0 electrons" in issue:
             score -= 20
 
-    # large heterocycle penalty 
+    # large heterocycle penalty
     large_hetero = sum(
-        1 for iss in results["issues"]
-        if "heterocycle" in iss and "large" in iss.lower())
+        1
+        for iss in results["issues"]
+        if "heterocycle" in iss and "large" in iss.lower()
+    )
     if large_hetero > 0:
         score -= large_hetero * 10
 
-    # clamp and label 
+    # clamp and label
     score = max(0, min(100, score))
     results["stability_score"] = score
 
@@ -437,44 +444,42 @@ def check_carbocations(
     if _SP2_CARBOCATION and mol.HasSubstructMatch(_SP2_CARBOCATION):
         for match in mol.GetSubstructMatches(_SP2_CARBOCATION):
             carbon = mol.GetAtomWithIdx(match[0])
-            neighbours = [mol.GetAtomWithIdx(n.GetIdx())
-                          for n in carbon.GetNeighbors()]
-            is_allylic = (
+            neighbours = [mol.GetAtomWithIdx(n.GetIdx()) for n in carbon.GetNeighbors()]
+            is_allylic = _ALLYLIC_CARBOCATION and mol.HasSubstructMatch(
                 _ALLYLIC_CARBOCATION
-                and mol.HasSubstructMatch(_ALLYLIC_CARBOCATION))
-            is_benzylic = (
+            )
+            is_benzylic = _BENZYLIC_CARBOCATION and mol.HasSubstructMatch(
                 _BENZYLIC_CARBOCATION
-                and mol.HasSubstructMatch(_BENZYLIC_CARBOCATION))
-            if (any(a.GetIsAromatic() for a in neighbours)
-                    or is_allylic or is_benzylic):
+            )
+            if any(a.GetIsAromatic() for a in neighbours) or is_allylic or is_benzylic:
                 score += 10
             else:
                 results["issues"].append(
                     "Contains non-stabilized sp2 carbocation "
-                    "(highly unstable intermediate)")
+                    "(highly unstable intermediate)"
+                )
                 score -= 25
 
     if _SP_CARBOCATION and mol.HasSubstructMatch(_SP_CARBOCATION):
         results["issues"].append(
-            "Contains sp carbocation (highly unstable intermediate)")
+            "Contains sp carbocation (highly unstable intermediate)"
+        )
         score -= 30
 
-    if (_UNSTABILISED_CARBOCATION
-            and mol.HasSubstructMatch(_UNSTABILISED_CARBOCATION)):
+    if _UNSTABILISED_CARBOCATION and mol.HasSubstructMatch(_UNSTABILISED_CARBOCATION):
         results["issues"].append(
             "Contains carbocation adjacent to electron-withdrawing "
-            "group (extremely unstable)")
+            "group (extremely unstable)"
+        )
         score -= 35
 
-    if (_PRIMARY_CARBOCATION
-            and mol.HasSubstructMatch(_PRIMARY_CARBOCATION)):
-        results["issues"].append(
-            "Contains primary carbocation (highly unstable)")
+    if _PRIMARY_CARBOCATION and mol.HasSubstructMatch(_PRIMARY_CARBOCATION):
+        results["issues"].append("Contains primary carbocation (highly unstable)")
         score -= 30
-    elif (_SECONDARY_CARBOCATION
-          and mol.HasSubstructMatch(_SECONDARY_CARBOCATION)):
+    elif _SECONDARY_CARBOCATION and mol.HasSubstructMatch(_SECONDARY_CARBOCATION):
         results["issues"].append(
-            "Contains secondary carbocation (unstable intermediate)")
+            "Contains secondary carbocation (unstable intermediate)"
+        )
         score -= 25
 
     return score
@@ -520,24 +525,26 @@ def check_carbenes(
     True
     """
     if _SINGLET_CARBENE and mol.HasSubstructMatch(_SINGLET_CARBENE):
-        results["issues"].append(
-            "Contains carbene (highly reactive intermediate)")
+        results["issues"].append("Contains carbene (highly reactive intermediate)")
         score -= 35
 
         if _UNSTABLE_CARBENE and mol.HasSubstructMatch(_UNSTABLE_CARBENE):
             results["issues"].append(
                 "Contains carbene adjacent to electron-withdrawing "
-                "group (extremely unstable)")
+                "group (extremely unstable)"
+            )
             score -= 10
 
         if _RING3_CARBENE and mol.HasSubstructMatch(_RING3_CARBENE):
             results["issues"].append(
-                "Contains carbene in 3-membered ring (extremely unstable)")
+                "Contains carbene in 3-membered ring (extremely unstable)"
+            )
             score -= 15
 
         if _RING4_CARBENE and mol.HasSubstructMatch(_RING4_CARBENE):
             results["issues"].append(
-                "Contains carbene in 4-membered ring (highly unstable)")
+                "Contains carbene in 4-membered ring (highly unstable)"
+            )
             score -= 10
 
     return score
@@ -589,28 +596,30 @@ def check_fused_cyclopentane(
         return score
 
     five_mem = [
-        r for r in atom_rings
-        if len(r) == 5
-        and all(mol.GetAtomWithIdx(i).GetSymbol() == "C" for i in r)
+        r
+        for r in atom_rings
+        if len(r) == 5 and all(mol.GetAtomWithIdx(i).GetSymbol() == "C" for i in r)
     ]
     small_hetero = [
-        r for r in atom_rings
-        if len(r) in (3, 4)
-        and any(mol.GetAtomWithIdx(i).GetSymbol() != "C" for i in r)
+        r
+        for r in atom_rings
+        if len(r) in (3, 4) and any(mol.GetAtomWithIdx(i).GetSymbol() != "C" for i in r)
     ]
 
     for fr in five_mem:
         fr_set = set(fr)
         for sr in small_hetero:
             if fr_set & set(sr):
-                hetero = {mol.GetAtomWithIdx(i).GetSymbol()
-                          for i in sr
-                          if mol.GetAtomWithIdx(i).GetSymbol() != "C"}
+                hetero = {
+                    mol.GetAtomWithIdx(i).GetSymbol()
+                    for i in sr
+                    if mol.GetAtomWithIdx(i).GetSymbol() != "C"
+                }
                 results["issues"].append(
                     f"5-membered carbon ring fused with "
                     f"{len(sr)}-membered ring containing "
-                    f"{', '.join(hetero)} (strained system)")
+                    f"{', '.join(hetero)} (strained system)"
+                )
                 score -= 40
 
     return score
-

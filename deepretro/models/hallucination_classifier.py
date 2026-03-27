@@ -24,6 +24,7 @@ from deepretro.utils.metrics import find_optimal_threshold
 
 # Helper functions (kept outside the class per DeepChem convention)
 
+
 def probability_scores(dataset: Dataset, model) -> dict[str, float]:
     """Compute ROC-AUC and optimal threshold from probabilities.
 
@@ -85,8 +86,10 @@ def predict_single_reaction(
     >>> predict_single_reaction(clf, "GARBAGE", "CC.O")       # doctest: +SKIP
     {'error': 'Invalid SMILES', 'is_hallucination': None, 'probability': None}
     """
-    if Chem.MolFromSmiles(product_smiles) is None or \
-       Chem.MolFromSmiles(reactants_smiles) is None:
+    if (
+        Chem.MolFromSmiles(product_smiles) is None
+        or Chem.MolFromSmiles(reactants_smiles) is None
+    ):
         return {
             "error": "Invalid SMILES",
             "is_hallucination": None,
@@ -175,9 +178,12 @@ class HallucinationClassifier(GBDTModel):
         random_state=42,
     )
 
-    def __init__(self, model_dir: str | None = None,
-                 early_stopping_rounds: int = 50,
-                 **xgb_kwargs: Any) -> None:
+    def __init__(
+        self,
+        model_dir: str | None = None,
+        early_stopping_rounds: int = 50,
+        **xgb_kwargs: Any,
+    ) -> None:
         params = {**self._DEFAULT_XGB, **xgb_kwargs}
         xgb = XGBClassifier(**params)
         super().__init__(
@@ -303,7 +309,9 @@ class HallucinationClassifier(GBDTModel):
         probabilities = self.predict_probability(dataset)
         return (probabilities >= self.threshold).astype(int), probabilities
 
-    def predict_single(self, product_smiles: str, reactants_smiles: str) -> dict[str, Any]:
+    def predict_single(
+        self, product_smiles: str, reactants_smiles: str
+    ) -> dict[str, Any]:
         """Thin wrapper around :func:`predict_single_reaction`."""
         return predict_single_reaction(self, product_smiles, reactants_smiles)
 

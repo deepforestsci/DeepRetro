@@ -6,4 +6,3 @@ __all__ = [
     "NUM_DOMAIN_FEATURES",
     "find_optimal_threshold",
 ]
-
