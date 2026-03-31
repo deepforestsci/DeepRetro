@@ -14,28 +14,110 @@ from __future__ import annotations
 
 import asyncio
 import functools
-import hashlib
-import json
-import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
-import structlog
-
-from src.main import main as _run_retrosynthesis
-from src.cache import clear_cache_for_molecule
-
-log = structlog.get_logger(__name__)
+_VALID_MODES = ("heuristic", "ml", "none")
 
 
-def _safe_filename(smiles: str) -> str:
-    """Derive a filesystem-safe name from a SMILES string."""
-    h = hashlib.md5(smiles.encode()).hexdigest()[:10]
-    safe = smiles.replace("/", "_").replace("\\", "_").replace(":", "_")
-    if len(safe) > 80:
-        safe = safe[:80]
-    return f"{safe}_{h}"
+def _get_pipeline():
+    """Lazy-import the retrosynthesis pipeline.
+
+    Deferred so that ``import deepretro.utils.autosolve`` succeeds even
+    when ``src`` / ``aizynthfinder`` are not installed (e.g. in CI).
+    """
+    from src.main import main as _run_retrosynthesis
+
+    return _run_retrosynthesis
+
+
+def _load_classifier(hallucination_classifier):
+    """Resolve *hallucination_classifier* into a ready-to-use instance.
+
+    Accepts either an already-instantiated ``HallucinationClassifier``
+    or a ``str | Path`` pointing to a saved model directory.  Returns
+    ``None`` when the argument is ``None``.
+    """
+    if hallucination_classifier is None:
+        return None
+
+    from deepretro.models.hallucination_classifier import HallucinationClassifier
+
+    if isinstance(hallucination_classifier, (str, Path)):
+        clf = HallucinationClassifier()
+        clf.load(str(hallucination_classifier))
+        return clf
+
+    if isinstance(hallucination_classifier, HallucinationClassifier):
+        return hallucination_classifier
+
+    raise TypeError(
+        "hallucination_classifier must be a HallucinationClassifier, "
+        f"a path to a saved model, or None — got {type(hallucination_classifier)}"
+    )
+
+
+def _build_ml_checker(clf):
+    """Wrap a ``HallucinationClassifier`` into a callable with the same
+    signature as ``src.utils.hallucination_checks.hallucination_checker``:
+
+        (product: str, pathways: list) -> (int, list)
+
+    Pathways flagged as hallucinated are dropped, exactly like the
+    heuristic checker.  This plugs into ``llm_pipeline``'s retry loop
+    so rejected results trigger a new LLM call.
+    """
+    from deepretro.utils.utils_molecule import is_valid_smiles
+
+    def _checker(product: str, pathways: list) -> tuple[int, list]:
+        valid = []
+        for pathway in pathways:
+            if isinstance(pathway, list):
+                reactants_smi = ".".join(pathway)
+            else:
+                reactants_smi = pathway
+
+            if not is_valid_smiles(reactants_smi):
+                continue
+
+            pred = clf.predict_single(product, reactants_smi)
+            if not pred.get("is_hallucination", True):
+                valid.append(pathway)
+
+        return 200, valid
+
+    return _checker
+
+
+def _resolve_hallucination_args(
+    hallucination_mode: str,
+    hallucination_classifier: Any,
+) -> tuple[str, Any]:
+    """Return ``(hallucination_check, hallucination_checker_fn)`` for the
+    pipeline based on *hallucination_mode*.
+    """
+    if hallucination_mode not in _VALID_MODES:
+        raise ValueError(
+            f"hallucination_mode must be one of {_VALID_MODES}, "
+            f"got {hallucination_mode!r}"
+        )
+
+    if hallucination_mode == "none":
+        return "False", None
+
+    if hallucination_mode == "heuristic":
+        return "True", None
+
+    # mode == "ml"
+    clf = _load_classifier(hallucination_classifier)
+    if clf is None:
+        raise ValueError(
+            "hallucination_mode='ml' requires hallucination_classifier "
+            "to be a HallucinationClassifier instance or a path to a "
+            "saved model directory"
+        )
+    return "True", _build_ml_checker(clf)
 
 
 def autosolve(
@@ -44,18 +126,15 @@ def autosolve(
     llm: str = "anthropic/claude-3-7-sonnet-20250219:adv",
     az_model: str = "Pistachio_100+",
     stability_flag: str = "True",
-    hallucination_check: str = "True",
+    hallucination_mode: str = "heuristic",
+    hallucination_classifier: Any = None,
     use_protecting_group_feature: bool = False,
-    clear_cache: bool = True,
-    output_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Run retrosynthesis on a single molecule.
 
-    This is the synchronous, single-molecule entry point that replaces
-    the old ``prod_dfs_runner.py`` script.  It calls the same pipeline
-    — :func:`src.main.main` -> :func:`src.prithvi.run_prithvi` ->
-    :func:`src.rec_prithvi.rec_run_prithvi` — but returns the result
-    as a dict instead of writing it to a hard-coded path.
+    Pure function: returns the result dict without writing anything to
+    disk.  The caller decides what to do with the output (save, display,
+    post-process, etc.).
 
     Parameters
     ----------
@@ -68,15 +147,21 @@ def autosolve(
         ``"Pistachio_100+"``).
     stability_flag : str
         ``"True"`` to enable stability checking.
-    hallucination_check : str
-        ``"True"`` to enable hallucination checking.
+    hallucination_mode : str
+        Which hallucination checker to use inside the pipeline's retry
+        loop.  One of:
+
+        * ``"heuristic"`` — rule-based checker (default, existing
+          behaviour).
+        * ``"ml"`` — use the ML ``HallucinationClassifier`` supplied
+          via *hallucination_classifier*.
+        * ``"none"`` — skip hallucination checking entirely.
+    hallucination_classifier : HallucinationClassifier or str or Path or None
+        Required when ``hallucination_mode="ml"``.  Pass a fitted
+        :class:`~deepretro.models.HallucinationClassifier` instance
+        or a path to a saved model directory.
     use_protecting_group_feature : bool
         Enable protecting-group masking in the LLM prompt.
-    clear_cache : bool
-        Clear any cached AZ / LLM results for this molecule before
-        running.  Set ``False`` to reuse previous results.
-    output_path : str or Path or None
-        If given, the result dict is also written as JSON to this file.
 
     Returns
     -------
@@ -87,32 +172,23 @@ def autosolve(
     --------
     >>> from deepretro.utils.autosolve import autosolve  # doctest: +SKIP
     >>> result = autosolve("c1ccccc1")                   # doctest: +SKIP
+    >>> result = autosolve("c1ccccc1", hallucination_mode="ml",
+    ...     hallucination_classifier="saved_model/")      # doctest: +SKIP
     """
-    t0 = time.time()
-    log.info("autosolve.start", smiles=smiles, llm=llm, az_model=az_model)
+    _run_retrosynthesis = _get_pipeline()
+    h_check, h_checker_fn = _resolve_hallucination_args(
+        hallucination_mode, hallucination_classifier,
+    )
 
-    if clear_cache:
-        clear_cache_for_molecule(smiles)
-
-    result = _run_retrosynthesis(
+    return _run_retrosynthesis(
         smiles,
         llm=llm,
         az_model=az_model,
         stability_flag=stability_flag,
-        hallucination_check=hallucination_check,
+        hallucination_check=h_check,
         use_protecting_group_feature=use_protecting_group_feature,
+        hallucination_checker_fn=h_checker_fn,
     )
-
-    elapsed = time.time() - t0
-    log.info("autosolve.done", smiles=smiles, elapsed_s=round(elapsed, 2))
-
-    if output_path is not None:
-        output_path = Path(output_path)
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(json.dumps(result, indent=4))
-        log.info("autosolve.saved", path=str(output_path))
-
-    return result
 
 
 async def autosolve_async(
@@ -121,15 +197,16 @@ async def autosolve_async(
     llm: str = "anthropic/claude-3-7-sonnet-20250219:adv",
     az_model: str = "Pistachio_100+",
     stability_flag: str = "True",
-    hallucination_check: str = "True",
+    hallucination_mode: str = "heuristic",
+    hallucination_classifier: Any = None,
     use_protecting_group_feature: bool = False,
-    clear_cache: bool = True,
-    output_dir: str | Path | None = None,
     max_concurrent: int = 6,
 ) -> list[dict[str, Any]]:
     """Run retrosynthesis on multiple molecules concurrently.
 
-    This is the async replacement for ``prod_dfs_runner_async.py``.
+    Pure function: returns a list of result dicts without writing
+    anything to disk.
+
     Each molecule is dispatched to a :class:`ThreadPoolExecutor`
     (because the underlying pipeline is synchronous) and at most
     *max_concurrent* molecules run in parallel.
@@ -144,15 +221,14 @@ async def autosolve_async(
         AiZynthFinder model variant.
     stability_flag : str
         ``"True"`` to enable stability checking.
-    hallucination_check : str
-        ``"True"`` to enable hallucination checking.
+    hallucination_mode : str
+        ``"heuristic"``, ``"ml"``, or ``"none"``.
+        See :func:`autosolve`.
+    hallucination_classifier : HallucinationClassifier or str or Path or None
+        Required when ``hallucination_mode="ml"``.
+        See :func:`autosolve`.
     use_protecting_group_feature : bool
         Enable protecting-group masking in the LLM prompt.
-    clear_cache : bool
-        Clear cached results for each molecule before running.
-    output_dir : str or Path or None
-        If given, each result is written as
-        ``<output_dir>/<sanitised_smiles>.json``.
     max_concurrent : int
         Maximum number of molecules processed in parallel.
 
@@ -168,10 +244,9 @@ async def autosolve_async(
     >>> from deepretro.utils.autosolve import autosolve_async     # doctest: +SKIP
     >>> results = asyncio.run(autosolve_async(["c1ccccc1"]))      # doctest: +SKIP
     """
-    log.info(
-        "autosolve_async.start",
-        count=len(smiles_list),
-        max_concurrent=max_concurrent,
+    _run_retrosynthesis = _get_pipeline()
+    h_check, h_checker_fn = _resolve_hallucination_args(
+        hallucination_mode, hallucination_classifier,
     )
 
     semaphore = asyncio.Semaphore(max_concurrent)
@@ -179,13 +254,9 @@ async def autosolve_async(
 
     async def _process(smi: str) -> dict[str, Any]:
         async with semaphore:
-            t0 = time.time()
             try:
-                if clear_cache:
-                    clear_cache_for_molecule(smi)
-
                 with ThreadPoolExecutor(max_workers=1) as pool:
-                    result = await loop.run_in_executor(
+                    return await loop.run_in_executor(
                         pool,
                         functools.partial(
                             _run_retrosynthesis,
@@ -193,37 +264,13 @@ async def autosolve_async(
                             llm=llm,
                             az_model=az_model,
                             stability_flag=stability_flag,
-                            hallucination_check=hallucination_check,
+                            hallucination_check=h_check,
                             use_protecting_group_feature=use_protecting_group_feature,
+                            hallucination_checker_fn=h_checker_fn,
                         ),
                     )
-
-                if output_dir is not None:
-                    out = Path(output_dir)
-                    out.mkdir(parents=True, exist_ok=True)
-                    fname = _safe_filename(smi) + ".json"
-                    (out / fname).write_text(json.dumps(result, indent=4))
-
-                elapsed = time.time() - t0
-                log.info(
-                    "autosolve_async.mol_done",
-                    smiles=smi,
-                    elapsed_s=round(elapsed, 2),
-                )
-                return result
-
             except Exception as exc:
-                elapsed = time.time() - t0
-                log.error(
-                    "autosolve_async.mol_error",
-                    smiles=smi,
-                    error=str(exc),
-                    elapsed_s=round(elapsed, 2),
-                )
                 return {"error": str(exc), "smiles": smi}
 
     tasks = [asyncio.create_task(_process(smi)) for smi in smiles_list]
-    results = await asyncio.gather(*tasks)
-
-    log.info("autosolve_async.done", total=len(results))
-    return list(results)
+    return list(await asyncio.gather(*tasks))
