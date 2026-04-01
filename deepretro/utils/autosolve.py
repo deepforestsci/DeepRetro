@@ -18,6 +18,8 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
+from deepretro.utils.utils_molecule import is_valid_smiles
+
 _VALID_MODES = ("heuristic", "ml", "none")
 
 
@@ -68,8 +70,6 @@ def _build_ml_checker(clf):
     heuristic checker.  This plugs into ``llm_pipeline``'s retry loop
     so rejected results trigger a new LLM call.
     """
-    from deepretro.utils.utils_molecule import is_valid_smiles
-
     def _checker(product: str, pathways: list) -> tuple[int, list]:
         valid = []
         for pathway in pathways:
