@@ -13,11 +13,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from deepretro.utils.autosolve import (
-    _build_ml_checker,
-    _resolve_hallucination_args,
-    autosolve,
-    autosolve_async,
+from deepretro.utils.autosolve import autosolve, autosolve_async
+from deepretro.models.hallucination_helpers import (
+    build_ml_checker,
+    resolve_hallucination_args,
 )
 
 BENZENE = "c1ccccc1"
@@ -65,7 +64,7 @@ class TestAutosolve:
             ASPIRIN,
             llm="test-model",
             az_model="USPTO",
-            stability_flag="False",
+            stability_check=False,
             hallucination_mode="none",
             use_protecting_group_feature=True,
         )
@@ -128,35 +127,36 @@ class TestAutosolveAsync:
 
 
 class TestResolveHallucinationArgs:
-    """Tests for ``_resolve_hallucination_args``."""
+    """Tests for ``resolve_hallucination_args``."""
 
     def test_heuristic_mode(self) -> None:
-        h_check, h_fn = _resolve_hallucination_args("heuristic", None)
+        h_check, h_fn = resolve_hallucination_args("heuristic", None)
         assert h_check == "True"
         assert h_fn is None
 
     def test_none_mode(self) -> None:
-        h_check, h_fn = _resolve_hallucination_args("none", None)
+        h_check, h_fn = resolve_hallucination_args("none", None)
         assert h_check == "False"
         assert h_fn is None
 
     def test_invalid_mode_raises(self) -> None:
         with pytest.raises(ValueError, match="hallucination_mode must be"):
-            _resolve_hallucination_args("invalid", None)
+            resolve_hallucination_args("invalid", None)
 
     def test_ml_mode_without_classifier_raises(self) -> None:
         with pytest.raises(ValueError, match="requires hallucination_classifier"):
-            _resolve_hallucination_args("ml", None)
+            resolve_hallucination_args("ml", None)
 
     def test_ml_mode_with_classifier_returns_callable(self) -> None:
         mock_clf = MagicMock()
         with patch(
-            "deepretro.utils.autosolve._load_classifier", return_value=mock_clf
+            "deepretro.models.hallucination_helpers.HallucinationClassifier",
+            new=type(mock_clf),
         ), patch(
-            "deepretro.utils.autosolve._build_ml_checker",
+            "deepretro.models.hallucination_helpers.build_ml_checker",
             return_value=lambda p, pw: (200, pw),
         ) as mock_build:
-            h_check, h_fn = _resolve_hallucination_args("ml", mock_clf)
+            h_check, h_fn = resolve_hallucination_args("ml", mock_clf)
 
         assert h_check == "True"
         assert h_fn is not None
@@ -164,57 +164,57 @@ class TestResolveHallucinationArgs:
 
 
 class TestBuildMlChecker:
-    """Tests for ``_build_ml_checker``."""
+    """Tests for ``build_ml_checker``."""
 
-    @patch("deepretro.utils.autosolve.is_valid_smiles", return_value=True)
+    @patch("deepretro.models.hallucination_helpers.is_valid_smiles", return_value=True)
     def test_keeps_non_hallucinated_pathways(self, _mock_valid) -> None:
         mock_clf = MagicMock()
         mock_clf.predict_single.return_value = {
             "is_hallucination": False, "probability": 0.1,
         }
-        checker = _build_ml_checker(mock_clf)
+        checker = build_ml_checker(mock_clf)
         status, kept = checker(BENZENE, [["CC", "O"], ["CCO"]])
         assert status == 200
         assert len(kept) == 2
 
-    @patch("deepretro.utils.autosolve.is_valid_smiles", return_value=True)
+    @patch("deepretro.models.hallucination_helpers.is_valid_smiles", return_value=True)
     def test_drops_hallucinated_pathways(self, _mock_valid) -> None:
         mock_clf = MagicMock()
         mock_clf.predict_single.side_effect = [
             {"is_hallucination": True, "probability": 0.9},
             {"is_hallucination": False, "probability": 0.1},
         ]
-        checker = _build_ml_checker(mock_clf)
+        checker = build_ml_checker(mock_clf)
         status, kept = checker(BENZENE, [["CC"], ["CCO"]])
         assert status == 200
         assert kept == [["CCO"]]
 
-    @patch("deepretro.utils.autosolve.is_valid_smiles", return_value=True)
+    @patch("deepretro.models.hallucination_helpers.is_valid_smiles", return_value=True)
     def test_joins_reactants_with_dot(self, _mock_valid) -> None:
         mock_clf = MagicMock()
         mock_clf.predict_single.return_value = {
             "is_hallucination": False, "probability": 0.1,
         }
-        checker = _build_ml_checker(mock_clf)
+        checker = build_ml_checker(mock_clf)
         checker(BENZENE, [["CC", "O"]])
         mock_clf.predict_single.assert_called_once_with(BENZENE, "CC.O")
 
-    @patch("deepretro.utils.autosolve.is_valid_smiles", return_value=False)
+    @patch("deepretro.models.hallucination_helpers.is_valid_smiles", return_value=False)
     def test_skips_invalid_smiles(self, _mock_valid) -> None:
         mock_clf = MagicMock()
-        checker = _build_ml_checker(mock_clf)
+        checker = build_ml_checker(mock_clf)
         status, kept = checker(BENZENE, [["INVALID"]])
         assert status == 200
         assert kept == []
         mock_clf.predict_single.assert_not_called()
 
-    @patch("deepretro.utils.autosolve.is_valid_smiles", return_value=True)
+    @patch("deepretro.models.hallucination_helpers.is_valid_smiles", return_value=True)
     def test_all_hallucinated_returns_empty(self, _mock_valid) -> None:
         mock_clf = MagicMock()
         mock_clf.predict_single.return_value = {
             "is_hallucination": True, "probability": 0.95,
         }
-        checker = _build_ml_checker(mock_clf)
+        checker = build_ml_checker(mock_clf)
         status, kept = checker(BENZENE, [["CC"], ["O"]])
         assert status == 200
         assert kept == []
@@ -241,7 +241,8 @@ class TestHallucinationModeIntegration:
         mock_run = mock_pipeline
         mock_clf = MagicMock()
         with patch(
-            "deepretro.utils.autosolve._load_classifier", return_value=mock_clf
+            "deepretro.models.hallucination_helpers.HallucinationClassifier",
+            new=type(mock_clf),
         ):
             autosolve(
                 BENZENE,
