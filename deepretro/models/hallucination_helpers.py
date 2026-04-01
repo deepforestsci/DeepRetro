@@ -14,8 +14,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from deepretro.utils.utils_molecule import is_valid_smiles
-
 VALID_MODES = ("heuristic", "ml", "none")
 
 
@@ -30,6 +28,8 @@ def build_ml_checker(clf: Any):
     so rejected results trigger a new LLM call.
     """
     def _checker(product: str, pathways: list) -> tuple[int, list]:
+        from deepretro.utils.utils_molecule import is_valid_smiles
+
         valid = []
         for pathway in pathways:
             if isinstance(pathway, list):

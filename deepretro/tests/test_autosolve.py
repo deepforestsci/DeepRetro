@@ -166,7 +166,7 @@ class TestResolveHallucinationArgs:
 class TestBuildMlChecker:
     """Tests for ``build_ml_checker``."""
 
-    @patch("deepretro.models.hallucination_helpers.is_valid_smiles", return_value=True)
+    @patch("deepretro.utils.utils_molecule.is_valid_smiles", return_value=True)
     def test_keeps_non_hallucinated_pathways(self, _mock_valid) -> None:
         mock_clf = MagicMock()
         mock_clf.predict_single.return_value = {
@@ -177,7 +177,7 @@ class TestBuildMlChecker:
         assert status == 200
         assert len(kept) == 2
 
-    @patch("deepretro.models.hallucination_helpers.is_valid_smiles", return_value=True)
+    @patch("deepretro.utils.utils_molecule.is_valid_smiles", return_value=True)
     def test_drops_hallucinated_pathways(self, _mock_valid) -> None:
         mock_clf = MagicMock()
         mock_clf.predict_single.side_effect = [
@@ -189,7 +189,7 @@ class TestBuildMlChecker:
         assert status == 200
         assert kept == [["CCO"]]
 
-    @patch("deepretro.models.hallucination_helpers.is_valid_smiles", return_value=True)
+    @patch("deepretro.utils.utils_molecule.is_valid_smiles", return_value=True)
     def test_joins_reactants_with_dot(self, _mock_valid) -> None:
         mock_clf = MagicMock()
         mock_clf.predict_single.return_value = {
@@ -199,7 +199,7 @@ class TestBuildMlChecker:
         checker(BENZENE, [["CC", "O"]])
         mock_clf.predict_single.assert_called_once_with(BENZENE, "CC.O")
 
-    @patch("deepretro.models.hallucination_helpers.is_valid_smiles", return_value=False)
+    @patch("deepretro.utils.utils_molecule.is_valid_smiles", return_value=False)
     def test_skips_invalid_smiles(self, _mock_valid) -> None:
         mock_clf = MagicMock()
         checker = build_ml_checker(mock_clf)
@@ -208,7 +208,7 @@ class TestBuildMlChecker:
         assert kept == []
         mock_clf.predict_single.assert_not_called()
 
-    @patch("deepretro.models.hallucination_helpers.is_valid_smiles", return_value=True)
+    @patch("deepretro.utils.utils_molecule.is_valid_smiles", return_value=True)
     def test_all_hallucinated_returns_empty(self, _mock_valid) -> None:
         mock_clf = MagicMock()
         mock_clf.predict_single.return_value = {

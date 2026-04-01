@@ -26,9 +26,25 @@ def _get_pipeline():
     Deferred so that ``import deepretro.utils.autosolve`` succeeds even
     when ``src`` / ``aizynthfinder`` are not installed (e.g. in CI).
     """
-    from src.main import main as _run_retrosynthesis
+    import os
+    import time
 
-    return _run_retrosynthesis
+    import structlog
+    from src.rec_prithvi import rec_run_prithvi
+    from src.utils.job_context import logger as context_logger
+    from src.utils.parse import format_output
+
+    def _run(smiles, **kwargs):
+        job_id = f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}"
+        log = structlog.get_logger().bind(job_id=job_id)
+        token = context_logger.set(log)
+        try:
+            result_dict, _ = rec_run_prithvi(smiles, job_id=job_id, **kwargs)
+            return format_output(result_dict)
+        finally:
+            context_logger.reset(token)
+
+    return _run
 
 
 def autosolve(
