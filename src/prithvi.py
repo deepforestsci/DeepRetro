@@ -18,11 +18,12 @@ date_dir = f'{root_dir}/logs/{time.strftime("%Y-%m-%d")}'
 
 
 def run_prithvi(molecule: str,
-                llm="claude-opus-4-20250514",
+                llm="claude-opus-4-6",
                 az_model: str = "USPTO",
                 stability_flag: str = "False",
                 hallucination_check: str = "False",
-                use_protecting_group_feature: bool = False) -> dict:
+                use_protecting_group_feature: bool = False,
+                hallucination_checker_fn=None) -> dict:
     """Run prithvi services to generate retrosynthesis on a molecule.
 
     Parameters
@@ -30,7 +31,7 @@ def run_prithvi(molecule: str,
     molecule : str
         SMILE String of the molecule.
     llm : str, optional
-        LLM Model, by default "claude-opus-4-20250514"
+        LLM Model, by default "claude-opus-4-6"
 
     Returns
     -------
@@ -58,9 +59,10 @@ def run_prithvi(molecule: str,
             az_model=az_model,
             stability_flag=stability_flag,
             hallucination_check=hallucination_check,
-            use_protecting_group_feature=use_protecting_group_feature)
+            use_protecting_group_feature=use_protecting_group_feature,
+            hallucination_checker_fn=hallucination_checker_fn)
         output_data = format_output(result_dict)
-        output_data = add_metadata(output_data)
+        # output_data = add_metadata(output_data)
         return output_data
     finally:
         # Clean up handlers

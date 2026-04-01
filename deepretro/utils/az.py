@@ -25,6 +25,35 @@ ENABLE_LOGGING = (
 AZ_MODEL_CONFIG_PATH = f"{root_dir}/{os.getenv('AZ_MODEL_CONFIG_PATH')}"
 AZ_MODELS_PATH = f"{root_dir}/{os.getenv('AZ_MODELS_PATH')}"
 
+_finder_cache: dict[str, AiZynthFinder] = {}
+
+
+def _get_finder(az_model: str) -> AiZynthFinder:
+    """Return a singleton AiZynthFinder for the given model, loading only once."""
+    if az_model in _finder_cache:
+        return _finder_cache[az_model]
+
+    config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
+    try:
+        with open(config_path, "r") as _:
+            config_filename = config_path
+    except FileNotFoundError:
+        _log(f"AZ_MODEL_CONFIG_PATH not found at {config_path}")
+        try:
+            with open(AZ_MODEL_CONFIG_PATH, "r") as _:
+                config_filename = AZ_MODEL_CONFIG_PATH
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}"
+            )
+
+    finder = AiZynthFinder(configfile=config_filename)
+    finder.stock.select("zinc")
+    finder.expansion_policy.select("uspto")
+    finder.filter_policy.select("uspto")
+    _finder_cache[az_model] = finder
+    return finder
+
 
 def _log(message: str, logger=None):
     """Log the message
@@ -72,20 +101,6 @@ def run_az(
     tuple[bool, Sequence[Dict[str, Any]]]
         ``(solved, routes)`` — whether a route was found and the route data.
     """
-    try:
-        config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
-        with open(config_path, "r") as _:
-            config_filename = config_path
-    except FileNotFoundError:
-        _log(f"AZ_MODEL_CONFIG_PATH not found at {config_path}")
-        try:
-            with open(AZ_MODEL_CONFIG_PATH, "r") as _:
-                config_filename = AZ_MODEL_CONFIG_PATH
-        except FileNotFoundError:
-            raise FileNotFoundError(
-                f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}"
-            )
-    # if simple molecule, skip the retrosynthesis
     if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
         return True, [
             {
@@ -96,10 +111,7 @@ def run_az(
                 "in_stock": True,
             }
         ]
-    finder = AiZynthFinder(configfile=config_filename)
-    finder.stock.select("zinc")
-    finder.expansion_policy.select("uspto")
-    finder.filter_policy.select("uspto")
+    finder = _get_finder(az_model)
     finder.target_smiles = smiles
     finder.tree_search()
     finder.build_routes()
@@ -135,7 +147,6 @@ def run_az_with_img(
         ``(solved, routes, images)`` — solved status, route data, and
         optional route images (PNG bytes). Uses ``AZ_MODEL_CONFIG_PATH``.
     """
-    # if simple molecule, skip the retrosynthesis
     if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
         return (
             True,
@@ -150,10 +161,7 @@ def run_az_with_img(
             ],
             None,
         )
-    finder = AiZynthFinder(configfile=AZ_MODEL_CONFIG_PATH)
-    finder.stock.select("zinc")
-    finder.expansion_policy.select("uspto")
-    finder.filter_policy.select("uspto")
+    finder = _get_finder("USPTO")
     finder.target_smiles = smiles
     finder.tree_search()
     finder.build_routes()

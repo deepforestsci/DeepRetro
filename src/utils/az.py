@@ -16,6 +16,40 @@ root_dir = rootutils.setup_root(__file__,
 AZ_MODEL_CONFIG_PATH = f"{root_dir}/{os.getenv('AZ_MODEL_CONFIG_PATH')}"
 AZ_MODELS_PATH = f"{root_dir}/{os.getenv('AZ_MODELS_PATH')}"
 
+_finder_cache: dict[str, AiZynthFinder] = {}
+
+
+def _get_finder(az_model: str) -> AiZynthFinder:
+    """Return a singleton AiZynthFinder for the given model, loading only once."""
+    if az_model in _finder_cache:
+        return _finder_cache[az_model]
+
+    logger = context_logger.get()
+    config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
+    try:
+        with open(config_path, "r") as file:
+            logger.info(f"AZ_MODEL_CONFIG_PATH found: {config_path}")
+            config_filename = config_path
+    except FileNotFoundError:
+        logger.error(f"AZ_MODEL_CONFIG_PATH not found at {config_path}")
+        try:
+            with open(AZ_MODEL_CONFIG_PATH, "r") as file:
+                logger.info(
+                    f"AZ_MODEL_CONFIG_PATH found: {AZ_MODEL_CONFIG_PATH}")
+                config_filename = AZ_MODEL_CONFIG_PATH
+        except FileNotFoundError:
+            logger.error(
+                f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}")
+            raise FileNotFoundError(
+                f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}")
+
+    finder = AiZynthFinder(configfile=config_filename)
+    finder.stock.select("zinc")
+    finder.expansion_policy.select("uspto")
+    finder.filter_policy.select("uspto")
+    _finder_cache[az_model] = finder
+    return finder
+
 
 @cache_results
 def run_az(smiles: str,
@@ -33,25 +67,6 @@ def run_az(smiles: str,
         A tuple containing the status of the retrosynthesis, 
         the results dictionary
     """
-    logger = context_logger.get()
-    try:
-        config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
-        with open(config_path, "r") as file:
-            logger.info(f"AZ_MODEL_CONFIG_PATH found: {config_path}")
-            config_filename = config_path
-    except FileNotFoundError:
-        logger.error(f"AZ_MODEL_CONFIG_PATH not found at {config_path}")
-        try:
-            with open(AZ_MODEL_CONFIG_PATH, "r") as file:
-                logger.info(
-                    f"AZ_MODEL_CONFIG_PATH found: {AZ_MODEL_CONFIG_PATH}")
-                config_filename = AZ_MODEL_CONFIG_PATH
-        except FileNotFoundError:
-            logger.error(
-                f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}")
-            raise FileNotFoundError(
-                f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}")
-    # if simple molecule, skip the retrosynthesis
     if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
         return True, [{
             'type': 'mol',
@@ -60,10 +75,7 @@ def run_az(smiles: str,
             'is_chemical': True,
             'in_stock': True,
         }]
-    finder = AiZynthFinder(configfile=config_filename)
-    finder.stock.select("zinc")
-    finder.expansion_policy.select("uspto")
-    finder.filter_policy.select("uspto")
+    finder = _get_finder(az_model)
     finder.target_smiles = smiles
     finder.tree_search()
     finder.build_routes()
@@ -90,7 +102,6 @@ def run_az_with_img(smiles: str) -> tuple[Any, Sequence[Dict[str, Any]]]:
         the results dictionary
         
     """
-    # if simple molecule, skip the retrosynthesis
     if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
         return True, [{
             'type': 'mol',
@@ -99,10 +110,7 @@ def run_az_with_img(smiles: str) -> tuple[Any, Sequence[Dict[str, Any]]]:
             'is_chemical': True,
             'in_stock': True,
         }]
-    finder = AiZynthFinder(configfile=AZ_MODEL_CONFIG_PATH)
-    finder.stock.select("zinc")
-    finder.expansion_policy.select("uspto")
-    finder.filter_policy.select("uspto")
+    finder = _get_finder("USPTO")
     finder.target_smiles = smiles
     finder.tree_search()
     finder.build_routes()

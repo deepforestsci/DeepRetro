@@ -285,7 +285,10 @@ def calc_confidence_estimate(probability: float) -> float:
         Confidence estimate
     """
     if isinstance(probability, list):
-        probability = probability[0]
+        if len(probability) == 0:
+            probability = 0.5
+        else:
+            probability = probability[0]
     if probability < 0.3:
         probability = 1 - probability
     elif probability < 0.45 and probability >= 0.3:

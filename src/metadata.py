@@ -31,7 +31,7 @@ from src.utils.langfuse_config import get_langfuse_metadata
 @cache_results
 def reagent_agent(reactants: list[dict],
                   product: list[dict],
-                  LLM: str = "claude-opus-4-20250514",
+                  LLM: str = "claude-opus-4-6",
                   temperature: float = 0.0):
     """Calls the LLM model to predict the reagents used in the reaction
 
@@ -42,7 +42,7 @@ def reagent_agent(reactants: list[dict],
     product : list[dict]
         Product dict with SMILES and metadata
     LLM : str, optional
-        LLM model to use, by default "claude-opus-4-20250514"
+        LLM model to use, by default "claude-opus-4-6"
     temperature : float, optional
         Temperature for the LLM model, by default 0.0
 
@@ -102,7 +102,7 @@ def reagent_agent(reactants: list[dict],
 @cache_results
 def reagent_llm_call(reactants: list[str],
                      product: str,
-                     LLM: str = "claude-opus-4-20250514",
+                     LLM: str = "claude-opus-4-6",
                      temperature: float = 0.0):
     """Calls the LLM model to predict the reagents used in the reaction
 
@@ -113,7 +113,7 @@ def reagent_llm_call(reactants: list[str],
     product : list[str]
         Product SMILES
     LLM : str, optional
-        LLM model to use, by default "claude-opus-4-20250514"
+        LLM model to use, by default "claude-opus-4-6"
     temperature : float, optional
         Temperature for the LLM model, by default 0.0
 
@@ -138,7 +138,6 @@ def reagent_llm_call(reactants: list[str],
                               max_completion_tokens=4096,
                               temperature=temperature,
                               seed=42,
-                              top_p=0.9,
                               metadata=get_langfuse_metadata("metadata"))
         res_text = response.choices[0].message.content
     except Exception as e:
@@ -149,8 +148,7 @@ def reagent_llm_call(reactants: list[str],
                                   messages=messages,
                                   max_completion_tokens=4096,
                                   temperature=temperature,
-                                  seed=42,
-                                  top_p=0.9)
+                                  seed=42)
             res_text = response.choices[0].message.content
         except Exception as e:
             logger.info(f"2nd Error in calling {LLM}: {e}")
@@ -165,7 +163,7 @@ def reagent_llm_call(reactants: list[str],
 def conditions_agent(reactants: list[dict],
                      product: list[dict],
                      reagents: list[dict],
-                     LLM: str = "claude-opus-4-20250514",
+                     LLM: str = "claude-opus-4-6",
                      temperature: float = 0.0):
     """Calls the LLM model to predict the reaction conditions
 
@@ -178,7 +176,7 @@ def conditions_agent(reactants: list[dict],
     reagents : list[str]
         List of reagents SMILES
     LLM : str, optional
-        LLM model to use, by default "claude-opus-4-20250514"
+        LLM model to use, by default "claude-opus-4-6"
     temperature : float, optional
         Temperature for the LLM model, by default 0.0
 
@@ -216,7 +214,7 @@ def conditions_agent(reactants: list[dict],
 def conditions_llm_call(reactants: list[str],
                         product: str,
                         reagents: list[str],
-                        LLM: str = "claude-opus-4-20250514",
+                        LLM: str = "claude-opus-4-6",
                         temperature: float = 0.0):
     """Calls the LLM model to predict the reaction conditions
 
@@ -229,7 +227,7 @@ def conditions_llm_call(reactants: list[str],
     reagents : list[str]
         List of reagents SMILES
     LLM : str, optional
-        LLM model to use, by default "claude-opus-4-20250514"
+        LLM model to use, by default "claude-opus-4-6"
     temperature : float, optional
         Temperature for the LLM model, by default 0.0
 
@@ -255,7 +253,6 @@ def conditions_llm_call(reactants: list[str],
                               max_completion_tokens=4096,
                               temperature=temperature,
                               seed=42,
-                              top_p=0.9,
                               metadata=get_langfuse_metadata("metadata"))
         res_text = response.choices[0].message.content
     except Exception as e:
@@ -267,8 +264,7 @@ def conditions_llm_call(reactants: list[str],
                                   messages=messages,
                                   max_completion_tokens=4096,
                                   temperature=temperature,
-                                  seed=42,
-                                  top_p=0.9)
+                                  seed=42)
             res_text = response.choices[0].message.content
         except Exception as e:
             logger.info(f"2nd Error in calling {LLM}: {e}")
@@ -284,7 +280,7 @@ def literature_agent(reactants: list[str],
                      product: str,
                      reagents: list[str],
                      conditions: str,
-                     LLM: str = "claude-opus-4-20250514",
+                     LLM: str = "claude-opus-4-6",
                      temperature: float = 0.0):
     """Calls the LLM model to predict the nearest literature references
 
@@ -299,7 +295,7 @@ def literature_agent(reactants: list[str],
     conditions : str
         Reaction conditions
     LLM : str, optional
-        LLM model to use, by default "claude-opus-4-20250514"
+        LLM model to use, by default "claude-opus-4-6"
     temperature : float, optional
         Temperature for the LLM model, by default 0.0
 
@@ -330,7 +326,6 @@ def literature_agent(reactants: list[str],
                               max_completion_tokens=4096,
                               temperature=temperature,
                               seed=42,
-                              top_p=0.9,
                               metadata=get_langfuse_metadata("metadata"))
         res_text = response.choices[0].message.content
     except Exception as e:
@@ -341,8 +336,7 @@ def literature_agent(reactants: list[str],
                                   messages=messages,
                                   max_completion_tokens=4096,
                                   temperature=temperature,
-                                  seed=42,
-                                  top_p=0.9)
+                                  seed=42)
             res_text = response.choices[0].message.content
         except Exception as e:
             logger.info(f"2nd Error in calling {LLM}: {e}")

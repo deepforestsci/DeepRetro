@@ -80,7 +80,7 @@ def obtain_prompt(LLM: str):
         else:
             sys_prompt_final = SYS_PROMPT_V4
             user_prompt_final = USER_PROMPT_V4
-            max_completion_tokens = 4096
+            max_completion_tokens = 8192
     else:
         if LLM in DEEPSEEK_MODELS:
             sys_prompt_final = SYS_PROMPT_DEEPSEEK
@@ -93,13 +93,13 @@ def obtain_prompt(LLM: str):
         else:
             sys_prompt_final = SYS_PROMPT
             user_prompt_final = USER_PROMPT
-            max_completion_tokens = 4096
+            max_completion_tokens = 8192
     return sys_prompt_final, user_prompt_final, max_completion_tokens
 
 
 @cache_results
 def call_LLM(molecule: str,
-             LLM: str = "claude-opus-4-20250514",
+             LLM: str = "claude-opus-4-6",
              temperature: float = 0.0,
              messages: Optional[list[dict]] = None,
              use_protecting_group_feature: bool = False) -> tuple[int, str]:
@@ -110,7 +110,7 @@ def call_LLM(molecule: str,
     molecule : str
         The target molecule for retrosynthesis
     LLM : str, optional
-        The LLM model to be used, by default "claude-opus-4-20250514"
+        The LLM model to be used, by default "claude-opus-4-6"
     temperature : float, optional
         The temperature for sampling, by default 0.0
     messages : Optional[list[dict]], optional
@@ -145,6 +145,7 @@ def call_LLM(molecule: str,
 
     sys_prompt_final, user_prompt_final, max_completion_tokens = obtain_prompt(
         LLM)
+    thinking_enabled = "think" in LLM.split(":")
     LLM = LLM.split(":")[0]
 
     params = {
@@ -165,6 +166,17 @@ def call_LLM(molecule: str,
         params.pop("top_p", None)
         params.pop("max_completion_tokens", None)
         params['thinking'] = {"type": "enabled", "budget_tokens": 5000}
+
+    if "opus-4-6" in LLM or "sonnet-4-6" in LLM:
+        params.pop("top_p", None)
+        if thinking_enabled:
+            params["thinking"] = {"type": "adaptive"}
+            params.pop("temperature", None)
+            params.pop("seed", None)
+            params.pop("max_completion_tokens", None)
+            params["max_tokens"] = 16000
+            if "opus-4-6" in LLM:
+                params["reasoning_effort"] = "high"
 
     if messages is None:
         messages = [{
@@ -360,11 +372,12 @@ def validate_split_json(
 
 def llm_pipeline(
     molecule: str,
-    LLM: str = "claude-opus-4-20250514",
+    LLM: str = "claude-opus-4-6",
     messages: Optional[list[dict]] = None,
     stability_flag: str = "False",
     hallucination_check: str = "False",
-    use_protecting_group_feature: bool = False
+    use_protecting_group_feature: bool = False,
+    hallucination_checker_fn=None,
 ) -> tuple[list[list[str]], list[str], list[float]]:
     """Pipeline to call LLM and validate the results
 
@@ -373,7 +386,7 @@ def llm_pipeline(
     molecule : str
         The target molecule for retrosynthesis
     LLM : str, optional
-        LLM to be used for retrosynthesis , by default "claude-opus-4-20250514"
+        LLM to be used for retrosynthesis , by default "claude-opus-4-6"
     messages : Optional[list[dict]], optional
         Conversation history, by default None
 
@@ -389,7 +402,7 @@ def llm_pipeline(
     run = 0.0
     if stability_flag.lower() == "true" or hallucination_check.lower(
     ) == "true":
-        max_run = 1.5
+        max_run = 1.0
     else:
         max_run = 0.6
     while (output_pathways == [] and run < max_run):
@@ -399,7 +412,7 @@ def llm_pipeline(
         # Selecting the model based on the run number
         current_model = LLM
         if LLM in DEEPSEEK_MODELS and run > 0.0:
-            current_model = "claude-opus-4-20250514"
+            current_model = "claude-opus-4-6"
 
         # --------------------
         # Call LLM
@@ -459,7 +472,8 @@ def llm_pipeline(
             log_message(
                 f"Calling hallucination check with pathways: {output_pathways}",
                 logger)
-            status_code, hallucination_pathways = hallucination_checker(
+            _checker = hallucination_checker_fn or hallucination_checker
+            status_code, hallucination_pathways = _checker(
                 molecule, output_pathways)
             if status_code != 200:
                 log_message(
