@@ -14,7 +14,7 @@ class ReactionStepFeaturizer(Featurizer):
 
     1. CircularFingerprint (Morgan/ECFP) for the product     — ``size`` bits
     2. CircularFingerprint (Morgan/ECFP) for the reactants   — ``size`` bits
-    3. 15 hand-crafted domain features (optional)
+    3. 27 domain features (optional)
 
     Parameters
     ----------
@@ -23,7 +23,7 @@ class ReactionStepFeaturizer(Featurizer):
     size : int, optional (default 2048)
         Fingerprint bit length for each molecule.
     use_domain_features : bool, optional (default True)
-        If True, appends 15 domain features (atom/bond/ring/MW deltas).
+        If True, appends 27 domain features.
 
     Notes
     -----
@@ -36,7 +36,7 @@ class ReactionStepFeaturizer(Featurizer):
     >>> reactions = [("CCO", "CC.O"), ("c1ccccc1", "c1ccccc1.Cl")]
     >>> X = featurizer.featurize(reactions)
     >>> X.shape
-    (2, 4111)
+    (2, 4123)
     """
 
     def __init__(
@@ -55,7 +55,7 @@ class ReactionStepFeaturizer(Featurizer):
         Returns
         -------
         dim : int
-            ``2 * size + 15`` when ``use_domain_features=True``,
+            ``2 * size + 27`` when ``use_domain_features=True``,
             ``2 * size`` otherwise.
         """
         return 2 * self.size + (NUM_DOMAIN_FEATURES if self.use_domain_features else 0)
