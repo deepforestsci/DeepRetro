@@ -150,7 +150,7 @@ class TestResolveHallucinationArgs:
     def test_ml_mode_with_classifier_returns_callable(self) -> None:
         mock_clf = MagicMock()
         with patch(
-            "deepretro.models.hallucination_helpers.HallucinationClassifier",
+            "deepretro.models.hallucination_classifier.HallucinationClassifier",
             new=type(mock_clf),
         ), patch(
             "deepretro.models.hallucination_helpers.build_ml_checker",
@@ -241,7 +241,7 @@ class TestHallucinationModeIntegration:
         mock_run = mock_pipeline
         mock_clf = MagicMock()
         with patch(
-            "deepretro.models.hallucination_helpers.HallucinationClassifier",
+            "deepretro.models.hallucination_classifier.HallucinationClassifier",
             new=type(mock_clf),
         ):
             autosolve(
