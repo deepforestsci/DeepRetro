@@ -17,15 +17,31 @@ from typing import Any
 VALID_MODES = ("heuristic", "ml", "none")
 
 
-def build_ml_checker(clf: Any):
-    """Wrap a ``HallucinationClassifier`` into a callable with the same
-    signature as ``src.utils.hallucination_checks.hallucination_checker``:
+def build_ml_checker(clf: Any) -> Any:
+    """Wrap a ``HallucinationClassifier`` into a pipeline-compatible checker.
 
-        (product: str, pathways: list) -> (int, list)
+    The returned callable has the same signature as the built-in
+    heuristic checker (``(product, pathways) -> (int, list)``).
+    Pathways flagged as hallucinated are dropped; if all are rejected
+    the pipeline retries the LLM call.
 
-    Pathways flagged as hallucinated are dropped, exactly like the
-    heuristic checker.  This plugs into ``llm_pipeline``'s retry loop
-    so rejected results trigger a new LLM call.
+    Parameters
+    ----------
+    clf : HallucinationClassifier
+        A fitted classifier instance.
+
+    Returns
+    -------
+    checker : callable
+        ``(product: str, pathways: list) -> tuple[int, list]``
+
+    Examples
+    --------
+    >>> from deepretro.models import HallucinationClassifier  # doctest: +SKIP
+    >>> clf = HallucinationClassifier()                       # doctest: +SKIP
+    >>> clf.load("model_out/")                                # doctest: +SKIP
+    >>> checker = build_ml_checker(clf)                       # doctest: +SKIP
+    >>> status, kept = checker("CCO", [["CC", "O"]])          # doctest: +SKIP
     """
     def _checker(product: str, pathways: list) -> tuple[int, list]:
         from deepretro.utils.utils_molecule import is_valid_smiles
@@ -53,8 +69,7 @@ def resolve_hallucination_args(
     hallucination_mode: str,
     hallucination_classifier: Any,
 ) -> tuple[str, Any]:
-    """Return ``(hallucination_check, hallucination_checker_fn)`` for the
-    pipeline based on *hallucination_mode*.
+    """Translate a user-facing mode string into pipeline arguments.
 
     Parameters
     ----------
@@ -64,6 +79,25 @@ def resolve_hallucination_args(
         Required when *hallucination_mode* is ``"ml"``.  Pass a fitted
         ``HallucinationClassifier`` instance or a ``str`` / ``Path``
         pointing to a saved model directory.
+
+    Returns
+    -------
+    tuple[str, callable or None]
+        ``(hallucination_check, hallucination_checker_fn)`` pair
+        consumed by ``llm_pipeline``.
+
+    Raises
+    ------
+    ValueError
+        If *hallucination_mode* is not one of the valid modes, or if
+        ``"ml"`` mode is requested without a valid classifier.
+
+    Examples
+    --------
+    >>> resolve_hallucination_args("heuristic", None)
+    ('True', None)
+    >>> resolve_hallucination_args("none", None)
+    ('False', None)
     """
     if hallucination_mode not in VALID_MODES:
         raise ValueError(
