@@ -172,10 +172,12 @@ napoleon_use_keyword = True
 autodoc_mock_imports = [
     'aizynthfinder',
     'deepchem',
+    'diskcache',
     'dotenv',
     'jax',
     'PIL',
     'rootutils',
+    'structlog',
     'tensorflow',
     'torch',
 ]
