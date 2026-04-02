@@ -78,7 +78,7 @@ jobs:
 
       - name: Run ty check
         run: |
-          uv run --project deepretro --with ty ty check deepretro \
+          uv run --isolated --no-project --with ty ty check deepretro \
             --python-version 3.12 \
             --ignore unresolved-import \
             --ignore invalid-method-override \

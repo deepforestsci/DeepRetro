@@ -18,3 +18,5 @@ coverage/
 docs/build/
 docs/_build/
 *.egg-info/
+deepretro/build/
+.worktrees/
