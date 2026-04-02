@@ -60,6 +60,7 @@ Submodules
 
    deepretro.utils.az
    deepretro.utils.metrics
+   deepretro.utils.cache
    deepretro.utils.utils_molecule
 
 API Reference
