@@ -9,6 +9,7 @@ description = "DeepRetro package for retrosynthesis"
 requires-python = ">=3.10"
 dependencies = [
     "deepchem",
+    "diskcache",
     "numpy",
     "rdkit",
     "structlog",
