@@ -1,9 +1,14 @@
 """
 Explicit in-memory cache primitives for expensive library operations.
 
-Provides a small process-local ``CacheManager`` with tag-based invalidation,
-TTL support, and lightweight statistics. Callers must instantiate and pass
-cache objects explicitly; this module does not create shared caches implicitly.
+This module provides a small process-local ``CacheManager`` backed by in-memory
+Python dictionaries. Each cache entry stores a value, an optional expiry
+deadline measured with ``time.monotonic()``, and an optional tag. A secondary
+``tag -> set[key]`` index makes group eviction efficient.
+
+The cache is explicit rather than global: callers instantiate ``CacheManager``
+objects and pass them where needed. The implementation does not use locks, so a
+single ``CacheManager`` instance is not thread-safe.
 """
 
 from __future__ import annotations
@@ -22,10 +27,31 @@ logger = structlog.get_logger(__name__)
 
 _MISS = object()
 
+__all__ = [
+    "CacheEntry",
+    "CacheManager",
+    "CacheStats",
+    "make_args_hash",
+    "make_cache_key",
+]
+
 
 @dataclass
 class CacheStats:
-    """Statistics for cache hits, misses, approximate size, and entry count."""
+    """
+    Snapshot of cache statistics.
+
+    Attributes
+    ----------
+    hits : int
+        Number of successful ``CacheManager.get`` lookups.
+    misses : int
+        Number of failed ``CacheManager.get`` lookups, including expired keys.
+    size_bytes : int
+        Shallow approximation of the live cache footprint in bytes.
+    num_entries : int
+        Number of live entries remaining after expired values are purged.
+    """
 
     hits: int
     misses: int
@@ -34,19 +60,36 @@ class CacheStats:
 
 
 @dataclass
-class _CacheEntry:
-    """Single in-memory cache entry."""
+class CacheEntry:
+    """
+    Single in-memory cache entry.
+
+    Attributes
+    ----------
+    value : Any
+        Cached payload returned by ``CacheManager.get``.
+    expires_at : float | None
+        ``time.monotonic()`` deadline when the key becomes stale. ``None`` means
+        the entry does not expire automatically.
+    tag : str | None
+        Optional group label used to evict multiple keys together.
+    """
 
     value: Any
     expires_at: float | None
     tag: str | None
 
 
-def _make_args_hash(*args: Any, **kwargs: Any) -> str:
+def make_args_hash(*args: Any, **kwargs: Any) -> str:
     """
     Generate a deterministic hash of arguments for cache keying.
 
     Tries JSON first for common types; falls back to pickle for complex objects.
+
+    Examples
+    --------
+    >>> make_args_hash("CCO", az_model="USPTO")
+    '6ad01e27a3a319962ad084787e060ab0fa0e661cc7d3e018e96747b06f7bacf7'
     """
     payload = {"args": args, "kwargs": kwargs}
     try:
@@ -77,10 +120,15 @@ def make_cache_key(namespace: str, *args: Any, version: int = 1, **kwargs: Any) 
     -------
     str
         A deterministic key suitable for ``CacheManager.get`` and ``set``.
+
+    Examples
+    --------
+    >>> make_cache_key("run_az", "CCO", az_model="USPTO", version=1)
+    'v1:run_az:6ad01e27a3a319962ad084787e060ab0fa0e661cc7d3e018e96747b06f7bacf7'
     """
     if not namespace:
         raise ValueError("namespace must be a non-empty string")
-    args_hash = _make_args_hash(*args, **kwargs)
+    args_hash = make_args_hash(*args, **kwargs)
     return f"v{version}:{namespace}:{args_hash}"
 
 
@@ -88,31 +136,76 @@ class CacheManager:
     """
     Process-local in-memory cache manager with tag support and TTL.
 
-    Each ``CacheManager`` instance owns its own dictionary, so cache state is
-    isolated unless the caller explicitly reuses the same object.
+    Each instance owns two in-memory indexes: ``_entries`` maps cache keys to
+    :class:`CacheEntry` objects, and ``_tags`` maps each tag to the set of keys
+    currently carrying that tag. ``get`` removes expired keys lazily,
+    ``evict_tag`` removes every key associated with a tag, and ``stats`` first
+    purges expired values so the reported counts reflect live entries only.
+
+    The cache is process-local and not thread-safe. Reuse the same
+    ``CacheManager`` instance only when callers intentionally want to share
+    state.
+
+    Examples
+    --------
+    >>> cache = CacheManager()
+    >>> key = make_cache_key("call_llm", "CCO", model="gpt-5.4", version=1)
+    >>> miss = object()
+    >>> cache.get(key, default=miss) is miss
+    True
+    >>> cache.set(key, {"molecule": "CCO"}, expire=300, tag="molecule:CCO")
+    >>> cache.get(key)
+    {'molecule': 'CCO'}
+    >>> cache.evict_tag("molecule:CCO")
+    1
     """
 
     def __init__(self) -> None:
         """Initialize an empty in-memory cache."""
-        self._entries: dict[str, _CacheEntry] = {}
+        self._entries: dict[str, CacheEntry] = {}
         self._tags: dict[str, set[str]] = {}
         self._hits = 0
         self._misses = 0
         self._log = logger.bind(component="cache")
 
-    def _purge_if_expired(self, key: str) -> bool:
-        """Remove the key if it has expired."""
+    def purge_if_expired(self, key: str) -> bool:
+        """
+        Remove a key if its expiry deadline has passed.
+
+        Parameters
+        ----------
+        key : str
+            Cache key to inspect.
+
+        Returns
+        -------
+        bool
+            ``True`` when the key existed and was removed because it had
+            expired, otherwise ``False``.
+        """
         entry = self._entries.get(key)
         if entry is None:
             return False
         if entry.expires_at is None or entry.expires_at > time.monotonic():
             return False
-        self._delete_key(key)
+        self.delete_key(key)
         self._log.debug("cache.expired", key=key)
         return True
 
-    def _delete_key(self, key: str) -> bool:
-        """Remove a key from the cache and tag index if present."""
+    def delete_key(self, key: str) -> bool:
+        """
+        Remove a key from the cache and tag index if present.
+
+        Parameters
+        ----------
+        key : str
+            Cache key to remove.
+
+        Returns
+        -------
+        bool
+            ``True`` when an entry was removed, otherwise ``False``.
+        """
         entry = self._entries.pop(key, None)
         if entry is None:
             return False
@@ -124,13 +217,23 @@ class CacheManager:
                     self._tags.pop(entry.tag, None)
         return True
 
-    def _purge_expired_entries(self) -> None:
-        """Drop expired keys so stats reflect live entries only."""
-        for key in list(self._entries):
-            self._purge_if_expired(key)
+    def purge_expired_entries(self) -> None:
+        """
+        Remove every expired entry currently stored in the cache.
 
-    def _estimate_size_bytes(self) -> int:
-        """Return a shallow approximation of in-memory cache size."""
+        This is useful before inspecting cache size or exporting diagnostics.
+        """
+        for key in list(self._entries):
+            self.purge_if_expired(key)
+
+    def estimate_size_bytes(self) -> int:
+        """
+        Return a shallow approximation of the current in-memory cache size.
+
+        The estimate includes the top-level dictionaries, keys, tag sets, and
+        the immediate cached values. Referenced objects are not traversed
+        recursively.
+        """
         size = sys.getsizeof(self._entries) + sys.getsizeof(self._tags)
         for key, entry in self._entries.items():
             size += sys.getsizeof(key)
@@ -157,8 +260,15 @@ class CacheManager:
         -------
         Any
             Cached value, or ``default`` if not found.
+
+        Examples
+        --------
+        >>> cache = CacheManager()
+        >>> miss = object()
+        >>> cache.get("missing", default=miss) is miss
+        True
         """
-        if self._purge_if_expired(key):
+        if self.purge_if_expired(key):
             self._misses += 1
             self._log.debug("cache.miss", key=key)
             return default
@@ -193,11 +303,17 @@ class CacheManager:
         expire : float | None, optional
             Time-to-live in seconds. None means no expiry.
         tag : str | None, optional
-            Tag for later eviction via ``evict_tag``.
+            Optional group label for later eviction via ``evict_tag``. Multiple
+            keys may share the same tag.
+
+        Examples
+        --------
+        >>> cache = CacheManager()
+        >>> cache.set("demo", {"smiles": "CCO"}, expire=60, tag="molecule:CCO")
         """
-        self._delete_key(key)
+        self.delete_key(key)
         expires_at = None if expire is None else time.monotonic() + expire
-        self._entries[key] = _CacheEntry(value=value, expires_at=expires_at, tag=tag)
+        self._entries[key] = CacheEntry(value=value, expires_at=expires_at, tag=tag)
         if tag is not None:
             self._tags.setdefault(tag, set()).add(key)
         self._log.debug("cache.set", key=key, expire=expire, tag=tag)
@@ -209,17 +325,26 @@ class CacheManager:
         Parameters
         ----------
         tag : str
-            Tag identifying entries to remove.
+            Group label identifying entries to remove. A single tag may be
+            attached to multiple cache keys.
 
         Returns
         -------
         int
             Number of entries evicted.
+
+        Examples
+        --------
+        >>> cache = CacheManager()
+        >>> cache.set("a", 1, tag="batch:1")
+        >>> cache.set("b", 2, tag="batch:1")
+        >>> cache.evict_tag("batch:1")
+        2
         """
         keys = list(self._tags.get(tag, set()))
         removed = 0
         for key in keys:
-            removed += int(self._delete_key(key))
+            removed += int(self.delete_key(key))
         self._log.info("cache.evict_tag", tag=tag, removed=removed)
         return removed
 
@@ -236,13 +361,22 @@ class CacheManager:
         Returns
         -------
         CacheStats
-            Hits, misses, approximate size in bytes, and live entry count.
+            A snapshot containing hit count, miss count, shallow byte estimate,
+            and live entry count.
+
+        Examples
+        --------
+        >>> cache = CacheManager()
+        >>> cache.set("demo", 1)
+        >>> stats = cache.stats()
+        >>> (stats.hits, stats.misses, stats.num_entries)
+        (0, 0, 1)
         """
-        self._purge_expired_entries()
+        self.purge_expired_entries()
         return CacheStats(
             hits=self._hits,
             misses=self._misses,
-            size_bytes=self._estimate_size_bytes(),
+            size_bytes=self.estimate_size_bytes(),
             num_entries=len(self._entries),
         )
 
