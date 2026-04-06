@@ -39,7 +39,11 @@ __all__ = [
 @dataclass
 class CacheStats:
     """
-    Snapshot of cache statistics.
+    Snapshot of live cache statistics returned by :meth:`CacheManager.stats`.
+
+    The reported values describe the cache after expired entries have been
+    purged. They are intended for diagnostics and monitoring rather than exact
+    process-memory accounting.
 
     Attributes
     ----------
@@ -48,9 +52,13 @@ class CacheStats:
     misses : int
         Number of failed ``CacheManager.get`` lookups, including expired keys.
     size_bytes : int
-        Shallow approximation of the live cache footprint in bytes.
+        Shallow approximation of the live cache footprint in bytes. The
+        estimate includes the top-level entry and tag dictionaries, their keys,
+        and the immediate cached values, but does not traverse referenced
+        objects recursively.
     num_entries : int
-        Number of live entries remaining after expired values are purged.
+        Number of live entries remaining after expired values are purged. This
+        reflects the keys that still participate in lookups and tag eviction.
     """
 
     hits: int
@@ -64,6 +72,11 @@ class CacheEntry:
     """
     Single in-memory cache entry.
 
+    Each entry stores a cached payload, an optional expiry deadline measured
+    with ``time.monotonic()``, and an optional tag used for group invalidation.
+    Tags let callers associate multiple cache keys with the same logical input
+    such as one molecule, model configuration, or request family.
+
     Attributes
     ----------
     value : Any
@@ -72,7 +85,10 @@ class CacheEntry:
         ``time.monotonic()`` deadline when the key becomes stale. ``None`` means
         the entry does not expire automatically.
     tag : str | None
-        Optional group label used to evict multiple keys together.
+        Optional group label attached when calling ``cache.set(..., tag=...)``.
+        All keys written with the same tag can be removed together with
+        ``CacheManager.evict_tag``, which is useful when multiple cached values
+        should be invalidated as one group.
     """
 
     value: Any
