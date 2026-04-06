@@ -87,5 +87,15 @@ all outputs from one model configuration.
 API
 ---
 
-.. automodule:: deepretro.utils.cache
+.. autofunction:: deepretro.utils.cache.make_args_hash
+
+.. autofunction:: deepretro.utils.cache.make_cache_key
+
+.. autoclass:: deepretro.utils.cache.CacheEntry
+   :exclude-members: __init__, value, expires_at, tag
+
+.. autoclass:: deepretro.utils.cache.CacheStats
+   :exclude-members: __init__, hits, misses, size_bytes, num_entries
+
+.. autoclass:: deepretro.utils.cache.CacheManager
    :members:
