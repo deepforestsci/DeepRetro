@@ -24,6 +24,8 @@ Utility Overview
      - Same as ``run_az`` plus route images when available.
    * - ``is_basic_molecule``
      - Shortcut heuristic for trivial molecules to bypass heavy search.
+   * - ``CacheManager`` / ``make_cache_key``
+     - Explicit in-memory cache primitives for expensive library operations.
 
 
 AiZynthFinder Integration Notes
@@ -39,6 +41,8 @@ Behavior highlights:
 - Auto-bypass for trivial/basic molecules via ``BASIC_MOLECULES`` and
   ``is_basic_molecule``.
 - Caching via ``src.cache.cache_results`` decorator.
+- Explicit process-local caching helpers live in ``deepretro.utils.cache`` when
+  callers need in-memory caching without shared global state.
 - Returns route dictionaries with metadata and scores from AiZynthFinder.
 
 Example: run template search
@@ -60,6 +64,7 @@ Submodules
 
    deepretro.utils.az
    deepretro.utils.metrics
+   deepretro.utils.cache
    deepretro.utils.utils_molecule
 
 API Reference
