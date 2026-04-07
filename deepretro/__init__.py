@@ -27,9 +27,9 @@ def __getattr__(name: str):
 
         return HallucinationClassifier
     if name == "autosolve":
-        from deepretro.utils.autosolve import autosolve
+        from deepretro.algorithms.autosolve import autosolve
         return autosolve
     if name == "autosolve_async":
-        from deepretro.utils.autosolve import autosolve_async
+        from deepretro.algorithms.autosolve import autosolve_async
         return autosolve_async
     raise AttributeError(f"module 'deepretro' has no attribute {name!r}")

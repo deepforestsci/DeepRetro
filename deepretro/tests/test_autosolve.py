@@ -1,4 +1,4 @@
-"""Unit tests for deepretro.utils.autosolve.
+"""Unit tests for deepretro.algorithms.autosolve.
 
 Tests the autosolve and autosolve_async wrappers using mocked pipeline
 calls so the tests run without AiZynthFinder models, LLM API keys, or
@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from deepretro.utils.autosolve import autosolve, autosolve_async
+from deepretro.algorithms.autosolve import autosolve, autosolve_async
 from deepretro.models.hallucination_helpers import (
     build_ml_checker,
     resolve_hallucination_args,
@@ -40,10 +40,10 @@ FAKE_RESULT = {
 
 @pytest.fixture()
 def mock_pipeline():
-    """Patch ``_get_pipeline`` so tests never touch src/ or aizynthfinder."""
+    """Patch ``get_pipeline`` so tests never touch src/ or aizynthfinder."""
     mock_run = MagicMock(return_value=FAKE_RESULT)
     with patch(
-        "deepretro.utils.autosolve._get_pipeline",
+        "deepretro.algorithms.autosolve.get_pipeline",
         return_value=mock_run,
     ):
         yield mock_run
