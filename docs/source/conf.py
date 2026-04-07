@@ -175,11 +175,17 @@ autodoc_mock_imports = [
     'diskcache',
     'dotenv',
     'jax',
+    'lightgbm',
+    'numpy',
+    'pandas',
     'PIL',
+    'rdkit',
     'rootutils',
+    'sklearn',
     'structlog',
     'tensorflow',
     'torch',
+    'xgboost',
 ]
 
 # Todo settings

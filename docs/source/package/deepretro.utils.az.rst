@@ -3,13 +3,37 @@ deepretro.utils.az
 
 AiZynthFinder integration helpers for template-based retrosynthesis.
 
+Installation
+------------
+
+Install the package with ``deepretro[az]`` before using this module:
+
+.. code-block:: bash
+
+   uv pip install "deepretro[az]"
+
 What This Module Does
 ---------------------
 
 - Runs AiZynthFinder search for a target SMILES.
 - Returns route dictionaries with metadata/scores.
 - Provides optional image outputs for generated routes.
+- Supports optional explicit caching through ``CacheManager``.
 - Short-circuits simple molecules to avoid unnecessary search overhead.
+
+Caching
+-------
+
+``run_az`` and ``run_az_with_img`` do not cache anything unless the caller
+passes a cache instance explicitly:
+
+.. code-block:: python
+
+   from deepretro.utils.az import run_az
+   from deepretro.utils.cache import CacheManager
+
+   cache = CacheManager(directory=".cache/deepretro")
+   solved, routes = run_az("C1CCCCC1", az_model="USPTO", cache=cache)
 
 Configuration
 -------------

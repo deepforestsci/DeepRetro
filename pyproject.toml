@@ -16,7 +16,7 @@ dependencies = [
     "flask",
     "numpy",
     "pandas",
-    "rdkit-pypi",
+    "rdkit",
     "requests",
     "boto3",
     "azure-ai-ml",
