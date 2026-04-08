@@ -64,7 +64,7 @@ def autosolve(
     from deepretro.migration.job_context import logger as context_logger
     from deepretro.migration.parse import format_output
 
-    hallucination_check, hallucination_checker_fn = _resolve_hallucination(
+    hallucination_check, hallucination_checker_fn = resolve_hallucination(
         hallucination_mode, hallucination_classifier,
     )
 
@@ -126,10 +126,10 @@ def rec_run(
 
     if depth >= max_depth:
         logger.warning(f"Max depth {max_depth} reached for {molecule}")
-        return _unsolved_leaf(molecule), False
+        return unsolved_leaf(molecule), False
     if canonical in visited:
         logger.warning(f"Cycle detected: {molecule} (canonical: {canonical})")
-        return _unsolved_leaf(molecule), False
+        return unsolved_leaf(molecule), False
 
     visited.add(canonical)
 
@@ -193,18 +193,15 @@ def rec_run(
     return result_dict, solved
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _unsolved_leaf(smiles: str) -> dict:
+def unsolved_leaf(smiles: str) -> dict:
+    """Terminal node for molecules that hit max depth or cycle detection."""
     return {
         'type': 'mol', 'smiles': smiles,
         'is_chemical': True, 'in_stock': False, 'children': [],
     }
 
 
-def _resolve_hallucination(
+def resolve_hallucination(
     mode: str, classifier: Any,
 ) -> tuple[str, Any]:
     """Convert user-facing mode to internal (flag, callable) pair."""
