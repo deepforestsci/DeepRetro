@@ -22,15 +22,13 @@ __all__ = [
     "check_carbenes",
     "check_fused_cyclopentane",
     "autosolve",
-    "autosolve_async",
 ]
 
 
 def __getattr__(name: str):
-    if name in ("autosolve", "autosolve_async"):
-        from .autosolve import autosolve, autosolve_async
+    if name == "autosolve":
+        from .autosolve import autosolve
 
         globals()["autosolve"] = autosolve
-        globals()["autosolve_async"] = autosolve_async
-        return globals()[name]
+        return autosolve
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

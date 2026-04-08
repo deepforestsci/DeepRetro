@@ -1,97 +1,21 @@
-"""Batch and single-molecule retrosynthesis runners.
+"""Single-molecule retrosynthesis runner.
 
-Wraps the full DeepRetro pipeline (AiZynthFinder -> LLM fallback ->
-metadata enrichment) into callable functions for headless execution
-without the GUI or server.
-
-The pipeline flow for each molecule is:
-
-1. **AiZynthFinder** attempts a template-based retrosynthesis.
-2. If AZ cannot find a route, the **LLM** (e.g. Claude) proposes
-   retrosynthetic steps with chain-of-thought reasoning.
-3. Proposed pathways are validated: SMILES validity, optional
-   **stability checks** (ring strain, reactive intermediates),
-   and optional **hallucination detection** (heuristic or ML-based).
-4. The recursive pipeline repeats for each reactant until all
-   leaf nodes are purchasable (in-stock) chemicals.
-5. The result tree is flattened into a step-by-step synthesis plan
-   with dependency ordering, confidence estimates, and metadata.
-
-Public API
-----------
-* :func:`autosolve` — synchronous, one molecule at a time.
-* :func:`autosolve_async` — concurrent execution over a list of SMILES
-  using ``asyncio`` + a thread-pool (the underlying pipeline is
-  synchronous, so each molecule gets its own worker thread).
+1. **AiZynthFinder** attempts template-based retrosynthesis.
+2. If AZ fails, the **LLM** proposes retrosynthetic steps.
+3. Pathways are validated (SMILES validity, stability, hallucination).
+4. Recurse on each reactant until all leaves are purchasable.
+5. Flatten the tree into a step-by-step synthesis plan.
 
 Examples
 --------
 >>> from deepretro.algorithms.autosolve import autosolve  # doctest: +SKIP
 >>> result = autosolve("CC(=O)Oc1ccccc1C(=O)O")           # doctest: +SKIP
->>> result["steps"][0]["reactants"]                         # doctest: +SKIP
-[{'smiles': 'CC(=O)O'}, {'smiles': 'Oc1ccccc1C(=O)O'}]
 """
 
 from __future__ import annotations
 
-import asyncio
-import functools
-from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from typing import Any
-
-from deepretro.models.hallucination_helpers import resolve_hallucination_args
-
-
-def get_pipeline():
-    """Lazy-import the retrosynthesis pipeline and return a runner callable.
-
-    Imports are deferred so that ``import deepretro.algorithms.autosolve``
-    succeeds even when heavy dependencies (``aizynthfinder``, LLM client
-    libraries) are not installed — useful for CI, docs builds, and
-    lightweight downstream packages that only need the data utilities.
-
-    Returns
-    -------
-    callable
-        A function ``run_retrosynthesis(smiles, **kwargs) -> dict`` that
-        executes one full retrosynthesis pass and returns the formatted
-        result dictionary.
-    """
-    import os
-    import time
-
-    import structlog
-    from deepretro.migration.rec_prithvi import rec_run_prithvi
-    from deepretro.migration.job_context import logger as context_logger
-    from deepretro.migration.parse import format_output
-
-    def run_retrosynthesis(smiles, **kwargs):
-        """Execute one retrosynthesis and return the formatted result.
-
-        Parameters
-        ----------
-        smiles : str
-            Target molecule SMILES.
-        **kwargs
-            Forwarded to :func:`rec_run_prithvi` — includes ``llm``,
-            ``az_model``, ``stability_flag``, ``hallucination_check``,
-            ``use_protecting_group_feature``, ``hallucination_checker_fn``.
-
-        Returns
-        -------
-        dict
-            Formatted result with ``steps`` and ``dependencies`` keys.
-        """
-        job_id = f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}"
-        log = structlog.get_logger().bind(job_id=job_id)
-        token = context_logger.set(log)
-        try:
-            result_dict, _ = rec_run_prithvi(smiles, job_id=job_id, **kwargs)
-            return format_output(result_dict)
-        finally:
-            context_logger.reset(token)
-
-    return run_retrosynthesis
 
 
 def autosolve(
@@ -103,180 +27,206 @@ def autosolve(
     hallucination_mode: str = "heuristic",
     hallucination_classifier: Any = None,
     use_protecting_group_feature: bool = False,
+    return_image: bool = False,
 ) -> dict[str, Any]:
     """Run retrosynthesis on a single molecule.
-
-    This is the main entry point for programmatic use of DeepRetro.
-    It is a pure function: returns the result dict without writing
-    anything to disk.  The caller decides what to do with the output
-    (save, display, post-process, etc.).
 
     Parameters
     ----------
     smiles : str
         SMILES string of the target molecule.
     llm : str
-        LLM model identifier passed to the pipeline.  Use the format
-        ``"provider/model:adv:think"`` — the ``:adv`` suffix selects
-        the advanced prompt template and ``:think`` enables extended
-        thinking for supported models (e.g. Claude Opus 4.6).
+        LLM model identifier.  ``"provider/model:adv:think"``
     az_model : str
-        AiZynthFinder model variant (e.g. ``"USPTO"``,
-        ``"Pistachio_100+"``).  Must match a subdirectory under
-        ``AZ_MODELS_PATH`` or default to the fallback config.
+        AiZynthFinder model variant (``"USPTO"``, ``"Pistachio_100+"``).
     stability_check : bool
-        When ``True``, proposed reactants are checked for chemical
-        stability (ring strain, carbocations, carbenes, etc.) and
-        unstable pathways are discarded before returning results.
+        Discard unstable pathways (ring strain, carbocations, etc.).
     hallucination_mode : str
-        Which hallucination checker to use inside the pipeline's
-        retry loop.  One of:
-
-        * ``"heuristic"`` — rule-based checker that compares product
-          and reactant atom counts, molecular weight, and fingerprint
-          similarity (default).
-        * ``"ml"`` — use the ML ``HallucinationClassifier`` supplied
-          via *hallucination_classifier*.  Requires a fitted model.
-        * ``"none"`` — skip hallucination checking entirely.
+        ``"heuristic"`` | ``"ml"`` | ``"none"``.
     hallucination_classifier : HallucinationClassifier or str or Path or None
-        Required when ``hallucination_mode="ml"``.  Pass a fitted
-        :class:`~deepretro.models.HallucinationClassifier` instance
-        or a path to a saved model directory (str / Path).
+        Required when *hallucination_mode* is ``"ml"``.
     use_protecting_group_feature : bool
-        When ``True``, the LLM prompt includes protecting-group context
-        derived from automatic detection of common protecting groups
-        in the target molecule.
+        Include protecting-group context in the LLM prompt.
+    return_image : bool
+        If ``True``, add an ``"image"`` key to the result containing a
+        ``PIL.Image.Image`` of the synthesis pathway.
 
     Returns
     -------
     dict[str, Any]
-        Retrosynthesis result dictionary with keys:
-
-        * ``"steps"`` — list of reaction steps, each containing
-          ``reactants``, ``products``, ``conditions``, ``reagents``,
-          and ``reactionmetrics`` (including ``confidenceestimate``).
-        * ``"dependencies"`` — adjacency mapping from each step to
-          its prerequisite steps.
-
-    Raises
-    ------
-    ValueError
-        If *hallucination_mode* is invalid, or ``"ml"`` mode is
-        requested without a valid *hallucination_classifier*.
-
-    Examples
-    --------
-    >>> from deepretro.algorithms.autosolve import autosolve  # doctest: +SKIP
-    >>> result = autosolve("c1ccccc1")                        # doctest: +SKIP
-    >>> result = autosolve(
-    ...     "c1ccccc1",
-    ...     hallucination_mode="ml",
-    ...     hallucination_classifier="model_out/",
-    ... )                                                      # doctest: +SKIP
+        ``{"steps": [...], "dependencies": {...}}``.
+        When *return_image* is ``True``, also contains ``"image"``.
     """
-    run_retrosynthesis = get_pipeline()
-    h_check, h_checker_fn = resolve_hallucination_args(
+    import os
+    import time
+
+    import structlog
+    from deepretro.migration.job_context import logger as context_logger
+    from deepretro.migration.parse import format_output
+
+    hallucination_check, hallucination_checker_fn = _resolve_hallucination(
         hallucination_mode, hallucination_classifier,
     )
 
-    return run_retrosynthesis(
-        smiles,
-        llm=llm,
-        az_model=az_model,
-        stability_flag=str(stability_check),
-        hallucination_check=h_check,
+    job_id = f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}"
+    log = structlog.get_logger().bind(job_id=job_id)
+    token = context_logger.set(log)
+    try:
+        result_dict, _ = rec_run(
+            smiles,
+            llm=llm,
+            az_model=az_model,
+            stability_flag=str(stability_check),
+            hallucination_check=hallucination_check,
+            use_protecting_group_feature=use_protecting_group_feature,
+            hallucination_checker_fn=hallucination_checker_fn,
+        )
+        output = format_output(result_dict)
+    finally:
+        context_logger.reset(token)
+
+    if return_image:
+        from deepretro.utils.visualize import visualize_pathway
+        output["image"] = visualize_pathway(output)
+
+    return output
+
+
+def rec_run(
+    molecule: str,
+    llm: str,
+    az_model: str,
+    stability_flag: str,
+    hallucination_check: str,
+    use_protecting_group_feature: bool,
+    hallucination_checker_fn,
+    visited: set | None = None,
+    depth: int = 0,
+    max_depth: int = 50,
+) -> tuple[dict, bool]:
+    """Recursively solve a molecule via AZ, falling back to LLM.
+
+    Returns a nested mol/reaction tree and a *solved* flag.
+    """
+    from rdkit import Chem
+    from deepretro.migration.llm import llm_pipeline
+    from deepretro.utils.az import run_az
+    from deepretro.migration.job_context import logger as context_logger
+
+    logger = context_logger.get()
+
+    if visited is None:
+        visited = set()
+
+    try:
+        mol = Chem.MolFromSmiles(molecule)
+        canonical = Chem.MolToSmiles(mol, canonical=True) if mol else molecule
+    except Exception:
+        canonical = molecule
+
+    if depth >= max_depth:
+        logger.warning(f"Max depth {max_depth} reached for {molecule}")
+        return _unsolved_leaf(molecule), False
+    if canonical in visited:
+        logger.warning(f"Cycle detected: {molecule} (canonical: {canonical})")
+        return _unsolved_leaf(molecule), False
+
+    visited.add(canonical)
+
+    solved, az_results = run_az(smiles=molecule, az_model=az_model)
+    result_dict = az_results[0]
+    if solved:
+        logger.info(f"AZ solved {molecule}")
+        return result_dict, True
+
+    logger.info(f"AZ failed for {molecule}, running LLM")
+    pathways, explained, confidence = llm_pipeline(
+        molecule=molecule,
+        LLM=llm,
+        stability_flag=stability_flag,
+        hallucination_check=hallucination_check,
         use_protecting_group_feature=use_protecting_group_feature,
-        hallucination_checker_fn=h_checker_fn,
+        hallucination_checker_fn=hallucination_checker_fn,
     )
+    logger.info(f"LLM returned {pathways}")
+    logger.info(f"LLM explained {explained}")
 
+    result_dict = {
+        'type': 'mol',
+        'smiles': molecule,
+        'is_chemical': True,
+        'in_stock': False,
+        'children': [{
+            'type': 'reaction',
+            'is_reaction': True,
+            'metadata': {'policy_probability': confidence},
+            'children': [],
+        }],
+    }
 
-async def autosolve_async(
-    smiles_list: list[str],
-    *,
-    llm: str = "anthropic/claude-3-7-sonnet-20250219:adv",
-    az_model: str = "Pistachio_100+",
-    stability_check: bool = True,
-    hallucination_mode: str = "heuristic",
-    hallucination_classifier: Any = None,
-    use_protecting_group_feature: bool = False,
-    max_concurrent: int = 6,
-) -> list[dict[str, Any]]:
-    """Run retrosynthesis on multiple molecules concurrently.
-
-    Each molecule is dispatched to a :class:`ThreadPoolExecutor`
-    (because the underlying pipeline is synchronous) and at most
-    *max_concurrent* molecules run in parallel.  Returns results
-    in the same order as the input list.
-
-    This is a pure function: returns a list of result dicts without
-    writing anything to disk.
-
-    Parameters
-    ----------
-    smiles_list : list[str]
-        SMILES strings of the target molecules.
-    llm : str
-        LLM model identifier.  See :func:`autosolve` for format.
-    az_model : str
-        AiZynthFinder model variant.
-    stability_check : bool
-        Enable stability checking on proposed reactants.
-    hallucination_mode : str
-        ``"heuristic"``, ``"ml"``, or ``"none"``.
-        See :func:`autosolve` for details.
-    hallucination_classifier : HallucinationClassifier or str or Path or None
-        Required when ``hallucination_mode="ml"``.
-        See :func:`autosolve` for details.
-    use_protecting_group_feature : bool
-        Enable protecting-group masking in the LLM prompt.
-    max_concurrent : int
-        Maximum number of molecules processed in parallel.  Each
-        molecule gets its own thread; this caps the concurrency to
-        avoid overwhelming API rate limits.
-
-    Returns
-    -------
-    list[dict[str, Any]]
-        One result dict per input SMILES, in the same order.
-        Failed molecules produce ``{"error": "<msg>", "smiles": "<smi>"}``
-        instead of raising, so one failure does not abort the batch.
-
-    Examples
-    --------
-    >>> import asyncio                                                 # doctest: +SKIP
-    >>> from deepretro.algorithms.autosolve import autosolve_async     # doctest: +SKIP
-    >>> results = asyncio.run(autosolve_async(["c1ccccc1", "CCO"]))    # doctest: +SKIP
-    >>> len(results)                                                    # doctest: +SKIP
-    2
-    """
-    run_retrosynthesis = get_pipeline()
-    h_check, h_checker_fn = resolve_hallucination_args(
-        hallucination_mode, hallucination_classifier,
+    recurse_kw = dict(
+        llm=llm, az_model=az_model,
+        stability_flag=stability_flag,
+        hallucination_check=hallucination_check,
+        use_protecting_group_feature=use_protecting_group_feature,
+        hallucination_checker_fn=hallucination_checker_fn,
+        visited=visited, depth=depth + 1, max_depth=max_depth,
     )
+    children = result_dict['children'][0]['children']
 
-    stability_flag = str(stability_check)
-    semaphore = asyncio.Semaphore(max_concurrent)
-    loop = asyncio.get_running_loop()
+    for pathway in pathways:
+        if isinstance(pathway, list):
+            all_solved = True
+            for smi in pathway:
+                res, stat = rec_run(molecule=smi, **recurse_kw)
+                if stat:
+                    children.append(res)
+                else:
+                    all_solved = False
+            solved = all_solved
+        else:
+            res, solved = rec_run(molecule=pathway, **recurse_kw)
+            children.append(res)
+        if solved:
+            break
 
-    async def process_molecule(smi: str) -> dict[str, Any]:
-        async with semaphore:
-            try:
-                with ThreadPoolExecutor(max_workers=1) as pool:
-                    return await loop.run_in_executor(
-                        pool,
-                        functools.partial(
-                            run_retrosynthesis,
-                            smi,
-                            llm=llm,
-                            az_model=az_model,
-                            stability_flag=stability_flag,
-                            hallucination_check=h_check,
-                            use_protecting_group_feature=use_protecting_group_feature,
-                            hallucination_checker_fn=h_checker_fn,
-                        ),
-                    )
-            except Exception as exc:
-                return {"error": str(exc), "smiles": smi}
+    return result_dict, solved
 
-    tasks = [asyncio.create_task(process_molecule(smi)) for smi in smiles_list]
-    return list(await asyncio.gather(*tasks))
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _unsolved_leaf(smiles: str) -> dict:
+    return {
+        'type': 'mol', 'smiles': smiles,
+        'is_chemical': True, 'in_stock': False, 'children': [],
+    }
+
+
+def _resolve_hallucination(
+    mode: str, classifier: Any,
+) -> tuple[str, Any]:
+    """Convert user-facing mode to internal (flag, callable) pair."""
+    if mode == "none":
+        return "False", None
+    if mode == "heuristic":
+        return "True", None
+    if mode == "ml":
+        from deepretro.models.hallucination_classifier import HallucinationClassifier
+        from deepretro.models.hallucination_helpers import build_ml_checker
+
+        if isinstance(classifier, (str, Path)):
+            clf = HallucinationClassifier()
+            clf.load(str(classifier))
+        elif hasattr(classifier, "predict_single"):
+            clf = classifier
+        else:
+            raise ValueError(
+                f"hallucination_mode='ml' requires a HallucinationClassifier "
+                f"or path to saved model — got {type(classifier)}"
+            )
+        return "True", build_ml_checker(clf)
+    raise ValueError(
+        f"hallucination_mode must be 'heuristic', 'ml', or 'none' — got {mode!r}"
+    )

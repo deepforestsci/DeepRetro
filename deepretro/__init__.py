@@ -10,7 +10,6 @@ __all__ = [
     "configure_logging",
     "HallucinationClassifier",
     "autosolve",
-    "autosolve_async",
 ]
 
 def __getattr__(name: str):
@@ -29,7 +28,4 @@ def __getattr__(name: str):
     if name == "autosolve":
         from deepretro.algorithms.autosolve import autosolve
         return autosolve
-    if name == "autosolve_async":
-        from deepretro.algorithms.autosolve import autosolve_async
-        return autosolve_async
     raise AttributeError(f"module 'deepretro' has no attribute {name!r}")
