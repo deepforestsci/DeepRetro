@@ -21,7 +21,7 @@ from typing import Any
 def autosolve(
     smiles: str,
     *,
-    llm: str = "anthropic/claude-3-7-sonnet-20250219:adv",
+    llm: str = "anthropic/claude-opus-4-6:adv:think",
     az_model: str = "Pistachio_100+",
     stability_check: bool = True,
     hallucination_mode: str = "heuristic",
