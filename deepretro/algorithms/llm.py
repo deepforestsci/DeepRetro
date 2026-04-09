@@ -14,16 +14,16 @@ from deepretro.utils.variables import USER_PROMPT_DEEPSEEK, SYS_PROMPT_DEEPSEEK
 from deepretro.utils.variables import ADDON_PROMPT_7_MEMBER, USER_PROMPT_DEEPSEEK_V4
 from deepretro.utils.variables import ERROR_MAP, PROTECTING_GROUP_CONTEXT
 from deepretro.utils.utils_molecule import validity_check, detect_seven_member_rings
-from deepretro.migration.job_context import logger as context_logger
-from deepretro.migration.pipeline_checks import stability_checker, hallucination_checker
-from deepretro.migration.protecting_group import mask_protecting_groups_multisymbol
+from deepretro.logging import logger as context_logger
+from deepretro.algorithms.pipeline_checks import stability_checker, hallucination_checker
+from deepretro.utils.protecting_group import mask_protecting_groups_multisymbol
 
 load_dotenv()
 
 litellm.success_callback = ["langfuse"]
 litellm.drop_params = True
 
-from deepretro.migration.langfuse_config import get_langfuse_metadata
+from deepretro.utils.langfuse_config import get_langfuse_metadata
 
 ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
                                     "true").lower() == "false" else True
@@ -121,6 +121,8 @@ def call_LLM(molecule: str,
     if LLM in DEEPSEEK_MODELS:
         user_prompt_final += add_on
 
+    is_anthropic = "anthropic" in LLM or "claude" in LLM
+
     if is_thinking:
         params["max_tokens"] = 16384
         params.pop("temperature", None)
@@ -128,6 +130,8 @@ def call_LLM(molecule: str,
         params.pop("seed", None)
         params.pop("max_completion_tokens", None)
         params['thinking'] = {"type": "adaptive"}
+    elif is_anthropic:
+        params.pop("top_p", None)
 
     if messages is None:
         messages = [{

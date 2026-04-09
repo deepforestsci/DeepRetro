@@ -61,8 +61,8 @@ def autosolve(
     import time
 
     import structlog
-    from deepretro.migration.job_context import logger as context_logger
-    from deepretro.migration.parse import format_output
+    from deepretro.logging import logger as context_logger
+    from deepretro.utils.parse import format_output
 
     hallucination_check, hallucination_checker_fn = resolve_hallucination(
         hallucination_mode, hallucination_classifier,
@@ -109,9 +109,9 @@ def rec_run(
     Returns a nested mol/reaction tree and a *solved* flag.
     """
     from rdkit import Chem
-    from deepretro.migration.llm import llm_pipeline
+    from deepretro.algorithms.llm import llm_pipeline
     from deepretro.utils.az import run_az
-    from deepretro.migration.job_context import logger as context_logger
+    from deepretro.logging import logger as context_logger
 
     logger = context_logger.get()
 

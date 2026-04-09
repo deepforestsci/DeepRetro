@@ -45,7 +45,7 @@ def mock_pipeline():
         "deepretro.algorithms.autosolve.rec_run",
         return_value=(FAKE_TREE, True),
     ) as mock_rec, patch(
-        "deepretro.migration.parse.format_output",
+        "deepretro.utils.parse.format_output",
         return_value=FAKE_RESULT,
     ) as mock_fmt:
         yield mock_rec, mock_fmt

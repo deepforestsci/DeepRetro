@@ -6,7 +6,7 @@ import os
 
 from deepretro.algorithms.hallucination_checker import calculate_hallucination_score
 from deepretro.algorithms.stability_checker import check_molecule_stability
-from deepretro.migration import job_context
+from deepretro import logging as job_context
 from deepretro.utils.utils_molecule import is_valid_smiles
 
 ENABLE_LOGGING = os.getenv("ENABLE_LOGGING", "true").lower() != "false"

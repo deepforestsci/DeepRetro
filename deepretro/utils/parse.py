@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Optional
 
-from deepretro.migration.parse_metrics import (
+from deepretro.utils.parse_metrics import (
     calc_confidence_estimate,
     calc_scalability_index,
 )

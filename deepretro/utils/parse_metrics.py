@@ -7,7 +7,7 @@ from pathlib import Path
 
 import joblib
 
-from deepretro.migration import job_context
+from deepretro import logging as job_context
 from deepretro.utils import utils_molecule
 from deepretro.utils.variables import ENCODING_SCALABILITY, REACTION_ENCODING_NAMES
 

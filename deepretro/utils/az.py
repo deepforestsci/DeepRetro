@@ -10,7 +10,7 @@ from pathlib import Path
 from aizynthfinder.aizynthfinder import AiZynthFinder
 from typing import Any, Dict, Sequence
 from deepretro.utils.variables import BASIC_MOLECULES
-from deepretro.migration.cache import cache_results
+from deepretro.utils.cache import cache_results
 from rdkit import Chem
 from rdkit.Chem import rdqueries
 from PIL.Image import Image

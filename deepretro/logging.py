@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import contextvars
 import logging
 
 import structlog
+
+# Context variable for the per-job structlog logger (set by autosolve)
+logger: contextvars.ContextVar = contextvars.ContextVar("logger")
 
 
 def configure_logging(
