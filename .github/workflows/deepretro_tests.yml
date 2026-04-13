@@ -55,8 +55,16 @@ jobs:
       - name: Install deepretro
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install -e "deepretro/[dev]"
+          if [ "${{ matrix.python-version }}" = "3.11" ]; then
+            pip install -e "deepretro/[dev,az]"
+          else
+            pip install -e "deepretro/[dev]"
+          fi
 
       - name: Run tests
         run: |
-          pytest deepretro/tests/ -v
+          if [ "${{ matrix.python-version }}" = "3.11" ]; then
+            pytest deepretro/tests/ -v
+          else
+            pytest deepretro/tests/ -v -m "not slow"
+          fi
