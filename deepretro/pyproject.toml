@@ -9,14 +9,13 @@ description = "DeepRetro package for retrosynthesis"
 requires-python = ">=3.10"
 dependencies = [
     "deepchem",
-    "diskcache",
-    "numpy>=1.26,<2",
-    "pandas>=2.2,<3",
+    "numpy",
     "rdkit",
     "structlog",
     "xgboost<2.0",  # DeepChem GBDTModel uses XGBoost's sklearn wrapper; >=2.0 has breaking API changes
     "lightgbm",
     "scikit-learn",
+    "pandas",
 ]
 
 [project.optional-dependencies]
@@ -29,10 +28,6 @@ docs = [
     "sphinx-rtd-theme>=3.0",
     "sphinx-autodoc-typehints>=3.0",
     "myst-parser>=4.0",
-]
-az = [
-    "aizynthfinder>=4.4.0",
-    "pillow",
 ]
 
 [project.urls]
