@@ -3,52 +3,63 @@
 Runs AiZynthFinder on target molecules, with optional image export.
 Uses ZINC stock and USPTO expansion/filter policies by default.
 Requires ``AZ_MODEL_CONFIG_PATH`` or ``AZ_MODELS_PATH`` environment variables.
+Caching is opt-in through an explicit ``CacheManager`` argument.
 """
 
+from __future__ import annotations
+
+import importlib
 import os
-from aizynthfinder.aizynthfinder import AiZynthFinder
-from typing import Any, Dict, Sequence
-from src.variables import BASIC_MOLECULES
-from src.cache import cache_results
-import rootutils
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, Sequence, cast
+
+import structlog
 from rdkit import Chem
 from rdkit.Chem import rdqueries
-from PIL.Image import Image
 
-root_dir = rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+from deepretro.utils.cache import CacheManager, make_cache_key
+from deepretro.utils.variables import BASIC_MOLECULES
 
-ENABLE_LOGGING = (
-    False if os.getenv("ENABLE_LOGGING", "true").lower() == "false" else True
-)
+if TYPE_CHECKING:
+    from PIL.Image import Image
 
-# Paths from env; required for AiZynthFinder config and model files
-AZ_MODEL_CONFIG_PATH = f"{root_dir}/{os.getenv('AZ_MODEL_CONFIG_PATH')}"
-AZ_MODELS_PATH = f"{root_dir}/{os.getenv('AZ_MODELS_PATH')}"
+logger = structlog.get_logger()
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-def _log(message: str, logger=None):
-    """Log the message
-
-    Parameters
-    ----------
-    message : str
-        The message to be logged
-    logger : _type_, optional
-        The logger object, by default None
-
-    Returns
-    -------
-    None
-    """
-    if logger is not None:
-        logger.info(message)
-    else:
-        print(message)
+AZ_MODEL_CONFIG_PATH = f"{PROJECT_ROOT}/{os.getenv('AZ_MODEL_CONFIG_PATH')}"
+AZ_MODELS_PATH = f"{PROJECT_ROOT}/{os.getenv('AZ_MODELS_PATH')}"
 
 
-@cache_results
+def _basic_molecule_route(smiles: str) -> list[Dict[str, Any]]:
+    """Return the solved route payload for a feedstock/basic molecule."""
+    return [
+        {
+            "type": "mol",
+            "hide": False,
+            "smiles": smiles,
+            "is_chemical": True,
+            "in_stock": True,
+        }
+    ]
+
+
+def _get_aizynthfinder_cls():
+    """Return the AiZynthFinder class or raise a helpful optional-dependency error."""
+    try:
+        module = importlib.import_module("aizynthfinder.aizynthfinder")
+    except ImportError as exc:
+        raise ImportError(
+            "AiZynthFinder support requires optional dependencies. "
+            "Install the package with `deepretro[az]`."
+        ) from exc
+    return module.AiZynthFinder
+
+
 def run_az(
-    smiles: str, az_model: str = "USPTO"
+    smiles: str,
+    az_model: str = "USPTO",
+    cache: CacheManager | None = None,
 ) -> tuple[bool, Sequence[Dict[str, Any]]]:
     """Run the retrosynthesis using AiZynthFinder.
 
@@ -66,18 +77,39 @@ def run_az(
     az_model : str, optional
         AiZynthFinder model variant (e.g. ``"USPTO"``, ``"Pistachio_50"``),
         by default ``"USPTO"``.
+    cache : CacheManager | None, optional
+        Explicit cache instance used to memoize results for this call. When
+        ``None``, no cache is read or written.
 
     Returns
     -------
     tuple[bool, Sequence[Dict[str, Any]]]
         ``(solved, routes)`` — whether a route was found and the route data.
+
+    Notes
+    -----
+    Install the package with ``deepretro[az]``. Caching is disabled unless an
+    explicit ``cache=CacheManager(...)`` is supplied.
     """
+    cache_key = make_cache_key("run_az", smiles, az_model=az_model, version=1)
+    cache_miss = object()
+    if cache is not None:
+        cached_result = cache.get(cache_key, default=cache_miss)
+        if cached_result is not cache_miss:
+            return cast(tuple[bool, Sequence[Dict[str, Any]]], cached_result)
+
+    if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
+        result = (True, _basic_molecule_route(smiles))
+        if cache is not None:
+            cache.set(cache_key, result, tag=smiles)
+        return result
+
     try:
         config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
         with open(config_path, "r") as _:
             config_filename = config_path
     except FileNotFoundError:
-        _log(f"AZ_MODEL_CONFIG_PATH not found at {config_path}")
+        logger.warning("AZ config not found, trying fallback", path=config_path)
         try:
             with open(AZ_MODEL_CONFIG_PATH, "r") as _:
                 config_filename = AZ_MODEL_CONFIG_PATH
@@ -85,18 +117,8 @@ def run_az(
             raise FileNotFoundError(
                 f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}"
             )
-    # if simple molecule, skip the retrosynthesis
-    if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
-        return True, [
-            {
-                "type": "mol",
-                "hide": False,
-                "smiles": smiles,
-                "is_chemical": True,
-                "in_stock": True,
-            }
-        ]
-    finder = AiZynthFinder(configfile=config_filename)
+    ai_zynth_finder_cls = _get_aizynthfinder_cls()
+    finder = ai_zynth_finder_cls(configfile=config_filename)
     finder.stock.select("zinc")
     finder.expansion_policy.select("uspto")
     finder.filter_policy.select("uspto")
@@ -108,12 +130,15 @@ def run_az(
     result_dict = finder.routes.dict_with_extra(
         include_metadata=True, include_scores=True
     )
-    return status, result_dict
+    result = (status, result_dict)
+    if cache is not None:
+        cache.set(cache_key, result, tag=smiles)
+    return result
 
 
-@cache_results
 def run_az_with_img(
     smiles: str,
+    cache: CacheManager | None = None,
 ) -> tuple[bool, Sequence[Dict[str, Any]], Sequence[Image | None] | None]:
     """Run the retrosynthesis using AiZynthFinder.
 
@@ -128,29 +153,39 @@ def run_az_with_img(
     ----------
     smiles : str
         SMILES string of the target molecule.
+    cache : CacheManager | None, optional
+        Explicit cache instance used to memoize results for this call. When
+        ``None``, no cache is read or written.
 
     Returns
     -------
     tuple[bool, Sequence[Dict[str, Any]], Sequence[Image] | None]
         ``(solved, routes, images)`` — solved status, route data, and
         optional route images (PNG bytes). Uses ``AZ_MODEL_CONFIG_PATH``.
+
+    Notes
+    -----
+    Install the package with ``deepretro[az]``. Caching is disabled unless an
+    explicit ``cache=CacheManager(...)`` is supplied.
     """
-    # if simple molecule, skip the retrosynthesis
+    cache_key = make_cache_key("run_az_with_img", smiles, version=1)
+    cache_miss = object()
+    if cache is not None:
+        cached_result = cache.get(cache_key, default=cache_miss)
+        if cached_result is not cache_miss:
+            return cast(
+                tuple[bool, Sequence[Dict[str, Any]], Any],
+                cached_result,
+            )
+
     if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
-        return (
-            True,
-            [
-                {
-                    "type": "mol",
-                    "hide": False,
-                    "smiles": smiles,
-                    "is_chemical": True,
-                    "in_stock": True,
-                }
-            ],
-            None,
-        )
-    finder = AiZynthFinder(configfile=AZ_MODEL_CONFIG_PATH)
+        result = (True, _basic_molecule_route(smiles), None)
+        if cache is not None:
+            cache.set(cache_key, result, tag=smiles)
+        return result
+
+    ai_zynth_finder_cls = _get_aizynthfinder_cls()
+    finder = ai_zynth_finder_cls(configfile=AZ_MODEL_CONFIG_PATH)
     finder.stock.select("zinc")
     finder.expansion_policy.select("uspto")
     finder.filter_policy.select("uspto")
@@ -163,7 +198,10 @@ def run_az_with_img(
         include_metadata=True, include_scores=True
     )
     images: Sequence[Image | None] = finder.routes.images
-    return status, result_dict, images
+    result = (status, result_dict, images)
+    if cache is not None:
+        cache.set(cache_key, result, tag=smiles)
+    return result
 
 
 def is_basic_molecule(smiles: str) -> bool:
