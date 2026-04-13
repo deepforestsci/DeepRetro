@@ -55,7 +55,6 @@ def _download_aizynth_models(models_dir: Path) -> None:
 @pytest.fixture(scope="session")
 def az_models_dir(tmp_path_factory):
     """Session-scoped fixture: download AiZynthFinder models to a temp directory."""
-    pytest.importorskip("aizynthfinder")
     models_dir = tmp_path_factory.mktemp("aizynth_models")
     _download_aizynth_models(models_dir)
     return models_dir
