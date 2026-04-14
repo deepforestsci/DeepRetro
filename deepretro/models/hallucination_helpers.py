@@ -5,8 +5,7 @@ Provides:
 * :func:`build_ml_checker` — wrap a classifier into the callable
   signature the pipeline expects.
 * :func:`resolve_hallucination_args` — turn a user-friendly mode string
-  into the ``(hallucination_check, hallucination_checker_fn)`` pair
-  consumed by ``llm_pipeline``.
+  into a checker callable (or ``None``) consumed by ``llm_pipeline``.
 """
 
 from __future__ import annotations
@@ -68,8 +67,8 @@ def build_ml_checker(clf: Any) -> Any:
 def resolve_hallucination_args(
     hallucination_mode: str,
     hallucination_classifier: Any,
-) -> tuple[str, Any]:
-    """Translate a user-facing mode string into pipeline arguments.
+):
+    """Translate a user-facing mode string into a checker callable or None.
 
     Parameters
     ----------
@@ -82,9 +81,9 @@ def resolve_hallucination_args(
 
     Returns
     -------
-    tuple[str, callable or None]
-        ``(hallucination_check, hallucination_checker_fn)`` pair
-        consumed by ``llm_pipeline``.
+    callable or None
+        A checker with signature ``(product, pathways) -> (int, list)``,
+        or ``None`` to skip hallucination checking.
 
     Raises
     ------
@@ -94,10 +93,10 @@ def resolve_hallucination_args(
 
     Examples
     --------
-    >>> resolve_hallucination_args("heuristic", None)
-    ('True', None)
-    >>> resolve_hallucination_args("none", None)
-    ('False', None)
+    >>> resolve_hallucination_args("none", None) is None
+    True
+    >>> callable(resolve_hallucination_args("heuristic", None))
+    True
     """
     if hallucination_mode not in VALID_MODES:
         raise ValueError(
@@ -106,10 +105,11 @@ def resolve_hallucination_args(
         )
 
     if hallucination_mode == "none":
-        return "False", None
+        return None
 
     if hallucination_mode == "heuristic":
-        return "True", None
+        from deepretro.algorithms.pipeline_checks import hallucination_checker
+        return hallucination_checker
 
     # mode == "ml" -- resolve the classifier
     from deepretro.models.hallucination_classifier import HallucinationClassifier
@@ -126,4 +126,4 @@ def resolve_hallucination_args(
             f"saved model directory — got {type(hallucination_classifier)}"
         )
 
-    return "True", build_ml_checker(clf)
+    return build_ml_checker(clf)

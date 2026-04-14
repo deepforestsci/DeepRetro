@@ -15,7 +15,7 @@ from deepretro.utils.variables import ADDON_PROMPT_7_MEMBER, USER_PROMPT_DEEPSEE
 from deepretro.utils.variables import ERROR_MAP, PROTECTING_GROUP_CONTEXT
 from deepretro.utils.utils_molecule import validity_check, detect_seven_member_rings
 from deepretro.logging import logger as context_logger
-from deepretro.algorithms.pipeline_checks import stability_checker, hallucination_checker
+from deepretro.algorithms.pipeline_checks import stability_checker
 from deepretro.utils.protecting_group import mask_protecting_groups_multisymbol
 
 load_dotenv()
@@ -264,9 +264,8 @@ def llm_pipeline(
     LLM: str = "claude-opus-4-20250514",
     messages: Optional[list[dict]] = None,
     stability_flag: str = "False",
-    hallucination_check: str = "False",
+    hallucination_checker=None,
     use_protecting_group_feature: bool = False,
-    hallucination_checker_fn=None,
 ) -> tuple[list[list[str]], list[str], list[float]]:
     """Full pipeline: call LLM, parse, validate, stability/hallucination check."""
     logger = context_logger.get() if ENABLE_LOGGING else None
@@ -274,8 +273,7 @@ def llm_pipeline(
     output_explanations: list[str] = []
     output_confidence: list[float] = []
     run = 0.0
-    if stability_flag.lower() == "true" or hallucination_check.lower(
-    ) == "true":
+    if stability_flag.lower() == "true" or hallucination_checker is not None:
         max_run = 1.5
     else:
         max_run = 0.6
@@ -329,12 +327,11 @@ def llm_pipeline(
                 continue
             output_pathways = stable_pathways
 
-        if hallucination_check.lower() == "true":
+        if hallucination_checker is not None:
             log_message(
                 f"Calling hallucination check with pathways: {output_pathways}",
                 logger)
-            _checker = hallucination_checker_fn or hallucination_checker
-            status_code, hallucination_pathways = _checker(
+            status_code, hallucination_pathways = hallucination_checker(
                 molecule, output_pathways)
             if status_code != 200:
                 log_message(

@@ -64,23 +64,23 @@ def autosolve(
     from deepretro.logging import logger as context_logger
     from deepretro.utils.parse import format_output
 
-    hallucination_check, hallucination_checker_fn = resolve_hallucination(
+    hallucination_checker = resolve_hallucination(
         hallucination_mode, hallucination_classifier,
+    )
+
+    solver = AutoSolver(
+        llm=llm,
+        az_model=az_model,
+        stability_flag=str(stability_check),
+        hallucination_checker=hallucination_checker,
+        use_protecting_group_feature=use_protecting_group_feature,
     )
 
     job_id = f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}"
     log = structlog.get_logger().bind(job_id=job_id)
     token = context_logger.set(log)
     try:
-        result_dict, _ = rec_run(
-            smiles,
-            llm=llm,
-            az_model=az_model,
-            stability_flag=str(stability_check),
-            hallucination_check=hallucination_check,
-            use_protecting_group_feature=use_protecting_group_feature,
-            hallucination_checker_fn=hallucination_checker_fn,
-        )
+        result_dict, _ = solver.solve(smiles)
         output = format_output(result_dict)
     finally:
         context_logger.reset(token)
@@ -92,105 +92,106 @@ def autosolve(
     return output
 
 
-def rec_run(
-    molecule: str,
-    llm: str,
-    az_model: str,
-    stability_flag: str,
-    hallucination_check: str,
-    use_protecting_group_feature: bool,
-    hallucination_checker_fn,
-    visited: set | None = None,
-    depth: int = 0,
-    max_depth: int = 50,
-) -> tuple[dict, bool]:
-    """Recursively solve a molecule via AZ, falling back to LLM.
+class AutoSolver:
+    """Holds shared config"""
 
-    Returns a nested mol/reaction tree and a *solved* flag.
-    """
-    from rdkit import Chem
-    from deepretro.algorithms.llm import llm_pipeline
-    from deepretro.utils.az import run_az
-    from deepretro.logging import logger as context_logger
+    def __init__(
+        self,
+        llm: str,
+        az_model: str,
+        stability_flag: str,
+        hallucination_checker,
+        use_protecting_group_feature: bool,
+        max_depth: int = 50,
+    ):
+        self.llm = llm
+        self.az_model = az_model
+        self.stability_flag = stability_flag
+        self.hallucination_checker = hallucination_checker
+        self.use_protecting_group_feature = use_protecting_group_feature
+        self.max_depth = max_depth
 
-    logger = context_logger.get()
+    def solve(
+        self,
+        molecule: str,
+        visited: set | None = None,
+        depth: int = 0,
+    ) -> tuple[dict, bool]:
+        """Recursively solve a molecule via AZ, falling back to LLM.
 
-    if visited is None:
-        visited = set()
+        Returns a nested mol/reaction tree and a *solved* flag.
+        """
+        from rdkit import Chem
+        from deepretro.algorithms.llm import llm_pipeline
+        from deepretro.utils.az import run_az
+        from deepretro.logging import logger as context_logger
 
-    try:
-        mol = Chem.MolFromSmiles(molecule)
-        canonical = Chem.MolToSmiles(mol, canonical=True) if mol else molecule
-    except Exception:
-        canonical = molecule
+        logger = context_logger.get()
 
-    if depth >= max_depth:
-        logger.warning(f"Max depth {max_depth} reached for {molecule}")
-        return unsolved_leaf(molecule), False
-    if canonical in visited:
-        logger.warning(f"Cycle detected: {molecule} (canonical: {canonical})")
-        return unsolved_leaf(molecule), False
+        if visited is None:
+            visited = set()
 
-    visited.add(canonical)
+        try:
+            mol = Chem.MolFromSmiles(molecule)
+            canonical = Chem.MolToSmiles(mol, canonical=True) if mol else molecule
+        except Exception:
+            canonical = molecule
 
-    solved, az_results = run_az(smiles=molecule, az_model=az_model)
-    result_dict = az_results[0]
-    if solved:
-        logger.info(f"AZ solved {molecule}")
-        return result_dict, True
+        if depth >= self.max_depth:
+            logger.warning(f"Max depth {self.max_depth} reached for {molecule}")
+            return unsolved_leaf(molecule), False
+        if canonical in visited:
+            logger.warning(f"Cycle detected: {molecule} (canonical: {canonical})")
+            return unsolved_leaf(molecule), False
 
-    logger.info(f"AZ failed for {molecule}, running LLM")
-    pathways, explained, confidence = llm_pipeline(
-        molecule=molecule,
-        LLM=llm,
-        stability_flag=stability_flag,
-        hallucination_check=hallucination_check,
-        use_protecting_group_feature=use_protecting_group_feature,
-        hallucination_checker_fn=hallucination_checker_fn,
-    )
-    logger.info(f"LLM returned {pathways}")
-    logger.info(f"LLM explained {explained}")
+        visited.add(canonical)
 
-    result_dict = {
-        'type': 'mol',
-        'smiles': molecule,
-        'is_chemical': True,
-        'in_stock': False,
-        'children': [{
-            'type': 'reaction',
-            'is_reaction': True,
-            'metadata': {'policy_probability': confidence},
-            'children': [],
-        }],
-    }
+        solved, az_results = run_az(smiles=molecule, az_model=self.az_model)
+        result_dict = az_results[0]
+        if solved:
+            logger.info(f"AZ solved {molecule}")
+            return result_dict, True
 
-    recurse_kw = dict(
-        llm=llm, az_model=az_model,
-        stability_flag=stability_flag,
-        hallucination_check=hallucination_check,
-        use_protecting_group_feature=use_protecting_group_feature,
-        hallucination_checker_fn=hallucination_checker_fn,
-        visited=visited, depth=depth + 1, max_depth=max_depth,
-    )
-    children = result_dict['children'][0]['children']
+        logger.info(f"AZ failed for {molecule}, running LLM")
+        pathways, explained, confidence = llm_pipeline(
+            molecule=molecule,
+            LLM=self.llm,
+            stability_flag=self.stability_flag,
+            hallucination_checker=self.hallucination_checker,
+            use_protecting_group_feature=self.use_protecting_group_feature,
+        )
+        logger.info(f"LLM returned {pathways}")
+        logger.info(f"LLM explained {explained}")
 
-    for pathway in pathways:
-        if isinstance(pathway, list):
+        result_dict = {
+            'type': 'mol',
+            'smiles': molecule,
+            'is_chemical': True,
+            'in_stock': False,
+            'children': [{
+                'type': 'reaction',
+                'is_reaction': True,
+                'metadata': {'policy_probability': confidence},
+                'children': [],
+            }],
+        }
+
+        children = result_dict['children'][0]['children']
+
+        for step in pathways:
+            reactants = step if isinstance(step, list) else [step]
             all_solved = True
-            for smi in pathway:
-                res, stat = rec_run(molecule=smi, **recurse_kw)
+            for smi in reactants:
+                res, stat = self.solve(smi, visited, depth + 1)
                 if stat:
                     children.append(res)
                 else:
                     all_solved = False
             solved = all_solved
-        else:
-            res, solved = rec_run(molecule=pathway, **recurse_kw)
-            children.append(res)
-        if solved:
-            break
+            if solved:
+                break
 
-    return result_dict, solved
+        return result_dict, solved
 
 
 def unsolved_leaf(smiles: str) -> dict:
@@ -201,14 +202,17 @@ def unsolved_leaf(smiles: str) -> dict:
     }
 
 
-def resolve_hallucination(
-    mode: str, classifier: Any,
-) -> tuple[str, Any]:
-    """Convert user-facing mode to internal (flag, callable) pair."""
+def resolve_hallucination(mode: str, classifier: Any):
+    """Convert user-facing mode to a single checker callable (or None).
+
+    Returns None (skip checking), or a callable with signature
+    ``(product: str, pathways: list) -> (int, list)``.
+    """
     if mode == "none":
-        return "False", None
+        return None
     if mode == "heuristic":
-        return "True", None
+        from deepretro.algorithms.pipeline_checks import hallucination_checker
+        return hallucination_checker
     if mode == "ml":
         from deepretro.models.hallucination_classifier import HallucinationClassifier
         from deepretro.models.hallucination_helpers import build_ml_checker
@@ -223,7 +227,7 @@ def resolve_hallucination(
                 f"hallucination_mode='ml' requires a HallucinationClassifier "
                 f"or path to saved model — got {type(classifier)}"
             )
-        return "True", build_ml_checker(clf)
+        return build_ml_checker(clf)
     raise ValueError(
         f"hallucination_mode must be 'heuristic', 'ml', or 'none' — got {mode!r}"
     )
