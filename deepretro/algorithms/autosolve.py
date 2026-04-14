@@ -14,8 +14,19 @@ Examples
 
 from __future__ import annotations
 
+import os
+import time
 from pathlib import Path
 from typing import Any
+
+import structlog
+from rdkit import Chem
+
+from deepretro.algorithms.llm import llm_pipeline
+from deepretro.algorithms.pipeline_checks import hallucination_checker as heuristic_checker
+from deepretro.logging import logger as context_logger
+from deepretro.utils.az import run_az
+from deepretro.utils.parse import format_output
 
 
 def autosolve(
@@ -57,13 +68,6 @@ def autosolve(
         ``{"steps": [...], "dependencies": {...}}``.
         When *return_image* is ``True``, also contains ``"image"``.
     """
-    import os
-    import time
-
-    import structlog
-    from deepretro.logging import logger as context_logger
-    from deepretro.utils.parse import format_output
-
     hallucination_checker = resolve_hallucination(
         hallucination_mode, hallucination_classifier,
     )
@@ -121,11 +125,6 @@ class AutoSolver:
 
         Returns a nested mol/reaction tree and a *solved* flag.
         """
-        from rdkit import Chem
-        from deepretro.algorithms.llm import llm_pipeline
-        from deepretro.utils.az import run_az
-        from deepretro.logging import logger as context_logger
-
         logger = context_logger.get()
 
         if visited is None:
@@ -211,8 +210,7 @@ def resolve_hallucination(mode: str, classifier: Any):
     if mode == "none":
         return None
     if mode == "heuristic":
-        from deepretro.algorithms.pipeline_checks import hallucination_checker
-        return hallucination_checker
+        return heuristic_checker
     if mode == "ml":
         from deepretro.models.hallucination_classifier import HallucinationClassifier
         from deepretro.models.hallucination_helpers import build_ml_checker
