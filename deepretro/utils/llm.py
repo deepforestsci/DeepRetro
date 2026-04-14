@@ -2,22 +2,19 @@
 
 This module calls chat-completion LLMs through LiteLLM, parses tagged model
 responses, and filters candidate precursor pathways. Provider-specific model
-normalization and completion argument construction live in
-``deepretro.utils.llm_helpers`` so the public pipeline stays focused on the
-retrosynthesis workflow.
+normalization lives in ``deepretro.utils.llm_helpers`` and provider-specific
+prompt/call/parse behavior lives in ``deepretro.utils.llm_interface`` so the
+public pipeline stays focused on the retrosynthesis workflow.
 """
 
 from __future__ import annotations
 
 import ast
-import re
-import time
 from typing import Any, cast
 
 import litellm
 import structlog
 from dotenv import load_dotenv
-from litellm import completion
 
 from deepretro.algorithms.hallucination_checker import calculate_hallucination_score
 from deepretro.algorithms.stability_checker import check_molecule_stability
@@ -26,26 +23,16 @@ from deepretro.utils.llm_helpers import (
     Pathway,
     PromptMode,
     ThinkingEffort,
-    build_completion_params,
-    coerce_response_text,
-    extract_json_payload,
-    extract_tag_content,
     is_enabled,
     resolve_model_selection,
 )
-from deepretro.utils.utils_molecule import detect_seven_member_rings, validity_check
-from deepretro.utils.variables import (
-    ADDON_PROMPT_7_MEMBER,
-    SYS_PROMPT,
-    SYS_PROMPT_DEEPSEEK,
-    SYS_PROMPT_OPENAI,
-    SYS_PROMPT_V4,
-    USER_PROMPT,
-    USER_PROMPT_DEEPSEEK,
-    USER_PROMPT_DEEPSEEK_V4,
-    USER_PROMPT_OPENAI,
-    USER_PROMPT_V4,
+from deepretro.utils.llm_interface import (
+    LLMRequest,
+    build_addon_prompt as build_addon_prompt,
+    create_llm_interface,
+    parse_cot_response as interface_parse_cot_response,
 )
+from deepretro.utils.utils_molecule import validity_check
 
 load_dotenv()
 
@@ -54,20 +41,10 @@ litellm.drop_params = True
 
 logger = structlog.get_logger(__name__)
 
-MAX_API_RETRIES = 2
 TEMPERATURE_STEP = 0.1
 FALLBACK_MODEL = "claude-opus-4-6"
 STABLE_ASSESSMENTS = {"Likely stable", "Moderately stable"}
 HALLUCINATION_SEVERITIES = {"low", "medium"}
-
-PROMPT_CONFIG = {
-    ("deepseek", "standard"): (SYS_PROMPT_DEEPSEEK, USER_PROMPT_DEEPSEEK, 16384),
-    ("deepseek", "advanced"): (SYS_PROMPT_V4, USER_PROMPT_DEEPSEEK_V4, 16384),
-    ("openai", "standard"): (SYS_PROMPT_OPENAI, USER_PROMPT_OPENAI, 16384),
-    ("openai", "advanced"): (SYS_PROMPT_OPENAI, USER_PROMPT_OPENAI, 16384),
-    ("default", "standard"): (SYS_PROMPT, USER_PROMPT, 16384),
-    ("default", "advanced"): (SYS_PROMPT_V4, USER_PROMPT_V4, 16384),
-}
 
 
 def obtain_prompt(
@@ -94,33 +71,7 @@ def obtain_prompt(
     >>> max_tokens
     16384
     """
-    selection = resolve_model_selection(model, prompt_mode=prompt_mode)
-    return PROMPT_CONFIG[(selection.family, selection.prompt_mode)]
-
-
-def build_addon_prompt(molecule: str) -> str:
-    """Build non-provider prompt context for a target molecule.
-
-    Parameters
-    ----------
-    molecule : str
-        Target molecule SMILES.
-
-    Returns
-    -------
-    str
-        Additional prompt text. Currently this only adds seven-membered ring
-        guidance.
-
-    Examples
-    --------
-    >>> build_addon_prompt("CCO")
-    ''
-    """
-    if detect_seven_member_rings(molecule):
-        logger.debug("Detected seven-membered ring", molecule=molecule)
-        return ADDON_PROMPT_7_MEMBER
-    return ""
+    return create_llm_interface(model, prompt_mode=prompt_mode).obtain_prompt()
 
 
 def build_messages(
@@ -159,17 +110,20 @@ def build_messages(
     >>> build_messages("CCO", "openai/gpt-4o-mini", messages=custom) is custom
     True
     """
-    if messages is not None:
-        return messages
-
-    sys_prompt, user_prompt, _ = obtain_prompt(model, prompt_mode=prompt_mode)
-    user_content = user_prompt.replace("{target_smiles}", molecule)
-    if addon:
-        user_content = f"{user_content}\n\n{addon}"
-
+    request = LLMRequest(
+        molecule=molecule,
+        model=model,
+        messages=messages,
+        prompt_mode=prompt_mode,
+    )
+    built_messages = create_llm_interface(
+        model, prompt_mode=prompt_mode
+    ).build_messages(request)
+    if messages is not None or not addon:
+        return built_messages
     return [
-        {"role": "system", "content": sys_prompt + addon},
-        {"role": "user", "content": user_content},
+        built_messages[0],
+        {"role": "user", "content": f"{built_messages[1]['content']}\n\n{addon}"},
     ]
 
 
@@ -221,55 +175,19 @@ def call_LLM(
     >>> isinstance(status, int) and isinstance(response_text, str)  # doctest: +SKIP
     True
     """
-    selection = resolve_model_selection(model, prompt_mode=prompt_mode)
-    logger.info("Calling LLM", model=selection.completion_model, molecule=molecule)
-
-    addon = build_addon_prompt(molecule)
-    default_messages = build_messages(
+    interface = create_llm_interface(model, prompt_mode=prompt_mode)
+    request = LLMRequest(
         molecule=molecule,
         model=model,
-        addon=addon,
         messages=messages,
-        prompt_mode=prompt_mode,
-    )
-    _, _, default_max_output_tokens = obtain_prompt(model, prompt_mode=prompt_mode)
-    token_limit = max_output_tokens or default_max_output_tokens
-    params = build_completion_params(
-        model=selection.completion_model,
-        messages=default_messages,
-        max_completion_tokens=token_limit,
         temperature=temperature,
+        prompt_mode=prompt_mode,
         enable_thinking=enable_thinking,
         thinking_effort=thinking_effort,
-        metadata={"task": "retrosynthesis"},
+        max_output_tokens=max_output_tokens,
     )
-
-    last_error = ""
-    for attempt in range(1, MAX_API_RETRIES + 1):
-        try:
-            response = completion(**params)
-            content = response.choices[0].message.content
-            response_text = coerce_response_text(content)
-            logger.debug("Received LLM response", response_length=len(response_text))
-            return 200, response_text
-        except Exception as exc:
-            last_error = str(exc)
-            logger.warning(
-                "LLM call attempt failed",
-                attempt=attempt,
-                max_retries=MAX_API_RETRIES,
-                model=selection.completion_model,
-                error=str(exc),
-            )
-            if attempt < MAX_API_RETRIES:
-                time.sleep(0.5)
-
-    logger.error(
-        "All LLM attempts exhausted",
-        max_retries=MAX_API_RETRIES,
-        model=selection.completion_model,
-    )
-    return 400, last_error
+    response = interface.call(request)
+    return response.status_code, response.text
 
 
 def parse_cot_response(response_text: str) -> tuple[int, list[str], str]:
@@ -291,24 +209,7 @@ def parse_cot_response(response_text: str) -> tuple[int, list[str], str]:
     >>> parse_cot_response(text)
     (200, ['step'], '{}')
     """
-    cot_content = extract_tag_content(response_text, "cot")
-    json_content = extract_tag_content(response_text, "json")
-    if not cot_content or not json_content:
-        return 501, [], ""
-
-    thinking_steps = [
-        match.group(1)
-        for match in re.finditer(
-            r"<thinking[^>]*>(.*?)</thinking>",
-            cot_content,
-            re.DOTALL,
-        )
-        if match.group(1).strip()
-    ]
-    if not thinking_steps:
-        return 501, [], ""
-
-    return 200, thinking_steps, json_content
+    return interface_parse_cot_response(response_text)
 
 
 def parse_openai_response(response_text: str) -> tuple[int, list[str], str]:
@@ -329,10 +230,7 @@ def parse_openai_response(response_text: str) -> tuple[int, list[str], str]:
     >>> parse_openai_response('<json>{"data": []}</json>')
     (200, [], '{"data": []}')
     """
-    json_content = extract_json_payload(response_text)
-    if not json_content:
-        return 502, [], ""
-    return 200, [], json_content
+    return create_llm_interface("openai/gpt-4o-mini").parse_response(response_text)
 
 
 def parse_deepseek_response(response_text: str) -> tuple[int, list[str], str]:
@@ -353,12 +251,7 @@ def parse_deepseek_response(response_text: str) -> tuple[int, list[str], str]:
     >>> parse_deepseek_response('<think>step</think><json>{"data": []}</json>')
     (200, ['step'], '{"data": []}')
     """
-    thinking_content = extract_tag_content(response_text, "think")
-    json_content = extract_json_payload(response_text)
-    if not json_content:
-        return 503, [], ""
-    thinking_steps = [thinking_content] if thinking_content else []
-    return 200, thinking_steps, json_content
+    return create_llm_interface("deepseek-ai/DeepSeek-R1").parse_response(response_text)
 
 
 def parse_response(response_text: str, model: str) -> tuple[int, list[str], str]:
@@ -381,15 +274,15 @@ def parse_response(response_text: str, model: str) -> tuple[int, list[str], str]
     >>> parse_response('<json>{"data": []}</json>', "openai/gpt-4o-mini")
     (200, [], '{"data": []}')
     """
-    family = resolve_model_selection(model).family
+    interface = create_llm_interface(model)
     try:
-        if family == "deepseek":
-            return parse_deepseek_response(response_text)
-        if family == "openai":
-            return parse_openai_response(response_text)
-        return parse_cot_response(response_text)
+        return interface.parse_response(response_text)
     except Exception as exc:
-        logger.error("Error parsing LLM response", family=family, error=str(exc))
+        logger.error(
+            "Error parsing LLM response",
+            family=interface.selection.family,
+            error=str(exc),
+        )
         return 505, [], ""
 
 
@@ -700,21 +593,26 @@ def llm_pipeline(
         current_model = model
         if resolve_model_selection(model).family == "deepseek" and attempt > 0:
             current_model = FALLBACK_MODEL
+        interface = create_llm_interface(current_model, prompt_mode=prompt_mode)
 
-        status, response_text = call_LLM(
-            molecule=molecule,
-            model=current_model,
-            messages=messages,
-            temperature=temperature,
-            prompt_mode=prompt_mode,
-            enable_thinking=enable_thinking,
-            max_output_tokens=max_output_tokens,
+        response = interface.call(
+            LLMRequest(
+                molecule=molecule,
+                model=current_model,
+                messages=messages,
+                temperature=temperature,
+                prompt_mode=prompt_mode,
+                enable_thinking=enable_thinking,
+                max_output_tokens=max_output_tokens,
+            )
         )
+        status = response.status_code
+        response_text = response.text
         if status != 200:
             logger.warning("LLM call failed", status_code=status)
             continue
 
-        status, _, json_content = parse_response(response_text, current_model)
+        status, _, json_content = interface.parse_response(response_text)
         if status != 200:
             logger.warning("Response parsing failed", status_code=status)
             continue

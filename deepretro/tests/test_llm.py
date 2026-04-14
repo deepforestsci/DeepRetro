@@ -46,6 +46,16 @@ from deepretro.utils.llm_helpers import (
     strip_code_fences,
     strip_provider_prefix,
 )
+from deepretro.utils.llm_interface import (
+    AnthropicLLM,
+    DeepSeekLLM,
+    GenericLLM,
+    LLMInterface,
+    LLMRequest,
+    LLMResponse,
+    OpenAILLM,
+    create_llm_interface,
+)
 
 PUBLIC_LLM_FUNCTIONS: tuple[Callable[..., object], ...] = (
     call_LLM,
@@ -65,6 +75,93 @@ def test_openai_model_selection_uses_chat_completion_params() -> None:
     assert selection.output_token_param == "max_completion_tokens"
     assert selection.supports_seed is True
     assert selection.supports_reasoning_effort is False
+
+
+def test_llm_interface_factory_returns_provider_classes() -> None:
+    """The interface factory should choose the provider-specific implementation."""
+    assert isinstance(create_llm_interface("openai/gpt-4o-mini"), OpenAILLM)
+    assert isinstance(create_llm_interface("claude-opus-4-6"), AnthropicLLM)
+    assert isinstance(
+        create_llm_interface("fireworks_ai/accounts/fireworks/models/deepseek-r1"),
+        DeepSeekLLM,
+    )
+    assert isinstance(create_llm_interface("custom/model"), GenericLLM)
+    assert issubclass(OpenAILLM, LLMInterface)
+    assert issubclass(AnthropicLLM, LLMInterface)
+
+
+def test_llm_request_and_response_dataclasses_carry_call_state() -> None:
+    """Request and response objects should carry LLM call state explicitly."""
+    request = LLMRequest(
+        molecule="CCO",
+        model="openai/gpt-4o-mini",
+        messages=[{"role": "user", "content": "Reply OK"}],
+        max_output_tokens=16,
+    )
+    response = LLMResponse(status_code=200, text="OK")
+
+    assert request.temperature == 0.0
+    assert request.enable_thinking is True
+    assert request.thinking_effort == "medium"
+    assert request.messages == [{"role": "user", "content": "Reply OK"}]
+    assert response.status_code == 200
+    assert response.text == "OK"
+
+
+def test_provider_interfaces_own_prompts_params_and_parsers() -> None:
+    """Provider interfaces should hide provider-specific request details."""
+    openai = create_llm_interface("openai/gpt-4o-mini")
+    anthropic = create_llm_interface("claude-opus-4-6")
+    deepseek = create_llm_interface("deepseek-ai/DeepSeek-R1")
+    request = LLMRequest(
+        molecule="CCO",
+        model="openai/gpt-4o-mini",
+        messages=[{"role": "user", "content": "Reply OK"}],
+        max_output_tokens=16,
+        enable_thinking=False,
+    )
+
+    openai_messages = openai.build_messages(request)
+    addon_messages = openai.build_messages(
+        LLMRequest(molecule="C1CCCCCC1", model="openai/gpt-4o-mini")
+    )
+    openai_params = openai.build_completion_params(request, openai_messages)
+    anthropic_params = anthropic.build_completion_params(
+        LLMRequest(
+            molecule="CCO",
+            model="claude-opus-4-6",
+            messages=request.messages,
+            max_output_tokens=16,
+            enable_thinking=False,
+        ),
+        request.messages or [],
+    )
+
+    assert openai.obtain_prompt()[2] == 16384
+    assert openai_messages == request.messages
+    assert "7-membered rings" in addon_messages[1]["content"]
+    assert openai_params["model"] == "openai/gpt-4o-mini"
+    assert openai_params["max_completion_tokens"] == 16
+    assert openai_params["seed"] == 42
+    assert "seed" not in anthropic_params
+    assert anthropic_params["max_tokens"] == 16
+    assert openai.parse_response('<json>{"data": []}</json>') == (
+        200,
+        [],
+        '{"data": []}',
+    )
+    assert anthropic.parse_response(
+        "<cot><thinking>x</thinking></cot><json>{}</json>"
+    ) == (
+        200,
+        ["x"],
+        "{}",
+    )
+    assert deepseek.parse_response('<think>x</think><json>{"data": []}</json>') == (
+        200,
+        ["x"],
+        '{"data": []}',
+    )
 
 
 def test_model_helper_functions_classify_and_normalize_models() -> None:
@@ -348,10 +445,11 @@ def test_public_llm_functions_have_annotations_and_usage_examples() -> None:
     """Public LLM functions should meet DeepRetro docstring standards."""
     import deepretro.utils.llm as llm_module
     import deepretro.utils.llm_helpers as helper_module
+    import deepretro.utils.llm_interface as interface_module
 
     public_functions = [
         obj
-        for module in (llm_module, helper_module)
+        for module in (llm_module, helper_module, interface_module)
         for name, obj in inspect.getmembers(module, inspect.isfunction)
         if not name.startswith("_") and obj.__module__ == module.__name__
     ]
@@ -375,6 +473,49 @@ def test_public_llm_functions_have_annotations_and_usage_examples() -> None:
             assert parameter.annotation is not inspect.Parameter.empty, (
                 f"{function.__name__}.{parameter.name} is missing a type annotation"
             )
+
+
+def test_public_llm_interface_classes_have_documented_public_methods() -> None:
+    """Public LLM interface classes should document their callable API."""
+    import deepretro.utils.llm_interface as interface_module
+
+    public_classes = [
+        obj
+        for name, obj in inspect.getmembers(interface_module, inspect.isclass)
+        if not name.startswith("_") and obj.__module__ == interface_module.__name__
+    ]
+
+    assert public_classes
+    for cls in public_classes:
+        class_docstring = inspect.getdoc(cls)
+        assert class_docstring, f"{cls.__name__} is missing a docstring"
+        assert "Examples\n--------" in class_docstring, (
+            f"{cls.__name__} is missing usage examples"
+        )
+
+        for method_name, method in inspect.getmembers(cls, inspect.isfunction):
+            if method_name.startswith("_"):
+                continue
+            signature = inspect.signature(method)
+            docstring = inspect.getdoc(method)
+
+            assert docstring, f"{cls.__name__}.{method_name} is missing a docstring"
+            assert "Examples\n--------" in docstring, (
+                f"{cls.__name__}.{method_name} is missing usage examples"
+            )
+            assert "Returns\n-------" in docstring, (
+                f"{cls.__name__}.{method_name} is missing a Returns section"
+            )
+            assert signature.return_annotation is not inspect.Signature.empty, (
+                f"{cls.__name__}.{method_name} is missing a return type annotation"
+            )
+            for parameter in signature.parameters.values():
+                if parameter.name in {"self", "cls"}:
+                    continue
+                assert parameter.annotation is not inspect.Parameter.empty, (
+                    f"{cls.__name__}.{method_name}.{parameter.name} "
+                    "is missing a type annotation"
+                )
 
 
 @pytest.mark.slow

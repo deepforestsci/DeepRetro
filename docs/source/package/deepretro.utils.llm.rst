@@ -11,6 +11,9 @@ The module exposes a compact public API:
 
 - ``obtain_prompt()`` selects the system/user prompt pair for Claude,
   DeepSeek, OpenAI, or generic model families.
+- ``create_llm_interface()`` returns an ``LLMInterface`` subclass for the
+  selected provider, so prompt construction, completion parameters, API calls,
+  and parsing stay behind one object.
 - ``call_LLM()`` calls a real LiteLLM completion endpoint and returns
   ``(status_code, response_text)``.
 - ``parse_response()`` extracts the JSON payload returned by Claude-style,
@@ -52,8 +55,9 @@ Example
 Testing
 -------
 
-The LLM endpoint test uses a real OpenAI call through LiteLLM and does not mock
-the model. Set ``OPENAI_API_KEY`` in the environment or ``.env`` before running:
+The LLM endpoint tests use real LiteLLM calls and do not mock the model. Set
+``ANTHROPIC_API_KEY`` for the pipeline endpoint test and ``OPENAI_API_KEY`` for
+the OpenAI endpoint smoke test in the environment or ``.env`` before running:
 
 .. code-block:: bash
 
@@ -64,6 +68,10 @@ API
 
 .. automodule:: deepretro.utils.llm
    :members:
+
+.. automodule:: deepretro.utils.llm_interface
+   :members:
+   :no-index:
 
 .. automodule:: deepretro.utils.llm_helpers
    :members:
