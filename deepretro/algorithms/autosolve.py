@@ -5,11 +5,6 @@
 3. Pathways are validated (SMILES validity, stability, hallucination).
 4. Recurse on each reactant until all leaves are purchasable.
 5. Flatten the tree into a step-by-step synthesis plan.
-
-Examples
---------
->>> from deepretro.algorithms.autosolve import autosolve  # doctest: +SKIP
->>> result = autosolve("CC(=O)Oc1ccccc1C(=O)O")           # doctest: +SKIP
 """
 
 from __future__ import annotations
@@ -17,6 +12,7 @@ from __future__ import annotations
 import os
 import time
 from pathlib import Path
+from collections.abc import Callable
 from typing import Any
 
 import structlog
@@ -36,7 +32,7 @@ def autosolve(
     az_model: str = "Pistachio_100+",
     stability_check: bool = True,
     hallucination_mode: str = "heuristic",
-    hallucination_classifier: Any = None,
+    hallucination_classifier: str | Path | None = None,
     use_protecting_group_feature: bool = False,
     return_image: bool = False,
 ) -> dict[str, Any]:
@@ -67,6 +63,11 @@ def autosolve(
     dict[str, Any]
         ``{"steps": [...], "dependencies": {...}}``.
         When *return_image* is ``True``, also contains ``"image"``.
+
+    Examples
+    --------
+    >>> from deepretro.algorithms.autosolve import autosolve  # doctest: +SKIP
+    >>> result = autosolve("CC(=O)Oc1ccccc1C(=O)O")           # doctest: +SKIP
     """
     hallucination_checker = resolve_hallucination(
         hallucination_mode, hallucination_classifier,
@@ -104,14 +105,14 @@ class AutoSolver:
         llm: str,
         az_model: str,
         stability_flag: str,
-        hallucination_checker,
+        hallucination_checker: Callable | None,
         use_protecting_group_feature: bool,
         max_depth: int = 50,
     ):
         self.llm = llm
         self.az_model = az_model
         self.stability_flag = stability_flag
-        self.hallucination_checker = hallucination_checker
+        self.hallucination_checker: Callable | None = hallucination_checker
         self.use_protecting_group_feature = use_protecting_group_feature
         self.max_depth = max_depth
 
@@ -123,7 +124,39 @@ class AutoSolver:
     ) -> tuple[dict, bool]:
         """Recursively solve a molecule via AZ, falling back to LLM.
 
-        Returns a nested mol/reaction tree and a *solved* flag.
+        For each molecule the solver first tries AiZynthFinder (template-based).
+        If AZ finds no route, the LLM proposes candidate reaction steps.  Each
+        reactant in the LLM's response is then solved recursively until every
+        leaf is purchasable or the depth limit is reached.
+
+        Parameters
+        ----------
+        molecule : str
+            SMILES string of the molecule to solve.
+        visited : set or None
+            Canonical SMILES already seen on this branch (cycle detection).
+            Initialised automatically on the first call.
+        depth : int
+            Current recursion depth.  The search stops at ``self.max_depth``.
+
+        Returns
+        -------
+        result_dict : dict
+            Nested mol/reaction tree.  Each node has ``"type"``
+            (``"mol"`` or ``"reaction"``), ``"smiles"``, and ``"children"``.
+        solved : bool
+            ``True`` if every leaf in the sub-tree is purchasable.
+
+        Examples
+        --------
+        >>> solver = AutoSolver(                              # doctest: +SKIP
+        ...     llm="anthropic/claude-opus-4-6:adv:think",
+        ...     az_model="USPTO",
+        ...     stability_flag="True",
+        ...     hallucination_checker=None,
+        ...     use_protecting_group_feature=False,
+        ... )
+        >>> tree, solved = solver.solve("CCO")                # doctest: +SKIP
         """
         logger = context_logger.get()
 
@@ -201,7 +234,7 @@ def unsolved_leaf(smiles: str) -> dict:
     }
 
 
-def resolve_hallucination(mode: str, classifier: Any):
+def resolve_hallucination(mode: str, classifier: str | Path | None) -> Callable | None:
     """Convert user-facing mode to a single checker callable (or None).
 
     Returns None (skip checking), or a callable with signature
