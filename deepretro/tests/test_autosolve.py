@@ -46,7 +46,7 @@ def mock_pipeline():
         autospec=True,
         return_value=(FAKE_TREE, True),
     ) as mock_recurse, patch(
-        "deepretro.utils.parse.format_output",
+        "deepretro.algorithms.autosolve.format_output",
         return_value=FAKE_RESULT,
     ) as mock_fmt:
         yield mock_recurse, mock_fmt
@@ -98,14 +98,10 @@ class TestHallucinationModeIntegration:
     def test_ml_passes_callable(self, mock_pipeline) -> None:
         mock_clf = MagicMock()
         mock_clf.predict_single = MagicMock()
-        with patch(
-            "deepretro.algorithms.autosolve.HallucinationClassifier",
-            new=type(mock_clf),
-        ):
-            solver = AutoSolver(
-                hallucination_mode="ml",
-                hallucination_classifier=mock_clf,
-            )
+        solver = AutoSolver(
+            hallucination_mode="ml",
+            hallucination_classifier=mock_clf,
+        )
         assert callable(solver.hallucination_checker)
         solver.solve(BENZENE)
 
