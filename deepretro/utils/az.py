@@ -7,10 +7,8 @@ Requires ``AZ_MODEL_CONFIG_PATH`` or ``AZ_MODELS_PATH`` environment variables.
 
 import os
 from pathlib import Path
-from aizynthfinder.aizynthfinder import AiZynthFinder
 from typing import Any, Dict, Sequence
 from deepretro.utils.variables import BASIC_MOLECULES
-from deepretro.utils.cache import cache_results
 from rdkit import Chem
 from rdkit.Chem import rdqueries
 from PIL.Image import Image
@@ -58,7 +56,6 @@ def _log(message: str, logger=None):
         print(message)
 
 
-@cache_results
 def run_az(
     smiles: str, az_model: str = "USPTO"
 ) -> tuple[bool, Sequence[Dict[str, Any]]]:
@@ -108,6 +105,8 @@ def run_az(
                 "in_stock": True,
             }
         ]
+    from aizynthfinder.aizynthfinder import AiZynthFinder
+
     finder = AiZynthFinder(configfile=config_filename)
     finder.stock.select("zinc")
     finder.expansion_policy.select("uspto")
@@ -123,7 +122,6 @@ def run_az(
     return status, result_dict
 
 
-@cache_results
 def run_az_with_img(
     smiles: str,
 ) -> tuple[bool, Sequence[Dict[str, Any]], Sequence[Image | None] | None]:
@@ -162,6 +160,8 @@ def run_az_with_img(
             ],
             None,
         )
+    from aizynthfinder.aizynthfinder import AiZynthFinder
+
     finder = AiZynthFinder(configfile=AZ_MODEL_CONFIG_PATH)
     finder.stock.select("zinc")
     finder.expansion_policy.select("uspto")
