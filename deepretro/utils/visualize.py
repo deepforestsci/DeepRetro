@@ -49,7 +49,7 @@ class Node:
 
 
 def build_tree(result: dict[str, Any]) -> Node | None:
-    """Build a tree of Nodes from autosolve output, mirroring the JS viewer."""
+    """Build a tree of Nodes from AutoSolver output, mirroring the JS viewer."""
     steps = result.get("steps", [])
     deps = result.get("dependencies", {})
     if not steps:
@@ -230,7 +230,7 @@ def visualize_pathway(result: dict[str, Any]) -> Image.Image:
     Parameters
     ----------
     result : dict
-        Output of ``autosolve()``, with ``"steps"`` and ``"dependencies"``.
+        Output of ``AutoSolver.solve()``, with ``"steps"`` and ``"dependencies"``.
 
     Returns
     -------

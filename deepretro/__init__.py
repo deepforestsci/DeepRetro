@@ -9,7 +9,7 @@ __all__ = [
     "ReactionStepFeaturizer",
     "configure_logging",
     "HallucinationClassifier",
-    "autosolve",
+    "AutoSolver",
 ]
 
 def __getattr__(name: str):
@@ -25,7 +25,7 @@ def __getattr__(name: str):
         from deepretro.models.hallucination_classifier import HallucinationClassifier
 
         return HallucinationClassifier
-    if name == "autosolve":
-        from deepretro.algorithms.autosolve import autosolve
-        return autosolve
+    if name == "AutoSolver":
+        from deepretro.algorithms.autosolve import AutoSolver
+        return AutoSolver
     raise AttributeError(f"module 'deepretro' has no attribute {name!r}")

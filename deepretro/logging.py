@@ -7,7 +7,7 @@ import logging
 
 import structlog
 
-# Context variable for the per-job structlog logger (set by autosolve)
+# Context variable for the per-job structlog logger (set by AutoSolver)
 logger: contextvars.ContextVar = contextvars.ContextVar("logger")
 
 

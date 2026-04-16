@@ -1,6 +1,6 @@
 """Unit tests for deepretro.algorithms.autosolve.
 
-Tests the autosolve wrapper using mocked pipeline calls so the tests
+Tests the AutoSolver using mocked pipeline calls so the tests
 run without AiZynthFinder models, LLM API keys, or any other heavy
 infrastructure.
 """
@@ -12,7 +12,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from deepretro.algorithms.autosolve import autosolve, AutoSolver
+from deepretro.algorithms.autosolve import AutoSolver
 from deepretro.models.hallucination_helpers import (
     build_ml_checker,
     resolve_hallucination_args,
@@ -40,44 +40,45 @@ FAKE_RESULT = {
 
 @pytest.fixture()
 def mock_pipeline():
-    """Patch AutoSolver.solve and format_output so tests never touch real infra."""
+    """Patch recurse and format_output so tests never touch real infra."""
     with patch.object(
-        AutoSolver, "solve",
+        AutoSolver, "recurse",
         autospec=True,
         return_value=(FAKE_TREE, True),
-    ) as mock_solve, patch(
+    ) as mock_recurse, patch(
         "deepretro.utils.parse.format_output",
         return_value=FAKE_RESULT,
     ) as mock_fmt:
-        yield mock_solve, mock_fmt
+        yield mock_recurse, mock_fmt
 
 
-class TestAutosolve:
-    """Tests for ``autosolve``."""
+class TestAutoSolver:
+    """Tests for ``AutoSolver.solve``."""
 
     def test_returns_result_dict(self, mock_pipeline) -> None:
-        result = autosolve(BENZENE)
+        solver = AutoSolver(hallucination_mode="none")
+        result = solver.solve(BENZENE)
         assert result == FAKE_RESULT
 
     def test_passes_params_to_solver(self, mock_pipeline) -> None:
-        mock_solve, _ = mock_pipeline
-        autosolve(
-            ASPIRIN,
+        solver = AutoSolver(
             llm="test-model",
             az_model="USPTO",
             stability_check=False,
             hallucination_mode="none",
             use_protecting_group_feature=True,
         )
-        solver_instance = mock_solve.call_args[0][0]  # first positional arg is self
-        assert solver_instance.llm == "test-model"
-        assert solver_instance.az_model == "USPTO"
-        assert solver_instance.stability_flag == "False"
-        assert solver_instance.hallucination_checker is None
-        assert solver_instance.use_protecting_group_feature is True
+        assert solver.llm == "test-model"
+        assert solver.az_model == "USPTO"
+        assert solver.stability_flag == "False"
+        assert solver.hallucination_checker is None
+        assert solver.use_protecting_group_feature is True
+
+        solver.solve(ASPIRIN)
 
     def test_does_not_write_to_disk(self, mock_pipeline, tmp_path: Path) -> None:
-        autosolve(BENZENE)
+        solver = AutoSolver(hallucination_mode="none")
+        solver.solve(BENZENE)
         assert list(tmp_path.iterdir()) == []
 
 
@@ -85,36 +86,32 @@ class TestHallucinationModeIntegration:
     """Tests that hallucination_mode correctly wires into the solver."""
 
     def test_heuristic_passes_callable(self, mock_pipeline) -> None:
-        mock_solve, _ = mock_pipeline
-        autosolve(BENZENE, hallucination_mode="heuristic")
-        solver_instance = mock_solve.call_args[0][0]
-        assert callable(solver_instance.hallucination_checker)
+        solver = AutoSolver(hallucination_mode="heuristic")
+        assert callable(solver.hallucination_checker)
+        solver.solve(BENZENE)
 
     def test_none_passes_none(self, mock_pipeline) -> None:
-        mock_solve, _ = mock_pipeline
-        autosolve(BENZENE, hallucination_mode="none")
-        solver_instance = mock_solve.call_args[0][0]
-        assert solver_instance.hallucination_checker is None
+        solver = AutoSolver(hallucination_mode="none")
+        assert solver.hallucination_checker is None
+        solver.solve(BENZENE)
 
     def test_ml_passes_callable(self, mock_pipeline) -> None:
-        mock_solve, _ = mock_pipeline
         mock_clf = MagicMock()
         mock_clf.predict_single = MagicMock()
         with patch(
             "deepretro.algorithms.autosolve.HallucinationClassifier",
             new=type(mock_clf),
         ):
-            autosolve(
-                BENZENE,
+            solver = AutoSolver(
                 hallucination_mode="ml",
                 hallucination_classifier=mock_clf,
             )
-        solver_instance = mock_solve.call_args[0][0]
-        assert callable(solver_instance.hallucination_checker)
+        assert callable(solver.hallucination_checker)
+        solver.solve(BENZENE)
 
     def test_invalid_mode_raises(self, mock_pipeline) -> None:
         with pytest.raises(ValueError):
-            autosolve(BENZENE, hallucination_mode="bad")
+            AutoSolver(hallucination_mode="bad")
 
 
 class TestResolveHallucinationArgs:
