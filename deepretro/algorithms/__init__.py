@@ -21,4 +21,14 @@ __all__ = [
     "check_carbocations",
     "check_carbenes",
     "check_fused_cyclopentane",
+    "AutoSolver",
 ]
+
+
+def __getattr__(name: str):
+    if name == "AutoSolver":
+        from .autosolve import AutoSolver
+
+        globals()["AutoSolver"] = AutoSolver
+        return AutoSolver
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
