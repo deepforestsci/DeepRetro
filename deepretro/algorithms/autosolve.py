@@ -25,8 +25,8 @@ import structlog
 from rdkit import Chem
 
 from deepretro.algorithms.llm import llm_pipeline
-from deepretro.algorithms.pipeline_checks import hallucination_checker as heuristic_checker
 from deepretro.logging import logger as context_logger
+from deepretro.models.hallucination_helpers import resolve_hallucination
 from deepretro.utils.az import run_az
 from deepretro.utils.parse import format_output
 
@@ -282,60 +282,3 @@ def unsolved_leaf(smiles: str) -> dict:
         'type': 'mol', 'smiles': smiles,
         'is_chemical': True, 'in_stock': False, 'children': [],
     }
-
-
-def resolve_hallucination(mode: str, classifier: str | Path | None) -> Callable | None:
-    """Convert a user-facing hallucination mode into a checker callable.
-
-    Parameters
-    ----------
-    mode : str
-        One of ``"heuristic"``, ``"ml"``, or ``"none"``.
-    classifier : str or Path or None
-        Path to a saved ML model directory.  Required when *mode* is
-        ``"ml"``, ignored otherwise.
-
-    Returns
-    -------
-    Callable or None
-        ``None`` when *mode* is ``"none"`` (skip checking).  Otherwise a
-        callable with signature ``(product: str, pathways: list) -> (int, list)``
-        that filters out hallucinated pathways.
-
-    Raises
-    ------
-    ValueError
-        If *mode* is not recognised, or *mode* is ``"ml"`` and
-        *classifier* is not a valid path or model instance.
-
-    Examples
-    --------
-    >>> resolve_hallucination("none", None) is None
-    True
-    >>> checker = resolve_hallucination("heuristic", None)  # doctest: +SKIP
-    >>> callable(checker)                                    # doctest: +SKIP
-    True
-    >>> checker = resolve_hallucination("ml", "model_out/") # doctest: +SKIP
-    """
-    if mode == "none":
-        return None
-    if mode == "heuristic":
-        return heuristic_checker
-    if mode == "ml":
-        from deepretro.models.hallucination_classifier import HallucinationClassifier
-        from deepretro.models.hallucination_helpers import build_ml_checker
-
-        if isinstance(classifier, (str, Path)):
-            clf = HallucinationClassifier()
-            clf.load(str(classifier))
-        elif hasattr(classifier, "predict_single"):
-            clf = classifier
-        else:
-            raise ValueError(
-                f"hallucination_mode='ml' requires a HallucinationClassifier "
-                f"or path to saved model — got {type(classifier)}"
-            )
-        return build_ml_checker(clf)
-    raise ValueError(
-        f"hallucination_mode must be 'heuristic', 'ml', or 'none' — got {mode!r}"
-    )

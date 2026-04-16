@@ -4,19 +4,18 @@ Provides:
 
 * :func:`build_ml_checker` — wrap a classifier into the callable
   signature the pipeline expects.
-* :func:`resolve_hallucination_args` — turn a user-friendly mode string
+* :func:`resolve_hallucination` — turn a string to determine checker type
   into a checker callable (or ``None``) consumed by ``llm_pipeline``.
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-VALID_MODES = ("heuristic", "ml", "none")
 
-
-def build_ml_checker(clf: Any) -> Any:
+def build_ml_checker(clf: Any) -> Callable:
     """Wrap a ``HallucinationClassifier`` into a pipeline-compatible checker.
 
     The returned callable has the same signature as the built-in
@@ -31,7 +30,7 @@ def build_ml_checker(clf: Any) -> Any:
 
     Returns
     -------
-    checker : callable
+    checker : Callable
         ``(product: str, pathways: list) -> tuple[int, list]``
 
     Examples
@@ -64,66 +63,58 @@ def build_ml_checker(clf: Any) -> Any:
     return _checker
 
 
-def resolve_hallucination_args(
-    hallucination_mode: str,
-    hallucination_classifier: Any,
-):
-    """Translate a user-facing mode string into a checker callable or None.
+def resolve_hallucination(mode: str, classifier: str | Path | None) -> Callable | None:
+    """Convert a user-facing hallucination mode into a checker callable.
 
     Parameters
     ----------
-    hallucination_mode : str
+    mode : str
         One of ``"heuristic"``, ``"ml"``, or ``"none"``.
-    hallucination_classifier : HallucinationClassifier or str or Path or None
-        Required when *hallucination_mode* is ``"ml"``.  Pass a fitted
-        ``HallucinationClassifier`` instance or a ``str`` / ``Path``
-        pointing to a saved model directory.
+    classifier : str or Path or None
+        Path to a saved ML model directory.  Required when *mode* is
+        ``"ml"``, ignored otherwise.
 
     Returns
     -------
-    callable or None
-        A checker with signature ``(product, pathways) -> (int, list)``,
-        or ``None`` to skip hallucination checking.
+    Callable or None
+        ``None`` when *mode* is ``"none"`` (skip checking).  Otherwise a
+        callable with signature ``(product: str, pathways: list) -> (int, list)``
+        that filters out hallucinated pathways.
 
     Raises
     ------
     ValueError
-        If *hallucination_mode* is not one of the valid modes, or if
-        ``"ml"`` mode is requested without a valid classifier.
+        If *mode* is not recognised, or *mode* is ``"ml"`` and
+        *classifier* is not a valid path or model instance.
 
     Examples
     --------
-    >>> resolve_hallucination_args("none", None) is None
+    >>> resolve_hallucination("none", None) is None
     True
-    >>> callable(resolve_hallucination_args("heuristic", None))
+    >>> checker = resolve_hallucination("heuristic", None)  # doctest: +SKIP
+    >>> callable(checker)                                    # doctest: +SKIP
     True
+    >>> checker = resolve_hallucination("ml", "model_out/") # doctest: +SKIP
     """
-    if hallucination_mode not in VALID_MODES:
-        raise ValueError(
-            f"hallucination_mode must be one of {VALID_MODES}, "
-            f"got {hallucination_mode!r}"
-        )
-
-    if hallucination_mode == "none":
+    if mode == "none":
         return None
-
-    if hallucination_mode == "heuristic":
+    if mode == "heuristic":
         from deepretro.algorithms.pipeline_checks import hallucination_checker
         return hallucination_checker
+    if mode == "ml":
+        from deepretro.models.hallucination_classifier import HallucinationClassifier
 
-    # mode == "ml" -- resolve the classifier
-    from deepretro.models.hallucination_classifier import HallucinationClassifier
-
-    if isinstance(hallucination_classifier, (str, Path)):
-        clf = HallucinationClassifier()
-        clf.load(str(hallucination_classifier))
-    elif isinstance(hallucination_classifier, HallucinationClassifier):
-        clf = hallucination_classifier
-    else:
-        raise ValueError(
-            "hallucination_mode='ml' requires hallucination_classifier "
-            "to be a HallucinationClassifier instance or a path to a "
-            f"saved model directory — got {type(hallucination_classifier)}"
-        )
-
-    return build_ml_checker(clf)
+        if isinstance(classifier, (str, Path)):
+            clf = HallucinationClassifier()
+            clf.load(str(classifier))
+        elif hasattr(classifier, "predict_single"):
+            clf = classifier
+        else:
+            raise ValueError(
+                f"hallucination_mode='ml' requires a HallucinationClassifier "
+                f"or path to saved model — got {type(classifier)}"
+            )
+        return build_ml_checker(clf)
+    raise ValueError(
+        f"hallucination_mode must be 'heuristic', 'ml', or 'none' — got {mode!r}"
+    )

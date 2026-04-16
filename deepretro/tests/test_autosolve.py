@@ -15,7 +15,7 @@ import pytest
 from deepretro.algorithms.autosolve import AutoSolver
 from deepretro.models.hallucination_helpers import (
     build_ml_checker,
-    resolve_hallucination_args,
+    resolve_hallucination,
 )
 
 BENZENE = "c1ccccc1"
@@ -115,23 +115,23 @@ class TestHallucinationModeIntegration:
 
 
 class TestResolveHallucinationArgs:
-    """Tests for the standalone resolve_hallucination_args helper."""
+    """Tests for the standalone resolve_hallucination helper."""
 
     def test_heuristic_mode(self) -> None:
-        checker = resolve_hallucination_args("heuristic", None)
+        checker = resolve_hallucination("heuristic", None)
         assert callable(checker)
 
     def test_none_mode(self) -> None:
-        checker = resolve_hallucination_args("none", None)
+        checker = resolve_hallucination("none", None)
         assert checker is None
 
     def test_invalid_mode_raises(self) -> None:
         with pytest.raises(ValueError, match="hallucination_mode must be"):
-            resolve_hallucination_args("invalid", None)
+            resolve_hallucination("invalid", None)
 
     def test_ml_mode_without_classifier_raises(self) -> None:
-        with pytest.raises(ValueError, match="requires hallucination_classifier"):
-            resolve_hallucination_args("ml", None)
+        with pytest.raises(ValueError, match="requires a HallucinationClassifier"):
+            resolve_hallucination("ml", None)
 
 
 class TestBuildMlChecker:
