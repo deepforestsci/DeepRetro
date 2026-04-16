@@ -17,13 +17,12 @@ from deepretro.utils.utils_molecule import validity_check, detect_seven_member_r
 from deepretro.logging import logger as context_logger
 from deepretro.algorithms.pipeline_checks import stability_checker
 from deepretro.utils.protecting_group import mask_protecting_groups_multisymbol
+from deepretro.utils.langfuse_config import get_langfuse_metadata
 
 load_dotenv()
 
 litellm.success_callback = ["langfuse"]
 litellm.drop_params = True
-
-from deepretro.utils.langfuse_config import get_langfuse_metadata
 
 ENABLE_LOGGING = False if os.getenv("ENABLE_LOGGING",
                                     "true").lower() == "false" else True

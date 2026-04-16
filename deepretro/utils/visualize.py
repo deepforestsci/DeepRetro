@@ -209,7 +209,7 @@ def draw_node(img: Image.Image, draw: ImageDraw.ImageDraw, node: Node,
         mol_px = int(r * 1.5)
         mol_img = render_mol(smiles, mol_px + 40)
         if mol_img is not None:
-            mol_img = mol_img.resize((mol_px, mol_px), Image.LANCZOS)
+            mol_img = mol_img.resize((mol_px, mol_px), Image.Resampling.LANCZOS)
             img.paste(mol_img, (cx - mol_px // 2, cy - mol_px // 2), mol_img)
 
         if isinstance(mol_data, dict):
