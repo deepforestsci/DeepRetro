@@ -338,12 +338,14 @@ class AnthropicLLM(LLMInterface):
     """
 
     def parse_response(self, response_text: str) -> tuple[int, list[str], str]:
-        """Parse Claude-style ``<cot>`` plus ``<json>`` output.
+        """Parse Claude-style ``<cot>`` output with a JSON payload.
 
         Parameters
         ----------
         response_text : str
-            Raw Claude-style response text.
+            Raw Claude-style response text. The response must contain ``<cot>``
+            with one or more ``<thinking>`` entries. JSON may be in ``<json>``
+            tags or in a fenced/raw JSON payload after ``</cot>``.
 
         Returns
         -------
@@ -354,6 +356,10 @@ class AnthropicLLM(LLMInterface):
         --------
         >>> AnthropicLLM("claude-opus-4-6").parse_response(
         ...     "<cot><thinking>x</thinking></cot><json>{}</json>"
+        ... )
+        (200, ['x'], '{}')
+        >>> AnthropicLLM("claude-opus-4-6").parse_response(
+        ...     '<cot><thinking>x</thinking></cot>```json\\n{}\\n```'
         ... )
         (200, ['x'], '{}')
         """
@@ -446,12 +452,13 @@ class GenericLLM(AnthropicLLM):
 
 
 def parse_cot_response(response_text: str) -> tuple[int, list[str], str]:
-    """Parse Claude-style ``<cot>`` plus ``<json>`` output.
+    """Parse Claude-style ``<cot>`` output with a JSON payload.
 
     Parameters
     ----------
     response_text : str
-        Raw model response containing ``<cot>`` and ``<json>`` tags.
+        Raw model response containing ``<cot>`` thinking content and either a
+        ``<json>`` payload or a fenced/raw JSON payload after ``</cot>``.
 
     Returns
     -------
@@ -462,9 +469,14 @@ def parse_cot_response(response_text: str) -> tuple[int, list[str], str]:
     --------
     >>> parse_cot_response("<cot><thinking>x</thinking></cot><json>{}</json>")
     (200, ['x'], '{}')
+    >>> parse_cot_response('<cot><thinking>x</thinking></cot>```json\\n{}\\n```')
+    (200, ['x'], '{}')
     """
     cot_content = extract_tag_content(response_text, "cot")
     json_content = extract_tag_content(response_text, "json")
+    if not json_content:
+        response_after_cot = response_text.split("</cot>", maxsplit=1)[-1]
+        json_content = extract_json_payload(response_after_cot)
     if not cot_content or not json_content:
         return 501, [], ""
 

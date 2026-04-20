@@ -166,6 +166,30 @@ def looks_like_openai_reasoning_model(model: str) -> bool:
     return base_name.startswith(("o1", "o3", "o4", "gpt-5"))
 
 
+def looks_like_anthropic_reasoning_model(model: str) -> bool:
+    """Return whether a model is an Anthropic reasoning-capable model.
+
+    Parameters
+    ----------
+    model : str
+        Model identifier to inspect.
+
+    Returns
+    -------
+    bool
+        ``True`` for Anthropic reasoning-model families.
+
+    Examples
+    --------
+    >>> looks_like_anthropic_reasoning_model("anthropic/claude-sonnet-4-6")
+    True
+    >>> looks_like_anthropic_reasoning_model("claude-3-5-haiku-20241022")
+    False
+    """
+    base_name = strip_provider_prefix(model).lower()
+    return base_name.startswith(("claude-opus-4-", "claude-sonnet-4-"))
+
+
 def infer_provider(model: str) -> ProviderName:
     """Infer the provider from a model identifier.
 
@@ -273,6 +297,10 @@ def resolve_model_selection(
     is_openai_reasoning = provider == "openai" and looks_like_openai_reasoning_model(
         completion_model
     )
+    is_anthropic_reasoning = (
+        provider == "anthropic"
+        and looks_like_anthropic_reasoning_model(completion_model)
+    )
     return ModelSelection(
         raw_model=model,
         completion_model=completion_model,
@@ -282,9 +310,9 @@ def resolve_model_selection(
         output_token_param=(
             "max_completion_tokens" if provider == "openai" else "max_tokens"
         ),
-        supports_reasoning_effort=provider == "anthropic" or is_openai_reasoning,
-        supports_seed=provider == "openai" and not is_openai_reasoning,
-        requires_temperature_one=is_openai_reasoning,
+        supports_reasoning_effort=is_openai_reasoning or is_anthropic_reasoning,
+        supports_seed=(provider == "openai") and not is_openai_reasoning,
+        requires_temperature_one=is_openai_reasoning or is_anthropic_reasoning,
     )
 
 
@@ -340,7 +368,9 @@ def build_completion_params(
     max_completion_tokens : int
         Requested maximum output tokens.
     temperature : float
-        Sampling temperature for providers that allow it.
+        Sampling temperature for providers that allow it. OpenAI reasoning
+        models and Anthropic Claude 4 reasoning-capable models are sent
+        ``temperature=1`` when reasoning controls are enabled.
     enable_thinking : bool, optional
         Whether to send reasoning controls for supported models.
     thinking_effort : {"low", "medium", "high", "max"}, optional
@@ -359,6 +389,9 @@ def build_completion_params(
     >>> params = build_completion_params("openai/gpt-4o-mini", messages, 16, 0.0)
     >>> (params["model"], params["max_completion_tokens"], params["seed"])
     ('openai/gpt-4o-mini', 16, 42)
+    >>> params = build_completion_params("anthropic/claude-sonnet-4-6", messages, 16, 0.2)
+    >>> (params["max_tokens"], params["temperature"], params["reasoning_effort"])
+    (8192, 1, 'medium')
     """
     selection = resolve_model_selection(model)
     output_token_limit = resolve_output_token_limit(
@@ -370,7 +403,9 @@ def build_completion_params(
         "model": selection.completion_model,
         "messages": messages,
         selection.output_token_param: output_token_limit,
-        "temperature": 1 if selection.requires_temperature_one else temperature,
+        "temperature": (
+            1 if selection.requires_temperature_one and enable_thinking else temperature
+        ),
     }
 
     if selection.supports_seed:

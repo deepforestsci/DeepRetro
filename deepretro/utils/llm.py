@@ -191,12 +191,13 @@ def call_LLM(
 
 
 def parse_cot_response(response_text: str) -> tuple[int, list[str], str]:
-    """Parse Claude-style ``<cot>`` plus ``<json>`` output.
+    """Parse Claude-style ``<cot>`` output with a JSON payload.
 
     Parameters
     ----------
     response_text : str
-        Raw model response containing ``<cot>`` and ``<json>`` tags.
+        Raw model response containing ``<cot>`` thinking content and either a
+        ``<json>`` payload or a fenced/raw JSON payload after ``</cot>``.
 
     Returns
     -------
@@ -208,6 +209,8 @@ def parse_cot_response(response_text: str) -> tuple[int, list[str], str]:
     >>> text = "<cot><thinking>step</thinking></cot><json>{}</json>"
     >>> parse_cot_response(text)
     (200, ['step'], '{}')
+    >>> parse_cot_response('<cot><thinking>x</thinking></cot>```json\\n{}\\n```')
+    (200, ['x'], '{}')
     """
     return interface_parse_cot_response(response_text)
 
@@ -373,7 +376,7 @@ def split_json_master(response_text: str, model: str) -> tuple[int, list[str], s
     return parse_response(response_text, model)
 
 
-def validate_json_response(
+def validate_split_json(
     json_content: str,
 ) -> tuple[int, list[Pathway], list[str], list[float]]:
     """Parse JSON-like response content into candidate pathways.
@@ -391,7 +394,7 @@ def validate_json_response(
 
     Examples
     --------
-    >>> validate_json_response(
+    >>> validate_split_json(
     ...     '{"data": [["CCO"]], "explanation": ["demo"], "confidence_scores": [1]}'
     ... )
     (200, [['CCO']], ['demo'], [1.0])
@@ -405,31 +408,6 @@ def validate_json_response(
     except Exception as exc:
         logger.error("Error parsing JSON response", error=str(exc))
         return 504, [], [], []
-
-
-def validate_split_json(
-    json_content: str,
-) -> tuple[int, list[Pathway], list[str], list[float]]:
-    """Backward-compatible wrapper for response JSON validation.
-
-    Parameters
-    ----------
-    json_content : str
-        JSON object containing pathway data, explanations, and confidence.
-
-    Returns
-    -------
-    tuple[int, list[Pathway], list[str], list[float]]
-        Status code, pathways, explanations, and confidence scores.
-
-    Examples
-    --------
-    >>> validate_split_json(
-    ...     '{"data": [["CCO"]], "explanation": ["demo"], "confidence_scores": [1]}'
-    ... )
-    (200, [['CCO']], ['demo'], [1.0])
-    """
-    return validate_json_response(json_content)
 
 
 def filter_stable_pathways(pathways: list[Pathway]) -> list[Pathway]:
@@ -617,8 +595,8 @@ def llm_pipeline(
             logger.warning("Response parsing failed", status_code=status)
             continue
 
-        status, res_molecules, res_explanations, res_confidence = (
-            validate_json_response(json_content)
+        status, res_molecules, res_explanations, res_confidence = validate_split_json(
+            json_content
         )
         if status != 200:
             logger.warning("JSON validation failed", status_code=status)
