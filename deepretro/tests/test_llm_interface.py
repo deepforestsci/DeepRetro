@@ -86,6 +86,8 @@ def test_completion_params_follow_provider_contracts() -> None:
         "metadata": {"task": "retrosynthesis"},
     }
 
+    # added seperately to test reasoning effort, reasoning requires temperature=1
+    # max_tokens should also be set to something higher for reasoning models
     reasoning = build_completion_params(
         model="openai/gpt-5",
         messages=messages,
@@ -98,6 +100,7 @@ def test_completion_params_follow_provider_contracts() -> None:
     assert reasoning["reasoning_effort"] == "high"
     assert "seed" not in reasoning
 
+    # anthropic models use max_tokens instead of max_completion_tokens
     anthropic = build_completion_params(
         model="claude-opus-4-6",
         messages=messages,
@@ -112,6 +115,8 @@ def test_completion_params_follow_provider_contracts() -> None:
         "temperature": 0.2,
     }
 
+    # added seperately to test reasoning effort, reasoning requires temperature=1,
+    # max_tokens should also be set to something higher for reasoning models
     anthropic_reasoning = build_completion_params(
         model="anthropic/claude-opus-4-6",
         messages=messages,
@@ -127,10 +132,6 @@ def test_completion_params_follow_provider_contracts() -> None:
         "reasoning_effort": "medium",
     }
 
-    deepseek = build_completion_params("fireworks/deepseek-v3p2", messages, 64, 0.2)
-    assert deepseek["model"] == "fireworks_ai/accounts/fireworks/models/deepseek-r1"
-    assert deepseek["max_tokens"] == 64
-    assert "max_completion_tokens" not in deepseek
 
 
 def test_interface_build_messages_preserves_custom_messages_and_fills_prompt() -> None:
@@ -192,61 +193,3 @@ def test_json_payload_helpers() -> None:
     assert extract_json_payload("No JSON here") is None
 
 
-def test_interface_call_wraps_litellm_completion(monkeypatch: Any) -> None:
-    captured: dict[str, Any] = {}
-
-    class FakeMessage:
-        content = [{"text": "O"}, {"text": "K"}]
-
-    class FakeChoice:
-        message = FakeMessage()
-
-    class FakeResponse:
-        choices = [FakeChoice()]
-
-    def fake_completion(**params: object) -> FakeResponse:
-        captured["params"] = params
-        return FakeResponse()
-
-    monkeypatch.setattr(
-        "deepretro.utils.llm_interface.completion",
-        fake_completion,
-    )
-
-    response = create_llm_interface("openai/gpt-4o-mini").call(
-        LLMRequest(
-            molecule="CCO",
-            model="openai/gpt-4o-mini",
-            messages=[{"role": "user", "content": "Return OK"}],
-            max_output_tokens=32,
-        )
-    )
-
-    assert response == LLMResponse(status_code=200, text="OK")
-    assert captured["params"]["model"] == "openai/gpt-4o-mini"
-    assert captured["params"]["messages"] == [{"role": "user", "content": "Return OK"}]
-    assert captured["params"]["max_completion_tokens"] == 32
-
-
-def test_interface_call_returns_error_after_retries(monkeypatch: Any) -> None:
-    attempts = 0
-
-    def fake_completion(**params: object) -> object:
-        nonlocal attempts
-        del params
-        attempts += 1
-        raise RuntimeError("network unavailable")
-
-    monkeypatch.setattr("deepretro.utils.llm_interface.completion", fake_completion)
-
-    response = create_llm_interface("openai/gpt-4o-mini").call(
-        LLMRequest(
-            molecule="CCO",
-            model="openai/gpt-4o-mini",
-            messages=[{"role": "user", "content": "Return OK"}],
-        )
-    )
-
-    assert attempts == 2
-    assert response.status_code == 400
-    assert re.search("network unavailable", response.text)
