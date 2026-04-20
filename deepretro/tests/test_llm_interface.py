@@ -46,7 +46,7 @@ def test_infer_provider_classifies_supported_model_identifier_shapes() -> None:
     assert infer_provider("claude-opus-4-6") == "anthropic"
     assert infer_provider("fireworks/deepseek-v3p2") == "deepseek"
     assert infer_provider("deepseek-ai/DeepSeek-R1") == "deepseek"
-    assert infer_provider("custom/model") == "generic"
+    assert infer_provider("custom/model") == "anthropic"
 
 
 def test_create_llm_interface_selects_provider_parser() -> None:

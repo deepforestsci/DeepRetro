@@ -10,7 +10,7 @@ from deepretro.utils.variables import DEEPSEEK_MODELS, OPENAI_MODELS
 
 PromptMode = Literal["standard", "advanced"]
 ModelFamily = Literal["deepseek", "openai", "default"]
-ProviderName = Literal["anthropic", "openai", "deepseek", "generic"]
+ProviderName = Literal["anthropic", "openai", "deepseek"]
 ThinkingEffort = Literal["low", "medium", "high", "max"]
 OutputTokenParam = Literal["max_tokens", "max_completion_tokens"]
 
@@ -42,7 +42,7 @@ class ModelSelection:
         Prompt variant selected for the call.
     family : {"deepseek", "openai", "default"}
         Prompt and parser family for the model.
-    provider : {"anthropic", "openai", "deepseek", "generic"}
+    provider : {"anthropic", "openai", "deepseek"}
         Provider inferred from the model name.
     output_token_param : {"max_tokens", "max_completion_tokens"}
         Token-limit keyword expected by the provider.
@@ -219,7 +219,7 @@ def infer_provider(model: str) -> ProviderName:
         return "openai"
     if lower_model.startswith("anthropic/") or "claude" in lower_model:
         return "anthropic"
-    return "generic"
+    return "anthropic"
 
 
 def normalize_completion_model(model: str, provider: ProviderName) -> str:

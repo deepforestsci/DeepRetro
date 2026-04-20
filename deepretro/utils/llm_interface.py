@@ -439,18 +439,6 @@ class DeepSeekLLM(LLMInterface):
         return 200, thinking_steps, json_content
 
 
-class GenericLLM(AnthropicLLM):
-    """Fallback interface for Claude-style generic providers.
-
-    Examples
-    --------
-    >>> GenericLLM("custom/model").parse_response(
-    ...     "<cot><thinking>x</thinking></cot><json>{}</json>"
-    ... )
-    (200, ['x'], '{}')
-    """
-
-
 def parse_cot_response(response_text: str) -> tuple[int, list[str], str]:
     """Parse Claude-style ``<cot>`` output with a JSON payload.
 
@@ -525,4 +513,4 @@ def create_llm_interface(
         return DeepSeekLLM(model, prompt_mode=prompt_mode)
     if selection.provider == "anthropic":
         return AnthropicLLM(model, prompt_mode=prompt_mode)
-    return GenericLLM(model, prompt_mode=prompt_mode)
+    return AnthropicLLM(model, prompt_mode=prompt_mode)
