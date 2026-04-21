@@ -8,12 +8,13 @@ from pathlib import Path
 from typing import Any, Optional
 
 import joblib
+import structlog
 
-from deepretro.logging import get_logger
 from deepretro.utils.variables import ENCODING_SCALABILITY, REACTION_ENCODING_NAMES
 
 ENABLE_LOGGING = os.getenv("ENABLE_LOGGING", "true").lower() != "false"
 UNKNOWN_REACTION = ("Unknown Reaction", -1)
+logger = structlog.get_logger(__name__)
 
 
 def _repo_root() -> Path:
@@ -60,6 +61,7 @@ def log_message(message: str, logger: Optional[Any] = None) -> None:
         logger.info(message)
         return
     print(message)
+
 
 class ReactionMetricCalculator:
     """
@@ -178,10 +180,10 @@ class ReactionMetricCalculator:
 
     def _log_exception(self, function_name: str, exc: Exception) -> None:
         """Log a recoverable metric calculation error."""
-        logger = self.logger
-        if logger is None and ENABLE_LOGGING:
-            logger = get_logger(__name__)
-        log_message(f"Error in {function_name}: {exc}", logger)
+        active_logger = self.logger
+        if active_logger is None and ENABLE_LOGGING:
+            active_logger = logger
+        log_message(f"Error in {function_name}: {exc}", active_logger)
 
 
 def get_reaction_type(mol1: str, mol2: str, model_path: str) -> tuple[str, int]:
