@@ -45,24 +45,6 @@ def _default_fingerprint_calculator(smiles: str) -> Optional[list[int]]:
     return utils_molecule.compute_fingerprint(smiles)
 
 
-def log_message(message: str, logger: Optional[Any] = None) -> None:
-    """
-    Log a parser metric message.
-
-    Parameters
-    ----------
-    message : str
-        Message to log.
-    logger : object, optional
-        Logger exposing an ``info`` method. When omitted, the message is
-        printed for backwards compatibility with the previous implementation.
-    """
-    if logger is not None:
-        logger.info(message)
-        return
-    print(message)
-
-
 class ReactionMetricCalculator:
     """
     Calculate scalability metrics for parsed route steps.
@@ -101,7 +83,7 @@ class ReactionMetricCalculator:
         scalability_encoding : Mapping[int, Any], optional
             Mapping from classifier output index to scalability label.
         logger : object, optional
-            Logger exposing an ``info`` method for recoverable metric errors.
+            Logger exposing an ``error`` method for recoverable metric errors.
         """
         self.model_path = (
             _rxn_classification_model_path() if model_path is None else model_path
@@ -183,7 +165,12 @@ class ReactionMetricCalculator:
         active_logger = self.logger
         if active_logger is None and ENABLE_LOGGING:
             active_logger = logger
-        log_message(f"Error in {function_name}: {exc}", active_logger)
+        if active_logger is not None:
+            active_logger.error(
+                "Error in metric calculation",
+                function=function_name,
+                error=str(exc),
+            )
 
 
 def get_reaction_type(mol1: str, mol2: str, model_path: str) -> tuple[str, int]:
