@@ -118,7 +118,7 @@ def test_format_output_classifies_basic_molecules_as_reagents():
     assert [reagent["smiles"] for reagent in step["reagents"]] == ["H2O"]
 
 
-def test_format_output_uses_reactants_not_reagents_for_scalability():
+def test_format_output_updates_scalability_for_all_children():
     calls = []
 
     def record_scalability(reactant, product):
@@ -135,8 +135,18 @@ def test_format_output_uses_reactants_not_reagents_for_scalability():
         basic_molecules={"H2O"},
     ).format_output(data)
 
-    assert calls == [("A", "P")]
-    assert output["steps"][0]["reactionmetrics"][0]["scalabilityindex"] == "A->P"
+    assert calls == [("A", "P"), ("H2O", "P")]
+    assert output["steps"][0]["reactionmetrics"][0]["scalabilityindex"] == "H2O->P"
+
+
+def test_fix_dependencies_overwrites_duplicate_producers():
+    steps = [
+        {"step": "1", "products": [{"smiles": "A"}], "reactants": []},
+        {"step": "2", "products": [{"smiles": "A"}], "reactants": []},
+        {"step": "3", "products": [{"smiles": "B"}], "reactants": [{"smiles": "A"}]},
+    ]
+
+    assert fix_dependencies({}, steps)["3"] == ["2"]
 
 
 def test_fix_dependencies_ignores_unmatched_reactants():
@@ -146,17 +156,6 @@ def test_fix_dependencies_ignores_unmatched_reactants():
     ]
 
     assert fix_dependencies({}, steps) == {"1": [], "2": []}
-
-
-def test_fix_dependencies_preserves_all_duplicate_producers():
-    steps = [
-        {"step": "1", "products": [{"smiles": "A"}], "reactants": []},
-        {"step": "2", "products": [{"smiles": "A"}], "reactants": []},
-        {"step": "3", "products": [{"smiles": "B"}], "reactants": [{"smiles": "A"}]},
-    ]
-
-    assert fix_dependencies({}, steps)["3"] == ["1", "2"]
-
 
 def test_format_output_handles_reaction_wrapper_children():
     data = {
