@@ -12,6 +12,7 @@ from collections.abc import Callable, Collection, Iterable, Mapping, MutableMapp
 from typing import Any, Optional
 
 from deepretro.utils.parse_metrics import calc_scalability_index
+from deepretro.utils.utils_molecule import calc_chemical_formula, calc_mol_wt
 
 RouteNode = Mapping[str, Any]
 Step = dict[str, Any]
@@ -26,18 +27,7 @@ def _default_basic_molecules() -> Collection[str]:
     return BASIC_MOLECULES
 
 
-def _default_formula_calculator(smiles: str) -> str:
-    """Calculate a molecular formula using the molecule utility module."""
-    from deepretro.utils.utils_molecule import calc_chemical_formula
 
-    return calc_chemical_formula(smiles)
-
-
-def _default_mass_calculator(smiles: str) -> float:
-    """Calculate molecular mass using the molecule utility module."""
-    from deepretro.utils.utils_molecule import calc_mol_wt
-
-    return calc_mol_wt(smiles)
 
 
 class RetrosynthesisRouteParser:
@@ -86,12 +76,12 @@ class RetrosynthesisRouteParser:
             _default_basic_molecules() if basic_molecules is None else basic_molecules
         )
         self.chemical_formula_calculator = (
-            _default_formula_calculator
+            calc_chemical_formula
             if chemical_formula_calculator is None
             else chemical_formula_calculator
         )
         self.mass_calculator = (
-            _default_mass_calculator if mass_calculator is None else mass_calculator
+            calc_mol_wt if mass_calculator is None else mass_calculator
         )
         self.scalability_calculator = (
             calc_scalability_index
