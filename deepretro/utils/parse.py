@@ -316,7 +316,6 @@ def fix_dependencies(
     dict[str, list[str]]
         Rebuilt dependency mapping.
     """
-    del dependencies
     return RetrosynthesisRouteParser().fix_dependencies(step_list)
 
 
