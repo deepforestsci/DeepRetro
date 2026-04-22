@@ -283,8 +283,31 @@ def parse_step(
 ) -> ParseOutput:
     """
     Parse a retrosynthesis route tree into dependencies and steps.
-
     This compatibility wrapper delegates to ``RetrosynthesisRouteParser``.
+    
+    Parameters
+    ----------
+    data : Mapping[str, Any]
+        Route node containing a product ``smiles`` value and optional
+        children.
+    include_metadata : bool, optional
+        Compatibility argument retained for the historical function API.
+        Metadata is always included by the current output schema.
+    step_list : list[dict[str, Any]], optional
+        Existing step accumulator used by recursive callers.
+    dependency_list : dict[str, list[str]], optional
+        Existing dependency accumulator used by recursive callers.
+    parent_id : int, optional
+        One-based step id of the parent reaction.
+
+    Returns
+    -------
+    dict[str, Any]
+        Dictionary with ``dependencies`` and ``steps`` keys.
+        
+    Examples
+    --------
+    
     """
     parser = RetrosynthesisRouteParser()
     return parser.parse_step(
