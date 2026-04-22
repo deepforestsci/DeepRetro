@@ -551,6 +551,12 @@ def extract_json_payload(response_text: str) -> str | None:
 
 def is_enabled(flag: str | bool) -> bool:
     """Normalize string and boolean feature flags.
+    
+    Note:
+    -----
+    This function is added for backwards compatibility, ideally we should 
+    not have this as type safety is altered with this, we should remove this 
+    once we make sure type safety is maintained.
 
     Parameters
     ----------
