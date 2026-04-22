@@ -61,9 +61,27 @@ def log_message(message: str, logger: Optional[Any] = None) -> None:
         return
     print(message)
 
+
 class ReactionMetricCalculator:
     """
     Calculate scalability metrics for parsed route steps.
+
+    Parameters
+    ----------
+    model_path : str, optional
+        Path to the joblib reaction classifier. ``None`` means resolve from
+        ``RXN_CLASSIFICATION_MODEL_PATH``; an empty string disables classifier
+        backed scalability.
+    model_loader : Callable[[str], Any], optional
+        Loader used to deserialize the classifier. Defaults to ``joblib.load``.
+    fingerprint_calculator : Callable[[str], list[int] | None], optional
+        Function used to convert SMILES to model fingerprints.
+    reaction_encoding_names : Mapping[int, str], optional
+        Mapping from classifier output index to reaction type label.
+    scalability_encoding : Mapping[int, Any], optional
+        Mapping from classifier output index to scalability label.
+    logger : object, optional
+        Logger exposing an ``info`` method for recoverable metric errors.
 
     Examples
     --------
@@ -83,24 +101,6 @@ class ReactionMetricCalculator:
         scalability_encoding: Mapping[int, Any] = ENCODING_SCALABILITY,
         logger: Optional[Any] = None,
     ) -> None:
-        """
-        Parameters
-        ----------
-        model_path : str, optional
-            Path to the joblib reaction classifier. ``None`` means resolve from
-            ``RXN_CLASSIFICATION_MODEL_PATH``; an empty string disables classifier
-            backed scalability.
-        model_loader : Callable[[str], Any], optional
-            Loader used to deserialize the classifier. Defaults to ``joblib.load``.
-        fingerprint_calculator : Callable[[str], list[int] | None], optional
-            Function used to convert SMILES to model fingerprints.
-        reaction_encoding_names : Mapping[int, str], optional
-            Mapping from classifier output index to reaction type label.
-        scalability_encoding : Mapping[int, Any], optional
-            Mapping from classifier output index to scalability label.
-        logger : object, optional
-            Logger exposing an ``info`` method for recoverable metric errors.
-        """
         self.model_path = (
             _rxn_classification_model_path() if model_path is None else model_path
         )

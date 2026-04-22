@@ -44,6 +44,18 @@ class RetrosynthesisRouteParser:
     """
     Convert recursive retrosynthesis route trees into viewer-ready dictionaries.
 
+    Parameters
+    ----------
+    basic_molecules : Collection[str], optional
+        Molecules that should be emitted as reagents instead of reactants.
+        Defaults to ``deepretro.utils.variables.BASIC_MOLECULES``.
+    chemical_formula_calculator : Callable[[str], str], optional
+        Function used to calculate formula metadata for each molecule.
+    mass_calculator : Callable[[str], float], optional
+        Function used to calculate molecular mass metadata.
+    scalability_calculator : Callable[[str, str], str], optional
+        Function used to score a precursor/product pair for scalability.
+
     Examples
     --------
     >>> parser = RetrosynthesisRouteParser(
@@ -69,19 +81,6 @@ class RetrosynthesisRouteParser:
         mass_calculator: Optional[Callable[[str], float]] = None,
         scalability_calculator: Optional[Callable[[str, str], str]] = None,
     ) -> None:
-        """
-        Parameters
-        ----------
-        basic_molecules : Collection[str], optional
-            Molecules that should be emitted as reagents instead of reactants.
-            Defaults to ``deepretro.utils.variables.BASIC_MOLECULES``.
-        chemical_formula_calculator : Callable[[str], str], optional
-            Function used to calculate formula metadata for each molecule.
-        mass_calculator : Callable[[str], float], optional
-            Function used to calculate molecular mass metadata.
-        scalability_calculator : Callable[[str, str], str], optional
-            Function used to score a precursor/product pair for scalability.
-        """
         self.basic_molecules = (
             _default_basic_molecules() if basic_molecules is None else basic_molecules
         )

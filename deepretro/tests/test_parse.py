@@ -1,151 +1,91 @@
+import pytest
+
 from deepretro.utils.parse import (
     RetrosynthesisRouteParser,
-    parse_step,
-    format_output,
     fix_dependencies,
+    format_output,
+    parse_step,
 )
 
 
-def dummy_formula(smiles):
-    return "X"
+def build_parser(scalability_calculator=None, basic_molecules=None):
+    return RetrosynthesisRouteParser(
+        basic_molecules=set() if basic_molecules is None else basic_molecules,
+        chemical_formula_calculator=lambda smiles: "X",
+        mass_calculator=lambda smiles: 1.0,
+        scalability_calculator=(
+            (lambda reactant, product: "N/A")
+            if scalability_calculator is None
+            else scalability_calculator
+        ),
+    )
 
-def dummy_mass(smiles):
-    return 1.0
 
-def dummy_scalability(a, b):
-    return "N/A"
-
-
-def test_simple_route_parsing():
-    """Checks basic parsing of a simple route with two reactants."""
+def test_format_output_parses_single_step_with_metadata():
     data = {
         "smiles": "CCO",
-        "children": [
-            {
-                "children": [
-                    {"smiles": "CC"},
-                    {"smiles": "O"},
-                ]
-            }
-        ],
+        "children": [{"children": [{"smiles": "CC"}, {"smiles": "O"}]}],
     }
 
-    parser = RetrosynthesisRouteParser(
-        basic_molecules=set(),
-        chemical_formula_calculator=dummy_formula,
-        mass_calculator=dummy_mass,
-        scalability_calculator=dummy_scalability,
-    )
+    output = build_parser().format_output(data)
 
-    output = parser.format_output(data)
-
-    assert "steps" in output
-    assert "dependencies" in output
-
-    assert len(output["steps"]) == 1
-    step = output["steps"][0]
-
-    assert step["products"][0]["smiles"] == "CCO"
-    assert len(step["reactants"]) == 2
-
-    product_metadata = step["products"][0]["product_metadata"]
-    assert "chemical_formula" in product_metadata
-    assert "mass" in product_metadata
-
-
-def test_fix_dependencies_simple():
-    """Checks dependency reconstruction from simple step relationships."""
-    steps = [
-        {"step": "1", "products": [{"smiles": "A"}], "reactants": []},
-        {"step": "2", "products": [{"smiles": "B"}], "reactants": [{"smiles": "A"}]},
-    ]
-
-    deps = fix_dependencies({}, steps)
-
-    assert deps["2"] == ["1"]
-
-
-def test_leaf_node_no_step_created():
-    """Ensures nodes without children do not produce steps."""
-    data = {"smiles": "CC"}
-
-    parser = RetrosynthesisRouteParser(
-        basic_molecules=set(),
-        chemical_formula_calculator=dummy_formula,
-        mass_calculator=dummy_mass,
-        scalability_calculator=dummy_scalability,
-    )
-
-    output = parser.parse_step(data)
-
-    assert output["steps"] == []
-    assert output["dependencies"] == {}
-
-
-def test_empty_children_creates_step():
-    """Checks that nodes with empty children still create a step."""
-    data = {"smiles": "CCO", "children": []}
-
-    parser = RetrosynthesisRouteParser(
-        basic_molecules=set(),
-        chemical_formula_calculator=dummy_formula,
-        mass_calculator=dummy_mass,
-        scalability_calculator=dummy_scalability,
-    )
-
-    output = parser.parse_step(data)
-
+    assert output["dependencies"] == {"1": []}
     assert len(output["steps"]) == 1
 
     step = output["steps"][0]
-    assert step["products"][0]["smiles"] == "CCO"
-    assert step["reactants"] == []
+    assert step["step"] == "1"
+    assert [product["smiles"] for product in step["products"]] == ["CCO"]
+    assert [reactant["smiles"] for reactant in step["reactants"]] == ["CC", "O"]
     assert step["reagents"] == []
+    assert step["reactionmetrics"][0]["scalabilityindex"] == "N/A"
+    assert step["products"][0]["product_metadata"]["chemical_formula"] == "X"
+    assert step["products"][0]["product_metadata"]["mass"] == 1.0
 
 
-def test_basic_molecule_goes_to_reagent():
-    """Verifies basic molecules are classified as reagents."""
-    data = {
-        "smiles": "CCO",
-        "children": [
-            {
-                "children": [
-                    {"smiles": "H2O"},
-                ]
-            }
-        ],
-    }
+def test_parse_step_returns_no_step_for_leaf_node():
+    output = build_parser().parse_step({"smiles": "CC"})
 
-    parser = RetrosynthesisRouteParser(
-        basic_molecules={"H2O"},
-        chemical_formula_calculator=dummy_formula,
-        mass_calculator=dummy_mass,
-        scalability_calculator=dummy_scalability,
+    assert output == {"dependencies": {}, "steps": []}
+
+
+def test_parse_step_creates_product_only_step_for_empty_children():
+    output = build_parser().parse_step({"smiles": "CCO", "children": []})
+
+    assert output["dependencies"] == {}
+    assert len(output["steps"]) == 1
+    assert output["steps"][0]["products"][0]["smiles"] == "CCO"
+    assert output["steps"][0]["reactants"] == []
+    assert output["steps"][0]["reagents"] == []
+
+
+def test_parse_step_appends_to_existing_accumulators():
+    steps = [
+        {
+            "step": "1",
+            "reactants": [],
+            "reagents": [],
+            "products": [{"smiles": "seed", "product_metadata": {}}],
+            "conditions": [],
+            "reactionmetrics": [{"scalabilityindex": "", "closestliterature": ""}],
+        }
+    ]
+    dependencies = {"1": []}
+
+    output = build_parser().parse_step(
+        {"smiles": "P", "children": [{"children": [{"smiles": "A"}]}]},
+        step_list=steps,
+        dependency_list=dependencies,
+        parent_id=1,
     )
 
-    output = parser.format_output(data)
-    step = output["steps"][0]
-
-    assert len(step["reagents"]) == 1
-    assert step["reagents"][0]["smiles"] == "H2O"
-
-
-def test_missing_smiles_raises():
-    """Ensures missing smiles field raises an error."""
-    data = {"children": []}
-
-    parser = RetrosynthesisRouteParser()
-
-    try:
-        parser.format_output(data)
-    except ValueError as e:
-        assert "smiles" in str(e)
-    else:
-        assert False
+    assert output["steps"] is steps
+    assert output["dependencies"] is dependencies
+    assert output["dependencies"] == {"1": ["2"], "2": []}
+    assert output["steps"][1]["step"] == "2"
+    assert output["steps"][0]["reactants"][0]["smiles"] == "P"
 
 
-def test_multi_step_route():
-    """Checks recursive parsing generates multiple steps."""
+def test_format_output_builds_dependency_chain_for_nested_route():
     data = {
         "smiles": "C",
         "children": [
@@ -153,228 +93,113 @@ def test_multi_step_route():
                 "children": [
                     {
                         "smiles": "B",
-                        "children": [
-                            {
-                                "children": [
-                                    {"smiles": "A"}
-                                ]
-                            }
-                        ],
+                        "children": [{"children": [{"smiles": "A"}]}],
                     }
                 ]
             }
         ],
     }
 
-    parser = RetrosynthesisRouteParser(
-        basic_molecules=set(),
-        chemical_formula_calculator=dummy_formula,
-        mass_calculator=dummy_mass,
-        scalability_calculator=dummy_scalability,
-    )
+    output = build_parser().format_output(data)
 
-    output = parser.format_output(data)
-
-    assert len(output["steps"]) == 2
+    assert [step["products"][0]["smiles"] for step in output["steps"]] == ["C", "B"]
+    assert output["dependencies"] == {"1": ["2"], "2": []}
 
 
-def test_parse_step_wrapper():
-    """Checks wrapper parse_step returns structured output."""
-    data = {
-        "smiles": "CCO",
-        "children": [{"children": [{"smiles": "CC"}]}],
-    }
-
-    result = parse_step(data)
-
-    assert "steps" in result
-
-
-def test_format_output_wrapper():
-    """Checks wrapper format_output returns dependencies."""
-    data = {
-        "smiles": "CCO",
-        "children": [{"children": [{"smiles": "CC"}]}],
-    }
-
-    result = format_output(data)
-
-    assert "dependencies" in result
-
-
-def test_one_parent_three_children():
-    """Checks parsing of a single step with three reactants."""
+def test_format_output_classifies_basic_molecules_as_reagents():
     data = {
         "smiles": "P",
-        "children": [
-            {
-                "children": [
-                    {"smiles": "A"},
-                    {"smiles": "B"},
-                    {"smiles": "C"},
-                ]
-            }
-        ],
+        "children": [{"children": [{"smiles": "A"}, {"smiles": "H2O"}]}],
     }
 
-    parser = RetrosynthesisRouteParser(
-        basic_molecules=set(),
-        chemical_formula_calculator=dummy_formula,
-        mass_calculator=dummy_mass,
-        scalability_calculator=dummy_scalability,
-    )
-
-    output = parser.format_output(data)
+    output = build_parser(basic_molecules={"H2O"}).format_output(data)
     step = output["steps"][0]
 
-    assert len(step["reactants"]) == 3
-    assert {r["smiles"] for r in step["reactants"]} == {"A", "B", "C"}
+    assert [reactant["smiles"] for reactant in step["reactants"]] == ["A"]
+    assert [reagent["smiles"] for reagent in step["reagents"]] == ["H2O"]
 
 
-def test_mixed_reactant_and_reagent():
-    """Checks correct split between reactants and reagents."""
+def test_format_output_uses_reactants_not_reagents_for_scalability():
+    calls = []
+
+    def record_scalability(reactant, product):
+        calls.append((reactant, product))
+        return f"{reactant}->{product}"
+
     data = {
         "smiles": "P",
-        "children": [
-            {
-                "children": [
-                    {"smiles": "A"},
-                    {"smiles": "H2O"},
-                ]
-            }
-        ],
+        "children": [{"children": [{"smiles": "A"}, {"smiles": "H2O"}]}],
     }
 
-    parser = RetrosynthesisRouteParser(
+    output = build_parser(
+        scalability_calculator=record_scalability,
         basic_molecules={"H2O"},
-        chemical_formula_calculator=dummy_formula,
-        mass_calculator=dummy_mass,
-        scalability_calculator=dummy_scalability,
-    )
+    ).format_output(data)
 
-    output = parser.format_output(data)
-    step = output["steps"][0]
-
-    assert len(step["reactants"]) == 1
-    assert len(step["reagents"]) == 1
+    assert calls == [("A", "P")]
+    assert output["steps"][0]["reactionmetrics"][0]["scalabilityindex"] == "A->P"
 
 
-def test_dependency_chain_three_steps():
-    """Checks dependency reconstruction across multiple linked steps."""
-    steps = [
-        {"step": "1", "products": [{"smiles": "A"}], "reactants": []},
-        {"step": "2", "products": [{"smiles": "B"}], "reactants": [{"smiles": "A"}]},
-        {"step": "3", "products": [{"smiles": "C"}], "reactants": [{"smiles": "B"}]},
-    ]
-
-    deps = fix_dependencies({}, steps)
-
-    assert deps["2"] == ["1"]
-    assert deps["3"] == ["2"]
-
-
-def test_duplicate_reactants_handled():
-    """Checks behavior when same reactant appears multiple times."""
-    data = {
-        "smiles": "P",
-        "children": [
-            {
-                "children": [
-                    {"smiles": "A"},
-                    {"smiles": "A"},
-                ]
-            }
-        ],
-    }
-
-    parser = RetrosynthesisRouteParser(
-        basic_molecules=set(),
-        chemical_formula_calculator=dummy_formula,
-        mass_calculator=dummy_mass,
-        scalability_calculator=dummy_scalability,
-    )
-
-    output = parser.format_output(data)
-    step = output["steps"][0]
-
-    assert len(step["reactants"]) == 2
-
-
-def test_no_matching_dependency():
-    """Checks that unmatched reactants do not create dependencies."""
+def test_fix_dependencies_ignores_unmatched_reactants():
     steps = [
         {"step": "1", "products": [{"smiles": "A"}], "reactants": []},
         {"step": "2", "products": [{"smiles": "B"}], "reactants": [{"smiles": "X"}]},
     ]
 
-    deps = fix_dependencies({}, steps)
-
-    assert deps["2"] == []
+    assert fix_dependencies({}, steps) == {"1": [], "2": []}
 
 
-def test_single_node_with_reaction_flag():
-    """Checks that reaction nodes do not attach as reactants."""
+def test_fix_dependencies_preserves_all_duplicate_producers():
+    steps = [
+        {"step": "1", "products": [{"smiles": "A"}], "reactants": []},
+        {"step": "2", "products": [{"smiles": "A"}], "reactants": []},
+        {"step": "3", "products": [{"smiles": "B"}], "reactants": [{"smiles": "A"}]},
+    ]
+
+    assert fix_dependencies({}, steps)["3"] == ["1", "2"]
+
+
+def test_format_output_handles_reaction_wrapper_children():
     data = {
         "smiles": "P",
-        "children": [
-            {
-                "is_reaction": True,
-                "children": [{"smiles": "A"}],
-            }
-        ],
+        "children": [{"is_reaction": True, "children": [{"smiles": "A"}]}],
     }
 
-    parser = RetrosynthesisRouteParser(
-        basic_molecules=set(),
-        chemical_formula_calculator=dummy_formula,
-        mass_calculator=dummy_mass,
-        scalability_calculator=dummy_scalability,
-    )
+    output = build_parser().format_output(data)
 
-    output = parser.format_output(data)
-
-    step = output["steps"][0]
-    assert len(step["reactants"]) == 1
+    assert [reactant["smiles"] for reactant in output["steps"][0]["reactants"]] == ["A"]
 
 
-def test_multiple_independent_steps():
-    """Checks parsing when multiple independent branches exist."""
+def test_format_output_preserves_duplicate_reactants():
     data = {
         "smiles": "P",
-        "children": [
-            {"children": [{"smiles": "A"}]},
-            {"children": [{"smiles": "B"}]},
-        ],
+        "children": [{"children": [{"smiles": "A"}, {"smiles": "A"}]}],
     }
 
-    parser = RetrosynthesisRouteParser(
-        basic_molecules=set(),
-        chemical_formula_calculator=dummy_formula,
-        mass_calculator=dummy_mass,
-        scalability_calculator=dummy_scalability,
-    )
+    output = build_parser().format_output(data)
 
-    output = parser.format_output(data)
-
-    assert len(output["steps"]) >= 1
+    assert [reactant["smiles"] for reactant in output["steps"][0]["reactants"]] == [
+        "A",
+        "A",
+    ]
 
 
-def test_missing_children_key_in_nested_node():
-    """Checks behavior when nested node lacks children key."""
+def test_format_output_raises_for_missing_smiles_anywhere_in_route():
+    with pytest.raises(ValueError, match="smiles"):
+        build_parser().format_output(
+            {"smiles": "P", "children": [{"children": [{}]}]}
+        )
+
+
+def test_public_wrapper_functions_parse_routes_end_to_end():
     data = {
-        "smiles": "P",
-        "children": [
-            {
-                "children": [{}]
-            }
-        ],
+        "smiles": "CCO",
+        "children": [{"children": [{"smiles": "CC"}]}],
     }
 
-    parser = RetrosynthesisRouteParser()
+    parsed = parse_step(data)
+    formatted = format_output(data)
 
-    try:
-        parser.format_output(data)
-    except ValueError:
-        assert True
-    else:
-        assert False
+    assert [step["products"][0]["smiles"] for step in parsed["steps"]] == ["CCO"]
+    assert [step["products"][0]["smiles"] for step in formatted["steps"]] == ["CCO"]
+    assert formatted["dependencies"] == {"1": []}
