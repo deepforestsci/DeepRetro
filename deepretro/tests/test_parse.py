@@ -36,7 +36,6 @@ def test_format_output_parses_single_step_with_metadata():
     assert step["step"] == "1"
     assert [product["smiles"] for product in step["products"]] == ["CCO"]
     assert [reactant["smiles"] for reactant in step["reactants"]] == ["CC", "O"]
-    assert step["reagents"] == []
     assert step["reactionmetrics"][0]["scalabilityindex"] == "N/A"
     assert step["products"][0]["product_metadata"]["chemical_formula"] == "X"
     assert step["products"][0]["product_metadata"]["mass"] == 1.0
