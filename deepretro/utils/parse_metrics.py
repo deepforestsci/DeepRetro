@@ -61,7 +61,6 @@ def log_message(message: str, logger: Optional[Any] = None) -> None:
         return
     print(message)
 
-
 class ReactionMetricCalculator:
     """
     Calculate scalability metrics for parsed route steps.
@@ -101,7 +100,6 @@ class ReactionMetricCalculator:
             Mapping from classifier output index to scalability label.
         logger : object, optional
             Logger exposing an ``info`` method for recoverable metric errors.
-
         """
         self.model_path = (
             _rxn_classification_model_path() if model_path is None else model_path
