@@ -8,12 +8,13 @@ from pathlib import Path
 from typing import Any, Optional
 
 import joblib
+import structlog
 
-from deepretro.logging import get_logger
 from deepretro.utils.variables import ENCODING_SCALABILITY, REACTION_ENCODING_NAMES
 
 ENABLE_LOGGING = os.getenv("ENABLE_LOGGING", "true").lower() != "false"
 UNKNOWN_REACTION = ("Unknown Reaction", -1)
+logger = structlog.get_logger(__name__)
 
 
 def _repo_root() -> Path:
@@ -44,44 +45,9 @@ def _default_fingerprint_calculator(smiles: str) -> Optional[list[int]]:
     return utils_molecule.compute_fingerprint(smiles)
 
 
-def log_message(message: str, logger: Optional[Any] = None) -> None:
-    """
-    Log a parser metric message.
-
-    Parameters
-    ----------
-    message : str
-        Message to log.
-    logger : object, optional
-        Logger exposing an ``info`` method. When omitted, the message is
-        printed for backwards compatibility with the previous implementation.
-    """
-    if logger is not None:
-        logger.info(message)
-        return
-    print(message)
-
-
 class ReactionMetricCalculator:
     """
     Calculate scalability metrics for parsed route steps.
-
-    Parameters
-    ----------
-    model_path : str, optional
-        Path to the joblib reaction classifier. ``None`` means resolve from
-        ``RXN_CLASSIFICATION_MODEL_PATH``; an empty string disables classifier
-        backed scalability.
-    model_loader : Callable[[str], Any], optional
-        Loader used to deserialize the classifier. Defaults to ``joblib.load``.
-    fingerprint_calculator : Callable[[str], list[int] | None], optional
-        Function used to convert SMILES to model fingerprints.
-    reaction_encoding_names : Mapping[int, str], optional
-        Mapping from classifier output index to reaction type label.
-    scalability_encoding : Mapping[int, Any], optional
-        Mapping from classifier output index to scalability label.
-    logger : object, optional
-        Logger exposing an ``info`` method for recoverable metric errors.
 
     Examples
     --------
@@ -101,6 +67,24 @@ class ReactionMetricCalculator:
         scalability_encoding: Mapping[int, Any] = ENCODING_SCALABILITY,
         logger: Optional[Any] = None,
     ) -> None:
+        """
+        Parameters
+        ----------
+        model_path : str, optional
+            Path to the joblib reaction classifier. ``None`` means resolve from
+            ``RXN_CLASSIFICATION_MODEL_PATH``; an empty string disables classifier
+            backed scalability.
+        model_loader : Callable[[str], Any], optional
+            Loader used to deserialize the classifier. Defaults to ``joblib.load``.
+        fingerprint_calculator : Callable[[str], list[int] | None], optional
+            Function used to convert SMILES to model fingerprints.
+        reaction_encoding_names : Mapping[int, str], optional
+            Mapping from classifier output index to reaction type label.
+        scalability_encoding : Mapping[int, Any], optional
+            Mapping from classifier output index to scalability label.
+        logger : object, optional
+            Logger exposing an ``error`` method for recoverable metric errors.
+        """
         self.model_path = (
             _rxn_classification_model_path() if model_path is None else model_path
         )
@@ -178,10 +162,15 @@ class ReactionMetricCalculator:
 
     def _log_exception(self, function_name: str, exc: Exception) -> None:
         """Log a recoverable metric calculation error."""
-        logger = self.logger
-        if logger is None and ENABLE_LOGGING:
-            logger = get_logger(__name__)
-        log_message(f"Error in {function_name}: {exc}", logger)
+        active_logger = self.logger
+        if active_logger is None and ENABLE_LOGGING:
+            active_logger = logger
+        if active_logger is not None:
+            active_logger.error(
+                "Error in metric calculation",
+                function=function_name,
+                error=str(exc),
+            )
 
 
 def get_reaction_type(mol1: str, mol2: str, model_path: str) -> tuple[str, int]:
