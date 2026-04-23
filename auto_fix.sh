@@ -4,12 +4,25 @@ set -e
 REPO_DIR="/mnt/c/Users/gask4/DeepRetro"
 MAX_RETRIES=3
 LOG_DIR="$REPO_DIR/logs"
+VENV_DIR="$REPO_DIR/.testvenv"
 CODEX_PROMPT_TEMPLATE="You are a senior Python engineer. PROJECT: DeepRetro FOCUS: Fix failing pytest tests ERRORS: ERRORS_PLACEHOLDER FILE (if available): FILE_PLACEHOLDER CONSTRAINTS: * Do NOT change function signatures * Do NOT modify unrelated logic * Keep code style consistent OUTPUT: Return ONLY a unified diff patch. NO explanations."
 
 cd "$REPO_DIR"
 
 # Ensure logs dir exists
 mkdir -p "$LOG_DIR"
+
+# Set up test virtual environment if needed
+setup_venv() {
+    if [ ! -d "$VENV_DIR" ] || [ ! -f "$VENV_DIR/bin/python" ]; then
+        echo "[SETUP] Creating test virtual environment..."
+        uv venv "$VENV_DIR" 2>&1
+        uv pip install --python "$VENV_DIR/bin/python" pytest pytest-cov 2>&1 | tail -5
+        echo "[OK] Virtual environment ready"
+    fi
+}
+
+PYTEST="$VENV_DIR/bin/python -m pytest"
 
 # Git checkpoint if uncommitted changes
 if ! git diff --quiet || [ -n "$(git status --porcelain)" ]; then
@@ -22,13 +35,15 @@ if ! git diff --quiet || [ -n "$(git status --porcelain)" ]; then
 fi
 
 run_pytest() {
-    pytest -x --tb=short 2>&1
+    $PYTEST -x --tb=short 2>&1
 }
 
 echo "=== DeepRetro Auto-Fix Pipeline ==="
 echo "Repo: $REPO_DIR"
 echo "Max retries: $MAX_RETRIES"
 echo ""
+
+setup_venv
 
 retry=0
 while [ $retry -lt $MAX_RETRIES ]; do
@@ -51,7 +66,7 @@ while [ $retry -lt $MAX_RETRIES ]; do
     # Extract key error lines for context
     echo ""
     echo "--- Failure summary ---"
-    tail -20 "$error_file" | grep -E "(FAILED|ERROR|AssertionError|ImportError)" | head -10
+    tail -20 "$error_file" | grep -E "(FAILED|ERROR|AssertionError|ImportError|NameError)" | head -10
     echo ""
     
     # Build file context
@@ -62,19 +77,19 @@ while [ $retry -lt $MAX_RETRIES ]; do
         file_context="FILE NOT FOUND"
     fi
     
-    # Escape special chars for prompt
-    errors_escaped=$(sed 's/"/\\"/g; s/`/\\`/g' "$error_file")
-    file_escaped=$(sed 's/"/\\"/g; s/`/\\`/g' <<< "$file_context")
+    # Escape special chars for prompt (handle newlines and special chars)
+    errors_escaped=$(python3 -c "import sys,json; print(json.dumps(sys.stdin.read()))" < "$error_file" 2>/dev/null | tr -d '"')
+    file_escaped=$(python3 -c "import sys,json; print(json.dumps(sys.stdin.read()))" <<< "$file_context" 2>/dev/null | tr -d '"')
     
     # Build prompt
     prompt="${CODEX_PROMPT_TEMPLATE/ERRORS_PLACEHOLDER/$errors_escaped}"
     prompt="${prompt/FILE_PLACEHOLDER/$file_escaped}"
     
-    # Call codex CLI
+    # Call codex CLI with PTY for interactive input
     echo "[CALL] Codex CLI..."
     fix_file="$LOG_DIR/fix_$retry.diff"
     
-    codex "$prompt" > "$fix_file" 2>&1
+    codex --yes "$prompt" > "$fix_file" 2>&1
     codex_exit=$?
     
     if [ $codex_exit -ne 0 ]; then
@@ -82,6 +97,7 @@ while [ $retry -lt $MAX_RETRIES ]; do
     fi
     
     echo "[INFO] Codex output saved to $fix_file"
+    head -10 "$fix_file"
     
     # Check if codex returned a patch
     if [ ! -s "$fix_file" ]; then
@@ -89,16 +105,19 @@ while [ $retry -lt $MAX_RETRIES ]; do
         exit 1
     fi
     
-    # Enforce unified diff format - if output contains more than diff, extract just the diff
-    if grep -q "^--- " "$fix_file" && grep -q "^+++" "$fix_file"; then
-        echo "[INFO] Valid diff detected in Codex output"
-    else
-        echo "[WARN] Output doesn't look like a unified diff. Attempting to extract..."
-        # Try to extract diff portion
-        sed -n '/^--- /,/^@@ /p' "$fix_file" > "${fix_file}.tmp" 2>/dev/null || true
-        if [ -s "${fix_file}.tmp" ]; then
-            mv "${fix_file}.tmp" "$fix_file"
-        fi
+    # Validate unified diff format
+    if ! grep -q "^--- " "$fix_file" || ! grep -q "^+++" "$fix_file"; then
+        echo "[WARN] Output doesn't look like a unified diff. Extracting diff portion..."
+        python3 -c "
+import sys, re
+content = open('$fix_file').read()
+# Try to find a diff pattern
+match = re.search(r'(--- .*\n\+\+\+ .*\n(?:@@ .*\n(?:[+@-].*\n)*)+)', content, re.MULTILINE)
+if match:
+    print(match.group(1), file=open('$fix_file', 'w'))
+else:
+    print('[ERROR] Could not extract diff', file=open('$fix_file', 'w'))
+" 2>&1
     fi
     
     # Apply patch
@@ -110,15 +129,14 @@ while [ $retry -lt $MAX_RETRIES ]; do
         if git apply --3way "$fix_file" 2>&1; then
             echo "[OK] Patch applied via 3-way merge"
         else
-            echo "[FAIL] Patch could not be applied. Saving and trying again..."
+            echo "[FAIL] Patch could not be applied. Saving and retrying..."
             cp "$fix_file" "$LOG_DIR/failed_fix_$retry.diff"
             retry=$((retry+1))
-            echo "[INFO] Retrying with more context..."
             continue
         fi
     fi
     
-    # Verify patch makes sense - stage the changes
+    # Stage the changes
     git add -A
     
     retry=$((retry+1))

@@ -1,0 +1,1 @@
+./auto_fix.sh: line 25: pytest: command not found
