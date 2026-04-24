@@ -61,6 +61,7 @@ Submodules
    deepretro.utils.az
    deepretro.utils.metrics
    deepretro.utils.utils_molecule
+   deepretro.utils.visualize
 
 API Reference
 -------------

@@ -7,6 +7,8 @@ trivial geometry or thin wrappers whose failures surface visually.
 
 from __future__ import annotations
 
+import pytest
+
 from deepretro.utils.visualize import (
     build_tree,
     mol_metadata,
@@ -50,12 +52,16 @@ def test_mol_metadata_uses_provided_values() -> None:
         "product_metadata": {"chemical_formula": "C2H6O", "mass": 46.07},
     })
     assert formula == "C2H6O"
-    assert "46" in mass_str
+    assert mass_str == "46.1 g/mol"
 
 
 def test_mol_metadata_falls_back_to_rdkit() -> None:
-    formula, _ = mol_metadata({"smiles": ETHANOL})
+    """RDKit is used to recompute formula and mass when metadata is absent."""
+    formula, mass_str = mol_metadata({"smiles": ETHANOL})
     assert formula == "C2H6O"
+    assert mass_str.endswith(" g/mol")
+    mass_value = float(mass_str.split()[0])
+    assert mass_value == pytest.approx(46.04, abs=0.05)
 
 
 def test_visualize_pathway_empty_returns_placeholder() -> None:

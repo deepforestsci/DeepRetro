@@ -1,23 +1,7 @@
 """Synthesis pathway visualization.
 
-Renders retrosynthesis output from :class:`~deepretro.algorithms.autosolve.AutoSolver`
-as a static PIL image.  Mirrors the interactive viewer's (``app_v4.js``)
-``processData`` + ``renderGraph`` logic:
-
-- Step 0 = target molecule (product of step 1) — green circle
-- Step N = reactants of that step — blue circles, stacked vertically
-- Layout follows the full dependency tree left-to-right.
-
-Dependencies: PIL (Pillow), numpy, rdkit.
-
-Examples
---------
->>> from deepretro.algorithms.autosolve import AutoSolver        # doctest: +SKIP
->>> from deepretro.utils.visualize import visualize_pathway      # doctest: +SKIP
->>> solver = AutoSolver()                                        # doctest: +SKIP
->>> result = solver.solve("CC(=O)Oc1ccccc1C(=O)O")              # doctest: +SKIP
->>> img = visualize_pathway(result)                              # doctest: +SKIP
->>> img.save("aspirin_pathway.png")                              # doctest: +SKIP
+See :doc:`/package/deepretro.utils.visualize` for the module overview,
+output layout, dependencies, and usage examples.
 """
 
 from __future__ import annotations
@@ -99,6 +83,7 @@ def build_tree(result: dict[str, Any]) -> Node | None:
 
     Examples
     --------
+    >>> from deepretro.utils.visualize import build_tree
     >>> result = {
     ...     "steps": [{"step": "1", "reactants": [{"smiles": "CCO"}],
     ...                "products": [{"smiles": "CC=O"}]}],
@@ -126,6 +111,26 @@ def build_tree(result: dict[str, Any]) -> Node | None:
     )
 
     def recurse(step_id: str) -> Node:
+        """Build the subtree rooted at ``step_id``.
+
+        Closes over ``step_map`` and ``deps`` from the enclosing
+        :func:`build_tree` call.  The step's reactants become the
+        node's molecules, and each dependency id listed in
+        ``deps[step_id]`` is expanded into a child node via a
+        recursive call.  Dependency ids pointing at steps absent
+        from ``step_map`` are silently skipped so malformed inputs
+        degrade gracefully rather than raising :class:`KeyError`.
+
+        Parameters
+        ----------
+        step_id : str
+            Key into ``step_map`` identifying the step to expand.
+
+        Returns
+        -------
+        Node
+            Fully populated subtree with label ``"Step <step_id>"``.
+        """
         step = step_map[step_id]
         node = Node(
             label=f"Step {step_id}",
@@ -160,6 +165,7 @@ def node_height(node: Node) -> int:
 
     Examples
     --------
+    >>> from deepretro.utils.visualize import Node, node_height, MOL_CELL_H
     >>> leaf = Node(label="Step 1", molecules=[{"smiles": "CCO"}])
     >>> node_height(leaf) == MOL_CELL_H
     True
@@ -188,6 +194,7 @@ def layout(node: Node, x: int, y_start: int, y_end: int) -> None:
 
     Examples
     --------
+    >>> from deepretro.utils.visualize import Node, layout
     >>> root = Node(label="Step 0", molecules=[], is_target=True)
     >>> layout(root, 100, 0, 400)
     >>> (root.x, root.y)
@@ -230,8 +237,9 @@ def render_mol(smiles: str, px: int) -> Image.Image | None:
 
     Examples
     --------
-    >>> img = render_mol("CCO", 200)   # doctest: +SKIP
-    >>> img.mode                        # doctest: +SKIP
+    >>> from deepretro.utils.visualize import render_mol  # doctest: +SKIP
+    >>> img = render_mol("CCO", 200)                       # doctest: +SKIP
+    >>> img.mode                                           # doctest: +SKIP
     'RGBA'
     """
     mol = Chem.MolFromSmiles(smiles)
@@ -274,9 +282,10 @@ def mol_metadata(mol_data: dict) -> tuple[str, str]:
 
     Examples
     --------
-    >>> mol_metadata({"smiles": "CCO"})         # doctest: +SKIP
+    >>> from deepretro.utils.visualize import mol_metadata  # doctest: +SKIP
+    >>> mol_metadata({"smiles": "CCO"})                     # doctest: +SKIP
     ('C2H6O', '46.0 g/mol')
-    >>> mol_metadata({"smiles": "INVALID"})     # doctest: +SKIP
+    >>> mol_metadata({"smiles": "INVALID"})                 # doctest: +SKIP
     ('INVALID', '?')
     """
     meta = mol_data.get("product_metadata") or mol_data.get("reactant_metadata")
@@ -310,7 +319,8 @@ def get_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
 
     Examples
     --------
-    >>> font = get_font(14)   # doctest: +SKIP
+    >>> from deepretro.utils.visualize import get_font  # doctest: +SKIP
+    >>> font = get_font(14)                              # doctest: +SKIP
     """
     for name in ("arial.ttf", "Arial.ttf", "DejaVuSans.ttf"):
         try:
@@ -367,6 +377,7 @@ def max_x(node: Node) -> int:
 
     Examples
     --------
+    >>> from deepretro.utils.visualize import Node, max_x
     >>> root = Node(label="Step 0", molecules=[])
     >>> root.x = 100
     >>> max_x(root)
@@ -381,7 +392,8 @@ def max_x(node: Node) -> int:
 def draw_edges(draw: ImageDraw.ImageDraw, node: Node) -> None:
     """Draw cubic bezier connectors from *node* to each descendant.
 
-    Recursively traverses the tree 
+    Recursively traverses the tree so every parent-child edge in the
+    subtree rooted at *node* is drawn once.
 
     Parameters
     ----------
@@ -493,6 +505,7 @@ def visualize_pathway(result: dict[str, Any]) -> Image.Image:
     Examples
     --------
     >>> from deepretro.algorithms.autosolve import AutoSolver  # doctest: +SKIP
+    >>> from deepretro.utils.visualize import visualize_pathway  # doctest: +SKIP
     >>> solver = AutoSolver()                                  # doctest: +SKIP
     >>> result = solver.solve("CCO")                           # doctest: +SKIP
     >>> img = visualize_pathway(result)                        # doctest: +SKIP
