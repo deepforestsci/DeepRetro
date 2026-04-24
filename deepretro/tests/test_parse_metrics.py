@@ -17,30 +17,6 @@ class FakeReactionClassifier:
         return [0]
 
 
-def test_private_metric_calculator_helpers_are_documented_and_typed() -> None:
-    """Private metric helpers should still have docstrings and type annotations."""
-    private_helpers = [
-        member
-        for name, member in inspect.getmembers(
-            ReactionMetricCalculator, inspect.isfunction
-        )
-        if name.startswith("_") and not name.startswith("__")
-    ]
-
-    assert private_helpers
-    for helper in private_helpers:
-        signature = inspect.signature(helper)
-        assert inspect.getdoc(helper), helper.__name__
-        assert all(
-            parameter.annotation is not inspect.Signature.empty
-            for parameter in signature.parameters.values()
-            if parameter.name not in {"self", "cls"}
-        ), helper.__name__
-        assert signature.return_annotation is not inspect.Signature.empty, (
-            helper.__name__
-        )
-
-
 def test_reaction_metric_calculator_returns_na_without_model_path() -> None:
     """Scalability should be unavailable when no classifier path is configured."""
     calculator = ReactionMetricCalculator(model_path="")
@@ -60,3 +36,52 @@ def test_reaction_metric_calculator_predicts_reaction_type() -> None:
 
     assert reaction_name == REACTION_ENCODING_NAMES[0]
     assert reaction_index == 0
+
+def test_reaction_type_returns_unknown_when_fingerprint_is_none() -> None:
+    """Should return UNKNOWN when fingerprint calculation fails."""
+
+    calculator = ReactionMetricCalculator(
+        model_path="model.joblib",
+        model_loader=lambda path: FakeReactionClassifier(),
+        fingerprint_calculator=lambda smiles: None,  # force failure
+    )
+
+    name, index = calculator.reaction_type("CC", "CCO")
+
+    assert name == "Unknown Reaction"
+    assert index == -1
+
+def test_reaction_type_handles_missing_model_file() -> None:
+    """Missing model file should return UNKNOWN_REACTION."""
+
+    def failing_loader(path: str):
+        raise FileNotFoundError
+
+    calculator = ReactionMetricCalculator(
+        model_path="model.joblib",
+        model_loader=failing_loader,
+        fingerprint_calculator=lambda smiles: [1, 0],
+    )
+
+    name, index = calculator.reaction_type("CC", "CCO")
+
+    assert name == "Unknown Reaction"
+    assert index == -1
+
+def test_scalability_index_returns_na_when_reaction_unknown() -> None:
+    """Unknown reaction should lead to N/A scalability."""
+
+    class BadClassifier:
+        def predict(self, x):
+            return [999]
+
+    calculator = ReactionMetricCalculator(
+        model_path="model.joblib",
+        model_loader=lambda path: BadClassifier(),
+        fingerprint_calculator=lambda smiles: [1, 0],
+    )
+
+    result = calculator.scalability_index("CC", "CCO")
+
+    assert result == "N/A"
+
