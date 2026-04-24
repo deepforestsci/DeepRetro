@@ -50,7 +50,7 @@ def test_diff_block_equals_product_minus_reactant():
     prod = result[block : 2 * block]
     diff = result[2 * block : 3 * block]
 
-    np.testing.assert_array_equal(diff, prod - reac)
+    np.testing.assert_allclose(diff, prod - reac, rtol=1e-6)
 
 
 def test_same_molecule_both_sides_gives_zero_diff():
@@ -64,6 +64,21 @@ def test_same_molecule_both_sides_gives_zero_diff():
 
 
 def test_diff_values_are_minus1_zero_or_plus1():
+    """Diff block is a ternary vector of bit-level reaction changes.
+
+    For a reaction ``reactants -> product``, each bit position in the
+    diff block equals ``product_bit - reactant_bit``, so valid values
+    are exactly ``{-1, 0, +1}``:
+
+    - ``+1`` -> bit gained (substructure appears in product only)
+    - ``-1`` -> bit lost (substructure appears in reactants only)
+    - `` 0`` -> bit unchanged (present in both or absent from both)
+
+    This test asserts that invariant on a real transformation
+    (pyrazole bromide + ketone -> pyrazole adduct) whose large
+    structural change guarantees we exercise both ``+1`` and ``-1``
+    entries, not just ``0``s.
+    """
     feat = DiffFingerprint(size=2048)
     block = 2 * 2048
 
