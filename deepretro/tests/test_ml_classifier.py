@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 from deepchem.data import NumpyDataset
 from deepchem.models import GBDTModel
+from unittest.mock import patch
 
 from deepretro.models.hallucination_classifier import HallucinationClassifier
 
@@ -92,9 +93,42 @@ def test_evaluate_keys_and_scores(trained_clf, toy_dataset):
 
 
 def test_predict_probability_shape_and_range(trained_clf, toy_dataset):
-    probability = trained_clf.predict_probability(toy_dataset)
-    assert probability.shape == (len(toy_dataset),)
-    assert np.all((probability >= 0.0) & (probability <= 1.0))
+    labels, probabilities = trained_clf.predict_probability(toy_dataset)
+    assert labels.shape == (len(toy_dataset),)
+    assert probabilities.shape == (len(toy_dataset),)
+    assert np.all((probabilities >= 0.0) & (probabilities <= 1.0))
+
+
+def test_predict_probability_override_uses_explicit_threshold():
+    clf = HallucinationClassifier(n_estimators=5)
+    dataset = NumpyDataset(X=np.zeros((2, 10)))
+    with patch.object(
+        clf.model, "predict_proba", return_value=np.array([[0.8, 0.2], [0.2, 0.8]])
+    ):
+        labels, probabilities = clf.predict_probability(
+            dataset, threshold=0.7
+        )
+
+    np.testing.assert_array_equal(labels, np.array([0, 1]))
+    np.testing.assert_array_equal(probabilities, np.array([0.2, 0.8]))
+
+
+def test_predict_single_override_uses_explicit_threshold():
+    clf = HallucinationClassifier(n_estimators=5)
+    original_threshold = clf.threshold
+
+    with patch.object(
+        clf, "predict_probability", return_value=(np.array([0]), np.array([0.6]))
+    ):
+        result = clf.predict_single(
+            PYRAZOLE_ADDUCT,
+            PYRAZOLE_BROMIDE_KETONE,
+            threshold=0.7,
+        )
+
+    assert result["is_hallucination"] is False
+    assert result["probability"] == 0.6
+    assert clf.threshold == original_threshold
 
 
 def test_predict_single_invalid_smiles(trained_clf):
@@ -109,7 +143,7 @@ def test_predict_single_invalid_smiles(trained_clf):
 
 def test_save_load_roundtrip(trained_clf, toy_dataset, tmp_path):
     trained_clf.evaluate(toy_dataset)
-    probability_before = trained_clf.predict_probability(toy_dataset)
+    _, probability_before = trained_clf.predict_probability(toy_dataset)
     saved_threshold = trained_clf.threshold
 
     save_dir = str(tmp_path / "saved")
@@ -118,8 +152,9 @@ def test_save_load_roundtrip(trained_clf, toy_dataset, tmp_path):
     new_clf = HallucinationClassifier(model_dir=save_dir)
     new_clf.load(save_dir)
     assert new_clf.threshold == saved_threshold
+    _, probability_after = new_clf.predict_probability(toy_dataset)
     np.testing.assert_array_almost_equal(
-        probability_before, new_clf.predict_probability(toy_dataset)
+        probability_before, probability_after
     )
 
 
@@ -136,6 +171,6 @@ def test_reload_from_saved_dir(trained_clf, toy_dataset, tmp_path):
     clf.load(save_dir)
     assert clf.threshold == trained_clf.threshold
 
-    probability_orig = trained_clf.predict_probability(toy_dataset)
-    probability_loaded = clf.predict_probability(toy_dataset)
+    _, probability_orig = trained_clf.predict_probability(toy_dataset)
+    _, probability_loaded = clf.predict_probability(toy_dataset)
     np.testing.assert_array_almost_equal(probability_orig, probability_loaded)
