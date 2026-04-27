@@ -178,6 +178,21 @@ def get_reaction_type(mol1: str, mol2: str, model_path: str) -> tuple[str, int]:
     Predict reaction type for a reactant/product pair.
 
     This compatibility wrapper delegates to ``ReactionMetricCalculator``.
+
+    Parameters
+    ----------
+    mol1 : str
+        Reactant SMILES.
+    mol2 : str
+        Product SMILES.
+    model_path : str
+        Path to the serialized reaction classification model.
+
+    Returns
+    -------
+    tuple[str, int]
+        Reaction label and classifier encoding index. Returns
+        ``("Unknown Reaction", -1)`` when prediction fails.
     """
     return ReactionMetricCalculator(model_path=model_path).reaction_type(mol1, mol2)
 
@@ -188,5 +203,18 @@ def calc_scalability_index(mol1: str, mol2: str) -> str:
 
     This compatibility wrapper resolves the configured classifier path from
     ``RXN_CLASSIFICATION_MODEL_PATH``.
+
+    Parameters
+    ----------
+    mol1 : str
+        Reactant SMILES.
+    mol2 : str
+        Product SMILES.
+
+    Returns
+    -------
+    str
+        Scalability label, or ``"N/A"`` when the classifier is unavailable or
+        cannot classify the pair.
     """
     return ReactionMetricCalculator().scalability_index(mol1, mol2)
