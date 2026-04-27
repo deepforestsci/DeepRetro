@@ -27,10 +27,8 @@ Utility Overview
      - Shortcut heuristic for trivial molecules to bypass heavy search.
    * - ``CacheManager`` / ``make_cache_key``
      - Explicit in-memory cache primitives for expensive library operations.
-   * - ``RetrosynthesisRouteParser``
-     - Convert recursive retrosynthesis route trees into viewer-ready steps and dependencies.
-   * - ``ReactionMetricCalculator``
-     - Reaction-type and scalability metrics for parsed route steps.
+   * - ``call_LLM`` / ``llm_pipeline``
+     - LiteLLM-backed retrosynthesis calls, response parsing, and pathway filtering.
 
 
 AiZynthFinder Integration Notes
@@ -72,6 +70,7 @@ Submodules
    deepretro.utils.parse
    deepretro.utils.parse_metrics
    deepretro.utils.cache
+   deepretro.utils.llm
    deepretro.utils.utils_molecule
 
 API Reference

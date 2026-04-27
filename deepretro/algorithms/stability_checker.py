@@ -70,6 +70,8 @@ Entry points
 * `is_valid_smiles` — quick check that a SMILES string parses.
 """
 
+from __future__ import annotations
+
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 from rdkit.Chem.rdMolDescriptors import (
