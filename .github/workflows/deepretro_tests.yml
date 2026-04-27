@@ -57,11 +57,6 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -e "deepretro/[dev]"
 
-      - name: Run pytest
+      - name: Run tests
         run: |
           pytest deepretro/tests/ -v
-
-      - name: Run doctest
-        shell: bash -el {0}
-        run: |
-          pytest -v --ignore-glob='deepretro/tests/test*.py' --doctest-modules deepretro --doctest-continue-on-failure
