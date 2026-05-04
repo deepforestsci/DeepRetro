@@ -64,4 +64,4 @@ jobs:
       - name: Run doctest
         shell: bash -el {0}
         run: |
-          pytest -v --ignore-glob='deepretro/tests/test*.py' --doctest-modules deepretro --doctest-continue-on-failure
+          pytest -v --ignore-glob='deepretro/tests/test*.py' --ignore-glob='deepretro/tests/test*.py' --doctest-modules deepretro --doctest-continue-on-failure
