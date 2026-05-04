@@ -60,4 +60,3 @@ jobs:
       - name: Run tests
         run: |
           pytest deepretro/tests/ -v
-

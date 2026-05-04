@@ -18,13 +18,21 @@ dependencies = [
     "rdkit",
     "scikit-learn",
     "structlog",
-    "xgboost<2.0",  # DeepChem GBDTModel uses XGBoost's sklearn wrapper; >=2.0 has breaking API changes
+    "xgboost<2.0", # DeepChem GBDTModel uses XGBoost's sklearn wrapper; >=2.0 has breaking API changes
+    "lightgbm",
+    "scikit-learn",
+    "pandas",
+    "litellm",
+    "python-dotenv",
+    "langfuse<3",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest",
     "pytest-cov",
+    "ruff",
+    "ty",
 ]
 docs = [
     "sphinx>=8.0",
