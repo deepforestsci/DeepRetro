@@ -6,7 +6,6 @@ Requires ``AZ_MODEL_CONFIG_PATH`` or ``AZ_MODELS_PATH`` environment variables.
 """
 
 import os
-from aizynthfinder.aizynthfinder import AiZynthFinder
 from typing import Any, Dict, Sequence
 from src.variables import BASIC_MOLECULES
 from src.cache import cache_results
@@ -14,6 +13,11 @@ import rootutils
 from rdkit import Chem
 from rdkit.Chem import rdqueries
 from PIL.Image import Image
+try:
+    from aizynthfinder.aizynthfinder import AiZynthFinder
+    HAS_AIZYNTHFINDER = True
+except ImportError:
+    HAS_AIZYNTHFINDER = False
 
 root_dir = rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
