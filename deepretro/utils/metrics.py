@@ -45,4 +45,6 @@ def find_optimal_threshold(
     precision, recall, thresholds = precision_recall_curve(y_true, probabilities)
     f1_scores = 2 * (precision * recall) / (precision + recall + 1e-10)
     best_idx = np.argmax(f1_scores)
+    if best_idx >= len(thresholds):
+        best_idx = len(thresholds) - 1
     return float(thresholds[best_idx]), float(f1_scores[best_idx])

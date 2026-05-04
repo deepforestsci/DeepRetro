@@ -33,7 +33,7 @@ class ReactionDataLoader(DataLoader):
     Parameters
     ----------
     featurizer : ReactionStepFeaturizer or None, optional
-        Pre-configured featurizer.  A default one (radius=2, size=2048,
+        Pre-configured featurizer.  A default one (radius=3, size=2048,
         domain features on) is created when ``None``.
     product_col : str, optional
         Column name for product SMILES.  Default ``"product"``.

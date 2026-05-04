@@ -74,17 +74,25 @@ def test_load_missing_model_dir(tmp_path):
 
 
 def test_evaluate_keys_and_scores(trained_clf, toy_dataset):
+    threshold_before = trained_clf.threshold
     scores = trained_clf.evaluate(toy_dataset)
     assert set(scores.keys()) == {
         "roc_auc",
         "accuracy",
         "f1",
-        "optimal_threshold",
-        "optimal_f1",
+        "threshold",
     }
-    for key in ("roc_auc", "accuracy", "f1", "optimal_f1"):
+    for key in ("roc_auc", "accuracy", "f1"):
         assert 0.0 <= scores[key] <= 1.0
+    assert scores["threshold"] == threshold_before
+    assert trained_clf.threshold == threshold_before
+
+
+def test_calibrate_threshold_updates_threshold(trained_clf, toy_dataset):
+    scores = trained_clf.calibrate_threshold(toy_dataset)
+    assert set(scores.keys()) == {"optimal_threshold", "optimal_f1"}
     assert 0.0 < scores["optimal_threshold"] < 1.0
+    assert 0.0 <= scores["optimal_f1"] <= 1.0
     assert trained_clf.threshold == scores["optimal_threshold"]
 
 
@@ -108,7 +116,7 @@ def test_predict_single_invalid_smiles(trained_clf):
 
 
 def test_save_load_roundtrip(trained_clf, toy_dataset, tmp_path):
-    trained_clf.evaluate(toy_dataset)
+    trained_clf.calibrate_threshold(toy_dataset)
     probability_before = trained_clf.predict_probability(toy_dataset)
     saved_threshold = trained_clf.threshold
 
@@ -129,7 +137,7 @@ def test_save_load_roundtrip(trained_clf, toy_dataset, tmp_path):
 def test_reload_from_saved_dir(trained_clf, toy_dataset, tmp_path):
     """User saves to a dir, then constructs + loads from same dir."""
     save_dir = str(tmp_path / "saved_model")
-    trained_clf.evaluate(toy_dataset)
+    trained_clf.calibrate_threshold(toy_dataset)
     trained_clf.save(save_dir)
 
     clf = HallucinationClassifier(model_dir=save_dir)
