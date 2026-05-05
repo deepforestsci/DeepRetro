@@ -5,8 +5,12 @@ Provides DeepChem-compatible featurizers, dataset loaders, algorithms,
 and model wrappers for reaction-step data.
 """
 
-__all__ = ["ReactionStepFeaturizer", "configure_logging", "HallucinationClassifier"]
-
+__all__ = [
+    "ReactionStepFeaturizer",
+    "configure_logging",
+    "HallucinationClassifier",
+    "AutoSolver",
+]
 
 def __getattr__(name: str):
     if name == "ReactionStepFeaturizer":
@@ -21,4 +25,7 @@ def __getattr__(name: str):
         from deepretro.models.hallucination_classifier import HallucinationClassifier
 
         return HallucinationClassifier
+    if name == "AutoSolver":
+        from deepretro.algorithms.autosolve import AutoSolver
+        return AutoSolver
     raise AttributeError(f"module 'deepretro' has no attribute {name!r}")

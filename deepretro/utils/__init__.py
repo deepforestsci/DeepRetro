@@ -15,9 +15,11 @@ else:
         from .metrics import find_optimal_threshold
     except Exception:
         pass
+from .visualize import visualize_pathway
 
 __all__ = [
     "extract_domain_features_single",
     "NUM_DOMAIN_FEATURES",
     "find_optimal_threshold",
+    "visualize_pathway",
 ]

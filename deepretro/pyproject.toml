@@ -9,8 +9,14 @@ description = "DeepRetro package for retrosynthesis"
 requires-python = ">=3.10"
 dependencies = [
     "deepchem",
+    "langfuse",
+    "lightgbm",
+    "litellm",
     "numpy",
+    "pandas",
+    "python-dotenv",
     "rdkit",
+    "scikit-learn",
     "structlog",
     "xgboost<2.0", # DeepChem GBDTModel uses XGBoost's sklearn wrapper; >=2.0 has breaking API changes
     "lightgbm",

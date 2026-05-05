@@ -38,12 +38,12 @@ Quickstart
 
    from deepretro import ReactionStepFeaturizer
 
-   featurizer = ReactionStepFeaturizer(radius=2, size=2048, use_domain_features=True)
+   featurizer = ReactionStepFeaturizer(radius=3, size=2048, use_domain_features=True)
    X = featurizer.featurize([
        ("CCO", "CC.O"),
        ("c1ccccc1", "c1ccccc1.Cl"),
    ])
-   print(X.shape)  # (2, 4111)
+   print(X.shape)  # (2, 4135)
 
 
 Top-Level API
