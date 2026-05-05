@@ -26,6 +26,8 @@ Utility Overview
      - Shortcut heuristic for trivial molecules to bypass heavy search.
    * - ``CacheManager`` / ``make_cache_key``
      - Explicit in-memory cache primitives for expensive library operations.
+   * - ``call_LLM`` / ``llm_pipeline``
+     - LiteLLM-backed retrosynthesis calls, response parsing, and pathway filtering.
 
 
 AiZynthFinder Integration Notes
@@ -65,6 +67,7 @@ Submodules
    deepretro.utils.az
    deepretro.utils.metrics
    deepretro.utils.cache
+   deepretro.utils.llm
    deepretro.utils.utils_molecule
 
 API Reference

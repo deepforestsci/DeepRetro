@@ -3,7 +3,6 @@
 from typing import Sequence
 
 import numpy as np
-from sklearn.metrics import precision_recall_curve
 
 
 def find_optimal_threshold(
@@ -42,6 +41,10 @@ def find_optimal_threshold(
     >>> f1 > 0.0
     True
     """
+    # Import lazily so docs and lightweight tooling can import this module
+    # without pulling in sklearn's full scipy stack at module import time.
+    from sklearn.metrics import precision_recall_curve
+
     precision, recall, thresholds = precision_recall_curve(y_true, probabilities)
     f1_scores = 2 * (precision * recall) / (precision + recall + 1e-10)
     best_idx = np.argmax(f1_scores)
