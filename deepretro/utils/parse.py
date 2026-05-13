@@ -30,15 +30,32 @@ class RetrosynthesisRouteParser:
 
     Algorithm
     ---------
-    The parser performs a depth-first traversal of the route tree.
+    The parser performs a depth-first traversal of the route tree. Each node
+    with a ``children`` key becomes a reaction step whose product is the
+    node's SMILES. The children of each node are intermediate reaction
+    wrappers that contain the actual precursor molecules.
+
+    For every precursor molecule encountered:
+
+    1. It is classified as a **reagent** if its SMILES appears in the
+       ``basic_molecules`` set, or as a **reactant** otherwise.
+    2. It is attached to its parent step with chemical metadata (formula,
+       mass) computed by the injected calculator functions.
+    3. A scalability metric is computed for the precursor/product pair.
+    4. If the precursor itself has children, a new reaction step is created
+       and the traversal recurses.
+
+    After the full tree is traversed, ``format_output`` rebuilds the
+    dependency map by matching each step's reactant SMILES against the
+    product SMILES of all other steps.
 
     **Input tree structure**::
 
         root = {
             "smiles": "<product>",
-            "children": [              # reaction wrappers
+            "children": [                    // reaction wrappers
                 {
-                    "children": [      # precursor molecules
+                    "children": [            // precursor molecules
                         {"smiles": "<reactant_1>", "children": [...]},
                         {"smiles": "<reactant_2>"},
                     ]
@@ -48,37 +65,73 @@ class RetrosynthesisRouteParser:
 
     **Pseudocode**::
 
-        function parse_node(node, steps, dependencies, parent_id):
-            if node has no "children":
-                # leaf molecule — terminal starting material, no step created
-                attach node as reactant/reagent to parent step
-                return
+        PARSE-NODE(node, S, D, parent_id)
+        ──────────────────────────────────────────────────
+        Input : node       — a route tree node
+                S          — list of accumulated steps (mutated)
+                D          — dependency map (mutated)
+                parent_id  — step id of the calling parent, or NIL
+        Output: S and D are updated in place
+        ──────────────────────────────────────────────────
+         1  step ← CREATE-STEP(node, |S| + 1)
+         2  ATTACH-TO-PARENT(node, S, parent_id)
+         3
+         4  if step = NIL                          ▷ leaf node, no children
+         5      if parent_id ≠ NIL
+         6          D[parent_id] ← D[parent_id]    ▷ ensure key exists
+         7      return
+         8
+         9  APPEND(S, step)
+        10  if parent_id ≠ NIL
+        11      APPEND(D[parent_id], step.id)
+        12
+        13  for each wrapper in node.children
+        14      for each precursor in wrapper.children
+        15          PARSE-NODE(precursor, S, D, step.id)
 
-            # node has children → it is a reaction product
-            step = create_step(node.smiles, step_id=len(steps)+1)
-            attach node as reactant/reagent to parent step (if any)
-            append step to steps
+        CREATE-STEP(node, step_id)
+        ──────────────────────────────────────────────────
+         1  if "children" ∉ node
+         2      return NIL
+         3  smiles ← node["smiles"]
+         4  return {step: step_id, products: [smiles],
+         5          reactants: [], reagents: [],
+         6          reactionmetrics: [∅]}
 
-            for each reaction_wrapper in node.children:
-                for each precursor in reaction_wrapper.children:
-                    classify precursor:
-                        if precursor.smiles in basic_molecules → reagent
-                        else → reactant
-                    compute metadata (formula, mass) for precursor
-                    compute scalability(precursor, product)
-                    attach precursor to step
+        ATTACH-TO-PARENT(node, S, parent_id)
+        ──────────────────────────────────────────────────
+         1  if parent_id = NIL or node.is_reaction
+         2      return
+         3  smiles ← node["smiles"]
+         4  parent ← S[parent_id]
+         5  if smiles ∈ basic_molecules
+         6      APPEND(parent.reagents, smiles)
+         7  else
+         8      APPEND(parent.reactants, smiles)
+         9  parent.scalability ← CALC-SCALABILITY(smiles, parent.product)
 
-                    # recurse into precursor's own synthesis
-                    parse_node(precursor, steps, dependencies, step.id)
+        FORMAT-OUTPUT(root)
+        ──────────────────────────────────────────────────
+        Input : root — the root of a retrosynthesis route tree
+        Output: {steps, dependencies}
+        ──────────────────────────────────────────────────
+         1  S ← [], D ← {}
+         2  PARSE-NODE(root, S, D, NIL)
+         3  D ← REBUILD-DEPENDENCIES(S)       ▷ overwrite tree-order deps
+         4  return {steps: S, dependencies: D}
 
-        function format_output(root):
-            steps, dependencies = parse_node(root)
-            # rebuild dependencies by matching SMILES
-            for each step in steps:
-                for each reactant in step.reactants:
-                    if another step produces reactant.smiles:
-                        add that step as a dependency
-            return {steps, dependencies}
+        REBUILD-DEPENDENCIES(S)
+        ──────────────────────────────────────────────────
+         1  product_map ← {}
+         2  for each step in S
+         3      product_map[step.product.smiles] ← step.id
+         4  D' ← {}
+         5  for each step in S
+         6      D'[step.id] ← []
+         7      for each reactant in step.reactants
+         8          if reactant.smiles ∈ product_map
+         9              APPEND(D'[step.id], product_map[reactant.smiles])
+        10  return D'
 
     Examples
     --------
