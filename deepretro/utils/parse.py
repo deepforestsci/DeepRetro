@@ -265,12 +265,14 @@ class RetrosynthesisRouteParser:
 
         smiles = self._smiles(data)
         parent_step = steps[parent_id - 1]
-        molecule_type = "reagents" if smiles in self.basic_molecules else "reactants"
+        is_reagent = smiles in self.basic_molecules
+        molecule_type = "reagents" if is_reagent else "reactants"
         metadata_key = f"{molecule_type[:-1]}_metadata"
         parent_step[molecule_type].append(self._molecule_entry(smiles, metadata_key))
-        parent_step["reactionmetrics"][0]["scalabilityindex"] = (
-            self.scalability_calculator(smiles, parent_step["products"][0]["smiles"])
-        )
+        if not is_reagent:
+            parent_step["reactionmetrics"][0]["scalabilityindex"] = (
+                self.scalability_calculator(smiles, parent_step["products"][0]["smiles"])
+            )
 
     def _molecule_entry(self, smiles: str, metadata_key: str) -> dict[str, Any]:
         """Build a molecule entry with the metadata key required by the schema."""

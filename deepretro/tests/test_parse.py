@@ -137,10 +137,10 @@ def test_format_output_classifies_basic_molecules_as_reagents():
     assert [r["smiles"] for r in step["reagents"]] == ["O"]
 
 
-def test_format_output_uses_all_attached_molecules_for_scalability():
-    """The scalability calculator is invoked for every precursor (both reactants
-    and reagents). The stored scalabilityindex reflects the last precursor
-    processed, since each attachment overwrites the single metric slot."""
+def test_format_output_computes_scalability_only_from_reactants():
+    """The scalability calculator should only be invoked for reactants, not
+    reagents (basic molecules like water). The stored scalabilityindex should
+    reflect the last reactant processed, ignoring reagents entirely."""
     calls = []
 
     def record_scalability(reactant, product):
@@ -157,8 +157,8 @@ def test_format_output_uses_all_attached_molecules_for_scalability():
         basic_molecules={"O"},
     ).format_output(data)
 
-    assert calls == [("CO", "CC(=O)O"), ("O", "CC(=O)O")]
-    assert output["steps"][0]["reactionmetrics"][0]["scalabilityindex"] == "O->CC(=O)O"
+    assert calls == [("CO", "CC(=O)O")]
+    assert output["steps"][0]["reactionmetrics"][0]["scalabilityindex"] == "CO->CC(=O)O"
 
 
 def test_fix_dependencies_ignores_unmatched_reactants():
