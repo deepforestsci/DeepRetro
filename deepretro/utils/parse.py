@@ -30,24 +30,55 @@ class RetrosynthesisRouteParser:
 
     Algorithm
     ---------
-    The parser performs a depth-first traversal of the route tree. Each node
-    with a ``children`` key becomes a reaction step whose product is the
-    node's SMILES. The children of each node are intermediate reaction
-    wrappers that contain the actual precursor molecules.
+    The parser performs a depth-first traversal of the route tree.
 
-    For every precursor molecule encountered:
+    **Input tree structure**::
 
-    1. It is classified as a **reagent** if its SMILES appears in the
-       ``basic_molecules`` set, or as a **reactant** otherwise.
-    2. It is attached to its parent step with chemical metadata (formula,
-       mass) computed by the injected calculator functions.
-    3. A scalability metric is computed for the precursor/product pair.
-    4. If the precursor itself has children, a new reaction step is created
-       and the traversal recurses.
+        root = {
+            "smiles": "<product>",
+            "children": [              # reaction wrappers
+                {
+                    "children": [      # precursor molecules
+                        {"smiles": "<reactant_1>", "children": [...]},
+                        {"smiles": "<reactant_2>"},
+                    ]
+                }
+            ]
+        }
 
-    After the full tree is traversed, ``format_output`` rebuilds the
-    dependency map by matching each step's reactant SMILES against the
-    product SMILES of all other steps.
+    **Pseudocode**::
+
+        function parse_node(node, steps, dependencies, parent_id):
+            if node has no "children":
+                # leaf molecule — terminal starting material, no step created
+                attach node as reactant/reagent to parent step
+                return
+
+            # node has children → it is a reaction product
+            step = create_step(node.smiles, step_id=len(steps)+1)
+            attach node as reactant/reagent to parent step (if any)
+            append step to steps
+
+            for each reaction_wrapper in node.children:
+                for each precursor in reaction_wrapper.children:
+                    classify precursor:
+                        if precursor.smiles in basic_molecules → reagent
+                        else → reactant
+                    compute metadata (formula, mass) for precursor
+                    compute scalability(precursor, product)
+                    attach precursor to step
+
+                    # recurse into precursor's own synthesis
+                    parse_node(precursor, steps, dependencies, step.id)
+
+        function format_output(root):
+            steps, dependencies = parse_node(root)
+            # rebuild dependencies by matching SMILES
+            for each step in steps:
+                for each reactant in step.reactants:
+                    if another step produces reactant.smiles:
+                        add that step as a dependency
+            return {steps, dependencies}
 
     Examples
     --------
