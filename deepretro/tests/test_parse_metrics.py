@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import structlog.testing
+
 from deepretro.utils.parse_metrics import (
     ReactionMetricCalculator,
     calc_scalability_index,
@@ -120,14 +122,9 @@ def test_scalability_index_returns_score_for_valid_prediction() -> None:
 
 
 def test_reaction_type_logs_error_on_file_not_found() -> None:
-    """FileNotFoundError should be logged via the injected logger before
-    returning UNKNOWN_REACTION. Verifies the fix for silently swallowed
-    errors that made missing model files hard to debug."""
-    logged = []
-
-    class CapturingLogger:
-        def error(self, *args, **kwargs):
-            logged.append((args, kwargs))
+    """FileNotFoundError should be logged via structlog before returning
+    UNKNOWN_REACTION. Verifies the fix for silently swallowed errors that
+    made missing model files hard to debug."""
 
     def failing_loader(path: str):
         raise FileNotFoundError("model.joblib not found")
@@ -136,13 +133,14 @@ def test_reaction_type_logs_error_on_file_not_found() -> None:
         model_path="model.joblib",
         model_loader=failing_loader,
         fingerprint_calculator=lambda smiles: [1, 0],
-        logger=CapturingLogger(),
     )
 
-    calculator.reaction_type("CC", "CCO")
+    with structlog.testing.capture_logs() as captured:
+        calculator.reaction_type("CC", "CCO")
 
-    assert len(logged) == 1
-    assert "model.joblib not found" in logged[0][1]["error"]
+    assert len(captured) == 1
+    assert captured[0]["function"] == "get_reaction_type"
+    assert "model.joblib not found" in captured[0]["error"]
 
 
 def test_get_reaction_type_compatibility_wrapper() -> None:

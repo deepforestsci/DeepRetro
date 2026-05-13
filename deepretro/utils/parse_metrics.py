@@ -12,7 +12,6 @@ import structlog
 
 from deepretro.utils.variables import ENCODING_SCALABILITY, REACTION_ENCODING_NAMES
 
-ENABLE_LOGGING = os.getenv("ENABLE_LOGGING", "true").lower() != "false"
 UNKNOWN_REACTION = ("Unknown Reaction", -1)
 logger = structlog.get_logger(__name__)
 
@@ -65,7 +64,6 @@ class ReactionMetricCalculator:
         ),
         reaction_encoding_names: Mapping[int, str] = REACTION_ENCODING_NAMES,
         scalability_encoding: Mapping[int, Any] = ENCODING_SCALABILITY,
-        logger: Optional[Any] = None,
     ) -> None:
         """
         Parameters
@@ -82,8 +80,6 @@ class ReactionMetricCalculator:
             Mapping from classifier output index to reaction type label.
         scalability_encoding : Mapping[int, Any], optional
             Mapping from classifier output index to scalability label.
-        logger : object, optional
-            Logger exposing an ``error`` method for recoverable metric errors.
         """
         self.model_path = (
             _rxn_classification_model_path() if model_path is None else model_path
@@ -92,7 +88,6 @@ class ReactionMetricCalculator:
         self.fingerprint_calculator = fingerprint_calculator
         self.reaction_encoding_names = reaction_encoding_names
         self.scalability_encoding = scalability_encoding
-        self.logger = logger
 
     def reaction_type(self, mol1: str, mol2: str) -> tuple[str, int]:
         """
@@ -113,11 +108,8 @@ class ReactionMetricCalculator:
         """
         try:
             return self._predict_reaction_type(mol1, mol2)
-        except FileNotFoundError as exc:
-            self._log_exception("get_reaction_type", exc)
-            return UNKNOWN_REACTION
         except Exception as exc:
-            self._log_exception("get_reaction_type", exc)
+            logger.error("Error in metric calculation", function="get_reaction_type", error=str(exc))
             return UNKNOWN_REACTION
 
     def scalability_index(self, mol1: str, mol2: str) -> int:
@@ -146,7 +138,7 @@ class ReactionMetricCalculator:
                 return 0
             return int(self.scalability_encoding[reaction_index])
         except Exception as exc:
-            self._log_exception("calc_scalability_index", exc)
+            logger.error("Error in metric calculation", function="calc_scalability_index", error=str(exc))
             return 0
 
     def _predict_reaction_type(self, mol1: str, mol2: str) -> tuple[str, int]:
@@ -160,18 +152,6 @@ class ReactionMetricCalculator:
         prediction = model.predict([mol1_fingerprint + mol2_fingerprint])
         reaction_index = int(prediction[0])
         return self.reaction_encoding_names[reaction_index], reaction_index
-
-    def _log_exception(self, function_name: str, exc: Exception) -> None:
-        """Log a recoverable metric calculation error."""
-        active_logger = self.logger
-        if active_logger is None and ENABLE_LOGGING:
-            active_logger = logger
-        if active_logger is not None:
-            active_logger.error(
-                "Error in metric calculation",
-                function=function_name,
-                error=str(exc),
-            )
 
 
 def get_reaction_type(mol1: str, mol2: str, model_path: str) -> tuple[str, int]:
