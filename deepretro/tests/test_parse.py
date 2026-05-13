@@ -15,7 +15,7 @@ def build_parser(scalability_calculator=None, basic_molecules=None):
         chemical_formula_calculator=calc_chemical_formula,
         mass_calculator=calc_mol_wt,
         scalability_calculator=(
-            (lambda reactant, product: "N/A")
+            (lambda reactant, product: 0)
             if scalability_calculator is None
             else scalability_calculator
         ),
@@ -40,7 +40,7 @@ def test_format_output_parses_single_step_with_metadata():
     assert step["step"] == "1"
     assert [p["smiles"] for p in step["products"]] == ["CCO"]
     assert [r["smiles"] for r in step["reactants"]] == ["CC", "O"]
-    assert step["reactionmetrics"][0]["scalabilityindex"] == "N/A"
+    assert step["reactionmetrics"][0]["scalabilityindex"] == 0
     assert step["products"][0]["product_metadata"]["chemical_formula"] == "C2H6O"
     assert step["products"][0]["product_metadata"]["mass"] == pytest.approx(46.04, abs=0.01)
 
@@ -145,7 +145,7 @@ def test_format_output_computes_scalability_only_from_reactants():
 
     def record_scalability(reactant, product):
         calls.append((reactant, product))
-        return f"{reactant}->{product}"
+        return 5
 
     data = {
         "smiles": "CC(=O)O",
@@ -158,7 +158,7 @@ def test_format_output_computes_scalability_only_from_reactants():
     ).format_output(data)
 
     assert calls == [("CO", "CC(=O)O")]
-    assert output["steps"][0]["reactionmetrics"][0]["scalabilityindex"] == "CO->CC(=O)O"
+    assert output["steps"][0]["reactionmetrics"][0]["scalabilityindex"] == 5
 
 
 def test_fix_dependencies_ignores_unmatched_reactants():

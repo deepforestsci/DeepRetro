@@ -21,10 +21,10 @@ class DummyReactionClassifier:
 
 def test_reaction_metric_calculator_returns_na_without_model_path() -> None:
     """When model_path is empty, no classifier is loaded and scalability_index
-    should return 'N/A' for any molecule pair."""
+    should return 0 for any molecule pair."""
     calculator = ReactionMetricCalculator(model_path="")
 
-    assert calculator.scalability_index("CC", "CCO") == "N/A"
+    assert calculator.scalability_index("CC", "CCO") == 0
 
 
 def test_reaction_metric_calculator_predicts_reaction_type() -> None:
@@ -79,9 +79,9 @@ def test_reaction_type_handles_missing_model_file() -> None:
     assert index == -1
 
 
-def test_scalability_index_returns_na_when_reaction_unknown() -> None:
+def test_scalability_index_returns_zero_when_reaction_unknown() -> None:
     """When the classifier returns an index (999) that doesn't map to a known
-    reaction encoding, scalability_index should return 'N/A' rather than
+    reaction encoding, scalability_index should return 0 rather than
     raising a KeyError."""
 
     class BadClassifier:
@@ -96,13 +96,13 @@ def test_scalability_index_returns_na_when_reaction_unknown() -> None:
 
     result = calculator.scalability_index("CC", "CCO")
 
-    assert result == "N/A"
+    assert result == 0
 
 
-def test_scalability_index_returns_label_for_valid_prediction() -> None:
+def test_scalability_index_returns_score_for_valid_prediction() -> None:
     """Happy path: when the classifier predicts index 0, scalability_index
-    should look up and return the corresponding label from ENCODING_SCALABILITY,
-    verifying the full prediction-to-label pipeline."""
+    should look up and return the corresponding score from ENCODING_SCALABILITY,
+    verifying the full prediction-to-score pipeline."""
 
     class PredictZero:
         def predict(self, x):
@@ -116,7 +116,7 @@ def test_scalability_index_returns_label_for_valid_prediction() -> None:
 
     result = calculator.scalability_index("CC", "CCO")
 
-    assert result == str(ENCODING_SCALABILITY[0])
+    assert result == ENCODING_SCALABILITY[0]
 
 
 def test_reaction_type_logs_error_on_file_not_found() -> None:
@@ -156,7 +156,7 @@ def test_get_reaction_type_compatibility_wrapper() -> None:
 def test_calc_scalability_index_compatibility_wrapper() -> None:
     """The module-level calc_scalability_index() backward-compatible wrapper
     should delegate to ReactionMetricCalculator using the env-configured
-    model path (empty by default in tests), returning 'N/A'."""
+    model path (empty by default in tests), returning 0."""
     result = calc_scalability_index("CC", "CCO")
 
-    assert result == "N/A"
+    assert result == 0

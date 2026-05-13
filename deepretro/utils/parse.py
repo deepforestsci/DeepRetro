@@ -58,7 +58,7 @@ class RetrosynthesisRouteParser:
     ...     basic_molecules=set(),
     ...     chemical_formula_calculator=lambda smiles: smiles,
     ...     mass_calculator=lambda smiles: 1.0,
-    ...     scalability_calculator=lambda reactant, product: "N/A",
+    ...     scalability_calculator=lambda reactant, product: 0,
     ... )
     >>> output = parser.format_output({
     ...     "smiles": "CCO",
@@ -75,7 +75,7 @@ class RetrosynthesisRouteParser:
         basic_molecules: Optional[Collection[str]] = None,
         chemical_formula_calculator: Optional[Callable[[str], str]] = None,
         mass_calculator: Optional[Callable[[str], float]] = None,
-        scalability_calculator: Optional[Callable[[str, str], str]] = None,
+        scalability_calculator: Optional[Callable[[str, str], int]] = None,
     ) -> None:
         """
         Parameters
@@ -87,7 +87,7 @@ class RetrosynthesisRouteParser:
             Function used to calculate formula metadata for each molecule.
         mass_calculator : Callable[[str], float], optional
             Function used to calculate molecular mass metadata.
-        scalability_calculator : Callable[[str, str], str], optional
+        scalability_calculator : Callable[[str, str], int], optional
             Function used to score a precursor/product pair for scalability.
         """
         self.basic_molecules = (
@@ -247,7 +247,7 @@ class RetrosynthesisRouteParser:
             "conditions": [],
             "reactionmetrics": [
                 {
-                    "scalabilityindex": "",
+                    "scalabilityindex": 0,
                     "closestliterature": "",
                 }
             ],

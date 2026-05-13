@@ -53,7 +53,7 @@ class ReactionMetricCalculator:
     --------
     >>> calculator = ReactionMetricCalculator(model_path="")
     >>> calculator.scalability_index("CC", "CCO")
-    'N/A'
+    0
     """
 
     def __init__(
@@ -120,9 +120,9 @@ class ReactionMetricCalculator:
             self._log_exception("get_reaction_type", exc)
             return UNKNOWN_REACTION
 
-    def scalability_index(self, mol1: str, mol2: str) -> str:
+    def scalability_index(self, mol1: str, mol2: str) -> int:
         """
-        Calculate the scalability label for a reactant/product pair.
+        Calculate the scalability score for a reactant/product pair.
 
         Parameters
         ----------
@@ -133,21 +133,21 @@ class ReactionMetricCalculator:
 
         Returns
         -------
-        str
-            Scalability label, or ``"N/A"`` when the classifier is unavailable
+        int
+            Scalability score, or ``0`` when the classifier is unavailable
             or cannot classify the pair.
         """
         if not self.model_path:
-            return "N/A"
+            return 0
 
         try:
             _, reaction_index = self.reaction_type(mol1, mol2)
             if reaction_index == -1:
-                return "N/A"
-            return str(self.scalability_encoding[reaction_index])
+                return 0
+            return int(self.scalability_encoding[reaction_index])
         except Exception as exc:
             self._log_exception("calc_scalability_index", exc)
-            return "N/A"
+            return 0
 
     def _predict_reaction_type(self, mol1: str, mol2: str) -> tuple[str, int]:
         """Run the classifier for a reactant/product SMILES pair."""
@@ -183,9 +183,9 @@ def get_reaction_type(mol1: str, mol2: str, model_path: str) -> tuple[str, int]:
     return ReactionMetricCalculator(model_path=model_path).reaction_type(mol1, mol2)
 
 
-def calc_scalability_index(mol1: str, mol2: str) -> str:
+def calc_scalability_index(mol1: str, mol2: str) -> int:
     """
-    Calculate the scalability label for a reactant/product pair.
+    Calculate the scalability score for a reactant/product pair.
 
     This compatibility wrapper resolves the configured classifier path from
     ``RXN_CLASSIFICATION_MODEL_PATH``.
