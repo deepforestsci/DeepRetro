@@ -20,14 +20,17 @@ class DummyReactionClassifier:
 
 
 def test_reaction_metric_calculator_returns_na_without_model_path() -> None:
-    """Scalability should be unavailable when no classifier path is configured."""
+    """When model_path is empty, no classifier is loaded and scalability_index
+    should return 'N/A' for any molecule pair."""
     calculator = ReactionMetricCalculator(model_path="")
 
     assert calculator.scalability_index("CC", "CCO") == "N/A"
 
 
 def test_reaction_metric_calculator_predicts_reaction_type() -> None:
-    """Calculator should load the model and map classifier output to names."""
+    """Happy path: with an injected model and fingerprint calculator, the
+    calculator should load the classifier, concatenate fingerprints [1,0]+[1,0],
+    and map the prediction index (0) to the corresponding reaction name."""
     calculator = ReactionMetricCalculator(
         model_path="model.joblib",
         model_loader=lambda path: DummyReactionClassifier(),
@@ -41,7 +44,9 @@ def test_reaction_metric_calculator_predicts_reaction_type() -> None:
 
 
 def test_reaction_type_returns_unknown_when_fingerprint_is_none() -> None:
-    """Should return UNKNOWN when fingerprint calculation fails."""
+    """When the fingerprint calculator returns None (e.g. invalid SMILES or
+    RDKit failure), reaction_type should gracefully return UNKNOWN_REACTION
+    instead of crashing."""
     calculator = ReactionMetricCalculator(
         model_path="model.joblib",
         model_loader=lambda path: DummyReactionClassifier(),
@@ -55,7 +60,9 @@ def test_reaction_type_returns_unknown_when_fingerprint_is_none() -> None:
 
 
 def test_reaction_type_handles_missing_model_file() -> None:
-    """Missing model file should return UNKNOWN_REACTION."""
+    """When the model loader raises FileNotFoundError (model file missing
+    from disk), reaction_type should catch it and return UNKNOWN_REACTION
+    so that route parsing can continue without a classifier."""
 
     def failing_loader(path: str):
         raise FileNotFoundError
@@ -73,7 +80,9 @@ def test_reaction_type_handles_missing_model_file() -> None:
 
 
 def test_scalability_index_returns_na_when_reaction_unknown() -> None:
-    """Unknown reaction should lead to N/A scalability."""
+    """When the classifier returns an index (999) that doesn't map to a known
+    reaction encoding, scalability_index should return 'N/A' rather than
+    raising a KeyError."""
 
     class BadClassifier:
         def predict(self, x):
@@ -91,7 +100,9 @@ def test_scalability_index_returns_na_when_reaction_unknown() -> None:
 
 
 def test_scalability_index_returns_label_for_valid_prediction() -> None:
-    """Happy path: a known reaction index should map to its scalability label."""
+    """Happy path: when the classifier predicts index 0, scalability_index
+    should look up and return the corresponding label from ENCODING_SCALABILITY,
+    verifying the full prediction-to-label pipeline."""
 
     class PredictZero:
         def predict(self, x):
@@ -109,7 +120,9 @@ def test_scalability_index_returns_label_for_valid_prediction() -> None:
 
 
 def test_reaction_type_logs_error_on_file_not_found() -> None:
-    """FileNotFoundError should be logged, not silently swallowed."""
+    """FileNotFoundError should be logged via the injected logger before
+    returning UNKNOWN_REACTION. Verifies the fix for silently swallowed
+    errors that made missing model files hard to debug."""
     logged = []
 
     class CapturingLogger:
@@ -133,14 +146,17 @@ def test_reaction_type_logs_error_on_file_not_found() -> None:
 
 
 def test_get_reaction_type_compatibility_wrapper() -> None:
-    """Module-level get_reaction_type should delegate to the calculator."""
+    """The module-level get_reaction_type() backward-compatible wrapper should
+    delegate to ReactionMetricCalculator and return the same result."""
     result = get_reaction_type("CC", "CCO", model_path="")
 
     assert result == ("Unknown Reaction", -1)
 
 
 def test_calc_scalability_index_compatibility_wrapper() -> None:
-    """Module-level calc_scalability_index should return N/A without model."""
+    """The module-level calc_scalability_index() backward-compatible wrapper
+    should delegate to ReactionMetricCalculator using the env-configured
+    model path (empty by default in tests), returning 'N/A'."""
     result = calc_scalability_index("CC", "CCO")
 
     assert result == "N/A"
