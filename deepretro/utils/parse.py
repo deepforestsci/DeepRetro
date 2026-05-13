@@ -12,12 +12,8 @@ from collections.abc import Callable, Collection, Iterable, Mapping, MutableMapp
 from typing import Any, Optional
 
 from deepretro.utils.parse_metrics import calc_scalability_index
+from deepretro.utils.typing import DependencyMap, ParseOutput, RouteNode, Step
 from deepretro.utils.utils_molecule import calc_chemical_formula, calc_mol_wt
-
-RouteNode = Mapping[str, Any]
-Step = dict[str, Any]
-DependencyMap = dict[str, list[str]]
-ParseOutput = dict[str, Any]
 
 
 def _default_basic_molecules() -> Collection[str]:
@@ -31,6 +27,27 @@ def _default_basic_molecules() -> Collection[str]:
 class RetrosynthesisRouteParser:
     """
     Convert recursive retrosynthesis route trees into viewer-ready dictionaries.
+
+    Algorithm
+    ---------
+    The parser performs a depth-first traversal of the route tree. Each node
+    with a ``children`` key becomes a reaction step whose product is the
+    node's SMILES. The children of each node are intermediate reaction
+    wrappers that contain the actual precursor molecules.
+
+    For every precursor molecule encountered:
+
+    1. It is classified as a **reagent** if its SMILES appears in the
+       ``basic_molecules`` set, or as a **reactant** otherwise.
+    2. It is attached to its parent step with chemical metadata (formula,
+       mass) computed by the injected calculator functions.
+    3. A scalability metric is computed for the precursor/product pair.
+    4. If the precursor itself has children, a new reaction step is created
+       and the traversal recurses.
+
+    After the full tree is traversed, ``format_output`` rebuilds the
+    dependency map by matching each step's reactant SMILES against the
+    product SMILES of all other steps.
 
     Examples
     --------
