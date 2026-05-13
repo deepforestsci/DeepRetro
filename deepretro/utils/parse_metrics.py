@@ -113,7 +113,8 @@ class ReactionMetricCalculator:
         """
         try:
             return self._predict_reaction_type(mol1, mol2)
-        except FileNotFoundError:
+        except FileNotFoundError as exc:
+            self._log_exception("get_reaction_type", exc)
             return UNKNOWN_REACTION
         except Exception as exc:
             self._log_exception("get_reaction_type", exc)

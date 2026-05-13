@@ -28,8 +28,6 @@ def _default_basic_molecules() -> Collection[str]:
 
 
 
-
-
 class RetrosynthesisRouteParser:
     """
     Convert recursive retrosynthesis route trees into viewer-ready dictionaries.
@@ -120,7 +118,7 @@ class RetrosynthesisRouteParser:
         dict[str, Any]
             Dictionary with ``dependencies`` and ``steps`` keys.
         """
-        del include_metadata
+        _ = include_metadata
         steps = [] if step_list is None else step_list
         dependencies = {} if dependency_list is None else dependency_list
         self._parse_node(data, steps, dependencies, parent_id)
@@ -183,7 +181,23 @@ class RetrosynthesisRouteParser:
         dependencies: MutableMapping[str, list[str]],
         parent_id: Optional[int],
     ) -> None:
-        """Parse one route node and recurse into its precursor children."""
+        """
+        Parse a single route node into steps and dependency links.
+
+        Parameters
+        ----------
+        data : Mapping[str, Any]
+            Route node to parse. Nodes may represent a product-bearing molecule
+            with optional precursor children, or a leaf molecule without
+            ``children``.
+        steps : list[dict[str, Any]]
+            Mutable step accumulator populated in traversal order.
+        dependencies : MutableMapping[str, list[str]]
+            Mutable dependency accumulator keyed by step id.
+        parent_id : int, optional
+            One-based step id of the parent reaction consuming this node as a
+            precursor. ``None`` indicates the root node.
+        """
         step = self._create_step(data, len(steps) + 1)
         self._attach_to_parent(data, steps, parent_id)
 
@@ -297,7 +311,12 @@ def parse_step(
         
     Examples
     --------
-    
+    >>> result = parse_step({
+    ...     "smiles": "CCO",
+    ...     "children": [{"children": [{"smiles": "CC"}, {"smiles": "O"}]}],
+    ... })
+    >>> result["steps"][0]["products"][0]["smiles"]
+    'CCO'
     """
     parser = RetrosynthesisRouteParser()
     return parser.parse_step(
