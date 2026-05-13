@@ -6,13 +6,14 @@ from deepretro.utils.parse import (
     format_output,
     parse_step,
 )
+from deepretro.utils.utils_molecule import calc_chemical_formula, calc_mol_wt
 
 
 def build_parser(scalability_calculator=None, basic_molecules=None):
     return RetrosynthesisRouteParser(
         basic_molecules=set() if basic_molecules is None else basic_molecules,
-        chemical_formula_calculator=lambda smiles: "X",
-        mass_calculator=lambda smiles: 1.0,
+        chemical_formula_calculator=calc_chemical_formula,
+        mass_calculator=calc_mol_wt,
         scalability_calculator=(
             (lambda reactant, product: "N/A")
             if scalability_calculator is None
@@ -34,11 +35,11 @@ def test_format_output_parses_single_step_with_metadata():
 
     step = output["steps"][0]
     assert step["step"] == "1"
-    assert [product["smiles"] for product in step["products"]] == ["CCO"]
-    assert [reactant["smiles"] for reactant in step["reactants"]] == ["CC", "O"]
+    assert [p["smiles"] for p in step["products"]] == ["CCO"]
+    assert [r["smiles"] for r in step["reactants"]] == ["CC", "O"]
     assert step["reactionmetrics"][0]["scalabilityindex"] == "N/A"
-    assert step["products"][0]["product_metadata"]["chemical_formula"] == "X"
-    assert step["products"][0]["product_metadata"]["mass"] == 1.0
+    assert step["products"][0]["product_metadata"]["chemical_formula"] == "C2H6O"
+    assert step["products"][0]["product_metadata"]["mass"] == pytest.approx(46.04, abs=0.01)
 
 
 def test_parse_step_returns_no_step_for_leaf_node():
@@ -63,7 +64,7 @@ def test_parse_step_appends_to_existing_accumulators():
             "step": "1",
             "reactants": [],
             "reagents": [],
-            "products": [{"smiles": "seed", "product_metadata": {}}],
+            "products": [{"smiles": "c1ccccc1", "product_metadata": {}}],
             "conditions": [],
             "reactionmetrics": [{"scalabilityindex": "", "closestliterature": ""}],
         }
@@ -71,7 +72,7 @@ def test_parse_step_appends_to_existing_accumulators():
     dependencies = {"1": []}
 
     output = build_parser().parse_step(
-        {"smiles": "P", "children": [{"children": [{"smiles": "A"}]}]},
+        {"smiles": "CC(=O)O", "children": [{"children": [{"smiles": "CO"}]}]},
         step_list=steps,
         dependency_list=dependencies,
         parent_id=1,
@@ -81,18 +82,18 @@ def test_parse_step_appends_to_existing_accumulators():
     assert output["dependencies"] is dependencies
     assert output["dependencies"] == {"1": ["2"], "2": []}
     assert output["steps"][1]["step"] == "2"
-    assert output["steps"][0]["reactants"][0]["smiles"] == "P"
+    assert output["steps"][0]["reactants"][0]["smiles"] == "CC(=O)O"
 
 
 def test_format_output_builds_dependency_chain_for_nested_route():
     data = {
-        "smiles": "C",
+        "smiles": "CCCO",
         "children": [
             {
                 "children": [
                     {
-                        "smiles": "B",
-                        "children": [{"children": [{"smiles": "A"}]}],
+                        "smiles": "CCO",
+                        "children": [{"children": [{"smiles": "CO"}]}],
                     }
                 ]
             }
@@ -101,21 +102,21 @@ def test_format_output_builds_dependency_chain_for_nested_route():
 
     output = build_parser().format_output(data)
 
-    assert [step["products"][0]["smiles"] for step in output["steps"]] == ["C", "B"]
+    assert [step["products"][0]["smiles"] for step in output["steps"]] == ["CCCO", "CCO"]
     assert output["dependencies"] == {"1": ["2"], "2": []}
 
 
 def test_format_output_classifies_basic_molecules_as_reagents():
     data = {
-        "smiles": "P",
-        "children": [{"children": [{"smiles": "A"}, {"smiles": "H2O"}]}],
+        "smiles": "CC(=O)O",
+        "children": [{"children": [{"smiles": "CO"}, {"smiles": "O"}]}],
     }
 
-    output = build_parser(basic_molecules={"H2O"}).format_output(data)
+    output = build_parser(basic_molecules={"O"}).format_output(data)
     step = output["steps"][0]
 
-    assert [reactant["smiles"] for reactant in step["reactants"]] == ["A"]
-    assert [reagent["smiles"] for reagent in step["reagents"]] == ["H2O"]
+    assert [r["smiles"] for r in step["reactants"]] == ["CO"]
+    assert [r["smiles"] for r in step["reagents"]] == ["O"]
 
 
 def test_format_output_uses_all_attached_molecules_for_scalability():
@@ -126,23 +127,23 @@ def test_format_output_uses_all_attached_molecules_for_scalability():
         return f"{reactant}->{product}"
 
     data = {
-        "smiles": "P",
-        "children": [{"children": [{"smiles": "A"}, {"smiles": "H2O"}]}],
+        "smiles": "CC(=O)O",
+        "children": [{"children": [{"smiles": "CO"}, {"smiles": "O"}]}],
     }
 
     output = build_parser(
         scalability_calculator=record_scalability,
-        basic_molecules={"H2O"},
+        basic_molecules={"O"},
     ).format_output(data)
 
-    assert calls == [("A", "P"), ("H2O", "P")]
-    assert output["steps"][0]["reactionmetrics"][0]["scalabilityindex"] == "H2O->P"
+    assert calls == [("CO", "CC(=O)O"), ("O", "CC(=O)O")]
+    assert output["steps"][0]["reactionmetrics"][0]["scalabilityindex"] == "O->CC(=O)O"
 
 
 def test_fix_dependencies_ignores_unmatched_reactants():
     steps = [
-        {"step": "1", "products": [{"smiles": "A"}], "reactants": []},
-        {"step": "2", "products": [{"smiles": "B"}], "reactants": [{"smiles": "X"}]},
+        {"step": "1", "products": [{"smiles": "CO"}], "reactants": []},
+        {"step": "2", "products": [{"smiles": "CCO"}], "reactants": [{"smiles": "CCCC"}]},
     ]
 
     assert fix_dependencies({}, steps) == {"1": [], "2": []}
@@ -150,9 +151,9 @@ def test_fix_dependencies_ignores_unmatched_reactants():
 
 def test_fix_dependencies_uses_last_duplicate_product_producer():
     steps = [
-        {"step": "1", "products": [{"smiles": "A"}], "reactants": []},
-        {"step": "2", "products": [{"smiles": "A"}], "reactants": []},
-        {"step": "3", "products": [{"smiles": "B"}], "reactants": [{"smiles": "A"}]},
+        {"step": "1", "products": [{"smiles": "CO"}], "reactants": []},
+        {"step": "2", "products": [{"smiles": "CO"}], "reactants": []},
+        {"step": "3", "products": [{"smiles": "CCO"}], "reactants": [{"smiles": "CO"}]},
     ]
 
     assert fix_dependencies({}, steps)["3"] == ["2"]
@@ -160,33 +161,30 @@ def test_fix_dependencies_uses_last_duplicate_product_producer():
 
 def test_format_output_handles_reaction_wrapper_children():
     data = {
-        "smiles": "P",
-        "children": [{"is_reaction": True, "children": [{"smiles": "A"}]}],
+        "smiles": "CC(=O)O",
+        "children": [{"is_reaction": True, "children": [{"smiles": "CO"}]}],
     }
 
     output = build_parser().format_output(data)
 
-    assert [reactant["smiles"] for reactant in output["steps"][0]["reactants"]] == ["A"]
+    assert [r["smiles"] for r in output["steps"][0]["reactants"]] == ["CO"]
 
 
 def test_format_output_preserves_duplicate_reactants():
     data = {
-        "smiles": "P",
-        "children": [{"children": [{"smiles": "A"}, {"smiles": "A"}]}],
+        "smiles": "CC(=O)O",
+        "children": [{"children": [{"smiles": "CO"}, {"smiles": "CO"}]}],
     }
 
     output = build_parser().format_output(data)
 
-    assert [reactant["smiles"] for reactant in output["steps"][0]["reactants"]] == [
-        "A",
-        "A",
-    ]
+    assert [r["smiles"] for r in output["steps"][0]["reactants"]] == ["CO", "CO"]
 
 
 def test_format_output_raises_for_missing_smiles_anywhere_in_route():
     with pytest.raises(ValueError, match="smiles"):
         build_parser().format_output(
-            {"smiles": "P", "children": [{"children": [{}]}]}
+            {"smiles": "CC(=O)O", "children": [{"children": [{}]}]}
         )
 
 
