@@ -1,10 +1,4 @@
-"""Utilities for converting retrosynthesis route trees into viewer steps.
-
-The module keeps the historical function API (``parse_step``,
-``fix_dependencies``, and ``format_output``) while exposing
-``RetrosynthesisRouteParser`` for callers that need dependency injection or a
-clearer unit to test.
-"""
+"""Utilities for converting retrosynthesis route trees into viewer steps."""
 
 from __future__ import annotations
 
