@@ -2,7 +2,7 @@
 
 Provides:
 
-* :func:`build_ml_checker` — wrap a classifier into the callable
+* :class:`MLChecker` — wrap a classifier into the callable
   signature the pipeline expects.
 * :func:`resolve_hallucination` — turn a string to determine checker type
   into a checker callable (or ``None``) consumed by ``llm_pipeline``.
@@ -15,66 +15,101 @@ from pathlib import Path
 from typing import Any
 
 
-def build_ml_checker(clf: Any) -> Callable:
-    """Wrap a ``HallucinationClassifier`` into a pipeline-compatible checker.
+class MLChecker:
+    """Wrap a classifier into a pipeline-compatible hallucination checker.
 
-    The returned callable has the same signature as the built-in
-    heuristic checker (``(product, pathways) -> (int, list)``).
-    Pathways flagged as hallucinated are dropped; if all are rejected
-    the pipeline retries the LLM call.
+    The checker has the same signature as the built-in heuristic checker
+    (``(product, pathways) -> (int, list)``). Pathways flagged as
+    hallucinated are dropped; if all are rejected the pipeline retries the
+    LLM call.
 
     Parameters
     ----------
     clf : HallucinationClassifier
-        A fitted classifier instance.
-
-    Returns
-    -------
-    checker : Callable
-        ``(product: str, pathways: list) -> tuple[int, list]``
+        A fitted classifier instance or classifier-like object with
+        ``predict_single(product, reactants)``.
 
     Examples
     --------
-    >>> from deepretro.models import HallucinationClassifier  # doctest: +SKIP
-    >>> clf = HallucinationClassifier()                       # doctest: +SKIP
-    >>> clf.load("model_out/")                                # doctest: +SKIP
-    >>> checker = build_ml_checker(clf)                       # doctest: +SKIP
-    >>> status, kept = checker("CCO", [["CC", "O"]])          # doctest: +SKIP
+    >>> class TinyClassifier:
+    ...     def predict_single(self, product, reactants):
+    ...         return {"is_hallucination": reactants == "C.N"}
+    >>> checker = MLChecker(TinyClassifier())
+    >>> status, kept = checker("CCO", [["CC", "O"], "C.N", "not_a_smiles"])
+    >>> status
+    200
+    >>> kept
+    [['CC', 'O']]
     """
-    def _checker(product: str, pathways: list) -> tuple[int, list]:
+
+    def __init__(self, clf: Any) -> None:
+        """Store the classifier and SMILES validator used by the checker.
+
+        Parameters
+        ----------
+        clf : Any
+            Classifier-like object implementing
+            ``predict_single(product, reactants)``.
+        """
         from deepretro.utils.utils_molecule import is_valid_smiles
 
-        valid = []
+        self.clf = clf
+        self.is_valid_smiles = is_valid_smiles
+
+    def __call__(self, product: str, pathways: list) -> tuple[int, list]:
+        """Filter pathway candidates using the configured ML classifier.
+
+        Parameters
+        ----------
+        product : str
+            SMILES string of the target product.
+        pathways : list
+            Candidate pathways represented as either lists of reactant
+            SMILES strings or single dot-separated reactant strings.
+
+        Returns
+        -------
+        tuple[int, list]
+            ``(200, valid_pathways)`` when at least one pathway is kept,
+            otherwise ``(400, [])``.
+        """
+        valid_pathways = []
         for pathway in pathways:
             if isinstance(pathway, list):
-                normalized_pathway = pathway
                 reactants_smi = ".".join(pathway)
+                normalized_pathway = pathway
             else:
-                normalized_pathway = [pathway]
                 reactants_smi = pathway
+                normalized_pathway = [pathway]
 
-            if not is_valid_smiles(reactants_smi):
+            if not self.is_valid_smiles(reactants_smi):
                 continue
 
-            pred = clf.predict_single(product, reactants_smi)
-            if not pred.get("is_hallucination", True):
-                valid.append(normalized_pathway)
+            pred = self.clf.predict_single(product, reactants_smi)
+            if pred.get("is_hallucination", True):
+                continue
 
-        return 200, valid
+            valid_pathways.append(normalized_pathway)
 
-    return _checker
+        if valid_pathways:
+            return 200, valid_pathways
+        return 400, []
 
 
-def resolve_hallucination(mode: str, classifier: str | Path | None) -> Callable | None:
+def resolve_hallucination(
+    mode: str,
+    classifier: str | Path | Any | None,
+) -> Callable | None:
     """Convert a user-facing hallucination mode into a checker callable.
 
     Parameters
     ----------
     mode : str
         One of ``"heuristic"``, ``"ml"``, or ``"none"``.
-    classifier : str or Path or None
-        Path to a saved ML model directory.  Required when *mode* is
-        ``"ml"``, ignored otherwise.
+    classifier : str or Path or Any or None
+        Path to a saved ML model directory, or a classifier-like object
+        implementing ``predict_single(product, reactants)``. Required
+        when *mode* is ``"ml"``, ignored otherwise.
 
     Returns
     -------
@@ -91,12 +126,19 @@ def resolve_hallucination(mode: str, classifier: str | Path | None) -> Callable 
 
     Examples
     --------
+    >>> from pathlib import Path
     >>> resolve_hallucination("none", None) is None
     True
     >>> checker = resolve_hallucination("heuristic", None)  # doctest: +SKIP
     >>> callable(checker)                                    # doctest: +SKIP
     True
-    >>> checker = resolve_hallucination("ml", "model_out/") # doctest: +SKIP
+    >>> class TinyClassifier:
+    ...     def predict_single(self, product, reactants):
+    ...         return {"is_hallucination": False}
+    >>> checker = resolve_hallucination("ml", TinyClassifier())
+    >>> isinstance(checker, MLChecker)
+    True
+    >>> checker = resolve_hallucination("ml", Path("model_out/"))  # doctest: +SKIP
     """
     if mode == "none":
         return None
@@ -116,7 +158,7 @@ def resolve_hallucination(mode: str, classifier: str | Path | None) -> Callable 
                 f"hallucination_mode='ml' requires a HallucinationClassifier "
                 f"or path to saved model — got {type(classifier)}"
             )
-        return build_ml_checker(clf)
+        return MLChecker(clf)
     raise ValueError(
         f"hallucination_mode must be 'heuristic', 'ml', or 'none' — got {mode!r}"
     )
