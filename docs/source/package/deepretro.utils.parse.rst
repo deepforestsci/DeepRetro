@@ -35,19 +35,26 @@ Example
    from deepretro.utils.parse import RetrosynthesisRouteParser
 
    parser = RetrosynthesisRouteParser(
-       basic_molecules=set(),
-       chemical_formula_calculator=lambda smiles: "N/A",
-       mass_calculator=lambda smiles: 0.0,
+       basic_molecules={"O"},
+       chemical_formula_calculator=lambda smiles: smiles,
+       mass_calculator=lambda smiles: 1.0,
        scalability_calculator=lambda reactant, product: "N/A",
    )
    output = parser.format_output(
        {
-           "smiles": "CCO",
-           "children": [{"children": [{"smiles": "CC"}, {"smiles": "O"}]}],
+           "smiles": "CCOC(=O)N",
+           "children": [
+               {"children": [{"smiles": "CCO"}, {"smiles": "NC=O"}, {"smiles": "O"}]}
+           ],
        }
    )
 
-   assert output["steps"][0]["products"][0]["smiles"] == "CCO"
+   assert output["steps"][0]["products"][0]["smiles"] == "CCOC(=O)N"
+   assert [molecule["smiles"] for molecule in output["steps"][0]["reactants"]] == [
+       "CCO",
+       "NC=O",
+   ]
+   assert [molecule["smiles"] for molecule in output["steps"][0]["reagents"]] == ["O"]
    assert output["dependencies"] == {"1": []}
 
 API Reference

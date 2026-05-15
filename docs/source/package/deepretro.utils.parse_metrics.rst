@@ -71,20 +71,21 @@ joblib model or compute RDKit fingerprints:
 
 .. code-block:: python
 
-   class FakeClassifier:
+   class DummyClassifier:
        def predict(self, fingerprints):
-           return [0]
+           assert fingerprints == [[1, 0, 0, 1]]
+           return [2]
 
    calculator = ReactionMetricCalculator(
        model_path="unused-in-test.joblib",
-       model_loader=lambda path: FakeClassifier(),
-       fingerprint_calculator=lambda smiles: [1, 0],
-       reaction_encoding_names={0: "Example reaction"},
-       scalability_encoding={0: "medium"},
+       model_loader=lambda path: DummyClassifier(),
+       fingerprint_calculator=lambda smiles: [1, 0] if smiles == "CC" else [0, 1],
+       reaction_encoding_names={2: "Example substitution"},
+       scalability_encoding={2: "pilot"},
    )
 
-   assert calculator.reaction_type("CC", "CCO") == ("Example reaction", 0)
-   assert calculator.scalability_index("CC", "CCO") == "medium"
+   assert calculator.reaction_type("CC", "CO") == ("Example substitution", 2)
+   assert calculator.scalability_index("CC", "CO") == "pilot"
 
 Logging and Failure Behavior
 ----------------------------

@@ -13,18 +13,13 @@ from typing import Any, Optional
 
 from deepretro.utils.parse_metrics import calc_scalability_index
 from deepretro.utils.utils_molecule import calc_chemical_formula, calc_mol_wt
+from deepretro.utils.variables import BASIC_MOLECULES
 
 RouteNode = Mapping[str, Any]
 Step = dict[str, Any]
 DependencyMap = dict[str, list[str]]
 ParseOutput = dict[str, Any]
 
-
-def _default_basic_molecules() -> Collection[str]:
-    """Return the configured set of commercially basic molecules."""
-    from deepretro.utils.variables import BASIC_MOLECULES
-
-    return BASIC_MOLECULES
 
 class RetrosynthesisRouteParser:
     """
@@ -69,7 +64,7 @@ class RetrosynthesisRouteParser:
             Function used to score a precursor/product pair for scalability.
         """
         self.basic_molecules = (
-            _default_basic_molecules() if basic_molecules is None else basic_molecules
+            BASIC_MOLECULES if basic_molecules is None else basic_molecules
         )
         self.chemical_formula_calculator = (
             calc_chemical_formula
@@ -115,8 +110,28 @@ class RetrosynthesisRouteParser:
         -------
         dict[str, Any]
             Dictionary with ``dependencies`` and ``steps`` keys.
+
+        Examples
+        --------
+        >>> parser = RetrosynthesisRouteParser(
+        ...     basic_molecules={"O"},
+        ...     chemical_formula_calculator=lambda smiles: smiles,
+        ...     mass_calculator=lambda smiles: 1.0,
+        ...     scalability_calculator=lambda reactant, product: "N/A",
+        ... )
+        >>> output = parser.parse_step(
+        ...     {
+        ...         "smiles": "CCO",
+        ...         "children": [{"children": [{"smiles": "CC"}, {"smiles": "O"}]}],
+        ...     }
+        ... )
+        >>> output["dependencies"]
+        {'1': []}
+        >>> [molecule["smiles"] for molecule in output["steps"][0]["reactants"]]
+        ['CC']
+        >>> [molecule["smiles"] for molecule in output["steps"][0]["reagents"]]
+        ['O']
         """
-        del include_metadata
         steps = [] if step_list is None else step_list
         dependencies = {} if dependency_list is None else dependency_list
         self._parse_node(data, steps, dependencies, parent_id)
@@ -237,7 +252,27 @@ class RetrosynthesisRouteParser:
         steps: list[Step],
         parent_id: Optional[int],
     ) -> None:
-        """Attach a precursor molecule node to its parent reaction step."""
+        """
+        Attach a precursor molecule node to its parent reaction step.
+
+        Parameters
+        ----------
+        data : Mapping[str, Any]
+            Molecule or reaction-wrapper node being attached as an input to the
+            parent reaction.
+        steps : list[dict[str, Any]]
+            Parsed steps accumulated so far. The parent step is updated in
+            place when this node is a precursor molecule.
+        parent_id : int, optional
+            One-based identifier of the parent step that consumes this
+            precursor. ``None`` means there is no parent step to update.
+
+        Returns
+        -------
+        None
+            The method mutates ``steps`` in place by appending a reactant or
+            reagent entry and updating the parent step's scalability metric.
+        """
         if parent_id is None or data.get("is_reaction", False):
             return
 
@@ -251,7 +286,24 @@ class RetrosynthesisRouteParser:
         )
 
     def _molecule_entry(self, smiles: str, metadata_key: str) -> dict[str, Any]:
-        """Build a molecule entry with the metadata key required by the schema."""
+        """
+        Build a molecule entry with the metadata key required by the schema.
+
+        Parameters
+        ----------
+        smiles : str
+            SMILES string for the molecule being emitted into the viewer
+            schema.
+        metadata_key : str
+            Metadata field name expected by the caller, such as
+            ``"product_metadata"`` or ``"reactant_metadata"``.
+
+        Returns
+        -------
+        dict[str, Any]
+            Molecule payload containing the original SMILES string and
+            calculated formula and mass metadata under ``metadata_key``.
+        """
         return {
             "smiles": smiles,
             metadata_key: {
@@ -306,10 +358,19 @@ def parse_step(
     -------
     dict[str, Any]
         Dictionary with ``dependencies`` and ``steps`` keys.
-        
+
     Examples
     --------
-    
+    >>> output = parse_step(
+    ...     {
+    ...         "smiles": "CCO",
+    ...         "children": [{"children": [{"smiles": "CC"}, {"smiles": "O"}]}],
+    ...     }
+    ... )
+    >>> output["dependencies"]
+    {'1': []}
+    >>> output["steps"][0]["products"][0]["smiles"]
+    'CCO'
     """
     parser = RetrosynthesisRouteParser()
     return parser.parse_step(

@@ -68,6 +68,42 @@ def test_reaction_type_handles_missing_model_file() -> None:
     assert name == "Unknown Reaction"
     assert index == -1
 
+
+def test_reaction_type_logs_missing_model_file() -> None:
+    """Missing model files should be logged before returning UNKNOWN_REACTION."""
+
+    class RecordingLogger:
+        def __init__(self) -> None:
+            self.calls = []
+
+        def error(self, event: str, **kwargs) -> None:
+            self.calls.append((event, kwargs))
+
+    def failing_loader(path: str):
+        raise FileNotFoundError(path)
+
+    logger = RecordingLogger()
+    calculator = ReactionMetricCalculator(
+        model_path="missing.joblib",
+        model_loader=failing_loader,
+        fingerprint_calculator=lambda smiles: [1, 0],
+        logger=logger,
+    )
+
+    name, index = calculator.reaction_type("CC", "CCO")
+
+    assert name == "Unknown Reaction"
+    assert index == -1
+    assert logger.calls == [
+        (
+            "Error in metric calculation",
+            {
+                "function": "get_reaction_type",
+                "error": "missing.joblib",
+            },
+        )
+    ]
+
 def test_scalability_index_returns_na_when_reaction_unknown() -> None:
     """Unknown reaction should lead to N/A scalability."""
 

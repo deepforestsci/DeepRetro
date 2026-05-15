@@ -54,6 +54,20 @@ class ReactionMetricCalculator:
     >>> calculator = ReactionMetricCalculator(model_path="")
     >>> calculator.scalability_index("CC", "CCO")
     'N/A'
+    >>> class StubClassifier:
+    ...     def predict(self, fingerprints):
+    ...         return [7]
+    >>> calculator = ReactionMetricCalculator(
+    ...     model_path="unused.joblib",
+    ...     model_loader=lambda path: StubClassifier(),
+    ...     fingerprint_calculator=lambda smiles: [1, 0] if smiles == "CC" else [0, 1],
+    ...     reaction_encoding_names={7: "Example coupling"},
+    ...     scalability_encoding={7: "pilot"},
+    ... )
+    >>> calculator.reaction_type("CC", "CO")
+    ('Example coupling', 7)
+    >>> calculator.scalability_index("CC", "CO")
+    'pilot'
     """
 
     def __init__(
@@ -110,10 +124,26 @@ class ReactionMetricCalculator:
         tuple[str, int]
             Reaction label and classifier encoding index. Unknown or failed
             predictions return ``("Unknown Reaction", -1)``.
+
+        Examples
+        --------
+        >>> class StubClassifier:
+        ...     def predict(self, fingerprints):
+        ...         return [3]
+        >>> calculator = ReactionMetricCalculator(
+        ...     model_path="unused.joblib",
+        ...     model_loader=lambda path: StubClassifier(),
+        ...     fingerprint_calculator=lambda smiles: [1, 0] if smiles == "CC" else [0, 1],
+        ...     reaction_encoding_names={3: "Example oxidation"},
+        ...     scalability_encoding={3: "demo"},
+        ... )
+        >>> calculator.reaction_type("CC", "CO")
+        ('Example oxidation', 3)
         """
         try:
             return self._predict_reaction_type(mol1, mol2)
-        except FileNotFoundError:
+        except FileNotFoundError as exc:
+            self._log_exception("get_reaction_type", exc)
             return UNKNOWN_REACTION
         except Exception as exc:
             self._log_exception("get_reaction_type", exc)
@@ -135,6 +165,21 @@ class ReactionMetricCalculator:
         str
             Scalability label, or ``"N/A"`` when the classifier is unavailable
             or cannot classify the pair.
+
+        Examples
+        --------
+        >>> class StubClassifier:
+        ...     def predict(self, fingerprints):
+        ...         return [5]
+        >>> calculator = ReactionMetricCalculator(
+        ...     model_path="unused.joblib",
+        ...     model_loader=lambda path: StubClassifier(),
+        ...     fingerprint_calculator=lambda smiles: [1, 0] if smiles == "CC" else [0, 1],
+        ...     reaction_encoding_names={5: "Example reduction"},
+        ...     scalability_encoding={5: "bench"},
+        ... )
+        >>> calculator.scalability_index("CC", "CO")
+        'bench'
         """
         if not self.model_path:
             return "N/A"
