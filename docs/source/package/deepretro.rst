@@ -17,6 +17,8 @@ The package currently provides:
 - Heuristic hallucination detection and scoring for retrosynthetic steps.
 - ML-based hallucination classification (XGBoost via DeepChem ``GBDTModel``).
 - Dataset loading with DeepChem ``DiskDataset`` sharding and stratified splitting.
+- LLM-assisted metadata prediction for reagents, reaction conditions, and
+  nearest literature reactions.
 
 
 Input and Output Conventions
@@ -62,6 +64,7 @@ Subpackages
    deepretro.algorithms.hallucination_checker
    deepretro.data.loader
    deepretro.models.hallucination_classifier
+   deepretro.metadata
    deepretro.algorithms.stability_checker
    deepretro.featurizers
    deepretro.utils_pkg

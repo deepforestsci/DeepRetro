@@ -2,9 +2,15 @@
 
 from __future__ import annotations
 
+import os
+from typing import cast
+
 import pytest
 
 from deepretro import metadata
+from deepretro.utils.cache import CacheManager, make_cache_key
+
+OPUS_MODEL = os.getenv("DEEPRETRO_METADATA_TEST_MODEL", metadata.DEFAULT_METADATA_MODEL)
 
 
 def test_parse_reaction_smiles_supports_reaction_smiles_forms() -> None:
@@ -24,6 +30,141 @@ def test_parse_reaction_smiles_supports_reaction_smiles_forms() -> None:
 def test_parse_reaction_smiles_rejects_invalid_shape() -> None:
     with pytest.raises(ValueError, match="reaction SMILES"):
         metadata.parse_reaction_smiles("CCO")
+
+
+def test_recommend_reaction_metadata_from_reaction_string_uses_all_three_agents() -> (
+    None
+):
+    calls: list[str] = []
+
+    def reagent_recommender(
+        reactants: list[metadata.MoleculeRecord],
+        product: list[metadata.MoleculeRecord],
+        model: str,
+        temperature: float,
+    ) -> metadata.ReagentStatusPayload:
+        calls.append(f"reagent:{model}:{temperature}")
+        assert reactants == [{"smiles": "CCO"}, {"smiles": "CC(=O)O"}]
+        assert product == [{"smiles": "CCOC(C)=O"}]
+        return 200, [{"smiles": "O", "reagent_metadata": {"name": ""}}]
+
+    def conditions_recommender(
+        reactants: list[metadata.MoleculeRecord],
+        product: list[metadata.MoleculeRecord],
+        reagents: list[metadata.MoleculeRecord],
+        model: str,
+        temperature: float,
+    ) -> metadata.ConditionsStatusPayload:
+        calls.append(f"conditions:{model}:{temperature}")
+        assert reagents == [{"smiles": "O", "reagent_metadata": {"name": ""}}]
+        return 200, {
+            "temperature": "25 C",
+            "pressure": "1 atm",
+            "solvent": "water",
+            "time": "1 h",
+        }
+
+    def literature_recommender(
+        reactants: list[metadata.MoleculeRecord],
+        product: list[metadata.MoleculeRecord],
+        reagents: list[metadata.MoleculeRecord],
+        conditions: metadata.ConditionsPayload,
+        model: str,
+        temperature: float,
+    ) -> metadata.LiteratureStatusPayload:
+        calls.append(f"literature:{model}:{temperature}")
+        assert conditions == {
+            "temperature": "25 C",
+            "pressure": "1 atm",
+            "solvent": "water",
+            "time": "1 h",
+        }
+        return 200, {"doi": "10.1000/example"}
+
+    status, recommendation = metadata.recommend_reaction_metadata(
+        "CCO.CC(=O)O>>CCOC(C)=O",
+        model="test-model",
+        temperature=0.2,
+        reagent_recommender=reagent_recommender,
+        conditions_recommender=conditions_recommender,
+        literature_recommender=literature_recommender,
+        cache=None,
+    )
+
+    assert status == 200
+    assert recommendation == {
+        "reaction_smiles": "CCO.CC(=O)O>>CCOC(C)=O",
+        "reactants": [{"smiles": "CCO"}, {"smiles": "CC(=O)O"}],
+        "product": [{"smiles": "CCOC(C)=O"}],
+        "reagents": [{"smiles": "O", "reagent_metadata": {"name": ""}}],
+        "conditions": {
+            "temperature": "25 C",
+            "pressure": "1 atm",
+            "solvent": "water",
+            "time": "1 h",
+        },
+        "literature": {"doi": "10.1000/example"},
+    }
+    assert calls == [
+        "reagent:test-model:0.2",
+        "conditions:test-model:0.2",
+        "literature:test-model:0.2",
+    ]
+
+
+def test_recommend_reaction_metadata_returns_failure_status() -> None:
+    def reagent_recommender(
+        reactants: list[metadata.MoleculeRecord],
+        product: list[metadata.MoleculeRecord],
+        model: str,
+        temperature: float,
+    ) -> metadata.ReagentStatusPayload:
+        return 404, ""
+
+    status, recommendation = metadata.recommend_reaction_metadata(
+        "CCO>>CC=O",
+        reagent_recommender=reagent_recommender,
+        cache=None,
+    )
+
+    assert status == 404
+    assert recommendation == {
+        "stage": "reagents",
+        "error": "metadata recommendation failed",
+    }
+
+
+def test_recommend_reaction_metadata_returns_seeded_cache_hit() -> None:
+    cache = CacheManager()
+    reaction_smiles = "CCO>>CC=O"
+    expected: metadata.MetadataRecommendation = {
+        "reaction_smiles": reaction_smiles,
+        "reactants": [{"smiles": "cached-reactant"}],
+        "product": [{"smiles": "cached-product"}],
+        "reagents": [{"smiles": "cached-reagent"}],
+        "conditions": {
+            "temperature": "cached-temperature",
+            "pressure": "cached-pressure",
+            "solvent": "cached-solvent",
+            "time": "cached-time",
+        },
+        "literature": {"doi": "cached-doi"},
+    }
+    cache_key = make_cache_key(
+        "recommend_reaction_metadata",
+        reaction_smiles,
+        model=metadata.DEFAULT_METADATA_MODEL,
+        temperature=0.0,
+    )
+    cache.set(cache_key, (200, expected), tag="metadata")
+
+    status, recommendation = metadata.recommend_reaction_metadata(
+        reaction_smiles,
+        cache=cache,
+    )
+
+    assert status == 200
+    assert recommendation == expected
 
 
 def test_build_reagent_records_filters_invalid_smiles_and_adds_metadata() -> None:
@@ -145,3 +286,67 @@ def test_metadata_prompt_builders_include_reaction_context() -> None:
     assert "{product}" not in literature_messages[1]["content"]
     assert "{reagents}" not in literature_messages[1]["content"]
     assert "{conditions}" not in literature_messages[1]["content"]
+
+
+def test_metadata_agents_hit_real_opus() -> None:
+    if not os.getenv("ANTHROPIC_API_KEY"):
+        pytest.skip("ANTHROPIC_API_KEY not set — skipping live Opus metadata test")
+
+    reactants: list[metadata.MoleculeRecord] = [
+        {"smiles": "CCO"},
+        {"smiles": "CC(=O)O"},
+    ]
+    product: list[metadata.MoleculeRecord] = [{"smiles": "CCOC(C)=O"}]
+
+    reagent_status, reagents = metadata.reagent_agent(
+        reactants=reactants,
+        product=product,
+        model=OPUS_MODEL,
+        temperature=0.0,
+    )
+
+    assert reagent_status == 200
+    assert isinstance(reagents, list)
+    assert reagents
+    assert all("smiles" in reagent for reagent in reagents)
+    assert all("reagent_metadata" in reagent for reagent in reagents)
+
+    status, conditions = metadata.conditions_agent(
+        reactants=reactants,
+        product=product,
+        reagents=reagents,
+        model=OPUS_MODEL,
+        temperature=0.0,
+    )
+
+    assert status == 200
+    assert metadata.valid_conditions_payload(conditions)
+    assert str(conditions["temperature"]).strip()
+    assert str(conditions["pressure"]).strip()
+    assert str(conditions["solvent"]).strip()
+    assert str(conditions["time"]).strip()
+
+    literature_status, literature = metadata.literature_agent(
+        reactants=reactants,
+        product=product,
+        reagents=reagents,
+        conditions=conditions,
+        model=OPUS_MODEL,
+        temperature=0.0,
+    )
+
+    assert literature_status == 200
+    assert str(literature).strip()
+
+    recommendation_status, recommendation = metadata.recommend_reaction_metadata(
+        "CCO.CC(=O)O>>CCOC(C)=O",
+        model=OPUS_MODEL,
+        temperature=0.0,
+        cache=None,
+    )
+
+    assert recommendation_status == 200
+    recommendation_payload = cast(metadata.MetadataRecommendation, recommendation)
+    assert metadata.valid_conditions_payload(recommendation_payload["conditions"])
+    assert recommendation_payload["reagents"]
+    assert str(recommendation_payload["literature"]).strip()

@@ -6,7 +6,13 @@ import ast
 import json
 from typing import TypeGuard, cast
 
-from deepretro.utils.llm_helpers import ChatMessage
+import litellm
+import structlog
+from litellm import completion
+
+from deepretro.utils.cache import CacheManager, make_cache_key
+from deepretro.utils.langfuse_config import get_langfuse_metadata
+from deepretro.utils.llm_helpers import ChatMessage, build_completion_params
 from deepretro.utils.utils_molecule import (
     calc_chemical_formula,
     calc_mol_wt,
@@ -40,9 +46,27 @@ from deepretro.metadata_types import (
     StatusPayload,
 )
 
+logger = structlog.get_logger(__name__)
+
+_litellm_initialized = False
+
+
+def _ensure_litellm_configured() -> None:
+    global _litellm_initialized
+    if _litellm_initialized:
+        return
+    from dotenv import load_dotenv
+
+    load_dotenv()
+    litellm.success_callback = ["langfuse"]
+    litellm.drop_params = True
+    _litellm_initialized = True
+
+
 DEFAULT_METADATA_MODEL = "claude-opus-4-20250514"
 MAX_COMPLETION_TOKENS = 4096
 TOP_P = 0.9
+metadata_cache = CacheManager()
 
 __all__ = [
     "ConditionsRecommender",
@@ -66,10 +90,18 @@ __all__ = [
     "build_conditions_messages",
     "build_literature_messages",
     "build_reagent_messages",
+    "call_metadata_llm",
+    "conditions_agent",
+    "conditions_llm_call",
     "extract_smiles",
+    "literature_agent",
+    "metadata_cache",
     "parse_metadata_response",
     "parse_literature_reaction",
     "parse_reaction_smiles",
+    "reagent_agent",
+    "reagent_llm_call",
+    "recommend_reaction_metadata",
     "valid_conditions_payload",
 ]
 
@@ -411,3 +443,459 @@ def parse_literature_reaction(response_text: str) -> JSONValue:
     'example'
     """
     return parse_metadata_response(response_text)["literature_reaction"]
+
+
+def call_metadata_llm(
+    messages: list[ChatMessage],
+    model: str,
+    temperature: float,
+) -> tuple[int, str]:
+    """Call LiteLLM with Langfuse metadata, then retry without it on failure.
+
+    Parameters
+    ----------
+    messages : list[ChatMessage]
+        Chat messages sent to LiteLLM.
+    model : str
+        LiteLLM model identifier.
+    temperature : float
+        Sampling temperature.
+
+    Returns
+    -------
+    tuple[int, str]
+        ``(200, response_text)`` on success or ``(404, "")`` after both
+        attempts fail.
+
+    Examples
+    --------
+    >>> call_metadata_llm([{"role": "user", "content": "Return {}"}], "claude-opus-4-20250514", 0.0)  # doctest: +SKIP
+    (200, '{}')
+    """
+    _ensure_litellm_configured()
+
+    metadata: dict[str, JSONValue] | None
+    try:
+        metadata = get_langfuse_metadata("metadata")
+    except Exception as exc:
+        logger.info("metadata.langfuse_metadata_unavailable", error=str(exc))
+        metadata = None
+
+    params = build_completion_params(
+        model=model,
+        messages=messages,
+        max_completion_tokens=MAX_COMPLETION_TOKENS,
+        temperature=temperature,
+        enable_thinking=False,
+        metadata=metadata,
+    )
+    params["top_p"] = TOP_P
+
+    try:
+        response = completion(**params)
+        return 200, str(response.choices[0].message.content)
+    except (litellm.AuthenticationError, litellm.PermissionDeniedError) as exc:
+        logger.warning("metadata.llm_auth_failed", model=model, error=str(exc))
+        return 404, ""
+    except litellm.APIError as exc:
+        logger.info("metadata.llm_call_failed", model=model, error=str(exc))
+
+    retry_params = dict(params)
+    retry_params.pop("metadata", None)
+    try:
+        response = completion(**retry_params)
+        return 200, str(response.choices[0].message.content)
+    except litellm.APIError as exc:
+        logger.info("metadata.llm_retry_failed", model=model, error=str(exc))
+        return 404, ""
+
+
+def reagent_agent(
+    reactants: list[MoleculeRecord],
+    product: list[MoleculeRecord],
+    model: str = DEFAULT_METADATA_MODEL,
+    temperature: float = 0.0,
+) -> ReagentStatusPayload:
+    """Predict reaction reagents and attach lightweight molecule metadata.
+
+    Parameters
+    ----------
+    reactants : list[MoleculeRecord]
+        Reactant molecule records containing a ``"smiles"`` key.
+    product : list[MoleculeRecord]
+        Product molecule records containing a ``"smiles"`` key.
+    model : str, optional
+        LiteLLM model identifier.
+    temperature : float, optional
+        Sampling temperature.
+
+    Returns
+    -------
+    ReagentStatusPayload
+        ``(200, reagents)`` on success, otherwise ``(404, "")`` or the LLM
+        status code and an empty payload.
+    """
+    status, result = reagent_llm_call(
+        extract_smiles(reactants), extract_smiles(product)[0], model, temperature
+    )
+    if status != 200:
+        return status, ""
+    if not isinstance(result, dict):
+        return 404, ""
+
+    try:
+        data = result["data"]
+        if not isinstance(data, list):
+            raise ValueError("reagent response data must be a list")
+        reagent_smiles = [
+            smiles
+            for smiles in data
+            if isinstance(smiles, str) and is_valid_smiles(smiles)
+        ]
+    except Exception as exc:
+        logger.info("metadata.reagent_parse_failed", error=str(exc))
+        return 404, ""
+
+    if not reagent_smiles:
+        return 404, ""
+
+    try:
+        reagents = build_reagent_records(reagent_smiles)
+    except Exception as exc:
+        logger.info("metadata.reagent_enrichment_failed", error=str(exc))
+        return 404, ""
+
+    return 200, reagents
+
+
+def reagent_llm_call(
+    reactants: list[str],
+    product: str,
+    model: str = DEFAULT_METADATA_MODEL,
+    temperature: float = 0.0,
+) -> MetadataResponseStatusPayload:
+    """Call an LLM to predict reaction reagent SMILES.
+
+    Parameters
+    ----------
+    reactants : list[str]
+        Reactant SMILES strings.
+    product : str
+        Product SMILES string.
+    model : str, optional
+        LiteLLM model identifier.
+    temperature : float, optional
+        Sampling temperature.
+
+    Returns
+    -------
+    MetadataResponseStatusPayload
+        ``(200, parsed_response)`` on success or ``(404, "")`` on failure.
+
+    Examples
+    --------
+    >>> reagent_llm_call(["CCO"], "CC=O")  # doctest: +SKIP
+    (200, {'data': [...]})
+    """
+    messages = build_reagent_messages(reactants, product)
+
+    status, response_text = call_metadata_llm(messages, model, temperature)
+    if status != 200:
+        return status, ""
+
+    try:
+        return 200, parse_metadata_response(response_text)
+    except Exception as exc:
+        logger.info("metadata.reagent_literal_parse_failed", error=str(exc))
+        return 404, ""
+
+
+def conditions_agent(
+    reactants: list[MoleculeRecord],
+    product: list[MoleculeRecord],
+    reagents: list[MoleculeRecord],
+    model: str = DEFAULT_METADATA_MODEL,
+    temperature: float = 0.0,
+) -> ConditionsStatusPayload:
+    """Predict reaction conditions for a retrosynthetic step.
+
+    Parameters
+    ----------
+    reactants : list[MoleculeRecord]
+        Reactant molecule records containing a ``"smiles"`` key.
+    product : list[MoleculeRecord]
+        Product molecule records containing a ``"smiles"`` key.
+    reagents : list[MoleculeRecord]
+        Reagent molecule records containing a ``"smiles"`` key.
+    model : str, optional
+        LiteLLM model identifier.
+    temperature : float, optional
+        Sampling temperature.
+
+    Returns
+    -------
+    ConditionsStatusPayload
+        ``(200, conditions)`` on success or ``(404, "")`` on failure.
+
+    Examples
+    --------
+    >>> conditions_agent([{"smiles": "CCO"}], [{"smiles": "CC=O"}], [{"smiles": "O"}])  # doctest: +SKIP
+    (200, {'temperature': ...})
+    """
+    status, result = conditions_llm_call(
+        extract_smiles(reactants),
+        extract_smiles(product)[0],
+        extract_smiles(reagents),
+        model,
+        temperature,
+    )
+    if status != 200:
+        return status, ""
+
+    if not valid_conditions_payload(result):
+        fields = sorted(result) if isinstance(result, dict) else []
+        logger.info("metadata.conditions_incomplete", fields=fields)
+        return 404, ""
+    return 200, result
+
+
+def conditions_llm_call(
+    reactants: list[str],
+    product: str,
+    reagents: list[str],
+    model: str = DEFAULT_METADATA_MODEL,
+    temperature: float = 0.0,
+) -> MetadataResponseStatusPayload:
+    """Call an LLM to predict reaction conditions.
+
+    Parameters
+    ----------
+    reactants : list[str]
+        Reactant SMILES strings.
+    product : str
+        Product SMILES string.
+    reagents : list[str]
+        Reagent SMILES strings.
+    model : str, optional
+        LiteLLM model identifier.
+    temperature : float, optional
+        Sampling temperature.
+
+    Returns
+    -------
+    MetadataResponseStatusPayload
+        ``(200, parsed_response)`` on success or ``(404, "")`` on failure.
+
+    Examples
+    --------
+    >>> conditions_llm_call(["CCO"], "CC=O", ["O"])  # doctest: +SKIP
+    (200, {'temperature': ...})
+    """
+    messages = build_conditions_messages(reactants, product, reagents)
+
+    status, response_text = call_metadata_llm(messages, model, temperature)
+    if status != 200:
+        return status, ""
+
+    try:
+        return 200, parse_metadata_response(response_text)
+    except Exception as exc:
+        logger.info("metadata.conditions_literal_parse_failed", error=str(exc))
+        return 404, ""
+
+
+def literature_agent(
+    reactants: list[MoleculeRecord],
+    product: list[MoleculeRecord],
+    reagents: list[MoleculeRecord],
+    conditions: ConditionsPayload,
+    model: str = DEFAULT_METADATA_MODEL,
+    temperature: float = 0.0,
+) -> LiteratureStatusPayload:
+    """Find the closest literature reaction for a retrosynthetic step.
+
+    Parameters
+    ----------
+    reactants : list[MoleculeRecord]
+        Reactant molecule records containing a ``"smiles"`` key.
+    product : list[MoleculeRecord]
+        Product molecule records containing a ``"smiles"`` key.
+    reagents : list[MoleculeRecord]
+        Reagent molecule records containing a ``"smiles"`` key.
+    conditions : ConditionsPayload
+        Reaction conditions payload.
+    model : str, optional
+        LiteLLM model identifier.
+    temperature : float, optional
+        Sampling temperature.
+
+    Returns
+    -------
+    LiteratureStatusPayload
+        ``(200, literature_reaction)`` on success or ``(404, "")`` on failure.
+
+    Examples
+    --------
+    >>> literature_agent([{"smiles": "CCO"}], [{"smiles": "CC=O"}], [{"smiles": "O"}], {"temperature": "25 C"})  # doctest: +SKIP
+    (200, ...)
+    """
+    messages = build_literature_messages(
+        extract_smiles(reactants),
+        extract_smiles(product)[0],
+        extract_smiles(reagents),
+        conditions,
+    )
+
+    status, response_text = call_metadata_llm(messages, model, temperature)
+    if status != 200:
+        return status, ""
+
+    try:
+        return 200, parse_literature_reaction(response_text)
+    except Exception as exc:
+        logger.info("metadata.literature_parse_failed", error=str(exc))
+        return 404, ""
+
+
+def recommend_reaction_metadata(
+    reaction_smiles: str,
+    model: str = DEFAULT_METADATA_MODEL,
+    temperature: float = 0.0,
+    reagent_recommender: ReagentRecommender | None = None,
+    conditions_recommender: ConditionsRecommender | None = None,
+    literature_recommender: LiteratureRecommender | None = None,
+    cache: CacheManager | None = metadata_cache,
+) -> RecommendationStatusPayload:
+    """Recommend reagents, conditions, and literature for one reaction string.
+
+    Parameters
+    ----------
+    reaction_smiles : str
+        Reaction SMILES in ``reactants>agents>products`` or
+        ``reactants>>products`` form.
+    model : str, optional
+        LiteLLM model identifier used by the default recommenders.
+    temperature : float, optional
+        Sampling temperature.
+    reagent_recommender : callable, optional
+        Alternate reagent recommendation function. Intended for tests and
+        controlled integrations.
+    conditions_recommender : callable, optional
+        Alternate conditions recommendation function.
+    literature_recommender : callable, optional
+        Alternate literature recommendation function.
+    cache : CacheManager | None, optional
+        Public cache instance used for the complete recommendation. Pass
+        ``None`` to disable this top-level cache.
+
+    Returns
+    -------
+    RecommendationStatusPayload
+        ``(200, recommendation)`` on success. The recommendation contains the
+        parsed reaction participants plus ``"reagents"``, ``"conditions"``, and
+        ``"literature"``. Failure returns the failing status and a small error
+        payload identifying the stage.
+
+    Examples
+    --------
+    >>> status, result = recommend_reaction_metadata("CCO>>CC=O")  # doctest: +SKIP
+    >>> status  # doctest: +SKIP
+    200
+    """
+    active_cache = cache
+    use_cache = (
+        active_cache is not None
+        and reagent_recommender is None
+        and conditions_recommender is None
+        and literature_recommender is None
+    )
+    if use_cache:
+        assert active_cache is not None
+        cache_key = make_cache_key(
+            "recommend_reaction_metadata",
+            reaction_smiles,
+            model=model,
+            temperature=temperature,
+        )
+        miss = object()
+        cached = active_cache.get(cache_key, default=miss)
+        if cached is not miss:
+            return cast(RecommendationStatusPayload, cached)
+
+    try:
+        participants = parse_reaction_smiles(reaction_smiles)
+    except ValueError as exc:
+        return 400, {"stage": "parse", "error": str(exc)}
+
+    reagent_recommender = (
+        reagent_agent if reagent_recommender is None else reagent_recommender
+    )
+    conditions_recommender = (
+        conditions_agent if conditions_recommender is None else conditions_recommender
+    )
+    literature_recommender = (
+        literature_agent if literature_recommender is None else literature_recommender
+    )
+
+    reagent_status, reagents = reagent_recommender(
+        participants.reactants,
+        participants.product,
+        model,
+        temperature,
+    )
+    if reagent_status != 200:
+        return reagent_status, {
+            "stage": "reagents",
+            "error": "metadata recommendation failed",
+        }
+    if not isinstance(reagents, list):
+        return 404, {
+            "stage": "reagents",
+            "error": "metadata recommendation failed",
+        }
+
+    conditions_status, conditions = conditions_recommender(
+        participants.reactants,
+        participants.product,
+        reagents,
+        model,
+        temperature,
+    )
+    if conditions_status != 200:
+        return conditions_status, {
+            "stage": "conditions",
+            "error": "metadata recommendation failed",
+        }
+    if not valid_conditions_payload(conditions):
+        return 404, {
+            "stage": "conditions",
+            "error": "metadata recommendation failed",
+        }
+
+    literature_status, literature = literature_recommender(
+        participants.reactants,
+        participants.product,
+        reagents,
+        conditions,
+        model,
+        temperature,
+    )
+    if literature_status != 200:
+        return literature_status, {
+            "stage": "literature",
+            "error": "metadata recommendation failed",
+        }
+
+    recommendation: MetadataRecommendation = {
+        "reaction_smiles": reaction_smiles,
+        "reactants": participants.reactants,
+        "product": participants.product,
+        "reagents": reagents,
+        "conditions": conditions,
+        "literature": literature,
+    }
+    result: RecommendationStatusPayload = (200, recommendation)
+    if use_cache:
+        assert active_cache is not None
+        active_cache.set(cache_key, result, tag="metadata")
+    return result
