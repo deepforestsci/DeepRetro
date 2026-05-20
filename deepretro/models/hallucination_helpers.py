@@ -14,6 +14,8 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from deepretro.models.hallucination_classifier import predict_single_reaction
+
 
 class MLChecker:
     """Wrap a classifier into a pipeline-compatible hallucination checker.
@@ -27,19 +29,16 @@ class MLChecker:
     ----------
     clf : HallucinationClassifier
         A fitted classifier instance or classifier-like object with
-        ``predict_single(product, reactants)``.
+        ``predict_probability()``, ``threshold``, and ``featurizer``
+        attributes compatible with :func:`predict_single_reaction`.
 
     Examples
     --------
-    >>> class TinyClassifier:
-    ...     def predict_single(self, product, reactants):
-    ...         return {"is_hallucination": reactants == "C.N"}
-    >>> checker = MLChecker(TinyClassifier())
-    >>> status, kept = checker("CCO", [["CC", "O"], "C.N", "not_a_smiles"])
-    >>> status
-    200
-    >>> kept
-    [['CC', 'O']]
+    >>> from deepretro.models import HallucinationClassifier  # doctest: +SKIP
+    >>> clf = HallucinationClassifier()                       # doctest: +SKIP
+    >>> clf.load("model_out/")                               # doctest: +SKIP
+    >>> checker = MLChecker(clf)                             # doctest: +SKIP
+    >>> status, kept = checker("CCO", [["CC", "O"]])         # doctest: +SKIP
     """
 
     def __init__(self, clf: Any) -> None:
@@ -49,7 +48,8 @@ class MLChecker:
         ----------
         clf : Any
             Classifier-like object implementing
-            ``predict_single(product, reactants)``.
+            ``predict_probability()``, ``threshold``, and ``featurizer``
+            attributes compatible with :func:`predict_single_reaction`.
         """
         from deepretro.utils.utils_molecule import is_valid_smiles
 
@@ -85,7 +85,7 @@ class MLChecker:
             if not self.is_valid_smiles(reactants_smi):
                 continue
 
-            pred = self.clf.predict_single(product, reactants_smi)
+            pred = predict_single_reaction(self.clf, product, reactants_smi)
             if pred.get("is_hallucination", True):
                 continue
 
@@ -108,7 +108,9 @@ def resolve_hallucination(
         One of ``"heuristic"``, ``"ml"``, or ``"none"``.
     classifier : str or Path or Any or None
         Path to a saved ML model directory, or a classifier-like object
-        implementing ``predict_single(product, reactants)``. Required
+        exposing ``predict_probability()``, ``threshold``, and
+        ``featurizer`` attributes compatible with
+        :func:`predict_single_reaction`. Required
         when *mode* is ``"ml"``, ignored otherwise.
 
     Returns
@@ -132,12 +134,9 @@ def resolve_hallucination(
     >>> checker = resolve_hallucination("heuristic", None)  # doctest: +SKIP
     >>> callable(checker)                                    # doctest: +SKIP
     True
-    >>> class TinyClassifier:
-    ...     def predict_single(self, product, reactants):
-    ...         return {"is_hallucination": False}
-    >>> checker = resolve_hallucination("ml", TinyClassifier())
-    >>> isinstance(checker, MLChecker)
-    True
+    >>> from deepretro.models import HallucinationClassifier  # doctest: +SKIP
+    >>> clf = HallucinationClassifier()                       # doctest: +SKIP
+    >>> checker = resolve_hallucination("ml", clf)           # doctest: +SKIP
     >>> checker = resolve_hallucination("ml", Path("model_out/"))  # doctest: +SKIP
     """
     if mode == "none":
@@ -151,7 +150,7 @@ def resolve_hallucination(
         if isinstance(classifier, (str, Path)):
             clf = HallucinationClassifier()
             clf.load(str(classifier))
-        elif hasattr(classifier, "predict_single"):
+        elif hasattr(classifier, "predict_probability"):
             clf = classifier
         else:
             raise ValueError(

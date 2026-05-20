@@ -10,7 +10,10 @@ from deepchem.data import NumpyDataset
 from deepchem.models import GBDTModel
 from unittest.mock import patch
 
-from deepretro.models.hallucination_classifier import HallucinationClassifier
+from deepretro.models.hallucination_classifier import (
+    HallucinationClassifier,
+    predict_single_reaction,
+)
 
 PYRAZOLE_ADDUCT = "Cn1nccc1[C@]1(O)CCCC[C@H]1O"
 PYRAZOLE_BROMIDE_KETONE = "Cn1nccc1Br.O=C1CCCC[C@H]1O"
@@ -75,6 +78,7 @@ def test_load_missing_model_dir(tmp_path):
 
 
 def test_evaluate_keys_and_scores(trained_clf, toy_dataset):
+    """Evaluate returns the expected metrics and updates the threshold."""
     scores = trained_clf.evaluate(toy_dataset)
     assert set(scores.keys()) == {
         "roc_auc",
@@ -93,6 +97,7 @@ def test_evaluate_keys_and_scores(trained_clf, toy_dataset):
 
 
 def test_predict_probability_shape_and_range(trained_clf, toy_dataset):
+    """Probability prediction returns one label and score per sample."""
     labels, probabilities = trained_clf.predict_probability(toy_dataset)
     assert labels.shape == (len(toy_dataset),)
     assert probabilities.shape == (len(toy_dataset),)
@@ -100,6 +105,7 @@ def test_predict_probability_shape_and_range(trained_clf, toy_dataset):
 
 
 def test_predict_probability_override_uses_explicit_threshold():
+    """An explicit threshold overrides the classifier's stored threshold."""
     clf = HallucinationClassifier(n_estimators=5)
     dataset = NumpyDataset(X=np.zeros((2, 10)))
     with patch.object(
@@ -114,13 +120,15 @@ def test_predict_probability_override_uses_explicit_threshold():
 
 
 def test_predict_single_override_uses_explicit_threshold():
+    """Single-reaction prediction honors an explicit threshold override."""
     clf = HallucinationClassifier(n_estimators=5)
     original_threshold = clf.threshold
 
     with patch.object(
         clf, "predict_probability", return_value=(np.array([0]), np.array([0.6]))
     ):
-        result = clf.predict_single(
+        result = predict_single_reaction(
+            clf,
             PYRAZOLE_ADDUCT,
             PYRAZOLE_BROMIDE_KETONE,
             threshold=0.7,
@@ -132,7 +140,8 @@ def test_predict_single_override_uses_explicit_threshold():
 
 
 def test_predict_single_invalid_smiles(trained_clf):
-    result = trained_clf.predict_single(INVALID_SMILES, ETHANE_WATER)
+    """Invalid SMILES returns the documented error payload."""
+    result = predict_single_reaction(trained_clf, INVALID_SMILES, ETHANE_WATER)
     assert result["is_hallucination"] is None
     assert result["probability"] is None
     assert "error" in result
@@ -142,6 +151,7 @@ def test_predict_single_invalid_smiles(trained_clf):
 
 
 def test_save_load_roundtrip(trained_clf, toy_dataset, tmp_path):
+    """Saving and reloading preserves both threshold and probabilities."""
     trained_clf.evaluate(toy_dataset)
     _, probability_before = trained_clf.predict_probability(toy_dataset)
     saved_threshold = trained_clf.threshold
