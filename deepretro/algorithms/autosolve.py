@@ -178,7 +178,8 @@ class AutoSolver:
             logger.warning(f"Cycle detected: {molecule} (canonical: {canonical})")
             return unsolved_leaf(molecule), False
 
-        visited.add(canonical)
+        descendant_visited = set(visited)
+        descendant_visited.add(canonical)
 
         solved, az_results = run_az(smiles=molecule, az_model=self.az_model)
         if solved:
@@ -209,17 +210,21 @@ class AutoSolver:
             }],
         }
         children = result_dict['children'][0]['children']
+        all_solved = False
 
         for step in pathways:
             reactants = step if isinstance(step, list) else [step]
-            all_solved = True
+            candidate_children = []
+            candidate_solved = True
             for smi in reactants:
-                res, stat = self.recurse(smi, visited, depth + 1)
+                res, stat = self.recurse(smi, descendant_visited.copy(), depth + 1)
                 if stat:
-                    children.append(res)
+                    candidate_children.append(res)
                 else:
-                    all_solved = False
-            if all_solved:
+                    candidate_solved = False
+            if candidate_solved:
+                children.extend(candidate_children)
+                all_solved = True
                 break
 
         return result_dict, all_solved
