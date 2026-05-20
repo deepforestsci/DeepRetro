@@ -109,7 +109,11 @@ class ReactionMetricCalculator:
         try:
             return self._predict_reaction_type(mol1, mol2)
         except Exception as exc:
-            logger.error("Error in metric calculation", function="get_reaction_type", error=str(exc))
+            logger.error(
+                "Error in metric calculation",
+                function="get_reaction_type",
+                error=str(exc),
+            )
             return UNKNOWN_REACTION
 
     def scalability_index(self, mol1: str, mol2: str) -> int:
@@ -138,7 +142,11 @@ class ReactionMetricCalculator:
                 return 0
             return int(self.scalability_encoding[reaction_index])
         except Exception as exc:
-            logger.error("Error in metric calculation", function="calc_scalability_index", error=str(exc))
+            logger.error(
+                "Error in metric calculation",
+                function="calc_scalability_index",
+                error=str(exc),
+            )
             return 0
 
     def _predict_reaction_type(self, mol1: str, mol2: str) -> tuple[str, int]:

@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any, NoReturn, Optional
+
 import structlog.testing
 
 from deepretro.utils.parse_metrics import (
@@ -12,15 +15,6 @@ from deepretro.utils.parse_metrics import (
 from deepretro.utils.variables import ENCODING_SCALABILITY, REACTION_ENCODING_NAMES
 
 
-class DummyReactionClassifier:
-    """Minimal classifier stub returning one reaction encoding."""
-
-    def predict(self, fingerprints: list[list[int]]) -> list[int]:
-        """Return a single deterministic reaction encoding."""
-        assert fingerprints == [[1, 0, 1, 0]]
-        return [0]
-
-
 def test_reaction_metric_calculator_returns_na_without_model_path() -> None:
     """When model_path is empty, no classifier is loaded and scalability_index
     should return 0 for any molecule pair."""
@@ -29,14 +23,17 @@ def test_reaction_metric_calculator_returns_na_without_model_path() -> None:
     assert calculator.scalability_index("CC", "CCO") == 0
 
 
-def test_reaction_metric_calculator_predicts_reaction_type() -> None:
+def test_reaction_metric_calculator_predicts_reaction_type(
+    dummy_model_loader: Callable[[str], Any],
+    fingerprint_calculator: Callable[[str], list[int]],
+) -> None:
     """Happy path: with an injected model and fingerprint calculator, the
     calculator should load the classifier, concatenate fingerprints [1,0]+[1,0],
     and map the prediction index (0) to the corresponding reaction name."""
     calculator = ReactionMetricCalculator(
         model_path="model.joblib",
-        model_loader=lambda path: DummyReactionClassifier(),
-        fingerprint_calculator=lambda smiles: [1, 0],
+        model_loader=dummy_model_loader,
+        fingerprint_calculator=fingerprint_calculator,
     )
 
     reaction_name, reaction_index = calculator.reaction_type("CC", "CCO")
@@ -45,14 +42,17 @@ def test_reaction_metric_calculator_predicts_reaction_type() -> None:
     assert reaction_index == 0
 
 
-def test_reaction_type_returns_unknown_when_fingerprint_is_none() -> None:
+def test_reaction_type_returns_unknown_when_fingerprint_is_none(
+    dummy_model_loader: Callable[[str], Any],
+    missing_fingerprint_calculator: Callable[[str], Optional[list[int]]],
+) -> None:
     """When the fingerprint calculator returns None (e.g. invalid SMILES or
     RDKit failure), reaction_type should gracefully return UNKNOWN_REACTION
     instead of crashing."""
     calculator = ReactionMetricCalculator(
         model_path="model.joblib",
-        model_loader=lambda path: DummyReactionClassifier(),
-        fingerprint_calculator=lambda smiles: None,
+        model_loader=dummy_model_loader,
+        fingerprint_calculator=missing_fingerprint_calculator,
     )
 
     name, index = calculator.reaction_type("CC", "CCO")
@@ -61,18 +61,18 @@ def test_reaction_type_returns_unknown_when_fingerprint_is_none() -> None:
     assert index == -1
 
 
-def test_reaction_type_handles_missing_model_file() -> None:
+def test_reaction_type_handles_missing_model_file(
+    missing_model_loader: Callable[[str], NoReturn],
+    fingerprint_calculator: Callable[[str], list[int]],
+) -> None:
     """When the model loader raises FileNotFoundError (model file missing
     from disk), reaction_type should catch it and return UNKNOWN_REACTION
     so that route parsing can continue without a classifier."""
 
-    def failing_loader(path: str):
-        raise FileNotFoundError
-
     calculator = ReactionMetricCalculator(
         model_path="model.joblib",
-        model_loader=failing_loader,
-        fingerprint_calculator=lambda smiles: [1, 0],
+        model_loader=missing_model_loader,
+        fingerprint_calculator=fingerprint_calculator,
     )
 
     name, index = calculator.reaction_type("CC", "CCO")
@@ -81,19 +81,17 @@ def test_reaction_type_handles_missing_model_file() -> None:
     assert index == -1
 
 
-def test_scalability_index_returns_zero_when_reaction_unknown() -> None:
+def test_scalability_index_returns_zero_when_reaction_unknown(
+    unknown_model_loader: Callable[[str], Any],
+    fingerprint_calculator: Callable[[str], list[int]],
+) -> None:
     """When the classifier returns an index (999) that doesn't map to a known
     reaction encoding, scalability_index should return 0 rather than
     raising a KeyError."""
-
-    class BadClassifier:
-        def predict(self, x):
-            return [999]
-
     calculator = ReactionMetricCalculator(
         model_path="model.joblib",
-        model_loader=lambda path: BadClassifier(),
-        fingerprint_calculator=lambda smiles: [1, 0],
+        model_loader=unknown_model_loader,
+        fingerprint_calculator=fingerprint_calculator,
     )
 
     result = calculator.scalability_index("CC", "CCO")
@@ -101,19 +99,17 @@ def test_scalability_index_returns_zero_when_reaction_unknown() -> None:
     assert result == 0
 
 
-def test_scalability_index_returns_score_for_valid_prediction() -> None:
+def test_scalability_index_returns_score_for_valid_prediction(
+    dummy_model_loader: Callable[[str], Any],
+    fingerprint_calculator: Callable[[str], list[int]],
+) -> None:
     """Happy path: when the classifier predicts index 0, scalability_index
     should look up and return the corresponding score from ENCODING_SCALABILITY,
     verifying the full prediction-to-score pipeline."""
-
-    class PredictZero:
-        def predict(self, x):
-            return [0]
-
     calculator = ReactionMetricCalculator(
         model_path="model.joblib",
-        model_loader=lambda path: PredictZero(),
-        fingerprint_calculator=lambda smiles: [1, 0],
+        model_loader=dummy_model_loader,
+        fingerprint_calculator=fingerprint_calculator,
     )
 
     result = calculator.scalability_index("CC", "CCO")
@@ -121,18 +117,18 @@ def test_scalability_index_returns_score_for_valid_prediction() -> None:
     assert result == ENCODING_SCALABILITY[0]
 
 
-def test_reaction_type_logs_error_on_file_not_found() -> None:
+def test_reaction_type_logs_error_on_file_not_found(
+    missing_model_loader_with_message: Callable[[str], NoReturn],
+    fingerprint_calculator: Callable[[str], list[int]],
+) -> None:
     """FileNotFoundError should be logged via structlog before returning
     UNKNOWN_REACTION. Verifies the fix for silently swallowed errors that
     made missing model files hard to debug."""
 
-    def failing_loader(path: str):
-        raise FileNotFoundError("model.joblib not found")
-
     calculator = ReactionMetricCalculator(
         model_path="model.joblib",
-        model_loader=failing_loader,
-        fingerprint_calculator=lambda smiles: [1, 0],
+        model_loader=missing_model_loader_with_message,
+        fingerprint_calculator=fingerprint_calculator,
     )
 
     with structlog.testing.capture_logs() as captured:

@@ -17,7 +17,6 @@ def _default_basic_molecules() -> Collection[str]:
     return BASIC_MOLECULES
 
 
-
 class RetrosynthesisRouteParser:
     """
     Convert recursive retrosynthesis route trees into viewer-ready dictionaries.
@@ -265,7 +264,9 @@ class RetrosynthesisRouteParser:
         parent_step[molecule_type].append(self._molecule_entry(smiles, metadata_key))
         if not is_reagent:
             parent_step["reactionmetrics"][0]["scalabilityindex"] = (
-                self.scalability_calculator(smiles, parent_step["products"][0]["smiles"])
+                self.scalability_calculator(
+                    smiles, parent_step["products"][0]["smiles"]
+                )
             )
 
     def _molecule_entry(self, smiles: str, metadata_key: str) -> dict[str, Any]:
@@ -304,7 +305,7 @@ def parse_step(
     """
     Parse a retrosynthesis route tree into dependencies and steps.
     This compatibility wrapper delegates to ``RetrosynthesisRouteParser``.
-    
+
     Parameters
     ----------
     data : Mapping[str, Any]
@@ -324,7 +325,7 @@ def parse_step(
     -------
     dict[str, Any]
         Dictionary with ``dependencies`` and ``steps`` keys.
-        
+
     Examples
     --------
     >>> result = parse_step({
