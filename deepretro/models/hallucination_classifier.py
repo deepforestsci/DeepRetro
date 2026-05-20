@@ -310,20 +310,6 @@ class HallucinationClassifier(GBDTModel):
         resolved_threshold = resolve_prediction_threshold(threshold, self.threshold)
         return (probabilities >= resolved_threshold).astype(int), probabilities
 
-    def predict_single(
-        self,
-        product_smiles: str,
-        reactants_smiles: str,
-        threshold: float | None = None,
-    ) -> dict[str, Any]:
-        """Thin wrapper around :func:`predict_single_reaction`."""
-        return predict_single_reaction(
-            self,
-            product_smiles,
-            reactants_smiles,
-            threshold=threshold,
-        )
-
     # Persistence
 
     def save(self, save_dir: str) -> None:
