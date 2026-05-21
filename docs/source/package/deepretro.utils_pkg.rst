@@ -3,10 +3,11 @@ deepretro.utils
 
 Utility layer for domain features and template-based retrosynthesis integration.
 
-This module group supports three major workflows:
+This module group supports four major workflows:
 
 - Feature engineering utilities for ML-ready reaction-step vectors.
 - AiZynthFinder orchestration helpers for template route generation.
+- Route tree parsing for viewer-ready step and dependency dictionaries.
 - Molecule utilities for SMILES validation, substructure matching, and pathway filtering (``deepretro.utils.utils_molecule``).
 
 Utility Overview
@@ -26,6 +27,10 @@ Utility Overview
      - Shortcut heuristic for trivial molecules to bypass heavy search.
    * - ``CacheManager`` / ``make_cache_key``
      - Explicit in-memory cache primitives for expensive library operations.
+   * - ``RetrosynthesisRouteParser``
+     - Convert recursive retrosynthesis route trees into viewer-ready steps and dependencies.
+   * - ``ReactionMetricCalculator``
+     - Reaction-type and scalability metrics for parsed route steps.
    * - ``call_LLM`` / ``llm_pipeline``
      - LiteLLM-backed retrosynthesis calls, response parsing, and pathway filtering.
 
@@ -66,6 +71,8 @@ Submodules
 
    deepretro.utils.az
    deepretro.utils.metrics
+   deepretro.utils.parse
+   deepretro.utils.parse_metrics
    deepretro.utils.cache
    deepretro.utils.llm
    deepretro.utils.utils_molecule
