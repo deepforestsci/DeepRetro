@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -12,30 +12,25 @@ from deepchem.data import NumpyDataset
 from deepretro.models.hallucination_helpers import MLChecker, resolve_hallucination
 
 
-class StubFeaturizer:
-    """Minimal featurizer that returns a fixed numeric feature array."""
-
-    def featurize(self, reactions: list[tuple[str, str]]) -> np.ndarray:
-        return np.zeros((len(reactions), 1))
-
-
-class StubClassifier:
-    """Classifier stub with a configurable hallucination probability."""
+class FixedProbabilityClassifier:
+    """Deterministic classifier double for hallucination helper tests."""
 
     def __init__(self, probability: float) -> None:
         self.threshold = 0.5
-        self.featurizer = StubFeaturizer()
-        self._probability = probability
+        self.probability = probability
+        self.featurizer = SimpleNamespace(
+            featurize=lambda reactions: np.zeros((len(reactions), 1))
+        )
 
     def predict_probability(
         self,
-        dataset: Any,
+        dataset: object,
         threshold: float | None = None,
     ) -> tuple[np.ndarray, np.ndarray]:
         del threshold
         del dataset
-        label = int(self._probability >= self.threshold)
-        return np.array([label]), np.array([self._probability])
+        label = int(self.probability >= self.threshold)
+        return np.array([label]), np.array([self.probability])
 
 
 def test_resolve_hallucination_none_returns_none() -> None:
@@ -45,7 +40,7 @@ def test_resolve_hallucination_none_returns_none() -> None:
 
 def test_resolve_hallucination_ml_wraps_classifier_instance() -> None:
     """ML mode should wrap classifier-like instances in MLChecker."""
-    checker = resolve_hallucination("ml", StubClassifier(0.1))
+    checker = resolve_hallucination("ml", FixedProbabilityClassifier(0.1))
     assert isinstance(checker, MLChecker)
 
 
@@ -69,7 +64,7 @@ def test_resolve_hallucination_ml_rejects_invalid_classifier() -> None:
 
 def test_mlchecker_keeps_valid_list_pathways() -> None:
     """MLChecker should keep valid list-based pathways with low-risk scores."""
-    checker = MLChecker(StubClassifier(0.1))
+    checker = MLChecker(FixedProbabilityClassifier(0.1))
 
     status, kept = checker("CCO", [["CC", "O"], ["C", "N"]])
 
@@ -79,7 +74,7 @@ def test_mlchecker_keeps_valid_list_pathways() -> None:
 
 def test_mlchecker_normalizes_valid_string_pathways() -> None:
     """MLChecker should normalize string pathways to one-item pathway lists."""
-    checker = MLChecker(StubClassifier(0.1))
+    checker = MLChecker(FixedProbabilityClassifier(0.1))
 
     status, kept = checker("CCO", ["CC.O"])
 
@@ -89,7 +84,7 @@ def test_mlchecker_normalizes_valid_string_pathways() -> None:
 
 def test_mlchecker_skips_invalid_smiles_and_keeps_remaining_valid_pathways() -> None:
     """MLChecker should skip invalid pathways without failing valid ones."""
-    checker = MLChecker(StubClassifier(0.1))
+    checker = MLChecker(FixedProbabilityClassifier(0.1))
 
     status, kept = checker("CCO", ["not_a_smiles", ["CC", "O"]])
 
@@ -99,7 +94,7 @@ def test_mlchecker_skips_invalid_smiles_and_keeps_remaining_valid_pathways() -> 
 
 def test_mlchecker_returns_400_when_all_pathways_are_predicted_hallucinations() -> None:
     """MLChecker should request retry when all pathways are classified as bad."""
-    checker = MLChecker(StubClassifier(0.9))
+    checker = MLChecker(FixedProbabilityClassifier(0.9))
 
     status, kept = checker("CCO", [["CC", "O"], ["CC", "N"]])
 
@@ -109,7 +104,7 @@ def test_mlchecker_returns_400_when_all_pathways_are_predicted_hallucinations() 
 
 def test_mlchecker_returns_400_when_all_pathways_are_invalid() -> None:
     """MLChecker should request retry when every candidate pathway is invalid."""
-    checker = MLChecker(StubClassifier(0.1))
+    checker = MLChecker(FixedProbabilityClassifier(0.1))
 
     status, kept = checker("CCO", ["not_a_smiles", "still_bad"])
 
@@ -117,11 +112,12 @@ def test_mlchecker_returns_400_when_all_pathways_are_invalid() -> None:
     assert kept == []
 
 
-def test_classifier_stubs_match_predict_probability_contract() -> None:
-    """Classifier stubs should match the expected tuple return contract."""
+def test_inline_classifier_matches_predict_probability_contract() -> None:
+    """The inline classifier should match the expected tuple return contract."""
     dataset = NumpyDataset(X=np.zeros((1, 1)))
+    classifier = FixedProbabilityClassifier(0.1)
 
-    labels, probabilities = StubClassifier(0.1).predict_probability(dataset)
+    labels, probabilities = classifier.predict_probability(dataset)
 
     assert labels.shape == (1,)
     assert probabilities.shape == (1,)
