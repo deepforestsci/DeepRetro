@@ -61,7 +61,24 @@ jobs:
             pip install -e "deepretro/[dev]"
           fi
 
+      - name: Cache AiZynthFinder models
+        if: matrix.python-version == '3.11'
+        uses: actions/cache@v4
+        with:
+          path: .az_models_cache
+          key: az-models-v1
+
+      - name: Download AiZynthFinder models
+        if: matrix.python-version == '3.11'
+        run: |
+          if [ ! -f .az_models_cache/config.yml ]; then
+            mkdir -p .az_models_cache
+            python -m aizynthfinder.tools.download_public_data .az_models_cache
+          fi
+
       - name: Run tests
+        env:
+          AZ_TEST_MODELS_DIR: ${{ matrix.python-version == '3.11' && '.az_models_cache' || '' }}
         run: |
           if [ "${{ matrix.python-version }}" = "3.11" ]; then
             pytest deepretro/tests/ -v

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 import subprocess
 import sys
 from collections.abc import Callable
@@ -25,7 +26,9 @@ AZ_MODULE_NAME = "_deepretro_utils_az_under_test"
 
 
 def _download_aizynth_models(models_dir: Path) -> None:
-    """Download AiZynthFinder public models to the given directory."""
+    """Download AiZynthFinder public models to *models_dir* (skips if config.yml exists)."""
+    if (models_dir / "config.yml").exists():
+        return
     models_dir.mkdir(parents=True, exist_ok=True)
     result = subprocess.run(
         [
@@ -46,8 +49,16 @@ def _download_aizynth_models(models_dir: Path) -> None:
 
 @pytest.fixture(scope="session")
 def az_models_dir(tmp_path_factory):
-    """Session-scoped fixture: download AiZynthFinder models to a temp directory."""
-    models_dir = tmp_path_factory.mktemp("aizynth_models")
+    """Session-scoped fixture providing a directory with AiZynthFinder models.
+
+    Honours ``AZ_TEST_MODELS_DIR`` so CI can point to a cached directory
+    and skip the download entirely.
+    """
+    env_dir = os.environ.get("AZ_TEST_MODELS_DIR")
+    if env_dir:
+        models_dir = Path(env_dir)
+    else:
+        models_dir = tmp_path_factory.mktemp("aizynth_models")
     _download_aizynth_models(models_dir)
     return models_dir
 
