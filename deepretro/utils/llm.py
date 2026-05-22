@@ -67,6 +67,7 @@ def obtain_prompt(
 
     Examples
     --------
+    >>> from deepretro.utils.llm import obtain_prompt
     >>> _, _, max_tokens = obtain_prompt("openai/gpt-4o-mini")
     >>> max_tokens
     16384
