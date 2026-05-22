@@ -2,13 +2,80 @@
 
 from __future__ import annotations
 
+import importlib.util
+import subprocess
+import sys
 from collections.abc import Callable
+from pathlib import Path
 from typing import NoReturn, Optional
 
 import pytest
 
 from deepretro.utils.parse import RetrosynthesisRouteParser
 from deepretro.utils.utils_molecule import calc_chemical_formula, calc_mol_wt
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+AZ_MODULE_PATH = PROJECT_ROOT / "deepretro" / "utils" / "az.py"
+AZ_MODULE_NAME = "_deepretro_utils_az_under_test"
+
+
+# ---------------------------------------------------------------------------
+# AiZynthFinder fixtures
+# ---------------------------------------------------------------------------
+
+
+def _download_aizynth_models(models_dir: Path) -> None:
+    """Download AiZynthFinder public models to the given directory."""
+    models_dir.mkdir(parents=True, exist_ok=True)
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "aizynthfinder.tools.download_public_data",
+            str(models_dir),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=300,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"Failed to download AiZynthFinder models: {result.stderr or result.stdout}"
+        )
+
+
+@pytest.fixture(scope="session")
+def az_models_dir(tmp_path_factory):
+    """Session-scoped fixture: download AiZynthFinder models to a temp directory."""
+    models_dir = tmp_path_factory.mktemp("aizynth_models")
+    _download_aizynth_models(models_dir)
+    return models_dir
+
+
+@pytest.fixture
+def az_module():
+    """Load the az module from source."""
+    sys.modules.pop(AZ_MODULE_NAME, None)
+    spec = importlib.util.spec_from_file_location(AZ_MODULE_NAME, AZ_MODULE_PATH)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[AZ_MODULE_NAME] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.fixture
+def az_module_with_models(az_module, az_models_dir):
+    """Az module with paths configured to use downloaded models."""
+    config_path = az_models_dir / "config.yml"
+    az_module.AZ_MODEL_CONFIG_PATH = str(config_path)
+    az_module.AZ_MODELS_PATH = str(az_models_dir)
+    return az_module
+
+
+# ---------------------------------------------------------------------------
+# Reaction classifier / parse fixtures
+# ---------------------------------------------------------------------------
 
 
 class DummyReactionClassifier:

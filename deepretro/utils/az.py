@@ -8,7 +8,6 @@ Caching is opt-in through an explicit ``CacheManager`` argument.
 
 from __future__ import annotations
 
-import importlib
 import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Sequence, cast
@@ -22,6 +21,11 @@ from deepretro.utils.variables import BASIC_MOLECULES
 
 if TYPE_CHECKING:
     from PIL.Image import Image
+
+try:
+    from aizynthfinder.aizynthfinder import AiZynthFinder
+except ImportError:
+    AiZynthFinder = None  # type: ignore[assignment, misc]
 
 logger = structlog.get_logger()
 
@@ -44,16 +48,40 @@ def _basic_molecule_route(smiles: str) -> list[Dict[str, Any]]:
     ]
 
 
-def _get_aizynthfinder_cls():
-    """Return the AiZynthFinder class or raise a helpful optional-dependency error."""
+def _resolve_config(az_model: str | None = None) -> str:
+    """Resolve AiZynthFinder config path, falling back to ``AZ_MODEL_CONFIG_PATH``."""
+    if az_model is not None:
+        config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
+        try:
+            with open(config_path, "r") as _:
+                return config_path
+        except FileNotFoundError:
+            logger.warning("AZ config not found, trying fallback", path=config_path)
+
     try:
-        module = importlib.import_module("aizynthfinder.aizynthfinder")
-    except ImportError as exc:
+        with open(AZ_MODEL_CONFIG_PATH, "r") as _:
+            return AZ_MODEL_CONFIG_PATH
+    except FileNotFoundError:
+        raise FileNotFoundError(
+            f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}"
+        )
+
+
+def _run_finder(config_filename: str, smiles: str) -> Any:
+    """Set up and run AiZynthFinder, returning the finder instance."""
+    if AiZynthFinder is None:
         raise ImportError(
             "AiZynthFinder support requires optional dependencies. "
             "Install the package with `deepretro[az]`."
-        ) from exc
-    return module.AiZynthFinder
+        )
+    finder = AiZynthFinder(configfile=config_filename)
+    finder.stock.select("zinc")
+    finder.expansion_policy.select("uspto")
+    finder.filter_policy.select("uspto")
+    finder.target_smiles = smiles
+    finder.tree_search()
+    finder.build_routes()
+    return finder
 
 
 def run_az(
@@ -104,27 +132,8 @@ def run_az(
             cache.set(cache_key, result, tag=smiles)
         return result
 
-    try:
-        config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
-        with open(config_path, "r") as _:
-            config_filename = config_path
-    except FileNotFoundError:
-        logger.warning("AZ config not found, trying fallback", path=config_path)
-        try:
-            with open(AZ_MODEL_CONFIG_PATH, "r") as _:
-                config_filename = AZ_MODEL_CONFIG_PATH
-        except FileNotFoundError:
-            raise FileNotFoundError(
-                f"AZ_MODEL_CONFIG_PATH not found at {AZ_MODEL_CONFIG_PATH}"
-            )
-    ai_zynth_finder_cls = _get_aizynthfinder_cls()
-    finder = ai_zynth_finder_cls(configfile=config_filename)
-    finder.stock.select("zinc")
-    finder.expansion_policy.select("uspto")
-    finder.filter_policy.select("uspto")
-    finder.target_smiles = smiles
-    finder.tree_search()
-    finder.build_routes()
+    config_filename = _resolve_config(az_model)
+    finder = _run_finder(config_filename, smiles)
     stats = finder.extract_statistics()
     status = bool(stats["is_solved"])
     result_dict = finder.routes.dict_with_extra(
@@ -184,14 +193,8 @@ def run_az_with_img(
             cache.set(cache_key, result, tag=smiles)
         return result
 
-    ai_zynth_finder_cls = _get_aizynthfinder_cls()
-    finder = ai_zynth_finder_cls(configfile=AZ_MODEL_CONFIG_PATH)
-    finder.stock.select("zinc")
-    finder.expansion_policy.select("uspto")
-    finder.filter_policy.select("uspto")
-    finder.target_smiles = smiles
-    finder.tree_search()
-    finder.build_routes()
+    config_filename = _resolve_config()
+    finder = _run_finder(config_filename, smiles)
     stats: dict[str, Any] = finder.extract_statistics()
     status = bool(stats["is_solved"])
     result_dict: Sequence[dict[str, Any]] = finder.routes.dict_with_extra(
