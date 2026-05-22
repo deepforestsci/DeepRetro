@@ -67,8 +67,35 @@ def _resolve_config(az_model: str | None = None) -> str:
         )
 
 
-def _run_finder(config_filename: str, smiles: str) -> Any:
-    """Set up and run AiZynthFinder, returning the finder instance."""
+def _run_az_core(
+    smiles: str, az_model: str | None = None
+) -> tuple[bool, Sequence[Dict[str, Any]], Any]:
+    """Shared retrosynthesis logic used by both public entry points.
+
+    Private because callers should use ``run_az`` or ``run_az_with_img``
+    which add caching and shape the return tuple for their respective
+    use-cases.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES string of the target molecule.
+    az_model : str | None, optional
+        Model variant for config resolution. ``None`` uses the global
+        fallback ``AZ_MODEL_CONFIG_PATH``.
+
+    Returns
+    -------
+    tuple[bool, Sequence[Dict[str, Any]], Any]
+        ``(status, result_dict, finder)`` where *finder* is the
+        ``AiZynthFinder`` instance (``None`` when the molecule was
+        short-circuited as a basic/feedstock molecule).
+    """
+    if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
+        return True, _basic_molecule_route(smiles), None
+
+    config_filename = _resolve_config(az_model)
+
     if AiZynthFinder is None:
         raise ImportError(
             "AiZynthFinder support requires optional dependencies. "
@@ -81,7 +108,12 @@ def _run_finder(config_filename: str, smiles: str) -> Any:
     finder.target_smiles = smiles
     finder.tree_search()
     finder.build_routes()
-    return finder
+    stats = finder.extract_statistics()
+    status = bool(stats["is_solved"])
+    result_dict = finder.routes.dict_with_extra(
+        include_metadata=True, include_scores=True
+    )
+    return status, result_dict, finder
 
 
 def run_az(
@@ -126,19 +158,7 @@ def run_az(
         if cached_result is not cache_miss:
             return cast(tuple[bool, Sequence[Dict[str, Any]]], cached_result)
 
-    if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
-        result = (True, _basic_molecule_route(smiles))
-        if cache is not None:
-            cache.set(cache_key, result, tag=smiles)
-        return result
-
-    config_filename = _resolve_config(az_model)
-    finder = _run_finder(config_filename, smiles)
-    stats = finder.extract_statistics()
-    status = bool(stats["is_solved"])
-    result_dict = finder.routes.dict_with_extra(
-        include_metadata=True, include_scores=True
-    )
+    status, result_dict, _ = _run_az_core(smiles, az_model)
     result = (status, result_dict)
     if cache is not None:
         cache.set(cache_key, result, tag=smiles)
@@ -149,7 +169,7 @@ def run_az_with_img(
     smiles: str,
     cache: CacheManager | None = None,
 ) -> tuple[bool, Sequence[Dict[str, Any]], Sequence[Image | None] | None]:
-    """Run the retrosynthesis using AiZynthFinder.
+    """Run the retrosynthesis using AiZynthFinder, including route images.
 
     Example
     -------
@@ -187,20 +207,8 @@ def run_az_with_img(
                 cached_result,
             )
 
-    if smiles in BASIC_MOLECULES or is_basic_molecule(smiles):
-        result = (True, _basic_molecule_route(smiles), None)
-        if cache is not None:
-            cache.set(cache_key, result, tag=smiles)
-        return result
-
-    config_filename = _resolve_config()
-    finder = _run_finder(config_filename, smiles)
-    stats: dict[str, Any] = finder.extract_statistics()
-    status = bool(stats["is_solved"])
-    result_dict: Sequence[dict[str, Any]] = finder.routes.dict_with_extra(
-        include_metadata=True, include_scores=True
-    )
-    images: Sequence[Image | None] = finder.routes.images
+    status, result_dict, finder = _run_az_core(smiles)
+    images = finder.routes.images if finder is not None else None
     result = (status, result_dict, images)
     if cache is not None:
         cache.set(cache_key, result, tag=smiles)

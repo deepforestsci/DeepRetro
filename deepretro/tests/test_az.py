@@ -40,6 +40,52 @@ def test_is_basic_molecule_chemical_thresholds(az_module, smiles, expected):
     assert az_module.is_basic_molecule(smiles) is expected
 
 
+# ---------------------------------------------------------------------------
+# _run_az_core tests
+# ---------------------------------------------------------------------------
+
+
+def test_run_az_core_short_circuits_basic_molecule(az_module):
+    """_run_az_core returns (True, route, None) for basic molecules."""
+    status, routes, finder = az_module._run_az_core("CCO")
+    assert status is True
+    assert routes == _BASIC_ROUTE
+    assert finder is None
+
+
+def test_run_az_core_short_circuits_with_az_model(az_module):
+    """az_model param is irrelevant for basic molecules."""
+    status, routes, finder = az_module._run_az_core("CCO", az_model="USPTO")
+    assert status is True
+    assert routes == _BASIC_ROUTE
+    assert finder is None
+
+
+def test_run_az_core_raises_file_not_found_before_import_error(
+    tmp_path, monkeypatch, az_module
+):
+    """Config resolution should fail before the AiZynthFinder import check."""
+    missing_models_root = tmp_path / "models"
+    missing_fallback = tmp_path / "missing.yml"
+    monkeypatch.setattr(az_module, "AZ_MODELS_PATH", str(missing_models_root))
+    monkeypatch.setattr(az_module, "AZ_MODEL_CONFIG_PATH", str(missing_fallback))
+    monkeypatch.setattr(az_module, "BASIC_MOLECULES", [])
+
+    with pytest.raises(FileNotFoundError, match=re.escape(str(missing_fallback))):
+        az_module._run_az_core("CCCCC", az_model="MISSING_MODEL")
+
+
+@pytest.mark.slow
+def test_run_az_core_returns_finder_for_real_molecule(az_module_with_models):
+    """_run_az_core returns a non-None finder for a real molecule."""
+    status, routes, finder = az_module_with_models._run_az_core(
+        "C1CCCCC1", az_model="USPTO"
+    )
+    assert isinstance(status, bool)
+    assert isinstance(routes, list)
+    assert finder is not None
+
+
 @pytest.mark.slow
 def test_run_az_returns_valid_result(az_module_with_models):
     """Test run_az with real AiZynthFinder returns (bool, list) with valid structure."""
