@@ -79,7 +79,7 @@ def test_run_az_core_raises_file_not_found_before_import_error(
 def test_run_az_core_returns_finder_for_real_molecule(az_module_with_models):
     """_run_az_core returns a non-None finder for a real molecule."""
     status, routes, finder = az_module_with_models._run_az_core(
-        "C1CCCCC1", az_model="USPTO"
+        "CC(=O)Oc1ccccc1C(=O)O", az_model="USPTO"
     )
     assert isinstance(status, bool)
     assert isinstance(routes, list)
