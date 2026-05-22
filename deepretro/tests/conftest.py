@@ -36,7 +36,7 @@ def _download_aizynth_models(models_dir: Path) -> None:
         ],
         capture_output=True,
         text=True,
-        timeout=300,
+        timeout=600,
     )
     if result.returncode != 0:
         raise RuntimeError(
