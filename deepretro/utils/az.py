@@ -6,16 +6,28 @@ Requires ``AZ_MODEL_CONFIG_PATH`` or ``AZ_MODELS_PATH`` environment variables.
 """
 
 import os
-from aizynthfinder.aizynthfinder import AiZynthFinder
+from pathlib import Path
 from typing import Any, Dict, Sequence
-from src.variables import BASIC_MOLECULES
-from src.cache import cache_results
-import rootutils
+
+from dotenv import load_dotenv
+from PIL.Image import Image
 from rdkit import Chem
 from rdkit.Chem import rdqueries
-from PIL.Image import Image
 
-root_dir = rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+from deepretro.utils.variables import BASIC_MOLECULES
+
+load_dotenv()
+
+
+def _find_project_root(start: Path, marker: str = ".project-root") -> Path:
+    """Walk up from *start* until a directory containing *marker* is found."""
+    for directory in [start.resolve(), *start.resolve().parents]:
+        if (directory / marker).exists():
+            return directory
+    return Path.cwd()
+
+
+root_dir = _find_project_root(Path(__file__))
 
 ENABLE_LOGGING = (
     False if os.getenv("ENABLE_LOGGING", "true").lower() == "false" else True
@@ -46,7 +58,6 @@ def _log(message: str, logger=None):
         print(message)
 
 
-@cache_results
 def run_az(
     smiles: str, az_model: str = "USPTO"
 ) -> tuple[bool, Sequence[Dict[str, Any]]]:
@@ -96,6 +107,8 @@ def run_az(
                 "in_stock": True,
             }
         ]
+    from aizynthfinder.aizynthfinder import AiZynthFinder
+
     finder = AiZynthFinder(configfile=config_filename)
     finder.stock.select("zinc")
     finder.expansion_policy.select("uspto")
@@ -111,7 +124,6 @@ def run_az(
     return status, result_dict
 
 
-@cache_results
 def run_az_with_img(
     smiles: str,
 ) -> tuple[bool, Sequence[Dict[str, Any]], Sequence[Image | None] | None]:
@@ -150,6 +162,8 @@ def run_az_with_img(
             ],
             None,
         )
+    from aizynthfinder.aizynthfinder import AiZynthFinder
+
     finder = AiZynthFinder(configfile=AZ_MODEL_CONFIG_PATH)
     finder.stock.select("zinc")
     finder.expansion_policy.select("uspto")
