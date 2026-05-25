@@ -180,6 +180,7 @@ autodoc_mock_imports = [
     'structlog',
     'tensorflow',
     'torch',
+    'xgboost',
 ]
 
 # Todo settings

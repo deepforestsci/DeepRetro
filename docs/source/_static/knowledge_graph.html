@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>DeepRetro Knowledge Graph</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --panel: #ffffff;
+      --line: #d5dde8;
+      --text: #102033;
+      --muted: #58677a;
+      --runtime: #1f6fb2;
+      --package: #1d8f6a;
+      --frontend: #9b4d1b;
+      --config: #7c3aed;
+      --cross: #c2410c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #f9fbfd 0%, #eef3f8 100%);
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(280px, 1fr);
+      gap: 16px;
+      padding: 16px;
+      height: 100vh;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(16, 32, 51, 0.08);
+      overflow: hidden;
+    }
+    .graph-header, .panel-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%);
+    }
+    .graph-header h1, .panel-header h2 {
+      margin: 0 0 6px 0;
+      font-size: 18px;
+    }
+    .graph-header p, .panel-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .legend span::before {
+      content: "";
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-right: 6px;
+      border-radius: 50%;
+      vertical-align: middle;
+    }
+    .runtime::before { background: var(--runtime); }
+    .package::before { background: var(--package); }
+    .frontend::before { background: var(--frontend); }
+    .config::before { background: var(--config); }
+    .cross::before { background: var(--cross); }
+    #graph {
+      width: 100%;
+      height: calc(100% - 98px);
+      min-height: 720px;
+      display: block;
+      background:
+        radial-gradient(circle at top left, rgba(31, 111, 178, 0.05), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(29, 143, 106, 0.05), transparent 35%),
+        #fbfcfe;
+    }
+    .panel-body {
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      margin: 16px 0 6px 0;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    ul {
+      margin: 6px 0 0 18px;
+      padding: 0;
+    }
+    li { margin: 4px 0; }
+    code {
+      background: #f2f5f8;
+      border-radius: 6px;
+      padding: 1px 5px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+    }
+    .hint {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f5f8fc;
+      border: 1px solid #dbe3ee;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .cluster-label {
+      font-size: 16px;
+      font-weight: 700;
+      fill: #607086;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="card">
+      <div class="graph-header">
+        <h1>DeepRetro repository graph</h1>
+        <p>Click a node to see the dependencies, related context, and editing warnings for that part of the repo.</p>
+        <div class="legend">
+          <span class="runtime">Runtime</span>
+          <span class="package">Package</span>
+          <span class="frontend">Frontend</span>
+          <span class="config">Config</span>
+          <span class="cross">Legacy cross-boundary edge</span>
+        </div>
+      </div>
+      <svg id="graph" viewBox="0 0 980 760" aria-label="DeepRetro knowledge graph"></svg>
+    </div>
+    <div class="card">
+      <div class="panel-header">
+        <h2 id="detail-title">Select a node</h2>
+        <p id="detail-subtitle">The panel shows what this file owns, what to read first, and where its edges go.</p>
+      </div>
+      <div class="panel-body" id="detail-body"></div>
+    </div>
+  </div>
+  <script>
+    const nodes = [
+      { id: "viewer-index", label: "viewer/index.html", group: "frontend", x: 80, y: 130, owns: "Main browser UI: model picker, API calls, rerun actions, pathway rendering.", readFirst: ["viewer/config.js", "src/api.py", "config/advanced_settings.json"], watchFor: "Payload or model-key drift breaks the primary user path." },
+      { id: "viewer-config", label: "viewer/config.js", group: "frontend", x: 80, y: 280, owns: "Frontend endpoint map and default request settings.", readFirst: ["src/api.py", "config/advanced_settings.json"], watchFor: "This must stay aligned with backend endpoint names and allowed model types." },
+      { id: "cfg-advanced", label: "config/advanced_settings.json", group: "config", x: 360, y: 70, owns: "Runtime model registry, display names, and default feature flags.", readFirst: ["src/api.py", "viewer/index.html"], watchFor: "This file is the shared source of truth for visible runtime model options." },
+      { id: "api", label: "src/api.py", group: "runtime", x: 360, y: 180, owns: "Request validation, endpoint contracts, rerun behavior, and cache-clearing entrypoints.", readFirst: ["src/main.py", "viewer/config.js", "config/advanced_settings.json"], watchFor: "Changing payload shapes can break reruns and the frontend." },
+      { id: "main", label: "src/main.py", group: "runtime", x: 360, y: 300, owns: "Thin runtime entrypoint and logging bootstrap.", readFirst: ["src/prithvi.py", "src/utils/custom_logging.py"], watchFor: "Looks small, but it is the handoff into the full retrosynthesis pipeline." },
+      { id: "prithvi", label: "src/prithvi.py", group: "runtime", x: 360, y: 420, owns: "Top-level orchestration between recursion, route formatting, and metadata enrichment.", readFirst: ["src/rec_prithvi.py", "src/utils/parse.py", "src/metadata.py"], watchFor: "Output-shape changes surface immediately in the viewer." },
+      { id: "rec", label: "src/rec_prithvi.py", group: "runtime", x: 360, y: 540, owns: "Recursive engine that tries template search first and LLM fallback second.", readFirst: ["src/utils/az.py", "src/utils/llm.py"], watchFor: "Branching and stopping-rule changes can alter end-to-end synthesis behavior." },
+      { id: "runtime-az", label: "src/utils/az.py", group: "runtime", x: 620, y: 500, owns: "AiZynthFinder wrapper for the live runtime path.", readFirst: ["src/cache.py", "src/variables.py"], watchFor: "Uses basic-molecule short-circuit rules and model-path environment configuration." },
+      { id: "runtime-llm", label: "src/utils/llm.py", group: "runtime", x: 620, y: 620, owns: "Prompt selection, LLM calls, validation gates, retries, and response parsing.", readFirst: ["src/variables.py", "src/utils/stability_checks.py", "src/utils/hallucination_checks.py"], watchFor: "Model identifiers, prompt constants, and validation flags are tightly coupled." },
+      { id: "runtime-parse", label: "src/utils/parse.py", group: "runtime", x: 620, y: 340, owns: "Transforms route trees into the dependency graph consumed by the viewer.", readFirst: ["src/utils/utils_molecule.py", "viewer/index.html"], watchFor: "Duplicate product SMILES and dependency rebuilding are high-risk areas." },
+      { id: "runtime-metadata", label: "src/metadata.py", group: "runtime", x: 620, y: 180, owns: "Post-processing for reagents, conditions, and literature metadata.", readFirst: ["src/cache.py", "src/variables.py"], watchFor: "Extra LLM calls and cache behavior affect latency and cost." },
+      { id: "runtime-cache", label: "src/cache.py", group: "runtime", x: 620, y: 70, owns: "Persistent disk-backed caching used by the runtime tree.", readFirst: ["src/api.py", "src/utils/az.py", "src/utils/llm.py"], watchFor: "The package AiZynthFinder helper still imports this runtime cache decorator." },
+      { id: "pkg-root", label: "deepretro/__init__.py", group: "package", x: 900, y: 140, owns: "Lazy public import surface for package consumers.", readFirst: ["deepretro/featurizers/reactionstep.py", "deepretro/logging.py", "deepretro/models/hallucination_classifier.py"], watchFor: "Changing exports affects how downstream code discovers the package API." },
+      { id: "pkg-feat", label: "deepretro/featurizers/reactionstep.py", group: "package", x: 900, y: 280, owns: "Core ML featurizer for (product, reactants) reaction-step tuples.", readFirst: ["deepretro/utils/domain_features.py", "deepretro/tests/test_reactionstep.py"], watchFor: "Feature-size changes ripple into loaders and models." },
+      { id: "pkg-loader", label: "deepretro/data/loader.py", group: "package", x: 900, y: 420, owns: "DeepChem dataset loading and stratified splitting.", readFirst: ["deepretro/featurizers/reactionstep.py", "deepretro/tests/test_loader.py"], watchFor: "Column conventions and dropped-row behavior matter to training pipelines." },
+      { id: "pkg-model", label: "deepretro/models/hallucination_classifier.py", group: "package", x: 900, y: 560, owns: "XGBoost-on-DeepChem hallucination model wrapper.", readFirst: ["deepretro/featurizers/reactionstep.py", "deepretro/utils/metrics.py", "deepretro/tests/test_ml_classifier.py"], watchFor: "Threshold and persistence behavior are common regression points." },
+      { id: "pkg-az", label: "deepretro/utils/az.py", group: "package", x: 900, y: 690, owns: "Package-facing AiZynthFinder helper.", readFirst: ["src/cache.py", "src/variables.py", "deepretro/tests/test_az.py"], watchFor: "This file is the clearest legacy coupling between package and runtime trees." }
+    ];
+
+    const edges = [
+      ["viewer-index", "viewer-config", "frontend"],
+      ["viewer-index", "cfg-advanced", "frontend"],
+      ["viewer-index", "api", "frontend"],
+      ["viewer-config", "api", "frontend"],
+      ["api", "cfg-advanced", "runtime"],
+      ["api", "main", "runtime"],
+      ["api", "runtime-cache", "runtime"],
+      ["main", "prithvi", "runtime"],
+      ["prithvi", "rec", "runtime"],
+      ["prithvi", "runtime-parse", "runtime"],
+      ["prithvi", "runtime-metadata", "runtime"],
+      ["rec", "runtime-az", "runtime"],
+      ["rec", "runtime-llm", "runtime"],
+      ["runtime-az", "runtime-cache", "runtime"],
+      ["pkg-root", "pkg-feat", "package"],
+      ["pkg-root", "pkg-model", "package"],
+      ["pkg-loader", "pkg-feat", "package"],
+      ["pkg-model", "pkg-feat", "package"],
+      ["pkg-az", "runtime-cache", "cross"]
+    ];
+
+    const groupColors = {
+      runtime: getComputedStyle(document.documentElement).getPropertyValue("--runtime").trim(),
+      package: getComputedStyle(document.documentElement).getPropertyValue("--package").trim(),
+      frontend: getComputedStyle(document.documentElement).getPropertyValue("--frontend").trim(),
+      config: getComputedStyle(document.documentElement).getPropertyValue("--config").trim(),
+      cross: getComputedStyle(document.documentElement).getPropertyValue("--cross").trim()
+    };
+
+    const graph = document.getElementById("graph");
+    const body = document.getElementById("detail-body");
+    const title = document.getElementById("detail-title");
+    const subtitle = document.getElementById("detail-subtitle");
+    const nodeMap = Object.fromEntries(nodes.map(node => [node.id, node]));
+
+    function relatedLists(nodeId) {
+      const outgoing = edges.filter(edge => edge[0] === nodeId).map(edge => nodeMap[edge[1]].label);
+      const incoming = edges.filter(edge => edge[1] === nodeId).map(edge => nodeMap[edge[0]].label);
+      return { outgoing, incoming };
+    }
+
+    function pill(node) {
+      const label = node.group === "config" ? "Config" : node.group[0].toUpperCase() + node.group.slice(1);
+      return `<span class="pill" style="background:${groupColors[node.group]}">${label}</span>`;
+    }
+
+    function renderDetails(node) {
+      const { outgoing, incoming } = relatedLists(node.id);
+      title.textContent = node.label;
+      subtitle.textContent = node.owns;
+      body.innerHTML = `
+        ${pill(node)}
+        <div class="hint">Use this node as the center of the file set you load before editing.</div>
+        <div class="section-title">Read first</div>
+        <ul>${node.readFirst.map(item => `<li><code>${item}</code></li>`).join("")}</ul>
+        <div class="section-title">Depends on</div>
+        <ul>${outgoing.length ? outgoing.map(item => `<li><code>${item}</code></li>`).join("") : "<li>No explicit graph edge recorded.</li>"}</ul>
+        <div class="section-title">Used by</div>
+        <ul>${incoming.length ? incoming.map(item => `<li><code>${item}</code></li>`).join("") : "<li>No inbound graph edge recorded.</li>"}</ul>
+        <div class="section-title">Editing warning</div>
+        <p>${node.watchFor}</p>
+      `;
+    }
+
+    function addText(x, y, text, className) {
+      const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      t.setAttribute("x", x);
+      t.setAttribute("y", y);
+      t.setAttribute("class", className);
+      t.textContent = text;
+      graph.appendChild(t);
+    }
+
+    function renderGraph(selectedId) {
+      graph.innerHTML = `
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#99a9bc"></path>
+          </marker>
+        </defs>
+      `;
+
+      addText(60, 45, "Frontend", "cluster-label");
+      addText(320, 45, "Runtime", "cluster-label");
+      addText(845, 45, "Package", "cluster-label");
+
+      edges.forEach(([fromId, toId, kind]) => {
+        const from = nodeMap[fromId];
+        const to = nodeMap[toId];
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", from.x + 86);
+        line.setAttribute("y1", from.y + 28);
+        line.setAttribute("x2", to.x);
+        line.setAttribute("y2", to.y + 28);
+        line.setAttribute("stroke", kind === "cross" ? groupColors.cross : "#9fb0c3");
+        line.setAttribute("stroke-width", kind === "cross" ? "3.5" : "2");
+        line.setAttribute("stroke-dasharray", kind === "cross" ? "8 6" : "0");
+        line.setAttribute("marker-end", "url(#arrow)");
+        line.setAttribute("opacity", selectedId && fromId !== selectedId && toId !== selectedId ? "0.23" : "0.95");
+        graph.appendChild(line);
+      });
+
+      nodes.forEach(node => {
+        const isSelected = node.id === selectedId;
+        const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        group.style.cursor = "pointer";
+        group.addEventListener("click", () => {
+          renderGraph(node.id);
+          renderDetails(node);
+        });
+
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", node.x);
+        rect.setAttribute("y", node.y);
+        rect.setAttribute("rx", 16);
+        rect.setAttribute("ry", 16);
+        rect.setAttribute("width", 172);
+        rect.setAttribute("height", 56);
+        rect.setAttribute("fill", isSelected ? groupColors[node.group] : "#ffffff");
+        rect.setAttribute("stroke", groupColors[node.group]);
+        rect.setAttribute("stroke-width", isSelected ? "3" : "2");
+        rect.setAttribute("filter", "drop-shadow(0 10px 18px rgba(16, 32, 51, 0.10))");
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", node.x + 14);
+        text.setAttribute("y", node.y + 24);
+        text.setAttribute("font-size", "12.5");
+        text.setAttribute("font-family", "Segoe UI, Tahoma, sans-serif");
+        text.setAttribute("font-weight", "700");
+        text.setAttribute("fill", isSelected ? "#ffffff" : "#12304e");
+        text.textContent = node.label;
+
+        group.appendChild(rect);
+        group.appendChild(text);
+        graph.appendChild(group);
+      });
+    }
+
+    renderGraph("api");
+    renderDetails(nodeMap["api"]);
+  </script>
+</body>
+</html>
