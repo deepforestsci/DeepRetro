@@ -7,6 +7,16 @@ from typing import NoReturn, Optional
 
 import pytest
 
+from deepretro.metadata_types import (
+    ConditionsPayload,
+    ConditionsRecommender,
+    ConditionsStatusPayload,
+    LiteratureRecommender,
+    LiteratureStatusPayload,
+    MoleculeRecord,
+    ReagentRecommender,
+    ReagentStatusPayload,
+)
 from deepretro.utils.parse import RetrosynthesisRouteParser
 from deepretro.utils.utils_molecule import calc_chemical_formula, calc_mol_wt
 
@@ -116,3 +126,91 @@ def route_parser_factory() -> Callable[..., RetrosynthesisRouteParser]:
         )
 
     return _factory
+
+
+# ---------------------------------------------------------------------------
+# Metadata recommender test doubles
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def recommender_calls() -> list[str]:
+    """Shared call-tracking list for recommender spy fixtures."""
+    return []
+
+
+@pytest.fixture
+def spy_reagent_recommender(
+    recommender_calls: list[str],
+) -> ReagentRecommender:
+    """Reagent recommender that logs calls and returns a water reagent."""
+
+    def _recommender(
+        reactants: list[MoleculeRecord],
+        product: list[MoleculeRecord],
+        model: str,
+        temperature: float,
+    ) -> ReagentStatusPayload:
+        recommender_calls.append(f"reagent:{model}:{temperature}")
+        return 200, [{"smiles": "O", "reagent_metadata": {"name": ""}}]
+
+    return _recommender
+
+
+@pytest.fixture
+def spy_conditions_recommender(
+    recommender_calls: list[str],
+) -> ConditionsRecommender:
+    """Conditions recommender that logs calls and returns standard conditions."""
+
+    def _recommender(
+        reactants: list[MoleculeRecord],
+        product: list[MoleculeRecord],
+        reagents: list[MoleculeRecord],
+        model: str,
+        temperature: float,
+    ) -> ConditionsStatusPayload:
+        recommender_calls.append(f"conditions:{model}:{temperature}")
+        return 200, {
+            "temperature": "25 C",
+            "pressure": "1 atm",
+            "solvent": "water",
+            "time": "1 h",
+        }
+
+    return _recommender
+
+
+@pytest.fixture
+def spy_literature_recommender(
+    recommender_calls: list[str],
+) -> LiteratureRecommender:
+    """Literature recommender that logs calls and returns a stub DOI."""
+
+    def _recommender(
+        reactants: list[MoleculeRecord],
+        product: list[MoleculeRecord],
+        reagents: list[MoleculeRecord],
+        conditions: ConditionsPayload,
+        model: str,
+        temperature: float,
+    ) -> LiteratureStatusPayload:
+        recommender_calls.append(f"literature:{model}:{temperature}")
+        return 200, {"doi": "10.1000/example"}
+
+    return _recommender
+
+
+@pytest.fixture
+def failing_reagent_recommender() -> ReagentRecommender:
+    """Reagent recommender that always returns a 404 failure."""
+
+    def _recommender(
+        reactants: list[MoleculeRecord],
+        product: list[MoleculeRecord],
+        model: str,
+        temperature: float,
+    ) -> ReagentStatusPayload:
+        return 404, ""
+
+    return _recommender

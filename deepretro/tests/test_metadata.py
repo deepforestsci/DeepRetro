@@ -32,62 +32,19 @@ def test_parse_reaction_smiles_rejects_invalid_shape() -> None:
         metadata.parse_reaction_smiles("CCO")
 
 
-def test_recommend_reaction_metadata_from_reaction_string_uses_all_three_agents() -> (
-    None
-):
-    calls: list[str] = []
-
-    def reagent_recommender(
-        reactants: list[metadata.MoleculeRecord],
-        product: list[metadata.MoleculeRecord],
-        model: str,
-        temperature: float,
-    ) -> metadata.ReagentStatusPayload:
-        calls.append(f"reagent:{model}:{temperature}")
-        assert reactants == [{"smiles": "CCO"}, {"smiles": "CC(=O)O"}]
-        assert product == [{"smiles": "CCOC(C)=O"}]
-        return 200, [{"smiles": "O", "reagent_metadata": {"name": ""}}]
-
-    def conditions_recommender(
-        reactants: list[metadata.MoleculeRecord],
-        product: list[metadata.MoleculeRecord],
-        reagents: list[metadata.MoleculeRecord],
-        model: str,
-        temperature: float,
-    ) -> metadata.ConditionsStatusPayload:
-        calls.append(f"conditions:{model}:{temperature}")
-        assert reagents == [{"smiles": "O", "reagent_metadata": {"name": ""}}]
-        return 200, {
-            "temperature": "25 C",
-            "pressure": "1 atm",
-            "solvent": "water",
-            "time": "1 h",
-        }
-
-    def literature_recommender(
-        reactants: list[metadata.MoleculeRecord],
-        product: list[metadata.MoleculeRecord],
-        reagents: list[metadata.MoleculeRecord],
-        conditions: metadata.ConditionsPayload,
-        model: str,
-        temperature: float,
-    ) -> metadata.LiteratureStatusPayload:
-        calls.append(f"literature:{model}:{temperature}")
-        assert conditions == {
-            "temperature": "25 C",
-            "pressure": "1 atm",
-            "solvent": "water",
-            "time": "1 h",
-        }
-        return 200, {"doi": "10.1000/example"}
-
+def test_recommend_reaction_metadata_from_reaction_string_uses_all_three_agents(
+    spy_reagent_recommender: metadata.ReagentRecommender,
+    spy_conditions_recommender: metadata.ConditionsRecommender,
+    spy_literature_recommender: metadata.LiteratureRecommender,
+    recommender_calls: list[str],
+) -> None:
     status, recommendation = metadata.recommend_reaction_metadata(
         "CCO.CC(=O)O>>CCOC(C)=O",
         model="test-model",
         temperature=0.2,
-        reagent_recommender=reagent_recommender,
-        conditions_recommender=conditions_recommender,
-        literature_recommender=literature_recommender,
+        reagent_recommender=spy_reagent_recommender,
+        conditions_recommender=spy_conditions_recommender,
+        literature_recommender=spy_literature_recommender,
         cache=None,
     )
 
@@ -105,25 +62,19 @@ def test_recommend_reaction_metadata_from_reaction_string_uses_all_three_agents(
         },
         "literature": {"doi": "10.1000/example"},
     }
-    assert calls == [
+    assert recommender_calls == [
         "reagent:test-model:0.2",
         "conditions:test-model:0.2",
         "literature:test-model:0.2",
     ]
 
 
-def test_recommend_reaction_metadata_returns_failure_status() -> None:
-    def reagent_recommender(
-        reactants: list[metadata.MoleculeRecord],
-        product: list[metadata.MoleculeRecord],
-        model: str,
-        temperature: float,
-    ) -> metadata.ReagentStatusPayload:
-        return 404, ""
-
+def test_recommend_reaction_metadata_returns_failure_status(
+    failing_reagent_recommender: metadata.ReagentRecommender,
+) -> None:
     status, recommendation = metadata.recommend_reaction_metadata(
         "CCO>>CC=O",
-        reagent_recommender=reagent_recommender,
+        reagent_recommender=failing_reagent_recommender,
         cache=None,
     )
 
