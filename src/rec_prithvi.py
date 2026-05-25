@@ -9,11 +9,12 @@ from src.utils.job_context import logger as context_logger
 def rec_run_prithvi(
         molecule: str,
         job_id: str,
-        llm: str = "claude-opus-4-20250514",
+        llm: str = "claude-opus-4-6",
         az_model: str = "USPTO",
         stability_flag: str = "False",
         hallucination_check: str = "False",
         use_protecting_group_feature: bool = False,
+        hallucination_checker_fn=None,
         visited=None,
         depth=0,
         max_depth=50) -> tuple[dict, bool]:
@@ -26,7 +27,7 @@ def rec_run_prithvi(
     job_id : str
         Job ID
     llm : str, optional
-        LLM to be used, by default "claude-opus-4-20250514"
+        LLM to be used, by default "claude-opus-4-6"
     az_model : str, optional
         AZ model to be used, by default "USPTO"
     stability_flag : str, optional
@@ -78,7 +79,8 @@ def rec_run_prithvi(
             LLM=llm,
             stability_flag=stability_flag,
             hallucination_check=hallucination_check,
-            use_protecting_group_feature=use_protecting_group_feature)
+            use_protecting_group_feature=use_protecting_group_feature,
+            hallucination_checker_fn=hallucination_checker_fn)
         result_dict = {
             'type':
             'mol',
@@ -113,6 +115,7 @@ def rec_run_prithvi(
                         hallucination_check=hallucination_check,
                         use_protecting_group_feature=
                         use_protecting_group_feature,
+                        hallucination_checker_fn=hallucination_checker_fn,
                         visited=visited,
                         depth=depth + 1,
                         max_depth=max_depth)
@@ -131,6 +134,7 @@ def rec_run_prithvi(
                     stability_flag=stability_flag,
                     hallucination_check=hallucination_check,
                     use_protecting_group_feature=use_protecting_group_feature,
+                    hallucination_checker_fn=hallucination_checker_fn,
                     visited=visited,
                     depth=depth + 1,
                     max_depth=max_depth)
@@ -146,11 +150,12 @@ def rec_run_prithvi(
 
 def single_run_DeepRetro(
         molecule: str,
-        llm: str = "anthropic/claude-opus-4-20250514",
+        llm: str = "anthropic/claude-opus-4-6",
         az_model: str = "USPTO",
         stability_flag: str = "False",
         hallucination_check: str = "False",
-        use_protecting_group_feature: bool = False) -> tuple[dict, bool]:
+        use_protecting_group_feature: bool = False,
+        hallucination_checker_fn=None) -> tuple[dict, bool]:
     """Single run function to run DeepRetro on a molecule
 
     Parameters
@@ -158,7 +163,7 @@ def single_run_DeepRetro(
     molecule : str
         Molecule SMILES
     llm : str, optional
-        LLM to be used, by default "claude-opus-4-20250514"
+        LLM to be used, by default "claude-opus-4-6"
     az_model : str, optional
         AZ model to be used, by default "USPTO"
     stability_flag : str, optional
@@ -181,7 +186,8 @@ def single_run_DeepRetro(
         LLM=llm,
         stability_flag=stability_flag,
         hallucination_check=hallucination_check,
-        use_protecting_group_feature=use_protecting_group_feature)
+        use_protecting_group_feature=use_protecting_group_feature,
+        hallucination_checker_fn=hallucination_checker_fn)
     result_dict = {
         'type':
         'mol',

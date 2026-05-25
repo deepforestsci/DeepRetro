@@ -22,11 +22,12 @@ load_dotenv()
 
 
 def main(smiles: str,
-         llm: str = "claude-opus-4-20250514",
+         llm: str = "claude-opus-4-6",
          az_model: str = "USPTO",
          stability_flag: str = "False",
          hallucination_check: str = "False",
-         use_protecting_group_feature: bool = False) -> Any:
+         use_protecting_group_feature: bool = False,
+         hallucination_checker_fn=None) -> Any:
     """Run the retrosynthesis on specific molecule.
 
     Parameters
@@ -34,7 +35,7 @@ def main(smiles: str,
     smiles : str
         SMILES string of the molecule.
     llm : str, optional
-        LLM model, by default "claude-opus-4-20250514"
+        LLM model, by default "claude-opus-4-6"
 
     Returns
     -------
@@ -54,6 +55,7 @@ def main(smiles: str,
         az_model=az_model,
         stability_flag=stability_flag,
         hallucination_check=hallucination_check,
-        use_protecting_group_feature=use_protecting_group_feature)
+        use_protecting_group_feature=use_protecting_group_feature,
+        hallucination_checker_fn=hallucination_checker_fn)
     logging.info(f"Retrosynthesis result: {res}")
     return res
