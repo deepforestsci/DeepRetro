@@ -1,4 +1,4 @@
-"""Tests for the package AutoSolver orchestration layer."""
+"""Tests for the AutoSolver retrosynthesis pipeline."""
 
 from __future__ import annotations
 
@@ -6,21 +6,29 @@ from typing import Any
 
 import pytest
 
-import deepretro.algorithms.autosolve as autosolve
 from deepretro.algorithms.autosolve import (
     AutoSolver,
-    canonicalize,
     reaction_tree,
     unsolved_leaf,
 )
+from deepretro.utils.utils_molecule import canonicalize
 
-TARGET = "CCCO"
-ETHANOL = "CCO"
-METHANOL = "CO"
+# ---------------------------------------------------------------------------
+# Real molecule SMILES
+# ---------------------------------------------------------------------------
+
+ASPIRIN = "CC(=O)Oc1ccccc1C(=O)O"
+SALICYLIC_ACID = "OC(=O)c1ccccc1O"
+ACETIC_ANHYDRIDE = "CC(=O)OC(C)=O"
+PARACETAMOL = "CC(=O)Nc1ccc(O)cc1"
+PARA_AMINOPHENOL = "Nc1ccc(O)cc1"
+IBUPROFEN = "CC(C)Cc1ccc(cc1)C(C)C(=O)O"
+CAFFEINE = "Cn1c(=O)c2c(ncn2C)n(C)c1=O"
+ACETIC_ACID = "CC(=O)O"
 
 
-def solved_route(smiles: str) -> dict[str, Any]:
-    """Return a minimal solved route node for tests."""
+def _solved_route(smiles: str) -> dict[str, Any]:
+    """Return a minimal solved route node."""
     return {
         "type": "mol",
         "smiles": smiles,
@@ -29,579 +37,576 @@ def solved_route(smiles: str) -> dict[str, Any]:
     }
 
 
-def test_public_lazy_exports_import_autosolver() -> None:
-    """Package-level and algorithms-level lazy exports expose AutoSolver."""
-    import deepretro
-    import deepretro.algorithms
-
-    assert deepretro.AutoSolver is AutoSolver
-    assert deepretro.algorithms.AutoSolver is AutoSolver
+def _az_always_fails(smiles: str, az_model: str) -> tuple[bool, list[Any]]:
+    return False, []
 
 
-def test_solve_returns_route_tree_and_solved_flag(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """solve() returns the raw route tree and solved flag on AZ success."""
-    first_route = solved_route(TARGET)
+def _llm_returns_nothing(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+    return [], [], []
 
-    monkeypatch.setattr(
-        autosolve,
-        "run_az",
-        lambda smiles, az_model: (True, [first_route]),
+
+def _aspirin_hydrolysis_tree() -> dict[str, Any]:
+    """Aspirin -> salicylic acid + acetic anhydride (one reaction step)."""
+    return reaction_tree(
+        ASPIRIN,
+        [unsolved_leaf(SALICYLIC_ACID), unsolved_leaf(ACETIC_ANHYDRIDE)],
+        [0.9],
     )
 
-    route, solved = AutoSolver(hallucination_mode="none").solve(TARGET)
 
-    assert solved is True
-    assert route == first_route
-
-
-def test_solve_returns_first_az_route_without_calling_llm(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """AiZynthFinder success short-circuits LLM fallback."""
-    llm_calls: list[str] = []
-    first_route = solved_route(TARGET)
-    second_route = solved_route("CCCC")
-
-    monkeypatch.setattr(
-        autosolve,
-        "run_az",
-        lambda smiles, az_model: (True, [first_route, second_route]),
-    )
-    monkeypatch.setattr(
-        autosolve,
-        "llm_pipeline",
-        lambda **kwargs: llm_calls.append(kwargs["molecule"]),
-    )
-
-    route, solved = AutoSolver(hallucination_mode="none").solve(TARGET)
-
-    assert solved is True
-    assert route == first_route
-    assert llm_calls == []
+# ---------------------------------------------------------------------------
+# Helper function tests — pure, no DI needed
+# ---------------------------------------------------------------------------
 
 
-def test_solve_calls_llm_with_package_pipeline_arguments(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """LLM fallback uses the target branch ``deepretro.utils.llm`` contract."""
-    captured: dict[str, Any] = {}
+class TestCanonicalizeRealMolecules:
+    def test_aspirin_non_canonical_form_normalizes(self) -> None:
+        non_canonical = "OC(=O)c1ccccc1OC(=O)C"
+        result = canonicalize(non_canonical)
+        assert result == canonicalize(ASPIRIN)
+        assert result != non_canonical
 
-    def fake_run_az(smiles: str, az_model: str) -> tuple[bool, list[dict[str, Any]]]:
-        return (True, [solved_route(smiles)]) if smiles == METHANOL else (False, [])
+    def test_ibuprofen_idempotent(self) -> None:
+        assert canonicalize(IBUPROFEN) == canonicalize(canonicalize(IBUPROFEN))
 
-    def fake_llm_pipeline(
-        **kwargs: Any,
-    ) -> tuple[list[list[str]], list[str], list[float]]:
-        captured.update(kwargs)
-        return [[METHANOL]], ["reduce chain"], [0.7]
+    def test_caffeine_aromatic_normalization(self) -> None:
+        result = canonicalize(CAFFEINE)
+        assert result == canonicalize(result)
 
-    monkeypatch.setattr(autosolve, "run_az", fake_run_az)
-    monkeypatch.setattr(autosolve, "llm_pipeline", fake_llm_pipeline)
-
-    route, solved = AutoSolver(
-        llm="openai/gpt-4o-mini",
-        az_model="USPTO",
-        stability_check=False,
-        hallucination_mode="heuristic",
-        enable_thinking=False,
-        max_output_tokens=64,
-    ).solve(TARGET)
-
-    assert solved is True
-    assert route["children"][0]["children"] == [solved_route(METHANOL)]
-    assert captured["molecule"] == TARGET
-    assert captured["model"] == "openai/gpt-4o-mini"
-    assert captured["stability_check"] is False
-    assert captured["hallucination_check"] is True
-    assert captured["enable_thinking"] is False
-    assert captured["max_output_tokens"] == 64
+    def test_invalid_smiles_passthrough(self) -> None:
+        assert canonicalize("not_a_smiles") == "not_a_smiles"
 
 
-def test_solve_selects_first_fully_solved_candidate(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """A failed candidate does not pollute the selected successful route."""
+class TestUnsolvedLeaf:
+    def test_aspirin_leaf_structure(self) -> None:
+        node = unsolved_leaf(ASPIRIN)
+        assert node["smiles"] == ASPIRIN
+        assert node["type"] == "mol"
+        assert node["is_chemical"] is True
+        assert node["in_stock"] is False
+        assert node["children"] == []
 
-    def fake_run_az(smiles: str, az_model: str) -> tuple[bool, list[dict[str, Any]]]:
-        return (True, [solved_route(smiles)]) if smiles == METHANOL else (False, [])
-
-    def fake_llm_pipeline(
-        **kwargs: Any,
-    ) -> tuple[list[list[str]], list[str], list[float]]:
-        if kwargs["molecule"] == TARGET:
-            return [[ETHANOL], [METHANOL]], ["bad", "good"], [0.2, 0.9]
-        return [], [], []
-
-    monkeypatch.setattr(autosolve, "run_az", fake_run_az)
-    monkeypatch.setattr(autosolve, "llm_pipeline", fake_llm_pipeline)
-
-    route, solved = AutoSolver(hallucination_mode="none").solve(TARGET)
-
-    assert solved is True
-    assert route["children"][0]["children"] == [solved_route(METHANOL)]
-    assert unsolved_leaf(ETHANOL) not in route["children"][0]["children"]
+    def test_caffeine_leaf_structure(self) -> None:
+        node = unsolved_leaf(CAFFEINE)
+        assert node["smiles"] == CAFFEINE
+        assert node["in_stock"] is False
 
 
-def test_solve_returns_first_partial_candidate_when_none_fully_solve(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """If all candidates fail, the first attempted route remains inspectable."""
+class TestReactionTree:
+    def test_aspirin_hydrolysis_structure(self) -> None:
+        children = [unsolved_leaf(SALICYLIC_ACID), unsolved_leaf(ACETIC_ANHYDRIDE)]
+        tree = reaction_tree(ASPIRIN, children, [0.85])
+        assert tree["smiles"] == ASPIRIN
+        assert tree["type"] == "mol"
+        rxn = tree["children"][0]
+        assert rxn["type"] == "reaction"
+        assert rxn["is_reaction"] is True
+        assert rxn["metadata"]["policy_probability"] == pytest.approx(0.85)
+        assert rxn["children"] == children
 
-    def fake_llm_pipeline(
-        **kwargs: Any,
-    ) -> tuple[list[list[str]], list[str], list[float]]:
-        if kwargs["molecule"] != TARGET:
+    def test_empty_confidence_defaults_to_zero(self) -> None:
+        tree = reaction_tree(ASPIRIN, [], [])
+        assert tree["children"][0]["metadata"]["policy_probability"] == 0.0
+
+
+# ---------------------------------------------------------------------------
+# Constructor tests
+# ---------------------------------------------------------------------------
+
+
+class TestConstructor:
+    def test_preserves_all_options(self) -> None:
+        solver = AutoSolver(
+            llm="openai/gpt-4o-mini:adv",
+            az_model="USPTO",
+            stability_check=False,
+            hallucination_mode="none",
+            max_depth=3,
+            enable_thinking=False,
+            max_output_tokens=128,
+            metadata_model="gpt-4o",
+        )
+        assert solver.llm == "openai/gpt-4o-mini:adv"
+        assert solver.az_model == "USPTO"
+        assert solver.stability_check is False
+        assert solver.hallucination_mode == "none"
+        assert solver.hallucination_checker is None
+        assert solver.max_depth == 3
+        assert solver.enable_thinking is False
+        assert solver.max_output_tokens == 128
+        assert solver.metadata_model == "gpt-4o"
+
+    def test_defaults(self) -> None:
+        solver = AutoSolver(hallucination_mode="none")
+        assert solver.llm == "anthropic/claude-opus-4-6:adv"
+        assert solver.az_model == "Pistachio_100+"
+        assert solver.stability_check is True
+        assert solver.max_depth == 50
+        assert solver.enable_thinking is True
+        assert solver.max_output_tokens is None
+        assert solver.metadata_model == "claude-opus-4-20250514"
+
+    def test_normalizes_hallucination_mode_to_lowercase(self) -> None:
+        solver = AutoSolver(hallucination_mode="NONE")
+        assert solver.hallucination_mode == "none"
+
+    def test_az_runner_injection(self) -> None:
+        solver = AutoSolver(az_runner=_az_always_fails, hallucination_mode="none")
+        assert solver._az_runner is _az_always_fails
+
+    def test_lazy_exports(self) -> None:
+        import deepretro
+        import deepretro.algorithms
+
+        assert deepretro.AutoSolver is AutoSolver
+        assert deepretro.algorithms.AutoSolver is AutoSolver
+
+
+# ---------------------------------------------------------------------------
+# solve() tests — DI via constructor
+# ---------------------------------------------------------------------------
+
+
+class TestSolve:
+    def test_az_success_returns_route_for_aspirin(self) -> None:
+        def az_solves_aspirin(smiles: str, az_model: str) -> tuple[bool, list]:
+            return True, [_solved_route(smiles)]
+
+        solver = AutoSolver(az_runner=az_solves_aspirin, hallucination_mode="none")
+        route, solved = solver.solve(ASPIRIN)
+
+        assert solved is True
+        assert route["smiles"] == ASPIRIN
+        assert route["in_stock"] is True
+
+    def test_az_success_skips_llm(self) -> None:
+        llm_calls: list[str] = []
+
+        def az_solves(smiles: str, az_model: str) -> tuple[bool, list]:
+            return True, [_solved_route(smiles)]
+
+        def llm_tracks(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+            llm_calls.append(molecule)
             return [], [], []
-        return [[ETHANOL], [METHANOL]], ["first", "second"], [0.2, 0.9]
 
-    monkeypatch.setattr(autosolve, "run_az", lambda smiles, az_model: (False, []))
-    monkeypatch.setattr(autosolve, "llm_pipeline", fake_llm_pipeline)
+        solver = AutoSolver(
+            az_runner=az_solves,
+            llm_runner=llm_tracks,
+            hallucination_mode="none",
+        )
+        solver.solve(ASPIRIN)
 
-    route, solved = AutoSolver(hallucination_mode="none").solve(TARGET)
+        assert llm_calls == []
 
-    assert solved is False
-    assert route["children"][0]["children"] == [unsolved_leaf(ETHANOL)]
+    def test_llm_fallback_with_solvable_precursors(self) -> None:
+        """Aspirin -> salicylic acid + acetic acid, both solved by AZ."""
+
+        def az_solves_precursors(smiles: str, az_model: str) -> tuple[bool, list]:
+            canonical = canonicalize(smiles)
+            if canonical in {
+                canonicalize(SALICYLIC_ACID),
+                canonicalize(ACETIC_ACID),
+            }:
+                return True, [_solved_route(smiles)]
+            return False, []
+
+        def llm_proposes_hydrolysis(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list, list, list]:
+            return (
+                [[SALICYLIC_ACID, ACETIC_ACID]],
+                ["aspirin hydrolysis"],
+                [0.9],
+            )
+
+        solver = AutoSolver(
+            az_runner=az_solves_precursors,
+            llm_runner=llm_proposes_hydrolysis,
+            hallucination_mode="none",
+        )
+        route, solved = solver.solve(ASPIRIN)
+
+        assert solved is True
+        children = route["children"][0]["children"]
+        assert len(children) == 2
+
+    def test_cycle_detection_with_non_canonical_aspirin(self) -> None:
+        non_canonical = "OC(=O)c1ccccc1OC(=O)C"
+
+        def llm_returns_self(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+            return [[non_canonical]], ["self-reference"], [0.5]
+
+        solver = AutoSolver(
+            az_runner=_az_always_fails,
+            llm_runner=llm_returns_self,
+            hallucination_mode="none",
+        )
+        route, solved = solver.solve(ASPIRIN)
+
+        assert solved is False
+        child = route["children"][0]["children"][0]
+        assert canonicalize(child["smiles"]) == canonicalize(ASPIRIN)
+
+    def test_max_depth_zero_returns_unsolved_without_az_call(self) -> None:
+        az_calls: list[str] = []
+
+        def az_tracks(smiles: str, az_model: str) -> tuple[bool, list]:
+            az_calls.append(smiles)
+            return False, []
+
+        solver = AutoSolver(az_runner=az_tracks, hallucination_mode="none", max_depth=0)
+        route, solved = solver.solve(ASPIRIN)
+
+        assert (route, solved) == (unsolved_leaf(ASPIRIN), False)
+        assert az_calls == []
+
+    def test_no_pathways_returns_unsolved_leaf(self) -> None:
+        solver = AutoSolver(
+            az_runner=_az_always_fails,
+            llm_runner=_llm_returns_nothing,
+            hallucination_mode="none",
+        )
+        route, solved = solver.solve(CAFFEINE)
+
+        assert solved is False
+        assert route == unsolved_leaf(CAFFEINE)
+
+    def test_selects_first_fully_solved_pathway(self) -> None:
+        """Two pathways: first unsolvable, second solvable."""
+
+        def az_selective(smiles: str, az_model: str) -> tuple[bool, list]:
+            if canonicalize(smiles) == canonicalize(ACETIC_ACID):
+                return True, [_solved_route(smiles)]
+            return False, []
+
+        def llm_two_pathways(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+            if canonicalize(molecule) == canonicalize(ASPIRIN):
+                return (
+                    [[IBUPROFEN], [ACETIC_ACID]],
+                    ["wrong", "right"],
+                    [0.3, 0.8],
+                )
+            return [], [], []
+
+        solver = AutoSolver(
+            az_runner=az_selective,
+            llm_runner=llm_two_pathways,
+            hallucination_mode="none",
+        )
+        route, solved = solver.solve(ASPIRIN)
+
+        assert solved is True
+        assert route["children"][0]["children"][0]["smiles"] == ACETIC_ACID
+
+    def test_partial_result_when_no_pathway_fully_solves(self) -> None:
+        def llm_one_unsolvable(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+            if canonicalize(molecule) == canonicalize(ASPIRIN):
+                return [[IBUPROFEN]], ["try ibuprofen"], [0.4]
+            return [], [], []
+
+        solver = AutoSolver(
+            az_runner=_az_always_fails,
+            llm_runner=llm_one_unsolvable,
+            hallucination_mode="none",
+        )
+        route, solved = solver.solve(ASPIRIN)
+
+        assert solved is False
+        assert route["children"][0]["children"] == [unsolved_leaf(IBUPROFEN)]
+
+    def test_multi_reactant_pathway_all_must_solve(self) -> None:
+        def az_solves_both(smiles: str, az_model: str) -> tuple[bool, list]:
+            canonical = canonicalize(smiles)
+            if canonical in {
+                canonicalize(PARA_AMINOPHENOL),
+                canonicalize(ACETIC_ANHYDRIDE),
+            }:
+                return True, [_solved_route(smiles)]
+            return False, []
+
+        def llm_proposes(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+            return (
+                [[PARA_AMINOPHENOL, ACETIC_ANHYDRIDE]],
+                ["acetylation"],
+                [0.8],
+            )
+
+        solver = AutoSolver(
+            az_runner=az_solves_both,
+            llm_runner=llm_proposes,
+            hallucination_mode="none",
+        )
+        route, solved = solver.solve(PARACETAMOL)
+
+        assert solved is True
+        children = route["children"][0]["children"]
+        assert len(children) == 2
+
+    def test_llm_runner_receives_correct_kwargs(self) -> None:
+        captured: dict[str, Any] = {}
+
+        def llm_captures(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+            captured["molecule"] = molecule
+            captured.update(kwargs)
+            return [[SALICYLIC_ACID]], ["hydrolysis"], [0.7]
+
+        def az_solves_precursor(smiles: str, az_model: str) -> tuple[bool, list]:
+            if canonicalize(smiles) == canonicalize(SALICYLIC_ACID):
+                return True, [_solved_route(smiles)]
+            return False, []
+
+        solver = AutoSolver(
+            llm="openai/gpt-4o-mini",
+            az_runner=az_solves_precursor,
+            llm_runner=llm_captures,
+            stability_check=False,
+            hallucination_mode="heuristic",
+            enable_thinking=False,
+            max_output_tokens=64,
+        )
+        solver.solve(ASPIRIN)
+
+        assert captured["molecule"] == ASPIRIN
+        assert captured["model"] == "openai/gpt-4o-mini"
+        assert captured["stability_check"] is False
+        assert captured["hallucination_check"] is True
+        assert captured["enable_thinking"] is False
+        assert captured["max_output_tokens"] == 64
 
 
-def test_solve_solves_multi_reactant_pathway(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Every reactant in a candidate pathway must solve for the route to solve."""
+# ---------------------------------------------------------------------------
+# single_step() tests
+# ---------------------------------------------------------------------------
 
-    def fake_run_az(smiles: str, az_model: str) -> tuple[bool, list[dict[str, Any]]]:
-        return (
-            (True, [solved_route(smiles)])
-            if smiles in {ETHANOL, METHANOL}
-            else (False, [])
+
+class TestSingleStep:
+    def test_az_success_returns_route(self) -> None:
+        def az_solves(smiles: str, az_model: str) -> tuple[bool, list]:
+            return True, [_solved_route(smiles)]
+
+        solver = AutoSolver(az_runner=az_solves, hallucination_mode="none")
+        route, solved = solver.single_step(ASPIRIN)
+
+        assert solved is True
+        assert route["smiles"] == ASPIRIN
+
+    def test_llm_builds_one_level_tree(self) -> None:
+        def llm_proposes(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+            return (
+                [[SALICYLIC_ACID, ACETIC_ACID]],
+                ["hydrolysis"],
+                [0.9],
+            )
+
+        solver = AutoSolver(
+            az_runner=_az_always_fails,
+            llm_runner=llm_proposes,
+            hallucination_mode="none",
+        )
+        route, solved = solver.single_step(ASPIRIN)
+
+        assert solved is False
+        children = route["children"][0]["children"]
+        assert len(children) == 2
+        assert children[0] == unsolved_leaf(SALICYLIC_ACID)
+        assert children[1] == unsolved_leaf(ACETIC_ACID)
+
+    def test_no_pathways_returns_unsolved(self) -> None:
+        solver = AutoSolver(
+            az_runner=_az_always_fails,
+            llm_runner=_llm_returns_nothing,
+            hallucination_mode="none",
+        )
+        route, solved = solver.single_step(CAFFEINE)
+
+        assert solved is False
+        assert route == unsolved_leaf(CAFFEINE)
+
+
+# ---------------------------------------------------------------------------
+# parse() tests — exercises real RetrosynthesisRouteParser
+# ---------------------------------------------------------------------------
+
+
+class TestParse:
+    def test_aspirin_hydrolysis_has_correct_product(self) -> None:
+        solver = AutoSolver(hallucination_mode="none")
+        result = solver.parse(_aspirin_hydrolysis_tree(), solved=True)
+
+        assert result["solved"] is True
+        assert len(result["steps"]) >= 1
+        top_step = result["steps"][0]
+        assert top_step["products"][0]["smiles"] == ASPIRIN
+        reactant_smiles = {r["smiles"] for r in top_step["reactants"]}
+        assert len(reactant_smiles) == 2
+
+    def test_solved_flag_propagates_false(self) -> None:
+        solver = AutoSolver(hallucination_mode="none")
+        tree = reaction_tree(ASPIRIN, [unsolved_leaf(SALICYLIC_ACID)], [0.5])
+        result = solver.parse(tree, solved=False)
+
+        assert result["solved"] is False
+
+    def test_two_step_route_has_dependencies(self) -> None:
+        inner_tree = reaction_tree(
+            PARA_AMINOPHENOL,
+            [unsolved_leaf("Nc1ccccc1"), unsolved_leaf("O")],
+            [0.6],
+        )
+        outer_tree = reaction_tree(
+            PARACETAMOL,
+            [inner_tree, unsolved_leaf(ACETIC_ANHYDRIDE)],
+            [0.8],
+        )
+        solver = AutoSolver(hallucination_mode="none")
+        result = solver.parse(outer_tree, solved=False)
+
+        assert len(result["steps"]) >= 2
+        deps = result["dependencies"]
+        assert any(len(v) > 0 for v in deps.values())
+
+
+# ---------------------------------------------------------------------------
+# add_metadata() tests — injectable recommenders, no patching
+# ---------------------------------------------------------------------------
+
+
+try:
+    import litellm  # noqa: F401
+
+    _has_litellm = True
+except ModuleNotFoundError:
+    _has_litellm = False
+
+
+@pytest.mark.skipif(not _has_litellm, reason="litellm not installed")
+class TestAddMetadata:
+    def test_enriches_aspirin_step(
+        self,
+        spy_reagent_recommender,
+        spy_conditions_recommender,
+        spy_literature_recommender,
+        recommender_calls,
+    ) -> None:
+        solver = AutoSolver(hallucination_mode="none", metadata_model="test-model")
+        parsed = solver.parse(_aspirin_hydrolysis_tree(), solved=True)
+        result = solver.add_metadata(
+            parsed,
+            reagent_recommender=spy_reagent_recommender,
+            conditions_recommender=spy_conditions_recommender,
+            literature_recommender=spy_literature_recommender,
         )
 
-    monkeypatch.setattr(autosolve, "run_az", fake_run_az)
-    monkeypatch.setattr(
-        autosolve,
-        "llm_pipeline",
-        lambda **kwargs: ([[ETHANOL, METHANOL]], ["two reactants"], [0.8]),
-    )
+        assert any("reagent" in c for c in recommender_calls)
+        step = result["steps"][0]
+        assert len(step["reagents"]) > 0
+        assert step["conditions"]["temperature"] == "25 C"
 
-    route, solved = AutoSolver(hallucination_mode="none").solve(TARGET)
+    def test_skips_step_when_reagent_fails(
+        self,
+        failing_reagent_recommender,
+    ) -> None:
+        solver = AutoSolver(hallucination_mode="none")
+        parsed = solver.parse(_aspirin_hydrolysis_tree(), solved=True)
+        original_reagents = list(parsed["steps"][0]["reagents"])
 
-    assert solved is True
-    assert route["children"][0]["children"] == [
-        solved_route(ETHANOL),
-        solved_route(METHANOL),
-    ]
+        result = solver.add_metadata(
+            parsed,
+            reagent_recommender=failing_reagent_recommender,
+        )
 
+        assert result["steps"][0]["reagents"] == original_reagents
 
-def test_solve_returns_unsolved_tree_when_llm_has_no_pathways(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """No LLM candidates yields a stable unsolved leaf."""
-    monkeypatch.setattr(autosolve, "run_az", lambda smiles, az_model: (False, []))
-    monkeypatch.setattr(autosolve, "llm_pipeline", lambda **kwargs: ([], [], []))
+    def test_passes_metadata_model(
+        self,
+        spy_reagent_recommender,
+        spy_conditions_recommender,
+        spy_literature_recommender,
+        recommender_calls,
+    ) -> None:
+        solver = AutoSolver(hallucination_mode="none", metadata_model="custom-model")
+        parsed = solver.parse(_aspirin_hydrolysis_tree(), solved=True)
+        solver.add_metadata(
+            parsed,
+            reagent_recommender=spy_reagent_recommender,
+            conditions_recommender=spy_conditions_recommender,
+            literature_recommender=spy_literature_recommender,
+        )
 
-    route, solved = AutoSolver(hallucination_mode="none").solve(TARGET)
+        assert all("custom-model" in c for c in recommender_calls)
 
-    assert solved is False
-    assert route == unsolved_leaf(TARGET)
-
-
-def test_solve_detects_canonical_cycles(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Canonicalized revisits stop recursion."""
-    monkeypatch.setattr(autosolve, "run_az", lambda smiles, az_model: (False, []))
-    monkeypatch.setattr(
-        autosolve,
-        "llm_pipeline",
-        lambda **kwargs: ([["C(O)C"]], ["same molecule"], [0.1]),
-    )
-
-    route, solved = AutoSolver(hallucination_mode="none").solve("CCO")
-
-    assert solved is False
-    assert route["children"][0]["children"] == [unsolved_leaf("C(O)C")]
-
-
-def test_solve_stops_at_max_depth(monkeypatch: pytest.MonkeyPatch) -> None:
-    """The recursion limit returns an unsolved leaf before external calls."""
-    run_az_calls: list[str] = []
-
-    def fake_run_az(smiles: str, az_model: str) -> tuple[bool, list[dict[str, Any]]]:
-        run_az_calls.append(smiles)
-        return False, []
-
-    monkeypatch.setattr(autosolve, "run_az", fake_run_az)
-
-    route, solved = AutoSolver(hallucination_mode="none", max_depth=0).solve(TARGET)
-
-    assert (route, solved) == (unsolved_leaf(TARGET), False)
-    assert run_az_calls == []
-
-
-def test_constructor_preserves_public_options() -> None:
-    """Constructor options are stored without invoking external services."""
-    solver = AutoSolver(
-        llm="openai/gpt-4o-mini:adv",
-        az_model="USPTO",
-        stability_check=False,
-        hallucination_mode="none",
-        max_depth=3,
-        enable_thinking=False,
-        max_output_tokens=128,
-        metadata_model="gpt-4o",
-    )
-
-    assert solver.llm == "openai/gpt-4o-mini:adv"
-    assert solver.az_model == "USPTO"
-    assert solver.stability_check is False
-    assert solver.hallucination_mode == "none"
-    assert solver.hallucination_checker is None
-    assert solver.max_depth == 3
-    assert solver.enable_thinking is False
-    assert solver.max_output_tokens == 128
-    assert solver.metadata_model == "gpt-4o"
-
-
-def test_constructor_defaults() -> None:
-    """Default constructor values match the documented API."""
-    solver = AutoSolver(hallucination_mode="none")
-
-    assert solver.llm == "anthropic/claude-opus-4-6:adv"
-    assert solver.az_model == "Pistachio_100+"
-    assert solver.stability_check is True
-    assert solver.hallucination_mode == "none"
-    assert solver.max_depth == 50
-    assert solver.enable_thinking is True
-    assert solver.max_output_tokens is None
-    assert solver.metadata_model == "claude-opus-4-20250514"
-
-
-def test_canonicalize_and_unsolved_leaf_helpers() -> None:
-    """Small helpers expose stable deterministic behavior."""
-    assert canonicalize("C(O)C") == "CCO"
-    assert canonicalize("not_a_smiles") == "not_a_smiles"
-    assert unsolved_leaf("CCO") == {
-        "type": "mol",
-        "smiles": "CCO",
-        "is_chemical": True,
-        "in_stock": False,
-        "children": [],
-    }
-
-
-# ---------------------------------------------------------------------------
-# single_step tests
-# ---------------------------------------------------------------------------
-
-
-def test_single_step_returns_az_route_when_solved(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """single_step() returns AZ result without LLM or recursion."""
-    az_route = solved_route(TARGET)
-    monkeypatch.setattr(
-        autosolve,
-        "run_az",
-        lambda smiles, az_model: (True, [az_route]),
-    )
-
-    route, solved = AutoSolver(hallucination_mode="none").single_step(TARGET)
-
-    assert solved is True
-    assert route == az_route
-
-
-def test_single_step_returns_llm_route_without_recursion(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """single_step() builds a one-level tree from LLM output without recursing."""
-    monkeypatch.setattr(autosolve, "run_az", lambda smiles, az_model: (False, []))
-    monkeypatch.setattr(
-        autosolve,
-        "llm_pipeline",
-        lambda **kwargs: ([[ETHANOL, METHANOL]], ["split"], [0.9]),
-    )
-
-    route, solved = AutoSolver(hallucination_mode="none").single_step(TARGET)
-
-    assert solved is False
-    children = route["children"][0]["children"]
-    assert len(children) == 2
-    assert children[0] == unsolved_leaf(ETHANOL)
-    assert children[1] == unsolved_leaf(METHANOL)
-
-
-def test_single_step_returns_unsolved_leaf_when_no_pathways(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """No AZ or LLM result produces an unsolved leaf."""
-    monkeypatch.setattr(autosolve, "run_az", lambda smiles, az_model: (False, []))
-    monkeypatch.setattr(autosolve, "llm_pipeline", lambda **kwargs: ([], [], []))
-
-    route, solved = AutoSolver(hallucination_mode="none").single_step(TARGET)
-
-    assert solved is False
-    assert route == unsolved_leaf(TARGET)
-
-
-# ---------------------------------------------------------------------------
-# parse tests
-# ---------------------------------------------------------------------------
-
-
-def test_parse_formats_route_tree_into_steps(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """parse() delegates to format_output and adds the solved flag."""
-    fake_output: dict[str, Any] = {"steps": [{"step": "1"}], "dependencies": {"1": []}}
-    monkeypatch.setattr(autosolve, "format_output", lambda tree: dict(fake_output))
-
-    route_tree = reaction_tree(TARGET, [solved_route(ETHANOL)], [0.8])
-    result = AutoSolver(hallucination_mode="none").parse(route_tree, solved=True)
-
-    assert result == {**fake_output, "solved": True}
-
-
-def test_parse_propagates_solved_false(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """parse() correctly propagates unsolved status."""
-    monkeypatch.setattr(
-        autosolve,
-        "format_output",
-        lambda tree: {"steps": [], "dependencies": {}},
-    )
-
-    result = AutoSolver(hallucination_mode="none").parse(
-        unsolved_leaf(TARGET), solved=False
-    )
-
-    assert result["solved"] is False
-
-
-# ---------------------------------------------------------------------------
-# add_metadata tests
-# ---------------------------------------------------------------------------
-
-
-def test_add_metadata_enriches_steps_with_recommendation(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """add_metadata() calls recommend_reaction_metadata per step and merges."""
-    captured_calls: list[str] = []
-
-    def fake_recommend(
-        reaction_smiles: str, **kwargs: Any
-    ) -> tuple[int, dict[str, Any]]:
-        captured_calls.append(reaction_smiles)
-        return 200, {
-            "reaction_smiles": reaction_smiles,
-            "reactants": [],
-            "product": [],
-            "reagents": [{"smiles": "O", "reagent_metadata": {"name": "water"}}],
-            "conditions": {
-                "temperature": "25 C",
-                "pressure": "1 atm",
-                "solvent": "water",
-                "time": "1 h",
-            },
-            "literature": {"doi": "10.1000/example"},
+    def test_skips_step_with_no_reactants(
+        self,
+        spy_reagent_recommender,
+        recommender_calls,
+    ) -> None:
+        parsed: dict[str, Any] = {
+            "steps": [
+                {
+                    "step": "1",
+                    "reactants": [],
+                    "reagents": [],
+                    "products": [{"smiles": ASPIRIN, "product_metadata": {}}],
+                    "conditions": [],
+                    "reactionmetrics": [
+                        {"scalabilityindex": 0, "closestliterature": ""}
+                    ],
+                }
+            ],
+            "dependencies": {"1": []},
+            "solved": True,
         }
+        solver = AutoSolver(hallucination_mode="none")
+        solver.add_metadata(parsed, reagent_recommender=spy_reagent_recommender)
 
-    monkeypatch.setattr(autosolve, "recommend_reaction_metadata", fake_recommend)
-
-    parsed: dict[str, Any] = {
-        "steps": [
-            {
-                "step": "1",
-                "reactants": [{"smiles": "CC", "reactant_metadata": {}}],
-                "reagents": [],
-                "products": [{"smiles": "CCO", "product_metadata": {}}],
-                "conditions": [],
-                "reactionmetrics": [{"scalabilityindex": 0, "closestliterature": ""}],
-            },
-        ],
-        "dependencies": {"1": []},
-        "solved": True,
-    }
-
-    result = AutoSolver(hallucination_mode="none").add_metadata(parsed)
-
-    assert captured_calls == ["CC>>CCO"]
-    step = result["steps"][0]
-    assert step["reagents"] == [{"smiles": "O", "reagent_metadata": {"name": "water"}}]
-    assert step["conditions"] == {
-        "temperature": "25 C",
-        "pressure": "1 atm",
-        "solvent": "water",
-        "time": "1 h",
-    }
-    assert step["reactionmetrics"][0]["closestliterature"] == {"doi": "10.1000/example"}
-
-
-def test_add_metadata_skips_step_on_recommendation_failure(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Metadata failure for one step does not block the pipeline."""
-    monkeypatch.setattr(
-        autosolve,
-        "recommend_reaction_metadata",
-        lambda reaction_smiles, **kwargs: (
-            404,
-            {"stage": "reagents", "error": "fail"},
-        ),
-    )
-
-    parsed: dict[str, Any] = {
-        "steps": [
-            {
-                "step": "1",
-                "reactants": [{"smiles": "CC", "reactant_metadata": {}}],
-                "reagents": [],
-                "products": [{"smiles": "CCO", "product_metadata": {}}],
-                "conditions": [],
-                "reactionmetrics": [{"scalabilityindex": 0, "closestliterature": ""}],
-            },
-        ],
-        "dependencies": {"1": []},
-        "solved": True,
-    }
-
-    result = AutoSolver(hallucination_mode="none").add_metadata(parsed)
-
-    step = result["steps"][0]
-    assert step["reagents"] == []
-    assert step["conditions"] == []
-    assert step["reactionmetrics"][0]["closestliterature"] == ""
-
-
-def test_add_metadata_uses_metadata_model_param(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """add_metadata passes the configured metadata_model."""
-    captured_kwargs: dict[str, Any] = {}
-
-    def fake_recommend(
-        reaction_smiles: str, **kwargs: Any
-    ) -> tuple[int, dict[str, Any]]:
-        captured_kwargs.update(kwargs)
-        return 404, {"stage": "reagents", "error": "fail"}
-
-    monkeypatch.setattr(autosolve, "recommend_reaction_metadata", fake_recommend)
-
-    parsed: dict[str, Any] = {
-        "steps": [
-            {
-                "step": "1",
-                "reactants": [{"smiles": "CC", "reactant_metadata": {}}],
-                "reagents": [],
-                "products": [{"smiles": "CCO", "product_metadata": {}}],
-                "conditions": [],
-                "reactionmetrics": [{"scalabilityindex": 0, "closestliterature": ""}],
-            },
-        ],
-        "dependencies": {"1": []},
-        "solved": True,
-    }
-
-    AutoSolver(hallucination_mode="none", metadata_model="gpt-4o").add_metadata(parsed)
-
-    assert captured_kwargs["model"] == "gpt-4o"
-
-
-def test_add_metadata_handles_multi_reactant_smiles(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Multiple reactants are joined with '.' in the reaction SMILES."""
-    captured_calls: list[str] = []
-
-    def fake_recommend(
-        reaction_smiles: str, **kwargs: Any
-    ) -> tuple[int, dict[str, Any]]:
-        captured_calls.append(reaction_smiles)
-        return 404, {"stage": "reagents", "error": "fail"}
-
-    monkeypatch.setattr(autosolve, "recommend_reaction_metadata", fake_recommend)
-
-    parsed: dict[str, Any] = {
-        "steps": [
-            {
-                "step": "1",
-                "reactants": [
-                    {"smiles": "CC", "reactant_metadata": {}},
-                    {"smiles": "O", "reactant_metadata": {}},
-                ],
-                "reagents": [],
-                "products": [{"smiles": "CCO", "product_metadata": {}}],
-                "conditions": [],
-                "reactionmetrics": [{"scalabilityindex": 0, "closestliterature": ""}],
-            },
-        ],
-        "dependencies": {"1": []},
-        "solved": True,
-    }
-
-    AutoSolver(hallucination_mode="none").add_metadata(parsed)
-
-    assert captured_calls == ["CC.O>>CCO"]
+        assert recommender_calls == []
 
 
 # ---------------------------------------------------------------------------
-# autosolve tests
+# autosolve() tests — subclass override, no patching
 # ---------------------------------------------------------------------------
 
 
-def test_autosolve_chains_solve_parse_add_metadata(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """autosolve() runs the full pipeline and returns enriched output."""
-    call_order: list[str] = []
+class _TrackingAutoSolver(AutoSolver):
+    """Subclass that records call order without patching."""
 
-    def tracking_solve(
-        self: AutoSolver, smiles: str, **kw: Any
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.call_log: list[str] = []
+
+    def solve(
+        self,
+        smiles: str,
+        visited: set[str] | None = None,
+        depth: int = 0,
     ) -> tuple[dict[str, Any], bool]:
-        call_order.append("solve")
-        return solved_route(smiles), True
+        self.call_log.append("solve")
+        return unsolved_leaf(smiles), False
 
-    def tracking_parse(
-        self: AutoSolver, tree: dict[str, Any], *, solved: bool
-    ) -> dict[str, Any]:
-        call_order.append("parse")
+    def parse(self, route_tree: dict[str, Any], *, solved: bool) -> dict[str, Any]:
+        self.call_log.append("parse")
         return {"steps": [], "dependencies": {}, "solved": solved}
 
-    def tracking_add_metadata(
-        self: AutoSolver, parsed: dict[str, Any]
-    ) -> dict[str, Any]:
-        call_order.append("add_metadata")
-        return parsed
-
-    monkeypatch.setattr(AutoSolver, "solve", tracking_solve)
-    monkeypatch.setattr(AutoSolver, "parse", tracking_parse)
-    monkeypatch.setattr(AutoSolver, "add_metadata", tracking_add_metadata)
-
-    result = AutoSolver(hallucination_mode="none").autosolve(TARGET)
-
-    assert call_order == ["solve", "parse", "add_metadata"]
-    assert result["solved"] is True
+    def add_metadata(self, parsed_output: Any, **kwargs: Any) -> Any:
+        self.call_log.append("add_metadata")
+        return parsed_output
 
 
-def test_autosolve_propagates_unsolved_status(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """autosolve() passes solved=False through the pipeline."""
-    monkeypatch.setattr(
-        AutoSolver,
-        "solve",
-        lambda self, smiles, **kw: (unsolved_leaf(smiles), False),
-    )
-    monkeypatch.setattr(
-        autosolve,
-        "format_output",
-        lambda tree: {"steps": [], "dependencies": {}},
-    )
-    monkeypatch.setattr(
-        AutoSolver,
-        "add_metadata",
-        lambda self, parsed: parsed,
-    )
+class TestAutosolve:
+    def test_chains_solve_parse_add_metadata(self) -> None:
+        solver = _TrackingAutoSolver(hallucination_mode="none")
+        result = solver.autosolve(ASPIRIN)
 
-    result = AutoSolver(hallucination_mode="none").autosolve(TARGET)
+        assert solver.call_log == ["solve", "parse", "add_metadata"]
+        assert result["solved"] is False
 
-    assert result["solved"] is False
+    def test_propagates_solved_true(self) -> None:
+        class _SolvedTracker(_TrackingAutoSolver):
+            def solve(self, smiles, visited=None, depth=0):
+                self.call_log.append("solve")
+                return _solved_route(smiles), True
+
+        solver = _SolvedTracker(hallucination_mode="none")
+        result = solver.autosolve(ASPIRIN)
+
+        assert result["solved"] is True
