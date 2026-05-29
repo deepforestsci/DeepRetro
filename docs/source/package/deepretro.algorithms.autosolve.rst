@@ -1,11 +1,22 @@
 deepretro.algorithms.autosolve
 ==============================
 
-``AutoSolver`` provides a package-level orchestration layer for single-molecule
-retrosynthesis. It first attempts an AiZynthFinder route through
-``deepretro.utils.az.run_az``. When no template route is available, it calls the
-package LLM retrosynthesis pipeline, recursively solves returned precursors, and
-formats the resulting tree with ``deepretro.utils.parse.format_output``.
+``AutoSolver`` provides the main retrosynthesis pipeline for the deepretro
+package. It combines AiZynthFinder template matching with LLM-based fallback,
+route parsing, and metadata enrichment in a single class.
+
+Pipeline
+--------
+
+.. code-block:: text
+
+   autosolve(smiles)
+     ├── solve(smiles)         → recursive AZ + LLM retrosynthesis → route tree
+     ├── parse(route_tree)     → format into steps + dependencies
+     └── add_metadata(parsed)  → enrich with reagents, conditions, literature
+
+Individual methods can be called separately for finer control. Use
+``single_step()`` for non-recursive one-pass retrosynthesis.
 
 Example
 -------
@@ -19,8 +30,18 @@ Example
        az_model="Pistachio_100+",
        hallucination_mode="heuristic",
    )
-   result = solver.solve("CC(=O)Oc1ccccc1C(=O)O")
+
+   # Full pipeline
+   result = solver.autosolve("CC(=O)Oc1ccccc1C(=O)O")
    print(result["solved"], len(result["steps"]))
+
+   # Individual steps
+   route_tree, solved = solver.solve("CC(=O)Oc1ccccc1C(=O)O")
+   parsed = solver.parse(route_tree, solved=solved)
+   enriched = solver.add_metadata(parsed)
+
+   # Single-step (no recursion)
+   route_tree, solved = solver.single_step("CC(=O)Oc1ccccc1C(=O)O")
 
 API Reference
 -------------
