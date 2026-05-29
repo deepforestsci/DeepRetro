@@ -52,6 +52,7 @@ _litellm_initialized = False
 
 
 def _ensure_litellm_configured() -> None:
+    # Deferred so importing this module doesn't trigger side-effects at load time.
     global _litellm_initialized
     if _litellm_initialized:
         return
