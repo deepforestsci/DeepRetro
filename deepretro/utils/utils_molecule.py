@@ -241,6 +241,32 @@ def calc_chemical_formula(mol: str) -> str:
     return CalcMolFormula(molecule)
 
 
+def canonicalize(smiles: str) -> str:
+    """Return canonical SMILES, or the original string if parsing fails.
+
+    Parameters
+    ----------
+    smiles : str
+        Input SMILES string.
+
+    Returns
+    -------
+    str
+        Canonical SMILES, or the original string when RDKit cannot parse it.
+
+    Examples
+    --------
+    >>> canonicalize("C(O)C")
+    'CCO'
+    >>> canonicalize("not_a_smiles")
+    'not_a_smiles'
+    """
+    molecule = Chem.MolFromSmiles(smiles)
+    if molecule is None:
+        return smiles
+    return Chem.MolToSmiles(molecule, canonical=True)
+
+
 def are_molecules_same(smiles1: str, smiles2: str) -> bool:
     """Check whether two SMILES strings describe the same molecule.
 

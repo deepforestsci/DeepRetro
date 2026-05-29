@@ -4,12 +4,11 @@ from __future__ import annotations
 
 import os
 import time
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, Optional
 
 import structlog
-from rdkit import Chem
 
 from deepretro.models.hallucination_helpers import (
     HallucinationChecker,
@@ -20,6 +19,7 @@ from deepretro.utils.az import run_az
 from deepretro.utils.llm_helpers import Pathway
 from deepretro.utils.parse import format_output
 from deepretro.utils.typing import ParseOutput, RouteNode
+from deepretro.utils.utils_molecule import canonicalize
 
 logger = structlog.get_logger(__name__)
 
@@ -50,6 +50,23 @@ class AutoSolver:
         Output-token override for LLM calls.
     metadata_model : str, optional
         Model identifier used for metadata recommendation steps.
+    az_runner : callable, optional
+        Replacement for the default AiZynthFinder call. Accepts
+        ``(smiles, az_model)`` and returns ``(solved, routes)``.
+    llm_runner : callable, optional
+        Replacement for the default LLM pipeline call. Accepts
+        ``(molecule, **kwargs)`` and returns ``(pathways, explanations,
+        confidence)``.
+
+    Examples
+    --------
+    >>> solver = AutoSolver(hallucination_mode="none")
+    >>> # Full pipeline (requires LLM and AZ services):
+    >>> # result = solver.autosolve("CC(=O)Oc1ccccc1C(=O)O")
+    >>> # Individual steps:
+    >>> # route_tree, solved = solver.solve("CC(=O)Oc1ccccc1C(=O)O")
+    >>> # parsed = solver.parse(route_tree, solved=solved)
+    >>> # enriched = solver.add_metadata(parsed)
     """
 
     def __init__(
@@ -63,6 +80,9 @@ class AutoSolver:
         enable_thinking: bool = True,
         max_output_tokens: int | None = None,
         metadata_model: str = "claude-opus-4-20250514",
+        az_runner: Callable[..., tuple[bool, list[Any]]] | None = None,
+        llm_runner: Callable[..., tuple[list[Any], list[str], list[float]]]
+        | None = None,
     ) -> None:
         self.llm = llm
         self.az_model = az_model
@@ -78,6 +98,8 @@ class AutoSolver:
         self.enable_thinking = enable_thinking
         self.max_output_tokens = max_output_tokens
         self.metadata_model = metadata_model
+        self._az_runner = az_runner if az_runner is not None else run_az
+        self._llm_runner = llm_runner
 
     def solve(
         self,
@@ -112,7 +134,7 @@ class AutoSolver:
             return unsolved_leaf(smiles), False
         branch_visited.add(canonical)
 
-        az_solved, az_routes = run_az(smiles=smiles, az_model=self.az_model)
+        az_solved, az_routes = self._az_runner(smiles, self.az_model)
         if az_solved and az_routes:
             logger.info("AiZynthFinder solved molecule", molecule=smiles)
             return dict(az_routes[0]), True
@@ -144,26 +166,27 @@ class AutoSolver:
         self,
         molecule: str,
     ) -> tuple[list[Pathway], list[str], list[float]]:
-        """Call the package LLM pipeline and apply optional ML filtering.
+        """Call the package LLM pipeline and apply optional ML filtering."""
+        if self._llm_runner is not None:
+            pathways, explanations, confidence = self._llm_runner(
+                molecule,
+                model=self.llm,
+                stability_check=self.stability_check,
+                hallucination_check=self.hallucination_mode == "heuristic",
+                enable_thinking=self.enable_thinking,
+                max_output_tokens=self.max_output_tokens,
+            )
+        else:
+            from deepretro.utils.llm import llm_pipeline
 
-        Parameters
-        ----------
-        molecule : str
-            Target molecule SMILES for the LLM pipeline.
-
-        Returns
-        -------
-        tuple[list[Pathway], list[str], list[float]]
-            Filtered pathways, explanations, and confidence scores.
-        """
-        pathways, explanations, confidence = llm_pipeline(
-            molecule=molecule,
-            model=self.llm,
-            stability_check=self.stability_check,
-            hallucination_check=self.hallucination_mode == "heuristic",
-            enable_thinking=self.enable_thinking,
-            max_output_tokens=self.max_output_tokens,
-        )
+            pathways, explanations, confidence = llm_pipeline(
+                molecule=molecule,
+                model=self.llm,
+                stability_check=self.stability_check,
+                hallucination_check=self.hallucination_mode == "heuristic",
+                enable_thinking=self.enable_thinking,
+                max_output_tokens=self.max_output_tokens,
+            )
         return filter_with_checker(
             molecule,
             pathways,
@@ -178,22 +201,7 @@ class AutoSolver:
         visited: set[str],
         depth: int,
     ) -> tuple[list[dict[str, Any]], bool]:
-        """Solve each reactant in a candidate precursor pathway.
-
-        Parameters
-        ----------
-        pathway : Sequence[str] or str
-            One or more reactant SMILES from a candidate retrosynthesis step.
-        visited : set[str]
-            Canonical SMILES already visited on the current branch.
-        depth : int
-            Current recursion depth.
-
-        Returns
-        -------
-        tuple[list[dict[str, Any]], bool]
-            Solved child route nodes and a flag indicating all reactants solved.
-        """
+        """Solve each reactant in a candidate precursor pathway."""
         reactants = [pathway] if isinstance(pathway, str) else list(pathway)
         children: list[dict[str, Any]] = []
         all_solved = True
@@ -219,7 +227,7 @@ class AutoSolver:
         tuple[dict[str, Any], bool]
             Route tree (one level deep) and solved flag.
         """
-        az_solved, az_routes = run_az(smiles=smiles, az_model=self.az_model)
+        az_solved, az_routes = self._az_runner(smiles, self.az_model)
         if az_solved and az_routes:
             return dict(az_routes[0]), True
 
@@ -253,19 +261,34 @@ class AutoSolver:
         output["solved"] = solved
         return output
 
-    def add_metadata(self, parsed_output: ParseOutput) -> ParseOutput:
+    def add_metadata(
+        self,
+        parsed_output: ParseOutput,
+        *,
+        reagent_recommender: Any = None,
+        conditions_recommender: Any = None,
+        literature_recommender: Any = None,
+    ) -> ParseOutput:
         """Enrich parsed steps with reagent, condition, and literature metadata.
 
         Parameters
         ----------
         parsed_output : dict[str, Any]
             Output from :meth:`parse`.
+        reagent_recommender : callable, optional
+            Injectable reagent recommender for testing.
+        conditions_recommender : callable, optional
+            Injectable conditions recommender for testing.
+        literature_recommender : callable, optional
+            Injectable literature recommender for testing.
 
         Returns
         -------
         dict[str, Any]
             The same dict with each step enriched in-place.
         """
+        from deepretro.metadata import recommend_reaction_metadata
+
         for step in parsed_output.get("steps", []):
             reactant_smiles = ".".join(r["smiles"] for r in step.get("reactants", []))
             product_smiles = (
@@ -277,7 +300,12 @@ class AutoSolver:
             reaction_smiles = f"{reactant_smiles}>>{product_smiles}"
             status, result = recommend_reaction_metadata(
                 reaction_smiles,
+                reaction_smiles,
                 model=self.metadata_model,
+                reagent_recommender=reagent_recommender,
+                conditions_recommender=conditions_recommender,
+                literature_recommender=literature_recommender,
+                cache=None,
             )
             if status != 200:
                 logger.info(
@@ -308,6 +336,12 @@ class AutoSolver:
         dict[str, Any]
             Fully enriched output with steps, dependencies, metadata, and
             solved status.
+
+        Examples
+        --------
+        >>> solver = AutoSolver(hallucination_mode="none")
+        >>> # result = solver.autosolve("CC(=O)Oc1ccccc1C(=O)O")  # doctest: +SKIP
+        >>> # print(result["solved"], len(result["steps"]))
         """
         log = logger.bind(job_id=f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}")
         log.info("AutoSolver starting", molecule=smiles)
@@ -318,75 +352,6 @@ class AutoSolver:
 
         log.info("AutoSolver completed", molecule=smiles, solved=solved)
         return output
-
-
-def canonicalize(smiles: str) -> str:
-    """Return canonical SMILES, or the original string if parsing fails.
-
-    Parameters
-    ----------
-    smiles : str
-        Input SMILES string.
-
-    Returns
-    -------
-    str
-        Canonical SMILES or the original string if RDKit cannot parse it.
-
-    Examples
-    --------
-    >>> canonicalize("C(O)C")
-    'CCO'
-    >>> canonicalize("not_a_smiles")
-    'not_a_smiles'
-    """
-    molecule = Chem.MolFromSmiles(smiles)
-    if molecule is None:
-        return smiles
-    return Chem.MolToSmiles(molecule, canonical=True)
-
-
-def llm_pipeline(**kwargs: Any) -> tuple[list[Pathway], list[str], list[float]]:
-    """Import and call the LLM pipeline lazily.
-
-    Keeping this import lazy lets users import ``deepretro.AutoSolver`` in
-    lightweight environments that have not installed LLM provider extras yet.
-
-    Parameters
-    ----------
-    **kwargs : Any
-        Keyword arguments forwarded to the package LLM pipeline.
-
-    Returns
-    -------
-    tuple[list[Pathway], list[str], list[float]]
-        Pathways, explanations, and confidence scores from the pipeline.
-    """
-    from deepretro.utils.llm import llm_pipeline as package_llm_pipeline
-
-    return package_llm_pipeline(**kwargs)
-
-
-def recommend_reaction_metadata(reaction_smiles: str, **kwargs: Any) -> tuple[int, Any]:
-    """Import and call the metadata recommender lazily.
-
-    Parameters
-    ----------
-    reaction_smiles : str
-        Reaction SMILES in ``reactants>>products`` form.
-    **kwargs : Any
-        Forwarded to ``deepretro.metadata.recommend_reaction_metadata``.
-
-    Returns
-    -------
-    tuple[int, Any]
-        Status code and recommendation payload.
-    """
-    from deepretro.metadata import (
-        recommend_reaction_metadata as _recommend,
-    )
-
-    return _recommend(reaction_smiles, **kwargs)
 
 
 def unsolved_leaf(smiles: str) -> dict[str, Any]:
@@ -404,7 +369,7 @@ def unsolved_leaf(smiles: str) -> dict[str, Any]:
 
     Examples
     --------
-    >>> unsolved_leaf("CCO")["in_stock"]
+    >>> unsolved_leaf("CC(=O)Oc1ccccc1C(=O)O")["in_stock"]
     False
     """
     return {
