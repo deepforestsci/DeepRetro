@@ -109,6 +109,9 @@ class AutoSolver:
     ) -> tuple[dict[str, Any], bool]:
         """Recursively solve one molecule via retrosynthesis.
 
+        Attempts AiZynthFinder first. On failure, falls back to the LLM
+        pipeline and recursively solves each proposed precursor.
+
         Parameters
         ----------
         smiles : str
@@ -122,6 +125,17 @@ class AutoSolver:
         -------
         tuple[dict[str, Any], bool]
             Raw route tree and solved flag.
+
+        Examples
+        --------
+        >>> solver = AutoSolver(
+        ...     az_runner=lambda s, m: (False, []),
+        ...     llm_runner=lambda mol, **kw: ([], [], []),
+        ...     hallucination_mode="none",
+        ... )
+        >>> route, solved = solver.solve("CC(=O)Oc1ccccc1C(=O)O")
+        >>> solved
+        False
         """
         canonical = canonicalize(smiles)
         if depth >= self.max_depth:
@@ -166,7 +180,21 @@ class AutoSolver:
         self,
         molecule: str,
     ) -> tuple[list[Pathway], list[str], list[float]]:
-        """Call the package LLM pipeline and apply optional ML filtering."""
+        """Call the LLM pipeline and apply optional ML hallucination filtering.
+
+        Uses the injected ``llm_runner`` if provided, otherwise imports and
+        calls ``deepretro.utils.llm.llm_pipeline`` directly.
+
+        Parameters
+        ----------
+        molecule : str
+            Target molecule SMILES for the LLM pipeline.
+
+        Returns
+        -------
+        tuple[list[Pathway], list[str], list[float]]
+            Filtered pathways, explanations, and confidence scores.
+        """
         if self._llm_runner is not None:
             pathways, explanations, confidence = self._llm_runner(
                 molecule,
@@ -201,7 +229,22 @@ class AutoSolver:
         visited: set[str],
         depth: int,
     ) -> tuple[list[dict[str, Any]], bool]:
-        """Solve each reactant in a candidate precursor pathway."""
+        """Solve each reactant in a candidate precursor pathway.
+
+        Parameters
+        ----------
+        pathway : Sequence[str] or str
+            One or more reactant SMILES from a candidate retrosynthesis step.
+        visited : set[str]
+            Canonical SMILES already visited on the current branch.
+        depth : int
+            Current recursion depth.
+
+        Returns
+        -------
+        tuple[list[dict[str, Any]], bool]
+            Solved child route nodes and whether all reactants were solved.
+        """
         reactants = [pathway] if isinstance(pathway, str) else list(pathway)
         children: list[dict[str, Any]] = []
         all_solved = True
@@ -217,6 +260,9 @@ class AutoSolver:
     ) -> tuple[dict[str, Any], bool]:
         """Run a single AZ + LLM retrosynthesis pass without recursion.
 
+        Unlike :meth:`solve`, this does not recurse into the proposed
+        precursors. Each precursor is returned as an unsolved leaf.
+
         Parameters
         ----------
         smiles : str
@@ -226,6 +272,17 @@ class AutoSolver:
         -------
         tuple[dict[str, Any], bool]
             Route tree (one level deep) and solved flag.
+
+        Examples
+        --------
+        >>> solver = AutoSolver(
+        ...     az_runner=lambda s, m: (False, []),
+        ...     llm_runner=lambda mol, **kw: ([], [], []),
+        ...     hallucination_mode="none",
+        ... )
+        >>> route, solved = solver.single_step("CC(=O)Oc1ccccc1C(=O)O")
+        >>> solved
+        False
         """
         az_solved, az_routes = self._az_runner(smiles, self.az_model)
         if az_solved and az_routes:
@@ -245,6 +302,9 @@ class AutoSolver:
     def parse(self, route_tree: dict[str, Any], *, solved: bool) -> ParseOutput:
         """Format a route tree into viewer-ready steps and dependencies.
 
+        Delegates to :func:`deepretro.utils.parse.format_output` and appends
+        the ``solved`` flag.
+
         Parameters
         ----------
         route_tree : dict[str, Any]
@@ -256,6 +316,14 @@ class AutoSolver:
         -------
         dict[str, Any]
             Parsed output with ``steps``, ``dependencies``, and ``solved`` keys.
+
+        Examples
+        --------
+        >>> from deepretro.algorithms.autosolve import unsolved_leaf
+        >>> solver = AutoSolver(hallucination_mode="none")
+        >>> result = solver.parse(unsolved_leaf("CCO"), solved=False)
+        >>> result["solved"]
+        False
         """
         output = format_output(route_tree)
         output["solved"] = solved
@@ -265,27 +333,40 @@ class AutoSolver:
         self,
         parsed_output: ParseOutput,
         *,
-        reagent_recommender: Any = None,
-        conditions_recommender: Any = None,
-        literature_recommender: Any = None,
+        reagent_recommender: Callable[..., Any] | None = None,
+        conditions_recommender: Callable[..., Any] | None = None,
+        literature_recommender: Callable[..., Any] | None = None,
     ) -> ParseOutput:
         """Enrich parsed steps with reagent, condition, and literature metadata.
+
+        Iterates each step, builds a ``reactants>>product`` reaction SMILES,
+        and calls :func:`deepretro.metadata.recommend_reaction_metadata`.
+        Injectable recommender callables are forwarded, allowing tests to
+        supply lightweight doubles.
 
         Parameters
         ----------
         parsed_output : dict[str, Any]
             Output from :meth:`parse`.
         reagent_recommender : callable, optional
-            Injectable reagent recommender for testing.
+            Override the default reagent prediction agent.
         conditions_recommender : callable, optional
-            Injectable conditions recommender for testing.
+            Override the default conditions prediction agent.
         literature_recommender : callable, optional
-            Injectable literature recommender for testing.
+            Override the default literature prediction agent.
 
         Returns
         -------
         dict[str, Any]
             The same dict with each step enriched in-place.
+
+        Examples
+        --------
+        >>> from deepretro.algorithms.autosolve import reaction_tree, unsolved_leaf
+        >>> solver = AutoSolver(hallucination_mode="none")
+        >>> tree = reaction_tree("CCO", [unsolved_leaf("C"), unsolved_leaf("O")], [0.8])
+        >>> parsed = solver.parse(tree, solved=True)
+        >>> # enriched = solver.add_metadata(parsed)  # doctest: +SKIP
         """
         from deepretro.metadata import recommend_reaction_metadata
 
@@ -299,7 +380,6 @@ class AutoSolver:
 
             reaction_smiles = f"{reactant_smiles}>>{product_smiles}"
             status, result = recommend_reaction_metadata(
-                reaction_smiles,
                 reaction_smiles,
                 model=self.metadata_model,
                 reagent_recommender=reagent_recommender,
