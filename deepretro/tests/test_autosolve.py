@@ -10,6 +10,7 @@ import deepretro.algorithms.autosolve as autosolve
 from deepretro.algorithms.autosolve import (
     AutoSolver,
     canonicalize,
+    reaction_tree,
     unsolved_leaf,
 )
 
@@ -283,3 +284,324 @@ def test_canonicalize_and_unsolved_leaf_helpers() -> None:
         "in_stock": False,
         "children": [],
     }
+
+
+# ---------------------------------------------------------------------------
+# single_step tests
+# ---------------------------------------------------------------------------
+
+
+def test_single_step_returns_az_route_when_solved(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """single_step() returns AZ result without LLM or recursion."""
+    az_route = solved_route(TARGET)
+    monkeypatch.setattr(
+        autosolve,
+        "run_az",
+        lambda smiles, az_model: (True, [az_route]),
+    )
+
+    route, solved = AutoSolver(hallucination_mode="none").single_step(TARGET)
+
+    assert solved is True
+    assert route == az_route
+
+
+def test_single_step_returns_llm_route_without_recursion(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """single_step() builds a one-level tree from LLM output without recursing."""
+    monkeypatch.setattr(autosolve, "run_az", lambda smiles, az_model: (False, []))
+    monkeypatch.setattr(
+        autosolve,
+        "llm_pipeline",
+        lambda **kwargs: ([[ETHANOL, METHANOL]], ["split"], [0.9]),
+    )
+
+    route, solved = AutoSolver(hallucination_mode="none").single_step(TARGET)
+
+    assert solved is False
+    children = route["children"][0]["children"]
+    assert len(children) == 2
+    assert children[0] == unsolved_leaf(ETHANOL)
+    assert children[1] == unsolved_leaf(METHANOL)
+
+
+def test_single_step_returns_unsolved_leaf_when_no_pathways(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """No AZ or LLM result produces an unsolved leaf."""
+    monkeypatch.setattr(autosolve, "run_az", lambda smiles, az_model: (False, []))
+    monkeypatch.setattr(autosolve, "llm_pipeline", lambda **kwargs: ([], [], []))
+
+    route, solved = AutoSolver(hallucination_mode="none").single_step(TARGET)
+
+    assert solved is False
+    assert route == unsolved_leaf(TARGET)
+
+
+# ---------------------------------------------------------------------------
+# parse tests
+# ---------------------------------------------------------------------------
+
+
+def test_parse_formats_route_tree_into_steps(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """parse() delegates to format_output and adds the solved flag."""
+    fake_output: dict[str, Any] = {"steps": [{"step": "1"}], "dependencies": {"1": []}}
+    monkeypatch.setattr(autosolve, "format_output", lambda tree: dict(fake_output))
+
+    route_tree = reaction_tree(TARGET, [solved_route(ETHANOL)], [0.8])
+    result = AutoSolver(hallucination_mode="none").parse(route_tree, solved=True)
+
+    assert result == {**fake_output, "solved": True}
+
+
+def test_parse_propagates_solved_false(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """parse() correctly propagates unsolved status."""
+    monkeypatch.setattr(
+        autosolve,
+        "format_output",
+        lambda tree: {"steps": [], "dependencies": {}},
+    )
+
+    result = AutoSolver(hallucination_mode="none").parse(
+        unsolved_leaf(TARGET), solved=False
+    )
+
+    assert result["solved"] is False
+
+
+# ---------------------------------------------------------------------------
+# add_metadata tests
+# ---------------------------------------------------------------------------
+
+
+def test_add_metadata_enriches_steps_with_recommendation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """add_metadata() calls recommend_reaction_metadata per step and merges."""
+    captured_calls: list[str] = []
+
+    def fake_recommend(
+        reaction_smiles: str, **kwargs: Any
+    ) -> tuple[int, dict[str, Any]]:
+        captured_calls.append(reaction_smiles)
+        return 200, {
+            "reaction_smiles": reaction_smiles,
+            "reactants": [],
+            "product": [],
+            "reagents": [{"smiles": "O", "reagent_metadata": {"name": "water"}}],
+            "conditions": {
+                "temperature": "25 C",
+                "pressure": "1 atm",
+                "solvent": "water",
+                "time": "1 h",
+            },
+            "literature": {"doi": "10.1000/example"},
+        }
+
+    monkeypatch.setattr(autosolve, "recommend_reaction_metadata", fake_recommend)
+
+    parsed: dict[str, Any] = {
+        "steps": [
+            {
+                "step": "1",
+                "reactants": [{"smiles": "CC", "reactant_metadata": {}}],
+                "reagents": [],
+                "products": [{"smiles": "CCO", "product_metadata": {}}],
+                "conditions": [],
+                "reactionmetrics": [{"scalabilityindex": 0, "closestliterature": ""}],
+            },
+        ],
+        "dependencies": {"1": []},
+        "solved": True,
+    }
+
+    result = AutoSolver(hallucination_mode="none").add_metadata(parsed)
+
+    assert captured_calls == ["CC>>CCO"]
+    step = result["steps"][0]
+    assert step["reagents"] == [{"smiles": "O", "reagent_metadata": {"name": "water"}}]
+    assert step["conditions"] == {
+        "temperature": "25 C",
+        "pressure": "1 atm",
+        "solvent": "water",
+        "time": "1 h",
+    }
+    assert step["reactionmetrics"][0]["closestliterature"] == {"doi": "10.1000/example"}
+
+
+def test_add_metadata_skips_step_on_recommendation_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Metadata failure for one step does not block the pipeline."""
+    monkeypatch.setattr(
+        autosolve,
+        "recommend_reaction_metadata",
+        lambda reaction_smiles, **kwargs: (
+            404,
+            {"stage": "reagents", "error": "fail"},
+        ),
+    )
+
+    parsed: dict[str, Any] = {
+        "steps": [
+            {
+                "step": "1",
+                "reactants": [{"smiles": "CC", "reactant_metadata": {}}],
+                "reagents": [],
+                "products": [{"smiles": "CCO", "product_metadata": {}}],
+                "conditions": [],
+                "reactionmetrics": [{"scalabilityindex": 0, "closestliterature": ""}],
+            },
+        ],
+        "dependencies": {"1": []},
+        "solved": True,
+    }
+
+    result = AutoSolver(hallucination_mode="none").add_metadata(parsed)
+
+    step = result["steps"][0]
+    assert step["reagents"] == []
+    assert step["conditions"] == []
+    assert step["reactionmetrics"][0]["closestliterature"] == ""
+
+
+def test_add_metadata_uses_metadata_model_param(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """add_metadata passes the configured metadata_model."""
+    captured_kwargs: dict[str, Any] = {}
+
+    def fake_recommend(
+        reaction_smiles: str, **kwargs: Any
+    ) -> tuple[int, dict[str, Any]]:
+        captured_kwargs.update(kwargs)
+        return 404, {"stage": "reagents", "error": "fail"}
+
+    monkeypatch.setattr(autosolve, "recommend_reaction_metadata", fake_recommend)
+
+    parsed: dict[str, Any] = {
+        "steps": [
+            {
+                "step": "1",
+                "reactants": [{"smiles": "CC", "reactant_metadata": {}}],
+                "reagents": [],
+                "products": [{"smiles": "CCO", "product_metadata": {}}],
+                "conditions": [],
+                "reactionmetrics": [{"scalabilityindex": 0, "closestliterature": ""}],
+            },
+        ],
+        "dependencies": {"1": []},
+        "solved": True,
+    }
+
+    AutoSolver(hallucination_mode="none", metadata_model="gpt-4o").add_metadata(parsed)
+
+    assert captured_kwargs["model"] == "gpt-4o"
+
+
+def test_add_metadata_handles_multi_reactant_smiles(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Multiple reactants are joined with '.' in the reaction SMILES."""
+    captured_calls: list[str] = []
+
+    def fake_recommend(
+        reaction_smiles: str, **kwargs: Any
+    ) -> tuple[int, dict[str, Any]]:
+        captured_calls.append(reaction_smiles)
+        return 404, {"stage": "reagents", "error": "fail"}
+
+    monkeypatch.setattr(autosolve, "recommend_reaction_metadata", fake_recommend)
+
+    parsed: dict[str, Any] = {
+        "steps": [
+            {
+                "step": "1",
+                "reactants": [
+                    {"smiles": "CC", "reactant_metadata": {}},
+                    {"smiles": "O", "reactant_metadata": {}},
+                ],
+                "reagents": [],
+                "products": [{"smiles": "CCO", "product_metadata": {}}],
+                "conditions": [],
+                "reactionmetrics": [{"scalabilityindex": 0, "closestliterature": ""}],
+            },
+        ],
+        "dependencies": {"1": []},
+        "solved": True,
+    }
+
+    AutoSolver(hallucination_mode="none").add_metadata(parsed)
+
+    assert captured_calls == ["CC.O>>CCO"]
+
+
+# ---------------------------------------------------------------------------
+# autosolve tests
+# ---------------------------------------------------------------------------
+
+
+def test_autosolve_chains_solve_parse_add_metadata(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """autosolve() runs the full pipeline and returns enriched output."""
+    call_order: list[str] = []
+
+    def tracking_solve(
+        self: AutoSolver, smiles: str, **kw: Any
+    ) -> tuple[dict[str, Any], bool]:
+        call_order.append("solve")
+        return solved_route(smiles), True
+
+    def tracking_parse(
+        self: AutoSolver, tree: dict[str, Any], *, solved: bool
+    ) -> dict[str, Any]:
+        call_order.append("parse")
+        return {"steps": [], "dependencies": {}, "solved": solved}
+
+    def tracking_add_metadata(
+        self: AutoSolver, parsed: dict[str, Any]
+    ) -> dict[str, Any]:
+        call_order.append("add_metadata")
+        return parsed
+
+    monkeypatch.setattr(AutoSolver, "solve", tracking_solve)
+    monkeypatch.setattr(AutoSolver, "parse", tracking_parse)
+    monkeypatch.setattr(AutoSolver, "add_metadata", tracking_add_metadata)
+
+    result = AutoSolver(hallucination_mode="none").autosolve(TARGET)
+
+    assert call_order == ["solve", "parse", "add_metadata"]
+    assert result["solved"] is True
+
+
+def test_autosolve_propagates_unsolved_status(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """autosolve() passes solved=False through the pipeline."""
+    monkeypatch.setattr(
+        AutoSolver,
+        "solve",
+        lambda self, smiles, **kw: (unsolved_leaf(smiles), False),
+    )
+    monkeypatch.setattr(
+        autosolve,
+        "format_output",
+        lambda tree: {"steps": [], "dependencies": {}},
+    )
+    monkeypatch.setattr(
+        AutoSolver,
+        "add_metadata",
+        lambda self, parsed: parsed,
+    )
+
+    result = AutoSolver(hallucination_mode="none").autosolve(TARGET)
+
+    assert result["solved"] is False

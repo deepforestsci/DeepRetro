@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+import time
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Optional
@@ -16,7 +18,8 @@ from deepretro.models.hallucination_helpers import (
 )
 from deepretro.utils.az import run_az
 from deepretro.utils.llm_helpers import Pathway
-from deepretro.utils.typing import RouteNode
+from deepretro.utils.parse import format_output
+from deepretro.utils.typing import ParseOutput, RouteNode
 
 logger = structlog.get_logger(__name__)
 
@@ -200,6 +203,122 @@ class AutoSolver:
             all_solved = all_solved and solved
         return children, all_solved
 
+    def single_step(
+        self,
+        smiles: str,
+    ) -> tuple[dict[str, Any], bool]:
+        """Run a single AZ + LLM retrosynthesis pass without recursion.
+
+        Parameters
+        ----------
+        smiles : str
+            Target molecule SMILES.
+
+        Returns
+        -------
+        tuple[dict[str, Any], bool]
+            Route tree (one level deep) and solved flag.
+        """
+        az_solved, az_routes = run_az(smiles=smiles, az_model=self.az_model)
+        if az_solved and az_routes:
+            return dict(az_routes[0]), True
+
+        pathways, explanations, confidence = self._run_llm_fallback(smiles)
+        if not pathways:
+            return unsolved_leaf(smiles), False
+
+        first_pathway = pathways[0]
+        reactants = (
+            [first_pathway] if isinstance(first_pathway, str) else list(first_pathway)
+        )
+        children = [unsolved_leaf(r) for r in reactants]
+        return reaction_tree(smiles, children, confidence), False
+
+    def parse(self, route_tree: dict[str, Any], *, solved: bool) -> ParseOutput:
+        """Format a route tree into viewer-ready steps and dependencies.
+
+        Parameters
+        ----------
+        route_tree : dict[str, Any]
+            Route tree from :meth:`solve` or :meth:`single_step`.
+        solved : bool
+            Whether the route was fully solved.
+
+        Returns
+        -------
+        dict[str, Any]
+            Parsed output with ``steps``, ``dependencies``, and ``solved`` keys.
+        """
+        output = format_output(route_tree)
+        output["solved"] = solved
+        return output
+
+    def add_metadata(self, parsed_output: ParseOutput) -> ParseOutput:
+        """Enrich parsed steps with reagent, condition, and literature metadata.
+
+        Parameters
+        ----------
+        parsed_output : dict[str, Any]
+            Output from :meth:`parse`.
+
+        Returns
+        -------
+        dict[str, Any]
+            The same dict with each step enriched in-place.
+        """
+        for step in parsed_output.get("steps", []):
+            reactant_smiles = ".".join(r["smiles"] for r in step.get("reactants", []))
+            product_smiles = (
+                step["products"][0]["smiles"] if step.get("products") else ""
+            )
+            if not reactant_smiles or not product_smiles:
+                continue
+
+            reaction_smiles = f"{reactant_smiles}>>{product_smiles}"
+            status, result = recommend_reaction_metadata(
+                reaction_smiles,
+                model=self.metadata_model,
+            )
+            if status != 200:
+                logger.info(
+                    "metadata recommendation failed",
+                    step=step["step"],
+                    status=status,
+                )
+                continue
+
+            step["reagents"] = result.get("reagents", [])
+            step["conditions"] = result.get("conditions", {})
+            step["reactionmetrics"][0]["closestliterature"] = result.get(
+                "literature", ""
+            )
+
+        return parsed_output
+
+    def autosolve(self, smiles: str) -> ParseOutput:
+        """Run the full retrosynthesis pipeline: solve, parse, and enrich.
+
+        Parameters
+        ----------
+        smiles : str
+            Target molecule SMILES.
+
+        Returns
+        -------
+        dict[str, Any]
+            Fully enriched output with steps, dependencies, metadata, and
+            solved status.
+        """
+        log = logger.bind(job_id=f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}")
+        log.info("AutoSolver starting", molecule=smiles)
+
+        route_tree, solved = self.solve(smiles)
+        output = self.parse(route_tree, solved=solved)
+        output = self.add_metadata(output)
+
+        log.info("AutoSolver completed", molecule=smiles, solved=solved)
+        return output
+
 
 def canonicalize(smiles: str) -> str:
     """Return canonical SMILES, or the original string if parsing fails.
@@ -246,6 +365,28 @@ def llm_pipeline(**kwargs: Any) -> tuple[list[Pathway], list[str], list[float]]:
     from deepretro.utils.llm import llm_pipeline as package_llm_pipeline
 
     return package_llm_pipeline(**kwargs)
+
+
+def recommend_reaction_metadata(reaction_smiles: str, **kwargs: Any) -> tuple[int, Any]:
+    """Import and call the metadata recommender lazily.
+
+    Parameters
+    ----------
+    reaction_smiles : str
+        Reaction SMILES in ``reactants>>products`` form.
+    **kwargs : Any
+        Forwarded to ``deepretro.metadata.recommend_reaction_metadata``.
+
+    Returns
+    -------
+    tuple[int, Any]
+        Status code and recommendation payload.
+    """
+    from deepretro.metadata import (
+        recommend_reaction_metadata as _recommend,
+    )
+
+    return _recommend(reaction_smiles, **kwargs)
 
 
 def unsolved_leaf(smiles: str) -> dict[str, Any]:
