@@ -11,14 +11,13 @@ from typing import Any, Optional
 import structlog
 
 from deepretro.models.hallucination_helpers import (
-    HallucinationChecker,
     filter_with_checker,
     resolve_hallucination,
 )
 from deepretro.utils.az import run_az
 from deepretro.utils.llm_helpers import Pathway
 from deepretro.utils.parse import format_output
-from deepretro.utils.typing import ParseOutput, RouteNode
+from deepretro.utils.typing import HallucinationChecker, ParseOutput, RouteNode
 from deepretro.utils.utils_molecule import canonicalize
 
 logger = structlog.get_logger(__name__)
@@ -71,7 +70,7 @@ class AutoSolver:
 
     def __init__(
         self,
-        llm: str = "anthropic/claude-opus-4-6:adv",
+        llm: str = "anthropic/claude-sonnet-4-6",
         az_model: str = "Pistachio_100+",
         stability_check: bool = True,
         hallucination_mode: str = "heuristic",
@@ -79,7 +78,7 @@ class AutoSolver:
         max_depth: int = 50,
         enable_thinking: bool = True,
         max_output_tokens: int | None = None,
-        metadata_model: str = "claude-opus-4-20250514",
+        metadata_model: str = "anthropic/claude-sonnet-4-6",
         az_runner: Callable[..., tuple[bool, list[Any]]] | None = None,
         llm_runner: Callable[..., tuple[list[Any], list[str], list[float]]]
         | None = None,
@@ -100,6 +99,8 @@ class AutoSolver:
         self.metadata_model = metadata_model
         self._az_runner = az_runner if az_runner is not None else run_az
         self._llm_runner = llm_runner
+
+    # -- Core pipeline methods ------------------------------------------------
 
     def solve(
         self,
@@ -137,27 +138,32 @@ class AutoSolver:
         >>> solved
         False
         """
+        # Canonicalize to detect cycles across equivalent SMILES representations
         canonical = canonicalize(smiles)
         if depth >= self.max_depth:
             logger.warning("Maximum recursion depth reached", molecule=smiles)
             return unsolved_leaf(smiles), False
 
+        # Track visited molecules per branch to prevent infinite loops
         branch_visited = set() if visited is None else set(visited)
         if canonical in branch_visited:
             logger.warning("Cycle detected in retrosynthesis tree", molecule=smiles)
             return unsolved_leaf(smiles), False
         branch_visited.add(canonical)
 
+        # Try AZ first — template-based, fast, no LLM cost
         az_solved, az_routes = self._az_runner(smiles, self.az_model)
         if az_solved and az_routes:
             logger.info("AiZynthFinder solved molecule", molecule=smiles)
             return dict(az_routes[0]), True
 
-        pathways, explanations, confidence = self._run_llm_fallback(smiles)
+        # AZ failed — fall back to LLM for retrosynthesis proposals
+        pathways, explanations, confidence = self.run_llm(smiles)
         if not pathways:
             logger.info("LLM fallback returned no usable pathways", molecule=smiles)
             return unsolved_leaf(smiles), False
 
+        # Try each proposed pathway; return the first fully-solved one
         first_attempted_children: list[dict[str, Any]] | None = None
         for pathway in pathways:
             candidate_children, candidate_solved = self._solve_pathway(
@@ -165,94 +171,18 @@ class AutoSolver:
                 branch_visited,
                 depth,
             )
+            # Keep the first attempt for partial-result fallback
             if first_attempted_children is None:
                 first_attempted_children = candidate_children
             if candidate_solved:
                 return reaction_tree(smiles, candidate_children, confidence), True
 
+        # No pathway fully solved — return best partial result
         return reaction_tree(
             smiles,
             [] if first_attempted_children is None else first_attempted_children,
             confidence,
         ), False
-
-    def _run_llm_fallback(
-        self,
-        molecule: str,
-    ) -> tuple[list[Pathway], list[str], list[float]]:
-        """Call the LLM pipeline and apply optional ML hallucination filtering.
-
-        Uses the injected ``llm_runner`` if provided, otherwise imports and
-        calls ``deepretro.utils.llm.llm_pipeline`` directly.
-
-        Parameters
-        ----------
-        molecule : str
-            Target molecule SMILES for the LLM pipeline.
-
-        Returns
-        -------
-        tuple[list[Pathway], list[str], list[float]]
-            Filtered pathways, explanations, and confidence scores.
-        """
-        if self._llm_runner is not None:
-            pathways, explanations, confidence = self._llm_runner(
-                molecule,
-                model=self.llm,
-                stability_check=self.stability_check,
-                hallucination_check=self.hallucination_mode == "heuristic",
-                enable_thinking=self.enable_thinking,
-                max_output_tokens=self.max_output_tokens,
-            )
-        else:
-            from deepretro.utils.llm import llm_pipeline
-
-            pathways, explanations, confidence = llm_pipeline(
-                molecule=molecule,
-                model=self.llm,
-                stability_check=self.stability_check,
-                hallucination_check=self.hallucination_mode == "heuristic",
-                enable_thinking=self.enable_thinking,
-                max_output_tokens=self.max_output_tokens,
-            )
-        return filter_with_checker(
-            molecule,
-            pathways,
-            explanations,
-            confidence,
-            self.hallucination_checker,
-        )
-
-    def _solve_pathway(
-        self,
-        pathway: Sequence[str] | str,
-        visited: set[str],
-        depth: int,
-    ) -> tuple[list[dict[str, Any]], bool]:
-        """Solve each reactant in a candidate precursor pathway.
-
-        Parameters
-        ----------
-        pathway : Sequence[str] or str
-            One or more reactant SMILES from a candidate retrosynthesis step.
-        visited : set[str]
-            Canonical SMILES already visited on the current branch.
-        depth : int
-            Current recursion depth.
-
-        Returns
-        -------
-        tuple[list[dict[str, Any]], bool]
-            Solved child route nodes and whether all reactants were solved.
-        """
-        reactants = [pathway] if isinstance(pathway, str) else list(pathway)
-        children: list[dict[str, Any]] = []
-        all_solved = True
-        for reactant in reactants:
-            child, solved = self.solve(reactant, visited, depth + 1)
-            children.append(child)
-            all_solved = all_solved and solved
-        return children, all_solved
 
     def single_step(
         self,
@@ -288,10 +218,11 @@ class AutoSolver:
         if az_solved and az_routes:
             return dict(az_routes[0]), True
 
-        pathways, explanations, confidence = self._run_llm_fallback(smiles)
+        pathways, explanations, confidence = self.run_llm(smiles)
         if not pathways:
             return unsolved_leaf(smiles), False
 
+        # Take the first pathway and wrap each precursor as an unsolved leaf
         first_pathway = pathways[0]
         reactants = (
             [first_pathway] if isinstance(first_pathway, str) else list(first_pathway)
@@ -371,6 +302,7 @@ class AutoSolver:
         from deepretro.metadata import recommend_reaction_metadata
 
         for step in parsed_output.get("steps", []):
+            # Build reaction SMILES: "reactant1.reactant2>>product"
             reactant_smiles = ".".join(r["smiles"] for r in step.get("reactants", []))
             product_smiles = (
                 step["products"][0]["smiles"] if step.get("products") else ""
@@ -395,6 +327,7 @@ class AutoSolver:
                 )
                 continue
 
+            # Merge recommended metadata into the step
             step["reagents"] = result.get("reagents", [])
             step["conditions"] = result.get("conditions", {})
             step["reactionmetrics"][0]["closestliterature"] = result.get(
@@ -432,6 +365,102 @@ class AutoSolver:
 
         log.info("AutoSolver completed", molecule=smiles, solved=solved)
         return output
+
+    # -- Internal helpers -----------------------------------------------------
+
+    def run_llm(
+        self,
+        molecule: str,
+    ) -> tuple[list[Pathway], list[str], list[float]]:
+        """Call the LLM retrosynthesis pipeline and filter hallucinations.
+
+        Uses the injected ``llm_runner`` if provided at construction time,
+        otherwise imports and calls ``deepretro.utils.llm.llm_pipeline``.
+        Results are then passed through the hallucination checker (if any).
+
+        Parameters
+        ----------
+        molecule : str
+            Target molecule SMILES for the LLM pipeline.
+
+        Returns
+        -------
+        tuple[list[Pathway], list[str], list[float]]
+            Filtered pathways, explanations, and confidence scores.
+
+        Examples
+        --------
+        >>> solver = AutoSolver(
+        ...     llm_runner=lambda mol, **kw: ([["CCO"]], ["reduction"], [0.8]),
+        ...     hallucination_mode="none",
+        ... )
+        >>> pathways, explanations, confidence = solver.run_llm("CC=O")
+        >>> pathways
+        [['CCO']]
+        """
+        if self._llm_runner is not None:
+            pathways, explanations, confidence = self._llm_runner(
+                molecule,
+                model=self.llm,
+                stability_check=self.stability_check,
+                hallucination_check=self.hallucination_mode == "heuristic",
+                enable_thinking=self.enable_thinking,
+                max_output_tokens=self.max_output_tokens,
+            )
+        else:
+            from deepretro.utils.llm import llm_pipeline
+
+            pathways, explanations, confidence = llm_pipeline(
+                molecule=molecule,
+                model=self.llm,
+                stability_check=self.stability_check,
+                hallucination_check=self.hallucination_mode == "heuristic",
+                enable_thinking=self.enable_thinking,
+                max_output_tokens=self.max_output_tokens,
+            )
+
+        # Apply ML hallucination filter if configured
+        return filter_with_checker(
+            molecule,
+            pathways,
+            explanations,
+            confidence,
+            self.hallucination_checker,
+        )
+
+    def _solve_pathway(
+        self,
+        pathway: Sequence[str] | str,
+        visited: set[str],
+        depth: int,
+    ) -> tuple[list[dict[str, Any]], bool]:
+        """Solve each reactant in a candidate precursor pathway.
+
+        Parameters
+        ----------
+        pathway : Sequence[str] or str
+            One or more reactant SMILES from a candidate retrosynthesis step.
+        visited : set[str]
+            Canonical SMILES already visited on the current branch.
+        depth : int
+            Current recursion depth.
+
+        Returns
+        -------
+        tuple[list[dict[str, Any]], bool]
+            Solved child route nodes and whether all reactants were solved.
+        """
+        reactants = [pathway] if isinstance(pathway, str) else list(pathway)
+        children: list[dict[str, Any]] = []
+        all_solved = True
+        for reactant in reactants:
+            child, solved = self.solve(reactant, visited, depth + 1)
+            children.append(child)
+            all_solved = all_solved and solved
+        return children, all_solved
+
+
+# -- Module-level route tree builders ----------------------------------------
 
 
 def unsolved_leaf(smiles: str) -> dict[str, Any]:

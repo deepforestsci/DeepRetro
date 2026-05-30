@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import NoReturn, Optional
+from typing import Any, NoReturn, Optional
 
 import pytest
 
+from deepretro.algorithms.autosolve import reaction_tree, unsolved_leaf
 from deepretro.metadata_types import (
     ConditionsPayload,
     ConditionsRecommender,
@@ -214,3 +215,46 @@ def failing_reagent_recommender() -> ReagentRecommender:
         return 404, ""
 
     return _recommender
+
+
+# ---------------------------------------------------------------------------
+# AutoSolver test doubles
+# ---------------------------------------------------------------------------
+
+ASPIRIN = "CC(=O)Oc1ccccc1C(=O)O"
+SALICYLIC_ACID = "OC(=O)c1ccccc1O"
+ACETIC_ANHYDRIDE = "CC(=O)OC(C)=O"
+PARACETAMOL = "CC(=O)Nc1ccc(O)cc1"
+PARA_AMINOPHENOL = "Nc1ccc(O)cc1"
+IBUPROFEN = "CC(C)Cc1ccc(cc1)C(C)C(=O)O"
+CAFFEINE = "Cn1c(=O)c2c(ncn2C)n(C)c1=O"
+ACETIC_ACID = "CC(=O)O"
+
+
+def solved_route(smiles: str) -> dict[str, Any]:
+    """Return a minimal solved route node."""
+    return {
+        "type": "mol",
+        "smiles": smiles,
+        "is_chemical": True,
+        "in_stock": True,
+    }
+
+
+def az_always_fails(smiles: str, az_model: str) -> tuple[bool, list[Any]]:
+    """AZ runner that never solves any molecule."""
+    return False, []
+
+
+def llm_returns_nothing(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+    """LLM runner that returns no pathways."""
+    return [], [], []
+
+
+def aspirin_hydrolysis_tree() -> dict[str, Any]:
+    """Aspirin -> salicylic acid + acetic anhydride (one reaction step)."""
+    return reaction_tree(
+        ASPIRIN,
+        [unsolved_leaf(SALICYLIC_ACID), unsolved_leaf(ACETIC_ANHYDRIDE)],
+        [0.9],
+    )

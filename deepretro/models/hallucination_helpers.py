@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
 from deepretro.utils.llm_helpers import Pathway
-
-HallucinationChecker = Callable[[str, list[Pathway]], tuple[int, list[Pathway]]]
+from deepretro.utils.typing import HallucinationChecker
 
 
 def _as_pathway(candidate: Pathway | str) -> Pathway:

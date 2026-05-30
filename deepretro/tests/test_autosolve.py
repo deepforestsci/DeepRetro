@@ -11,47 +11,21 @@ from deepretro.algorithms.autosolve import (
     reaction_tree,
     unsolved_leaf,
 )
+from deepretro.tests.conftest import (
+    ACETIC_ACID,
+    ACETIC_ANHYDRIDE,
+    ASPIRIN,
+    CAFFEINE,
+    IBUPROFEN,
+    PARA_AMINOPHENOL,
+    PARACETAMOL,
+    SALICYLIC_ACID,
+    aspirin_hydrolysis_tree,
+    az_always_fails,
+    llm_returns_nothing,
+    solved_route,
+)
 from deepretro.utils.utils_molecule import canonicalize
-
-# ---------------------------------------------------------------------------
-# Real molecule SMILES
-# ---------------------------------------------------------------------------
-
-ASPIRIN = "CC(=O)Oc1ccccc1C(=O)O"
-SALICYLIC_ACID = "OC(=O)c1ccccc1O"
-ACETIC_ANHYDRIDE = "CC(=O)OC(C)=O"
-PARACETAMOL = "CC(=O)Nc1ccc(O)cc1"
-PARA_AMINOPHENOL = "Nc1ccc(O)cc1"
-IBUPROFEN = "CC(C)Cc1ccc(cc1)C(C)C(=O)O"
-CAFFEINE = "Cn1c(=O)c2c(ncn2C)n(C)c1=O"
-ACETIC_ACID = "CC(=O)O"
-
-
-def _solved_route(smiles: str) -> dict[str, Any]:
-    """Return a minimal solved route node."""
-    return {
-        "type": "mol",
-        "smiles": smiles,
-        "is_chemical": True,
-        "in_stock": True,
-    }
-
-
-def _az_always_fails(smiles: str, az_model: str) -> tuple[bool, list[Any]]:
-    return False, []
-
-
-def _llm_returns_nothing(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
-    return [], [], []
-
-
-def _aspirin_hydrolysis_tree() -> dict[str, Any]:
-    """Aspirin -> salicylic acid + acetic anhydride (one reaction step)."""
-    return reaction_tree(
-        ASPIRIN,
-        [unsolved_leaf(SALICYLIC_ACID), unsolved_leaf(ACETIC_ANHYDRIDE)],
-        [0.9],
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -117,16 +91,16 @@ class TestReactionTree:
 class TestConstructor:
     def test_preserves_all_options(self) -> None:
         solver = AutoSolver(
-            llm="openai/gpt-4o-mini:adv",
+            llm="anthropic/claude-sonnet-4-6",
             az_model="USPTO",
             stability_check=False,
             hallucination_mode="none",
             max_depth=3,
             enable_thinking=False,
             max_output_tokens=128,
-            metadata_model="gpt-4o",
+            metadata_model="anthropic/claude-sonnet-4-6",
         )
-        assert solver.llm == "openai/gpt-4o-mini:adv"
+        assert solver.llm == "anthropic/claude-sonnet-4-6"
         assert solver.az_model == "USPTO"
         assert solver.stability_check is False
         assert solver.hallucination_mode == "none"
@@ -134,25 +108,25 @@ class TestConstructor:
         assert solver.max_depth == 3
         assert solver.enable_thinking is False
         assert solver.max_output_tokens == 128
-        assert solver.metadata_model == "gpt-4o"
+        assert solver.metadata_model == "anthropic/claude-sonnet-4-6"
 
     def test_defaults(self) -> None:
         solver = AutoSolver(hallucination_mode="none")
-        assert solver.llm == "anthropic/claude-opus-4-6:adv"
+        assert solver.llm == "anthropic/claude-sonnet-4-6"
         assert solver.az_model == "Pistachio_100+"
         assert solver.stability_check is True
         assert solver.max_depth == 50
         assert solver.enable_thinking is True
         assert solver.max_output_tokens is None
-        assert solver.metadata_model == "claude-opus-4-20250514"
+        assert solver.metadata_model == "anthropic/claude-sonnet-4-6"
 
     def test_normalizes_hallucination_mode_to_lowercase(self) -> None:
         solver = AutoSolver(hallucination_mode="NONE")
         assert solver.hallucination_mode == "none"
 
     def test_az_runner_injection(self) -> None:
-        solver = AutoSolver(az_runner=_az_always_fails, hallucination_mode="none")
-        assert solver._az_runner is _az_always_fails
+        solver = AutoSolver(az_runner=az_always_fails, hallucination_mode="none")
+        assert solver._az_runner is az_always_fails
 
     def test_lazy_exports(self) -> None:
         import deepretro
@@ -170,7 +144,7 @@ class TestConstructor:
 class TestSolve:
     def test_az_success_returns_route_for_aspirin(self) -> None:
         def az_solves_aspirin(smiles: str, az_model: str) -> tuple[bool, list]:
-            return True, [_solved_route(smiles)]
+            return True, [solved_route(smiles)]
 
         solver = AutoSolver(az_runner=az_solves_aspirin, hallucination_mode="none")
         route, solved = solver.solve(ASPIRIN)
@@ -183,7 +157,7 @@ class TestSolve:
         llm_calls: list[str] = []
 
         def az_solves(smiles: str, az_model: str) -> tuple[bool, list]:
-            return True, [_solved_route(smiles)]
+            return True, [solved_route(smiles)]
 
         def llm_tracks(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
             llm_calls.append(molecule)
@@ -207,7 +181,7 @@ class TestSolve:
                 canonicalize(SALICYLIC_ACID),
                 canonicalize(ACETIC_ACID),
             }:
-                return True, [_solved_route(smiles)]
+                return True, [solved_route(smiles)]
             return False, []
 
         def llm_proposes_hydrolysis(
@@ -237,7 +211,7 @@ class TestSolve:
             return [[non_canonical]], ["self-reference"], [0.5]
 
         solver = AutoSolver(
-            az_runner=_az_always_fails,
+            az_runner=az_always_fails,
             llm_runner=llm_returns_self,
             hallucination_mode="none",
         )
@@ -262,8 +236,8 @@ class TestSolve:
 
     def test_no_pathways_returns_unsolved_leaf(self) -> None:
         solver = AutoSolver(
-            az_runner=_az_always_fails,
-            llm_runner=_llm_returns_nothing,
+            az_runner=az_always_fails,
+            llm_runner=llm_returns_nothing,
             hallucination_mode="none",
         )
         route, solved = solver.solve(CAFFEINE)
@@ -276,7 +250,7 @@ class TestSolve:
 
         def az_selective(smiles: str, az_model: str) -> tuple[bool, list]:
             if canonicalize(smiles) == canonicalize(ACETIC_ACID):
-                return True, [_solved_route(smiles)]
+                return True, [solved_route(smiles)]
             return False, []
 
         def llm_two_pathways(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
@@ -305,7 +279,7 @@ class TestSolve:
             return [], [], []
 
         solver = AutoSolver(
-            az_runner=_az_always_fails,
+            az_runner=az_always_fails,
             llm_runner=llm_one_unsolvable,
             hallucination_mode="none",
         )
@@ -321,7 +295,7 @@ class TestSolve:
                 canonicalize(PARA_AMINOPHENOL),
                 canonicalize(ACETIC_ANHYDRIDE),
             }:
-                return True, [_solved_route(smiles)]
+                return True, [solved_route(smiles)]
             return False, []
 
         def llm_proposes(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
@@ -352,11 +326,11 @@ class TestSolve:
 
         def az_solves_precursor(smiles: str, az_model: str) -> tuple[bool, list]:
             if canonicalize(smiles) == canonicalize(SALICYLIC_ACID):
-                return True, [_solved_route(smiles)]
+                return True, [solved_route(smiles)]
             return False, []
 
         solver = AutoSolver(
-            llm="openai/gpt-4o-mini",
+            llm="anthropic/claude-sonnet-4-6",
             az_runner=az_solves_precursor,
             llm_runner=llm_captures,
             stability_check=False,
@@ -367,11 +341,37 @@ class TestSolve:
         solver.solve(ASPIRIN)
 
         assert captured["molecule"] == ASPIRIN
-        assert captured["model"] == "openai/gpt-4o-mini"
+        assert captured["model"] == "anthropic/claude-sonnet-4-6"
         assert captured["stability_check"] is False
         assert captured["hallucination_check"] is True
         assert captured["enable_thinking"] is False
         assert captured["max_output_tokens"] == 64
+
+
+# ---------------------------------------------------------------------------
+# run_llm() tests
+# ---------------------------------------------------------------------------
+
+
+class TestRunLlm:
+    def test_returns_pathways_from_injected_runner(self) -> None:
+        def llm_stub(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+            return [["CCO"]], ["reduce"], [0.8]
+
+        solver = AutoSolver(llm_runner=llm_stub, hallucination_mode="none")
+        pathways, explanations, confidence = solver.run_llm(ASPIRIN)
+
+        assert pathways == [["CCO"]]
+        assert explanations == ["reduce"]
+        assert confidence == [0.8]
+
+    def test_returns_empty_when_runner_returns_nothing(self) -> None:
+        solver = AutoSolver(llm_runner=llm_returns_nothing, hallucination_mode="none")
+        pathways, explanations, confidence = solver.run_llm(ASPIRIN)
+
+        assert pathways == []
+        assert explanations == []
+        assert confidence == []
 
 
 # ---------------------------------------------------------------------------
@@ -382,7 +382,7 @@ class TestSolve:
 class TestSingleStep:
     def test_az_success_returns_route(self) -> None:
         def az_solves(smiles: str, az_model: str) -> tuple[bool, list]:
-            return True, [_solved_route(smiles)]
+            return True, [solved_route(smiles)]
 
         solver = AutoSolver(az_runner=az_solves, hallucination_mode="none")
         route, solved = solver.single_step(ASPIRIN)
@@ -399,7 +399,7 @@ class TestSingleStep:
             )
 
         solver = AutoSolver(
-            az_runner=_az_always_fails,
+            az_runner=az_always_fails,
             llm_runner=llm_proposes,
             hallucination_mode="none",
         )
@@ -413,8 +413,8 @@ class TestSingleStep:
 
     def test_no_pathways_returns_unsolved(self) -> None:
         solver = AutoSolver(
-            az_runner=_az_always_fails,
-            llm_runner=_llm_returns_nothing,
+            az_runner=az_always_fails,
+            llm_runner=llm_returns_nothing,
             hallucination_mode="none",
         )
         route, solved = solver.single_step(CAFFEINE)
@@ -431,7 +431,7 @@ class TestSingleStep:
 class TestParse:
     def test_aspirin_hydrolysis_has_correct_product(self) -> None:
         solver = AutoSolver(hallucination_mode="none")
-        result = solver.parse(_aspirin_hydrolysis_tree(), solved=True)
+        result = solver.parse(aspirin_hydrolysis_tree(), solved=True)
 
         assert result["solved"] is True
         assert len(result["steps"]) >= 1
@@ -470,7 +470,6 @@ class TestParse:
 # add_metadata() tests — injectable recommenders, no patching
 # ---------------------------------------------------------------------------
 
-
 try:
     import litellm  # noqa: F401
 
@@ -488,8 +487,10 @@ class TestAddMetadata:
         spy_literature_recommender,
         recommender_calls,
     ) -> None:
-        solver = AutoSolver(hallucination_mode="none", metadata_model="test-model")
-        parsed = solver.parse(_aspirin_hydrolysis_tree(), solved=True)
+        solver = AutoSolver(
+            hallucination_mode="none", metadata_model="anthropic/claude-sonnet-4-6"
+        )
+        parsed = solver.parse(aspirin_hydrolysis_tree(), solved=True)
         result = solver.add_metadata(
             parsed,
             reagent_recommender=spy_reagent_recommender,
@@ -507,7 +508,7 @@ class TestAddMetadata:
         failing_reagent_recommender,
     ) -> None:
         solver = AutoSolver(hallucination_mode="none")
-        parsed = solver.parse(_aspirin_hydrolysis_tree(), solved=True)
+        parsed = solver.parse(aspirin_hydrolysis_tree(), solved=True)
         original_reagents = list(parsed["steps"][0]["reagents"])
 
         result = solver.add_metadata(
@@ -524,8 +525,11 @@ class TestAddMetadata:
         spy_literature_recommender,
         recommender_calls,
     ) -> None:
-        solver = AutoSolver(hallucination_mode="none", metadata_model="custom-model")
-        parsed = solver.parse(_aspirin_hydrolysis_tree(), solved=True)
+        solver = AutoSolver(
+            hallucination_mode="none",
+            metadata_model="anthropic/claude-sonnet-4-6",
+        )
+        parsed = solver.parse(aspirin_hydrolysis_tree(), solved=True)
         solver.add_metadata(
             parsed,
             reagent_recommender=spy_reagent_recommender,
@@ -533,7 +537,7 @@ class TestAddMetadata:
             literature_recommender=spy_literature_recommender,
         )
 
-        assert all("custom-model" in c for c in recommender_calls)
+        assert all("anthropic/claude-sonnet-4-6" in c for c in recommender_calls)
 
     def test_skips_step_with_no_reactants(
         self,
@@ -604,7 +608,7 @@ class TestAutosolve:
         class _SolvedTracker(_TrackingAutoSolver):
             def solve(self, smiles, visited=None, depth=0):
                 self.call_log.append("solve")
-                return _solved_route(smiles), True
+                return solved_route(smiles), True
 
         solver = _SolvedTracker(hallucination_mode="none")
         result = solver.autosolve(ASPIRIN)
