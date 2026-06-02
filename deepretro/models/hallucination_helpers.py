@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 
 from deepretro.utils.llm_helpers import Pathway
@@ -141,7 +140,7 @@ def filter_with_checker(
 
 def resolve_hallucination(
     mode: str,
-    classifier: str | Path | HallucinationPredictor | None,
+    classifier: HallucinationPredictor | None,
 ) -> HallucinationChecker | None:
     """Resolve an AutoSolver hallucination mode into a checker callable.
 
@@ -149,8 +148,9 @@ def resolve_hallucination(
     ----------
     mode : str
         One of ``"heuristic"``, ``"ml"``, or ``"none"``.
-    classifier : str, Path, HallucinationPredictor, or None
-        Saved classifier directory or classifier object for ``"ml"`` mode.
+    classifier : HallucinationPredictor or None
+        Classifier object exposing ``predict_single`` for ``"ml"`` mode.
+        The caller is responsible for loading the model before passing it.
 
     Returns
     -------
@@ -172,17 +172,10 @@ def resolve_hallucination(
             f"hallucination_mode must be 'heuristic', 'ml', or 'none' (got {mode!r})"
         )
 
-    if isinstance(classifier, (str, Path)):
-        from deepretro.models.hallucination_classifier import HallucinationClassifier
-
-        loaded_classifier = HallucinationClassifier()
-        loaded_classifier.load(str(classifier))
-        return build_ml_checker(loaded_classifier)
-
     if isinstance(classifier, HallucinationPredictor):
         return build_ml_checker(classifier)
 
     raise ValueError(
-        "hallucination_mode='ml' requires a HallucinationClassifier instance "
-        "or path to a saved classifier"
+        "hallucination_mode='ml' requires a classifier object exposing "
+        "predict_single(product_smiles, reactants_smiles)"
     )
