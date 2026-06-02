@@ -8,6 +8,7 @@ from typing import Any
 
 from deepretro.utils.llm_helpers import Pathway
 from deepretro.utils.typing import HallucinationChecker
+from deepretro.utils.utils_molecule import is_valid_smiles
 
 
 def _as_pathway(candidate: Pathway | str) -> Pathway:
@@ -30,8 +31,6 @@ def build_ml_checker(classifier: Any) -> HallucinationChecker:
     """
 
     def _checker(product: str, pathways: list[Pathway]) -> tuple[int, list[Pathway]]:
-        from deepretro.utils.utils_molecule import is_valid_smiles
-
         retained: list[Pathway] = []
         for candidate in pathways:
             pathway = _as_pathway(candidate)
@@ -82,18 +81,20 @@ def filter_with_checker(
     if status != 200:
         return [], [], []
 
-    retained_explanations: list[str] = []
-    retained_confidence: list[float] = []
+    matched_pathways: list[Pathway] = []
+    matched_explanations: list[str] = []
+    matched_confidence: list[float] = []
     available = list(zip(pathways, explanations, confidence))
     for retained in retained_pathways:
         for index, (pathway, explanation, score) in enumerate(available):
             if pathway == retained:
-                retained_explanations.append(explanation)
-                retained_confidence.append(float(score))
+                matched_pathways.append(retained)
+                matched_explanations.append(explanation)
+                matched_confidence.append(float(score))
                 available.pop(index)
                 break
 
-    return retained_pathways, retained_explanations, retained_confidence
+    return matched_pathways, matched_explanations, matched_confidence
 
 
 def resolve_hallucination(
