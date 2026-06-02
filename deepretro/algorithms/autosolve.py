@@ -5,7 +5,6 @@ from __future__ import annotations
 import os
 import time
 from collections.abc import Callable, Sequence
-from pathlib import Path
 from typing import Any, Optional
 
 import structlog
@@ -44,9 +43,9 @@ class AutoSolver:
         Hallucination filter strategy. The heuristic mode delegates to the
         package LLM pipeline; ML mode applies the provided classifier after
         the LLM pipeline returns candidates.
-    hallucination_classifier : str, Path, object, or None, optional
-        Saved classifier directory or classifier object for ML hallucination
-        filtering.
+    hallucination_classifier : HallucinationPredictor or None, optional
+        Loaded classifier object for ML hallucination filtering. Must expose
+        ``predict_single(product_smiles, reactants_smiles)``.
     max_depth : int, optional
         Maximum retrosynthesis recursion depth.
     enable_thinking : bool, optional
@@ -71,7 +70,7 @@ class AutoSolver:
         az_model: str = "Pistachio_100+",
         stability_check: bool = True,
         hallucination_mode: str = "heuristic",
-        hallucination_classifier: str | Path | HallucinationPredictor | None = None,
+        hallucination_classifier: HallucinationPredictor | None = None,
         max_depth: int = 50,
         enable_thinking: bool = True,
         max_output_tokens: int | None = None,
