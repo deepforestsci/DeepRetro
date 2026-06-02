@@ -63,15 +63,6 @@ class AutoSolver:
         ``(molecule, **kwargs)`` and returns ``(pathways, explanations,
         confidence)``.
 
-    Examples
-    --------
-    >>> solver = AutoSolver(hallucination_mode="none")
-    >>> # Full pipeline (requires LLM and AZ services):
-    >>> # result = solver.autosolve("CC(=O)Oc1ccccc1C(=O)O")
-    >>> # Individual steps:
-    >>> # route_tree, solved = solver.solve("CC(=O)Oc1ccccc1C(=O)O")
-    >>> # parsed = solver.parse(route_tree, solved=solved)
-    >>> # enriched = solver.add_metadata(parsed)
     """
 
     def __init__(
@@ -89,6 +80,9 @@ class AutoSolver:
         llm_runner: Callable[..., tuple[list[Any], list[str], list[float]]]
         | None = None,
     ) -> None:
+        if max_depth < 0:
+            raise ValueError("max_depth must be non-negative")
+
         self.llm = llm
         self.az_model = az_model
         self.stability_check = stability_check
@@ -105,8 +99,6 @@ class AutoSolver:
         self.metadata_model = metadata_model
         self._az_runner = az_runner if az_runner is not None else run_az
         self._llm_runner = llm_runner
-
-    # -- Core pipeline methods ------------------------------------------------
 
     def solve(
         self,
@@ -144,41 +136,46 @@ class AutoSolver:
         >>> solved
         False
         """
-        # Canonicalize to detect cycles across equivalent SMILES representations
+        smiles = _clean_smiles(smiles)
+        if not smiles:
+            return unsolved_leaf(smiles), False
+
         canonical = canonicalize(smiles)
         if depth >= self.max_depth:
             logger.warning("Maximum recursion depth reached", molecule=smiles)
             return unsolved_leaf(smiles), False
 
-        # Track visited molecules per branch to prevent infinite loops
         branch_visited = set() if visited is None else set(visited)
         if canonical in branch_visited:
             logger.warning("Cycle detected in retrosynthesis tree", molecule=smiles)
             return unsolved_leaf(smiles), False
         branch_visited.add(canonical)
 
-        # Try AZ first — template-based, fast, no LLM cost
         az_solved, az_routes = self._az_runner(smiles, self.az_model)
         if az_solved and az_routes:
             logger.info("AiZynthFinder solved molecule", molecule=smiles)
             return dict(az_routes[0]), True
 
-        # AZ failed — fall back to LLM for retrosynthesis proposals
         pathways, explanations, confidence = self.run_llm(smiles)
         if not pathways:
             logger.info("LLM fallback returned no usable pathways", molecule=smiles)
             return unsolved_leaf(smiles), False
 
-        # Try each proposed pathway; return the first fully-solved one
         first_attempted_children: list[dict[str, Any]] | None = None
+        first_attempted_confidence: list[float] = []
         for i, pathway in enumerate(pathways):
             candidate_children, candidate_solved = self._solve_pathway(
                 pathway,
                 branch_visited,
                 depth,
             )
+            if not candidate_children:
+                continue
             if first_attempted_children is None:
                 first_attempted_children = candidate_children
+                first_attempted_confidence = (
+                    [confidence[i]] if i < len(confidence) else []
+                )
             if candidate_solved:
                 selected_confidence = [confidence[i]] if i < len(confidence) else []
                 return (
@@ -186,10 +183,11 @@ class AutoSolver:
                     True,
                 )
 
+        if first_attempted_children is None:
+            return unsolved_leaf(smiles), False
+
         return reaction_tree(
-            smiles,
-            [] if first_attempted_children is None else first_attempted_children,
-            confidence[:1],
+            smiles, first_attempted_children, first_attempted_confidence
         ), False
 
     def single_step(
@@ -222,6 +220,10 @@ class AutoSolver:
         >>> solved
         False
         """
+        smiles = _clean_smiles(smiles)
+        if not smiles:
+            return unsolved_leaf(smiles), False
+
         az_solved, az_routes = self._az_runner(smiles, self.az_model)
         if az_solved and az_routes:
             return dict(az_routes[0]), True
@@ -230,13 +232,15 @@ class AutoSolver:
         if not pathways:
             return unsolved_leaf(smiles), False
 
-        # Take the first pathway and wrap each precursor as an unsolved leaf
-        first_pathway = pathways[0]
-        reactants = (
-            [first_pathway] if isinstance(first_pathway, str) else list(first_pathway)
-        )
-        children = [unsolved_leaf(r) for r in reactants]
-        return reaction_tree(smiles, children, confidence), False
+        for i, pathway in enumerate(pathways):
+            reactants = _pathway_reactants(pathway)
+            if not reactants:
+                continue
+            children = [unsolved_leaf(r) for r in reactants]
+            selected_confidence = [confidence[i]] if i < len(confidence) else []
+            return reaction_tree(smiles, children, selected_confidence), False
+
+        return unsolved_leaf(smiles), False
 
     def parse(self, route_tree: dict[str, Any], *, solved: bool) -> ParseOutput:
         """Format a route tree into viewer-ready steps and dependencies.
@@ -305,10 +309,10 @@ class AutoSolver:
         >>> solver = AutoSolver(hallucination_mode="none")
         >>> tree = reaction_tree("CCO", [unsolved_leaf("C"), unsolved_leaf("O")], [0.8])
         >>> parsed = solver.parse(tree, solved=True)
-        >>> # enriched = solver.add_metadata(parsed)  # doctest: +SKIP
+        >>> parsed["solved"]
+        True
         """
         for step in parsed_output.get("steps", []):
-            # Build reaction SMILES: "reactant1.reactant2>>product"
             reactant_smiles = ".".join(r["smiles"] for r in step.get("reactants", []))
             product_smiles = (
                 step["products"][0]["smiles"] if step.get("products") else ""
@@ -330,17 +334,17 @@ class AutoSolver:
             if status != 200:
                 logger.info(
                     "metadata recommendation failed",
-                    step=step["step"],
+                    step=step.get("step"),
                     status=status,
                 )
                 continue
 
-            # Merge recommended metadata into the step
             step["reagents"] = result.get("reagents", [])
             step["conditions"] = result.get("conditions", {})
-            step["reactionmetrics"][0]["closestliterature"] = result.get(
-                "literature", ""
-            )
+            reactionmetrics = step.setdefault("reactionmetrics", [])
+            if not reactionmetrics:
+                reactionmetrics.append({"scalabilityindex": 0, "closestliterature": ""})
+            reactionmetrics[0]["closestliterature"] = result.get("literature", "")
 
         return parsed_output
 
@@ -358,13 +362,11 @@ class AutoSolver:
             Fully enriched output with steps, dependencies, metadata, and
             solved status.
 
-        Examples
-        --------
-        >>> solver = AutoSolver(hallucination_mode="none")
-        >>> # result = solver.autosolve("CC(=O)Oc1ccccc1C(=O)O")  # doctest: +SKIP
-        >>> # print(result["solved"], len(result["steps"]))
         """
-        log = logger.bind(job_id=f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}")
+        smiles = _clean_smiles(smiles)
+        log = logger.bind(
+            job_id=(f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}_{time.time_ns()}")
+        )
         log.info("AutoSolver starting", molecule=smiles)
 
         route_tree, solved = self.solve(smiles)
@@ -373,8 +375,6 @@ class AutoSolver:
 
         log.info("AutoSolver completed", molecule=smiles, solved=solved)
         return output
-
-    # -- Internal helpers -----------------------------------------------------
 
     def run_llm(
         self,
@@ -427,7 +427,6 @@ class AutoSolver:
                 max_output_tokens=self.max_output_tokens,
             )
 
-        # Apply ML hallucination filter if configured
         return filter_with_checker(
             molecule,
             pathways,
@@ -458,7 +457,7 @@ class AutoSolver:
         tuple[list[dict[str, Any]], bool]
             Solved child route nodes and whether all reactants were solved.
         """
-        reactants = [pathway] if isinstance(pathway, str) else list(pathway)
+        reactants = _pathway_reactants(pathway)
         if not reactants:
             return [], False
         children: list[dict[str, Any]] = []
@@ -468,9 +467,6 @@ class AutoSolver:
             children.append(child)
             all_solved = all_solved and solved
         return children, all_solved
-
-
-# -- Module-level route tree builders ----------------------------------------
 
 
 def unsolved_leaf(smiles: str) -> dict[str, Any]:
@@ -498,6 +494,26 @@ def unsolved_leaf(smiles: str) -> dict[str, Any]:
         "in_stock": False,
         "children": [],
     }
+
+
+def _clean_smiles(smiles: str) -> str:
+    if not isinstance(smiles, str):
+        raise TypeError("smiles must be a string")
+    return smiles.strip()
+
+
+def _pathway_reactants(pathway: Sequence[str] | str) -> list[str]:
+    if isinstance(pathway, str):
+        return [pathway.strip()] if pathway.strip() else []
+
+    reactants: list[str] = []
+    for reactant in pathway:
+        if not isinstance(reactant, str):
+            raise TypeError("pathway reactants must be strings")
+        reactant = reactant.strip()
+        if reactant:
+            reactants.append(reactant)
+    return reactants
 
 
 def reaction_tree(
