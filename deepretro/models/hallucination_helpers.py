@@ -41,6 +41,18 @@ def build_ml_checker(classifier: HallucinationPredictor) -> HallucinationChecker
     ------
     TypeError
         If *classifier* does not expose ``predict_single``.
+
+    Examples
+    --------
+    >>> class MyClassifier:
+    ...     def predict_single(self, product, reactants):
+    ...         return {"is_hallucination": False}
+    >>> checker = build_ml_checker(MyClassifier())
+    >>> status, retained = checker("CC(=O)Oc1ccccc1C(=O)O", [["OC(=O)c1ccccc1O"]])
+    >>> status
+    200
+    >>> retained
+    [['OC(=O)c1ccccc1O']]
     """
     if not callable(getattr(classifier, "predict_single", None)):
         raise TypeError(
@@ -99,6 +111,20 @@ def filter_with_checker(
         If ``pathways``, ``explanations``, and ``confidence`` have
         different lengths, or if the checker returns a pathway not present
         in the original input.
+
+    Examples
+    --------
+    >>> pathways, expl, conf = filter_with_checker(
+    ...     "CC(=O)Oc1ccccc1C(=O)O",
+    ...     [["OC(=O)c1ccccc1O"], ["CC(=O)O"]],
+    ...     ["hydrolysis", "deacetylation"],
+    ...     [0.3, 0.9],
+    ...     None,
+    ... )
+    >>> pathways
+    [['OC(=O)c1ccccc1O'], ['CC(=O)O']]
+    >>> conf
+    [0.3, 0.9]
     """
     explanation_list = list(explanations)
     confidence_list = list(confidence)
@@ -163,6 +189,19 @@ def resolve_hallucination(
     ValueError
         If *mode* is not one of the three valid options, or if ``"ml"``
         mode is requested without a valid classifier.
+
+    Examples
+    --------
+    >>> resolve_hallucination("none", None) is None
+    True
+    >>> resolve_hallucination("heuristic", None) is None
+    True
+    >>> class MyClassifier:
+    ...     def predict_single(self, product, reactants):
+    ...         return {"is_hallucination": False}
+    >>> checker = resolve_hallucination("ml", MyClassifier())
+    >>> callable(checker)
+    True
     """
     normalized_mode = mode.lower()
     if normalized_mode in {"none", "heuristic"}:
