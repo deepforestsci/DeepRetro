@@ -11,12 +11,18 @@ from typing import Any, Optional
 import structlog
 
 from deepretro.models.hallucination_helpers import (
+    HallucinationPredictor,
     filter_with_checker,
     resolve_hallucination,
 )
 from deepretro.utils.az import run_az
 from deepretro.utils.llm_helpers import Pathway
 from deepretro.utils.parse import format_output
+from deepretro.metadata_types import (
+    ConditionsRecommender,
+    LiteratureRecommender,
+    ReagentRecommender,
+)
 from deepretro.utils.typing import HallucinationChecker, ParseOutput, RouteNode
 from deepretro.utils.utils_molecule import canonicalize
 
@@ -74,7 +80,7 @@ class AutoSolver:
         az_model: str = "Pistachio_100+",
         stability_check: bool = True,
         hallucination_mode: str = "heuristic",
-        hallucination_classifier: str | Path | Any | None = None,
+        hallucination_classifier: str | Path | HallucinationPredictor | None = None,
         max_depth: int = 50,
         enable_thinking: bool = True,
         max_output_tokens: int | None = None,
@@ -165,23 +171,25 @@ class AutoSolver:
 
         # Try each proposed pathway; return the first fully-solved one
         first_attempted_children: list[dict[str, Any]] | None = None
-        for pathway in pathways:
+        for i, pathway in enumerate(pathways):
             candidate_children, candidate_solved = self._solve_pathway(
                 pathway,
                 branch_visited,
                 depth,
             )
-            # Keep the first attempt for partial-result fallback
             if first_attempted_children is None:
                 first_attempted_children = candidate_children
             if candidate_solved:
-                return reaction_tree(smiles, candidate_children, confidence), True
+                selected_confidence = [confidence[i]] if i < len(confidence) else []
+                return (
+                    reaction_tree(smiles, candidate_children, selected_confidence),
+                    True,
+                )
 
-        # No pathway fully solved — return best partial result
         return reaction_tree(
             smiles,
             [] if first_attempted_children is None else first_attempted_children,
-            confidence,
+            confidence[:1],
         ), False
 
     def single_step(
@@ -264,9 +272,9 @@ class AutoSolver:
         self,
         parsed_output: ParseOutput,
         *,
-        reagent_recommender: Callable[..., Any] | None = None,
-        conditions_recommender: Callable[..., Any] | None = None,
-        literature_recommender: Callable[..., Any] | None = None,
+        reagent_recommender: ReagentRecommender | None = None,
+        conditions_recommender: ConditionsRecommender | None = None,
+        literature_recommender: LiteratureRecommender | None = None,
     ) -> ParseOutput:
         """Enrich parsed steps with reagent, condition, and literature metadata.
 
@@ -299,8 +307,6 @@ class AutoSolver:
         >>> parsed = solver.parse(tree, solved=True)
         >>> # enriched = solver.add_metadata(parsed)  # doctest: +SKIP
         """
-        from deepretro.metadata import recommend_reaction_metadata
-
         for step in parsed_output.get("steps", []):
             # Build reaction SMILES: "reactant1.reactant2>>product"
             reactant_smiles = ".".join(r["smiles"] for r in step.get("reactants", []))
@@ -309,6 +315,8 @@ class AutoSolver:
             )
             if not reactant_smiles or not product_smiles:
                 continue
+
+            from deepretro.metadata import recommend_reaction_metadata
 
             reaction_smiles = f"{reactant_smiles}>>{product_smiles}"
             status, result = recommend_reaction_metadata(
@@ -451,6 +459,8 @@ class AutoSolver:
             Solved child route nodes and whether all reactants were solved.
         """
         reactants = [pathway] if isinstance(pathway, str) else list(pathway)
+        if not reactants:
+            return [], False
         children: list[dict[str, Any]] = []
         all_solved = True
         for reactant in reactants:

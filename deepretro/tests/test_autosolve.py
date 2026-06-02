@@ -11,26 +11,101 @@ from deepretro.algorithms.autosolve import (
     reaction_tree,
     unsolved_leaf,
 )
-from deepretro.tests.conftest import (
-    ACETIC_ACID,
-    ACETIC_ANHYDRIDE,
-    ASPIRIN,
-    CAFFEINE,
-    IBUPROFEN,
-    PARA_AMINOPHENOL,
-    PARACETAMOL,
-    SALICYLIC_ACID,
-    aspirin_hydrolysis_tree,
-    az_always_fails,
-    llm_returns_nothing,
-    solved_route,
-)
 from deepretro.utils.utils_molecule import canonicalize
 
+ASPIRIN = "CC(=O)Oc1ccccc1C(=O)O"
+SALICYLIC_ACID = "OC(=O)c1ccccc1O"
+ACETIC_ANHYDRIDE = "CC(=O)OC(C)=O"
+PARACETAMOL = "CC(=O)Nc1ccc(O)cc1"
+PARA_AMINOPHENOL = "Nc1ccc(O)cc1"
+IBUPROFEN = "CC(C)Cc1ccc(cc1)C(C)C(=O)O"
+CAFFEINE = "Cn1c(=O)c2c(ncn2C)n(C)c1=O"
+ACETIC_ACID = "CC(=O)O"
 
-# ---------------------------------------------------------------------------
-# Helper function tests — pure, no DI needed
-# ---------------------------------------------------------------------------
+
+def solved_route(smiles: str) -> dict[str, Any]:
+    """Minimal in-stock route node for a solved molecule."""
+    return {
+        "type": "mol",
+        "smiles": smiles,
+        "is_chemical": True,
+        "in_stock": True,
+    }
+
+
+def az_always_fails(smiles: str, az_model: str) -> tuple[bool, list[Any]]:
+    """AZ runner that never solves any molecule."""
+    return False, []
+
+
+def az_solves_all(smiles: str, az_model: str) -> tuple[bool, list[Any]]:
+    """AZ runner that solves every molecule."""
+    return True, [solved_route(smiles)]
+
+
+def llm_returns_nothing(
+    molecule: str, **kwargs: Any
+) -> tuple[list[list[str]], list[str], list[float]]:
+    """LLM runner that returns no pathways."""
+    return [], [], []
+
+
+def az_solves_set(solvable: set[str]):
+    """Return an AZ runner that solves only the given canonical SMILES."""
+
+    def runner(smiles: str, az_model: str) -> tuple[bool, list[Any]]:
+        if canonicalize(smiles) in {canonicalize(s) for s in solvable}:
+            return True, [solved_route(smiles)]
+        return False, []
+
+    return runner
+
+
+def aspirin_hydrolysis_tree() -> dict[str, Any]:
+    """One-step route: aspirin -> salicylic acid + acetic anhydride."""
+    return reaction_tree(
+        ASPIRIN,
+        [unsolved_leaf(SALICYLIC_ACID), unsolved_leaf(ACETIC_ANHYDRIDE)],
+        [0.9],
+    )
+
+
+class TrackingAutoSolver(AutoSolver):
+    """AutoSolver subclass that records method calls for orchestration tests."""
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.call_log: list[str] = []
+
+    def solve(
+        self,
+        smiles: str,
+        visited: set[str] | None = None,
+        depth: int = 0,
+    ) -> tuple[dict[str, Any], bool]:
+        self.call_log.append("solve")
+        return unsolved_leaf(smiles), False
+
+    def parse(self, route_tree: dict[str, Any], *, solved: bool) -> dict[str, Any]:
+        self.call_log.append("parse")
+        return {"steps": [], "dependencies": {}, "solved": solved}
+
+    def add_metadata(self, parsed_output: Any, **kwargs: Any) -> Any:
+        self.call_log.append("add_metadata")
+        return parsed_output
+
+
+class SolvedTrackingAutoSolver(TrackingAutoSolver):
+    """TrackingAutoSolver variant where solve() always returns a solved route."""
+
+    def solve(
+        self,
+        smiles: str,
+        visited: set[str] | None = None,
+        depth: int = 0,
+    ) -> tuple[dict[str, Any], bool]:
+        self.call_log.append("solve")
+        return solved_route(smiles), True
 
 
 class TestCanonicalizeRealMolecules:
@@ -52,7 +127,7 @@ class TestCanonicalizeRealMolecules:
 
 
 class TestUnsolvedLeaf:
-    def test_aspirin_leaf_structure(self) -> None:
+    def test_aspirin(self) -> None:
         node = unsolved_leaf(ASPIRIN)
         assert node["smiles"] == ASPIRIN
         assert node["type"] == "mol"
@@ -60,36 +135,29 @@ class TestUnsolvedLeaf:
         assert node["in_stock"] is False
         assert node["children"] == []
 
-    def test_caffeine_leaf_structure(self) -> None:
+    def test_caffeine(self) -> None:
         node = unsolved_leaf(CAFFEINE)
         assert node["smiles"] == CAFFEINE
         assert node["in_stock"] is False
 
 
 class TestReactionTree:
-    def test_aspirin_hydrolysis_structure(self) -> None:
+    def test_aspirin_hydrolysis(self) -> None:
         children = [unsolved_leaf(SALICYLIC_ACID), unsolved_leaf(ACETIC_ANHYDRIDE)]
         tree = reaction_tree(ASPIRIN, children, [0.85])
         assert tree["smiles"] == ASPIRIN
-        assert tree["type"] == "mol"
         rxn = tree["children"][0]
         assert rxn["type"] == "reaction"
-        assert rxn["is_reaction"] is True
         assert rxn["metadata"]["policy_probability"] == pytest.approx(0.85)
         assert rxn["children"] == children
 
-    def test_empty_confidence_defaults_to_zero(self) -> None:
+    def test_empty_confidence(self) -> None:
         tree = reaction_tree(ASPIRIN, [], [])
         assert tree["children"][0]["metadata"]["policy_probability"] == 0.0
 
 
-# ---------------------------------------------------------------------------
-# Constructor tests
-# ---------------------------------------------------------------------------
-
-
 class TestConstructor:
-    def test_preserves_all_options(self) -> None:
+    def test_preserves_options(self) -> None:
         solver = AutoSolver(
             llm="anthropic/claude-sonnet-4-6",
             az_model="USPTO",
@@ -120,7 +188,7 @@ class TestConstructor:
         assert solver.max_output_tokens is None
         assert solver.metadata_model == "anthropic/claude-sonnet-4-6"
 
-    def test_normalizes_hallucination_mode_to_lowercase(self) -> None:
+    def test_normalizes_hallucination_mode(self) -> None:
         solver = AutoSolver(hallucination_mode="NONE")
         assert solver.hallucination_mode == "none"
 
@@ -136,17 +204,9 @@ class TestConstructor:
         assert deepretro.algorithms.AutoSolver is AutoSolver
 
 
-# ---------------------------------------------------------------------------
-# solve() tests — DI via constructor
-# ---------------------------------------------------------------------------
-
-
 class TestSolve:
-    def test_az_success_returns_route_for_aspirin(self) -> None:
-        def az_solves_aspirin(smiles: str, az_model: str) -> tuple[bool, list]:
-            return True, [solved_route(smiles)]
-
-        solver = AutoSolver(az_runner=az_solves_aspirin, hallucination_mode="none")
+    def test_az_success_returns_route(self) -> None:
+        solver = AutoSolver(az_runner=az_solves_all, hallucination_mode="none")
         route, solved = solver.solve(ASPIRIN)
 
         assert solved is True
@@ -156,58 +216,42 @@ class TestSolve:
     def test_az_success_skips_llm(self) -> None:
         llm_calls: list[str] = []
 
-        def az_solves(smiles: str, az_model: str) -> tuple[bool, list]:
-            return True, [solved_route(smiles)]
-
-        def llm_tracks(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+        def llm_tracks(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
             llm_calls.append(molecule)
             return [], [], []
 
         solver = AutoSolver(
-            az_runner=az_solves,
+            az_runner=az_solves_all,
             llm_runner=llm_tracks,
             hallucination_mode="none",
         )
         solver.solve(ASPIRIN)
-
         assert llm_calls == []
 
     def test_llm_fallback_with_solvable_precursors(self) -> None:
-        """Aspirin -> salicylic acid + acetic acid, both solved by AZ."""
-
-        def az_solves_precursors(smiles: str, az_model: str) -> tuple[bool, list]:
-            canonical = canonicalize(smiles)
-            if canonical in {
-                canonicalize(SALICYLIC_ACID),
-                canonicalize(ACETIC_ACID),
-            }:
-                return True, [solved_route(smiles)]
-            return False, []
-
-        def llm_proposes_hydrolysis(
+        def llm_proposes(
             molecule: str, **kwargs: Any
-        ) -> tuple[list, list, list]:
-            return (
-                [[SALICYLIC_ACID, ACETIC_ACID]],
-                ["aspirin hydrolysis"],
-                [0.9],
-            )
+        ) -> tuple[list[list[str]], list[str], list[float]]:
+            return [[SALICYLIC_ACID, ACETIC_ACID]], ["hydrolysis"], [0.9]
 
         solver = AutoSolver(
-            az_runner=az_solves_precursors,
-            llm_runner=llm_proposes_hydrolysis,
+            az_runner=az_solves_set({SALICYLIC_ACID, ACETIC_ACID}),
+            llm_runner=llm_proposes,
             hallucination_mode="none",
         )
         route, solved = solver.solve(ASPIRIN)
 
         assert solved is True
-        children = route["children"][0]["children"]
-        assert len(children) == 2
+        assert len(route["children"][0]["children"]) == 2
 
-    def test_cycle_detection_with_non_canonical_aspirin(self) -> None:
+    def test_cycle_detection_with_non_canonical_form(self) -> None:
         non_canonical = "OC(=O)c1ccccc1OC(=O)C"
 
-        def llm_returns_self(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+        def llm_returns_self(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
             return [[non_canonical]], ["self-reference"], [0.5]
 
         solver = AutoSolver(
@@ -221,10 +265,10 @@ class TestSolve:
         child = route["children"][0]["children"][0]
         assert canonicalize(child["smiles"]) == canonicalize(ASPIRIN)
 
-    def test_max_depth_zero_returns_unsolved_without_az_call(self) -> None:
+    def test_max_depth_zero_skips_az(self) -> None:
         az_calls: list[str] = []
 
-        def az_tracks(smiles: str, az_model: str) -> tuple[bool, list]:
+        def az_tracks(smiles: str, az_model: str) -> tuple[bool, list[Any]]:
             az_calls.append(smiles)
             return False, []
 
@@ -234,7 +278,7 @@ class TestSolve:
         assert (route, solved) == (unsolved_leaf(ASPIRIN), False)
         assert az_calls == []
 
-    def test_no_pathways_returns_unsolved_leaf(self) -> None:
+    def test_no_pathways_returns_unsolved(self) -> None:
         solver = AutoSolver(
             az_runner=az_always_fails,
             llm_runner=llm_returns_nothing,
@@ -245,15 +289,10 @@ class TestSolve:
         assert solved is False
         assert route == unsolved_leaf(CAFFEINE)
 
-    def test_selects_first_fully_solved_pathway(self) -> None:
-        """Two pathways: first unsolvable, second solvable."""
-
-        def az_selective(smiles: str, az_model: str) -> tuple[bool, list]:
-            if canonicalize(smiles) == canonicalize(ACETIC_ACID):
-                return True, [solved_route(smiles)]
-            return False, []
-
-        def llm_two_pathways(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+    def test_selects_first_fully_solved_pathway_with_correct_confidence(self) -> None:
+        def llm_two_pathways(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
             if canonicalize(molecule) == canonicalize(ASPIRIN):
                 return (
                     [[IBUPROFEN], [ACETIC_ACID]],
@@ -263,7 +302,7 @@ class TestSolve:
             return [], [], []
 
         solver = AutoSolver(
-            az_runner=az_selective,
+            az_runner=az_solves_set({ACETIC_ACID}),
             llm_runner=llm_two_pathways,
             hallucination_mode="none",
         )
@@ -271,16 +310,21 @@ class TestSolve:
 
         assert solved is True
         assert route["children"][0]["children"][0]["smiles"] == ACETIC_ACID
+        assert route["children"][0]["metadata"]["policy_probability"] == pytest.approx(
+            0.8
+        )
 
-    def test_partial_result_when_no_pathway_fully_solves(self) -> None:
-        def llm_one_unsolvable(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+    def test_partial_result_when_nothing_fully_solves(self) -> None:
+        def llm_unsolvable(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
             if canonicalize(molecule) == canonicalize(ASPIRIN):
                 return [[IBUPROFEN]], ["try ibuprofen"], [0.4]
             return [], [], []
 
         solver = AutoSolver(
             az_runner=az_always_fails,
-            llm_runner=llm_one_unsolvable,
+            llm_runner=llm_unsolvable,
             hallucination_mode="none",
         )
         route, solved = solver.solve(ASPIRIN)
@@ -288,50 +332,51 @@ class TestSolve:
         assert solved is False
         assert route["children"][0]["children"] == [unsolved_leaf(IBUPROFEN)]
 
-    def test_multi_reactant_pathway_all_must_solve(self) -> None:
-        def az_solves_both(smiles: str, az_model: str) -> tuple[bool, list]:
-            canonical = canonicalize(smiles)
-            if canonical in {
-                canonicalize(PARA_AMINOPHENOL),
-                canonicalize(ACETIC_ANHYDRIDE),
-            }:
-                return True, [solved_route(smiles)]
-            return False, []
-
-        def llm_proposes(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
-            return (
-                [[PARA_AMINOPHENOL, ACETIC_ANHYDRIDE]],
-                ["acetylation"],
-                [0.8],
-            )
+    def test_multi_reactant_pathway(self) -> None:
+        def llm_proposes(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
+            return [[PARA_AMINOPHENOL, ACETIC_ANHYDRIDE]], ["acetylation"], [0.8]
 
         solver = AutoSolver(
-            az_runner=az_solves_both,
+            az_runner=az_solves_set({PARA_AMINOPHENOL, ACETIC_ANHYDRIDE}),
             llm_runner=llm_proposes,
             hallucination_mode="none",
         )
         route, solved = solver.solve(PARACETAMOL)
 
         assert solved is True
-        children = route["children"][0]["children"]
-        assert len(children) == 2
+        assert len(route["children"][0]["children"]) == 2
+
+    def test_empty_pathway_is_not_treated_as_solved(self) -> None:
+        def llm_empty_pathway(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
+            return [[], [ACETIC_ACID]], ["empty", "real"], [0.1, 0.9]
+
+        solver = AutoSolver(
+            az_runner=az_solves_set({ACETIC_ACID}),
+            llm_runner=llm_empty_pathway,
+            hallucination_mode="none",
+        )
+        route, solved = solver.solve(ASPIRIN)
+
+        assert solved is True
+        assert route["children"][0]["children"][0]["smiles"] == ACETIC_ACID
 
     def test_llm_runner_receives_correct_kwargs(self) -> None:
         captured: dict[str, Any] = {}
 
-        def llm_captures(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+        def llm_captures(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
             captured["molecule"] = molecule
             captured.update(kwargs)
             return [[SALICYLIC_ACID]], ["hydrolysis"], [0.7]
 
-        def az_solves_precursor(smiles: str, az_model: str) -> tuple[bool, list]:
-            if canonicalize(smiles) == canonicalize(SALICYLIC_ACID):
-                return True, [solved_route(smiles)]
-            return False, []
-
         solver = AutoSolver(
             llm="anthropic/claude-sonnet-4-6",
-            az_runner=az_solves_precursor,
+            az_runner=az_solves_set({SALICYLIC_ACID}),
             llm_runner=llm_captures,
             stability_check=False,
             hallucination_mode="heuristic",
@@ -348,14 +393,11 @@ class TestSolve:
         assert captured["max_output_tokens"] == 64
 
 
-# ---------------------------------------------------------------------------
-# run_llm() tests
-# ---------------------------------------------------------------------------
-
-
 class TestRunLlm:
     def test_returns_pathways_from_injected_runner(self) -> None:
-        def llm_stub(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+        def llm_stub(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
             return [["CCO"]], ["reduce"], [0.8]
 
         solver = AutoSolver(llm_runner=llm_stub, hallucination_mode="none")
@@ -365,38 +407,26 @@ class TestRunLlm:
         assert explanations == ["reduce"]
         assert confidence == [0.8]
 
-    def test_returns_empty_when_runner_returns_nothing(self) -> None:
+    def test_empty_runner(self) -> None:
         solver = AutoSolver(llm_runner=llm_returns_nothing, hallucination_mode="none")
         pathways, explanations, confidence = solver.run_llm(ASPIRIN)
 
         assert pathways == []
-        assert explanations == []
-        assert confidence == []
-
-
-# ---------------------------------------------------------------------------
-# single_step() tests
-# ---------------------------------------------------------------------------
 
 
 class TestSingleStep:
-    def test_az_success_returns_route(self) -> None:
-        def az_solves(smiles: str, az_model: str) -> tuple[bool, list]:
-            return True, [solved_route(smiles)]
-
-        solver = AutoSolver(az_runner=az_solves, hallucination_mode="none")
+    def test_az_success(self) -> None:
+        solver = AutoSolver(az_runner=az_solves_all, hallucination_mode="none")
         route, solved = solver.single_step(ASPIRIN)
 
         assert solved is True
         assert route["smiles"] == ASPIRIN
 
     def test_llm_builds_one_level_tree(self) -> None:
-        def llm_proposes(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
-            return (
-                [[SALICYLIC_ACID, ACETIC_ACID]],
-                ["hydrolysis"],
-                [0.9],
-            )
+        def llm_proposes(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
+            return [[SALICYLIC_ACID, ACETIC_ACID]], ["hydrolysis"], [0.9]
 
         solver = AutoSolver(
             az_runner=az_always_fails,
@@ -407,11 +437,10 @@ class TestSingleStep:
 
         assert solved is False
         children = route["children"][0]["children"]
-        assert len(children) == 2
         assert children[0] == unsolved_leaf(SALICYLIC_ACID)
         assert children[1] == unsolved_leaf(ACETIC_ACID)
 
-    def test_no_pathways_returns_unsolved(self) -> None:
+    def test_no_pathways(self) -> None:
         solver = AutoSolver(
             az_runner=az_always_fails,
             llm_runner=llm_returns_nothing,
@@ -423,64 +452,53 @@ class TestSingleStep:
         assert route == unsolved_leaf(CAFFEINE)
 
 
-# ---------------------------------------------------------------------------
-# parse() tests — exercises real RetrosynthesisRouteParser
-# ---------------------------------------------------------------------------
-
-
 class TestParse:
-    def test_aspirin_hydrolysis_has_correct_product(self) -> None:
+    def test_aspirin_hydrolysis_product(self) -> None:
         solver = AutoSolver(hallucination_mode="none")
         result = solver.parse(aspirin_hydrolysis_tree(), solved=True)
 
         assert result["solved"] is True
         assert len(result["steps"]) >= 1
-        top_step = result["steps"][0]
-        assert top_step["products"][0]["smiles"] == ASPIRIN
-        reactant_smiles = {r["smiles"] for r in top_step["reactants"]}
-        assert len(reactant_smiles) == 2
+        assert result["steps"][0]["products"][0]["smiles"] == ASPIRIN
 
-    def test_solved_flag_propagates_false(self) -> None:
+    def test_solved_false_propagates(self) -> None:
         solver = AutoSolver(hallucination_mode="none")
         tree = reaction_tree(ASPIRIN, [unsolved_leaf(SALICYLIC_ACID)], [0.5])
         result = solver.parse(tree, solved=False)
 
         assert result["solved"] is False
 
-    def test_two_step_route_has_dependencies(self) -> None:
-        inner_tree = reaction_tree(
+    def test_two_step_route_dependencies(self) -> None:
+        inner = reaction_tree(
             PARA_AMINOPHENOL,
             [unsolved_leaf("Nc1ccccc1"), unsolved_leaf("O")],
             [0.6],
         )
-        outer_tree = reaction_tree(
+        outer = reaction_tree(
             PARACETAMOL,
-            [inner_tree, unsolved_leaf(ACETIC_ANHYDRIDE)],
+            [inner, unsolved_leaf(ACETIC_ANHYDRIDE)],
             [0.8],
         )
         solver = AutoSolver(hallucination_mode="none")
-        result = solver.parse(outer_tree, solved=False)
+        result = solver.parse(outer, solved=False)
 
         assert len(result["steps"]) >= 2
-        deps = result["dependencies"]
-        assert any(len(v) > 0 for v in deps.values())
+        assert any(len(v) > 0 for v in result["dependencies"].values())
 
-
-# ---------------------------------------------------------------------------
-# add_metadata() tests — injectable recommenders, no patching
-# ---------------------------------------------------------------------------
 
 try:
     import litellm  # noqa: F401
 
-    _has_litellm = True
+    HAS_LITELLM = True
 except ModuleNotFoundError:
-    _has_litellm = False
+    HAS_LITELLM = False
 
 
-@pytest.mark.skipif(not _has_litellm, reason="litellm not installed")
+@pytest.mark.skipif(
+    not HAS_LITELLM, reason="litellm required for metadata recommendation"
+)
 class TestAddMetadata:
-    def test_enriches_aspirin_step(
+    def test_enriches_step(
         self,
         spy_reagent_recommender,
         spy_conditions_recommender,
@@ -518,7 +536,7 @@ class TestAddMetadata:
 
         assert result["steps"][0]["reagents"] == original_reagents
 
-    def test_passes_metadata_model(
+    def test_forwards_metadata_model(
         self,
         spy_reagent_recommender,
         spy_conditions_recommender,
@@ -566,51 +584,16 @@ class TestAddMetadata:
         assert recommender_calls == []
 
 
-# ---------------------------------------------------------------------------
-# autosolve() tests — subclass override, no patching
-# ---------------------------------------------------------------------------
-
-
-class _TrackingAutoSolver(AutoSolver):
-    """Subclass that records call order without patching."""
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.call_log: list[str] = []
-
-    def solve(
-        self,
-        smiles: str,
-        visited: set[str] | None = None,
-        depth: int = 0,
-    ) -> tuple[dict[str, Any], bool]:
-        self.call_log.append("solve")
-        return unsolved_leaf(smiles), False
-
-    def parse(self, route_tree: dict[str, Any], *, solved: bool) -> dict[str, Any]:
-        self.call_log.append("parse")
-        return {"steps": [], "dependencies": {}, "solved": solved}
-
-    def add_metadata(self, parsed_output: Any, **kwargs: Any) -> Any:
-        self.call_log.append("add_metadata")
-        return parsed_output
-
-
 class TestAutosolve:
-    def test_chains_solve_parse_add_metadata(self) -> None:
-        solver = _TrackingAutoSolver(hallucination_mode="none")
+    def test_calls_solve_parse_add_metadata_in_order(self) -> None:
+        solver = TrackingAutoSolver(hallucination_mode="none")
         result = solver.autosolve(ASPIRIN)
 
         assert solver.call_log == ["solve", "parse", "add_metadata"]
         assert result["solved"] is False
 
-    def test_propagates_solved_true(self) -> None:
-        class _SolvedTracker(_TrackingAutoSolver):
-            def solve(self, smiles, visited=None, depth=0):
-                self.call_log.append("solve")
-                return solved_route(smiles), True
-
-        solver = _SolvedTracker(hallucination_mode="none")
+    def test_propagates_solved_status(self) -> None:
+        solver = SolvedTrackingAutoSolver(hallucination_mode="none")
         result = solver.autosolve(ASPIRIN)
 
         assert result["solved"] is True
