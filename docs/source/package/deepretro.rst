@@ -14,6 +14,8 @@ The package currently provides:
   handcrafted chemistry descriptors.
 - Domain-feature extraction helpers for product/reactant SMILES pairs.
 - AiZynthFinder wrappers for template-based route search.
+- ``AutoSolver`` orchestration that tries AiZynthFinder first and falls back to
+  the package LLM retrosynthesis pipeline.
 - Heuristic hallucination detection and scoring for retrosynthetic steps.
 - ML-based hallucination classification (XGBoost via DeepChem ``GBDTModel``).
 - Dataset loading with DeepChem ``DiskDataset`` sharding and stratified splitting.
@@ -62,6 +64,7 @@ Subpackages
    :maxdepth: 2
 
    deepretro.algorithms.hallucination_checker
+   deepretro.algorithms.autosolve
    deepretro.data.loader
    deepretro.models.hallucination_classifier
    deepretro.metadata

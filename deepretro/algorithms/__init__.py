@@ -13,6 +13,7 @@ from .stability_checker import (
 )
 
 __all__ = [
+    "AutoSolver",
     "calculate_hallucination_score",
     "hallucination_compare_molecules",
     "interpret_score",
@@ -22,3 +23,11 @@ __all__ = [
     "check_carbenes",
     "check_fused_cyclopentane",
 ]
+
+
+def __getattr__(name: str):
+    if name == "AutoSolver":
+        from deepretro.algorithms.autosolve import AutoSolver
+
+        return AutoSolver
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
