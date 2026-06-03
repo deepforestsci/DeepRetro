@@ -34,6 +34,12 @@ docs = [
     "sphinx-autodoc-typehints>=3.0",
     "myst-parser>=4.0",
 ]
+az = [
+    "aizynthfinder>=4.4.0",
+    "numpy>=1.26,<2",
+    "pandas>=2.2,<3",
+    "pillow",
+]
 
 [project.urls]
 Repository = "https://github.com/deepforestsci/DeepRetro"
