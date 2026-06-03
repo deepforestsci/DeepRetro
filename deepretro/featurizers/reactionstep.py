@@ -1,7 +1,22 @@
 """DeepChem-compatible featurizer for reaction-step (product + reactants) pairs."""
 
 import numpy as np
-from deepchem.feat import Featurizer, CircularFingerprint
+
+_DEEPCHEM_IMPORT_ERROR: ModuleNotFoundError | None = None
+
+try:
+    from deepchem.feat import Featurizer, CircularFingerprint
+except ModuleNotFoundError as exc:
+    _DEEPCHEM_IMPORT_ERROR = exc
+
+    class Featurizer:  # type: ignore[override]
+        """Fallback base class when DeepChem dependencies are unavailable."""
+
+    class CircularFingerprint:  # type: ignore[override]
+        def __init__(self, *args, **kwargs) -> None:
+            raise ModuleNotFoundError(
+                "ReactionStepFeaturizer requires DeepChem/TensorFlow to be installed."
+            ) from _DEEPCHEM_IMPORT_ERROR
 
 from deepretro.utils import extract_domain_features_single, NUM_DOMAIN_FEATURES
 
@@ -31,11 +46,11 @@ class ReactionStepFeaturizer(Featurizer):
 
     Examples
     --------
-    >>> from deepretro.featurizers.reactionstep import ReactionStepFeaturizer
-    >>> featurizer = ReactionStepFeaturizer(radius=2, size=2048)
-    >>> reactions = [("CCO", "CC.O"), ("c1ccccc1", "c1ccccc1.Cl")]
-    >>> X = featurizer.featurize(reactions)
-    >>> X.shape
+    >>> from deepretro.featurizers.reactionstep import ReactionStepFeaturizer  # doctest: +SKIP
+    >>> featurizer = ReactionStepFeaturizer(radius=2, size=2048)  # doctest: +SKIP
+    >>> reactions = [("CCO", "CC.O"), ("c1ccccc1", "c1ccccc1.Cl")]  # doctest: +SKIP
+    >>> X = featurizer.featurize(reactions)  # doctest: +SKIP
+    >>> X.shape  # doctest: +SKIP
     (2, 4111)
     """
 

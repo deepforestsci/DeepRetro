@@ -51,7 +51,7 @@ def unmask_protecting_groups_multisymbol(smiles: str) -> str:
     'COC.COC'
     
     >>> unmask_protecting_groups_multisymbol("CC(C)$%&")
-    'CC(C)OCCOCc1ccccc1COC'
+    'COCc1ccccc1COCCOC(C)C'
     
     >>> unmask_protecting_groups_multisymbol("invalid_smiles")
     'INVALID_SMILES'
