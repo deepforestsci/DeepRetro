@@ -14,29 +14,9 @@ from typing import Any, Iterator, List, Optional
 
 import numpy as np
 import pandas as pd
-
-_DEEPCHEM_IMPORT_ERROR: ModuleNotFoundError | None = None
-
-try:
-    from deepchem.data import Dataset, DiskDataset
-    from deepchem.data.data_loader import DataLoader
-    from deepchem.splits import SingletaskStratifiedSplitter
-except ModuleNotFoundError as exc:
-    _DEEPCHEM_IMPORT_ERROR = exc
-    Dataset = Any  # type: ignore[assignment]
-    DiskDataset = Any  # type: ignore[assignment]
-
-    class DataLoader:  # type: ignore[override]
-        def __init__(self, *args, **kwargs) -> None:
-            raise ModuleNotFoundError(
-                "ReactionDataLoader requires DeepChem/TensorFlow to be installed."
-            ) from _DEEPCHEM_IMPORT_ERROR
-
-    class SingletaskStratifiedSplitter:  # type: ignore[override]
-        def __init__(self, *args, **kwargs) -> None:
-            raise ModuleNotFoundError(
-                "stratified_split requires DeepChem/TensorFlow to be installed."
-            ) from _DEEPCHEM_IMPORT_ERROR
+from deepchem.data import Dataset, DiskDataset
+from deepchem.data.data_loader import DataLoader
+from deepchem.splits import SingletaskStratifiedSplitter
 
 from deepretro.featurizers import ReactionStepFeaturizer
 
@@ -69,8 +49,8 @@ class ReactionDataLoader(DataLoader):
 
     Examples
     --------
-    >>> from deepretro.data import ReactionDataLoader  # doctest: +SKIP
-    >>> loader = ReactionDataLoader()  # doctest: +SKIP
+    >>> from deepretro.data import ReactionDataLoader
+    >>> loader = ReactionDataLoader()
     >>> ds = loader.create_dataset("data/dataset.csv")  # doctest: +SKIP
     >>> len(ds)                                          # doctest: +SKIP
     808
@@ -182,7 +162,7 @@ class ReactionDataLoader(DataLoader):
 
         Examples
         --------
-        >>> loader = ReactionDataLoader()  # doctest: +SKIP
+        >>> loader = ReactionDataLoader()
         >>> ds = loader.create_dataset("data/dataset.csv")  # doctest: +SKIP
         """
         if not isinstance(inputs, list):
@@ -258,12 +238,12 @@ def stratified_split(
 
     Examples
     --------
-    >>> import numpy as np  # doctest: +SKIP
-    >>> from deepchem.data import NumpyDataset  # doctest: +SKIP
-    >>> from deepretro.data import stratified_split  # doctest: +SKIP
-    >>> ds = NumpyDataset(X=np.random.rand(100, 10), y=np.array([0]*50 + [1]*50).reshape(-1,1))  # doctest: +SKIP
-    >>> train, valid, test = stratified_split(ds)  # doctest: +SKIP
-    >>> len(train) + len(valid) + len(test) == 100  # doctest: +SKIP
+    >>> import numpy as np
+    >>> from deepchem.data import NumpyDataset
+    >>> from deepretro.data import stratified_split
+    >>> ds = NumpyDataset(X=np.random.rand(100, 10), y=np.array([0]*50 + [1]*50).reshape(-1,1))
+    >>> train, valid, test = stratified_split(ds)
+    >>> len(train) + len(valid) + len(test) == 100
     True
     """
     splitter = SingletaskStratifiedSplitter()

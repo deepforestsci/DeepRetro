@@ -12,62 +12,11 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-
-_DEEPCHEM_IMPORT_ERROR: ModuleNotFoundError | None = None
-
-try:
-    from deepchem.data import Dataset, NumpyDataset
-    from deepchem.metrics import Metric, accuracy_score, f1_score, roc_auc_score
-    from deepchem.models import GBDTModel
-except ModuleNotFoundError as exc:
-    _DEEPCHEM_IMPORT_ERROR = exc
-    Dataset = Any  # type: ignore[assignment]
-
-    class NumpyDataset:  # type: ignore[override]
-        def __init__(self, *args, **kwargs) -> None:
-            raise ModuleNotFoundError(
-                "HallucinationClassifier requires DeepChem/TensorFlow to be installed."
-            ) from _DEEPCHEM_IMPORT_ERROR
-
-    class GBDTModel:  # type: ignore[override]
-        def __init__(self, *args, **kwargs) -> None:
-            raise ModuleNotFoundError(
-                "HallucinationClassifier requires DeepChem/TensorFlow to be installed."
-            ) from _DEEPCHEM_IMPORT_ERROR
-
-    def Metric(*args, **kwargs):  # type: ignore[misc]
-        raise ModuleNotFoundError(
-            "HallucinationClassifier requires DeepChem/TensorFlow to be installed."
-        ) from _DEEPCHEM_IMPORT_ERROR
-
-    def accuracy_score(*args, **kwargs):
-        raise ModuleNotFoundError(
-            "HallucinationClassifier requires DeepChem/TensorFlow to be installed."
-        ) from _DEEPCHEM_IMPORT_ERROR
-
-    def f1_score(*args, **kwargs):
-        raise ModuleNotFoundError(
-            "HallucinationClassifier requires DeepChem/TensorFlow to be installed."
-        ) from _DEEPCHEM_IMPORT_ERROR
-
-    def roc_auc_score(*args, **kwargs):
-        raise ModuleNotFoundError(
-            "HallucinationClassifier requires DeepChem/TensorFlow to be installed."
-        ) from _DEEPCHEM_IMPORT_ERROR
+from deepchem.data import Dataset, NumpyDataset
+from deepchem.metrics import Metric, accuracy_score, f1_score, roc_auc_score
+from deepchem.models import GBDTModel
 from rdkit import Chem
-
-_XGBOOST_IMPORT_ERROR: ModuleNotFoundError | None = None
-
-try:
-    from xgboost import XGBClassifier
-except ModuleNotFoundError as exc:
-    _XGBOOST_IMPORT_ERROR = exc
-
-    class XGBClassifier:  # type: ignore[override]
-        def __init__(self, *args, **kwargs) -> None:
-            raise ModuleNotFoundError(
-                "HallucinationClassifier requires xgboost to be installed."
-            ) from _XGBOOST_IMPORT_ERROR
+from xgboost import XGBClassifier
 
 from deepretro.featurizers import ReactionStepFeaturizer
 from deepretro.utils.metrics import find_optimal_threshold
@@ -106,6 +55,7 @@ def predict_single_reaction(
     clf: "HallucinationClassifier",
     product_smiles: str,
     reactants_smiles: str,
+    threshold: float | None = None,
 ) -> dict[str, Any]:
     """Predict whether a single reaction step is hallucinated.
 
@@ -129,8 +79,8 @@ def predict_single_reaction(
 
     Examples
     --------
-    >>> from deepretro.models import HallucinationClassifier  # doctest: +SKIP
-    >>> clf = HallucinationClassifier()  # doctest: +SKIP
+    >>> from deepretro.models import HallucinationClassifier
+    >>> clf = HallucinationClassifier()
     >>> clf.load("saved_model/")                              # doctest: +SKIP
     >>> predict_single_reaction(clf, "CCO", "CC.O")           # doctest: +SKIP
     {'is_hallucination': False, 'probability': 0.12}
@@ -152,11 +102,23 @@ def predict_single_reaction(
 
     X = clf.featurizer.featurize([(product_smiles, reactants_smiles)])
     ds = NumpyDataset(X=X)
-    probability = clf.predict_probability(ds)[0]
+    _labels, probabilities = clf.predict_probability(ds, threshold=threshold)
+    probability = probabilities[0]
+    resolved_threshold = resolve_prediction_threshold(threshold, clf.threshold)
     return {
-        "is_hallucination": bool(probability >= clf.threshold),
+        "is_hallucination": bool(probability >= resolved_threshold),
         "probability": float(probability),
     }
+
+
+def resolve_prediction_threshold(
+    explicit_threshold: float | None,
+    stored_threshold: float,
+) -> float:
+    """Return the effective threshold for a prediction call."""
+    if explicit_threshold is not None:
+        return explicit_threshold
+    return stored_threshold
 
 
 class HallucinationClassifier(GBDTModel):
@@ -211,9 +173,9 @@ class HallucinationClassifier(GBDTModel):
 
     Examples
     --------
-    >>> from deepretro.models import HallucinationClassifier  # doctest: +SKIP
-    >>> clf = HallucinationClassifier()  # doctest: +SKIP
-    >>> clf.threshold  # doctest: +SKIP
+    >>> from deepretro.models import HallucinationClassifier
+    >>> clf = HallucinationClassifier()
+    >>> clf.threshold
     0.5
     """
 
@@ -322,49 +284,31 @@ class HallucinationClassifier(GBDTModel):
 
     # Prediction
 
-    def predict_probability(self, dataset: Dataset) -> np.ndarray:
+    def predict_probability(
+        self,
+        dataset: Dataset,
+        threshold: float | None = None,
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
-        Return hallucination probabilities for each sample.
+        Return binary labels and hallucination probabilities for each sample.
 
         Parameters
         ----------
         dataset : Dataset
             Data to score.
-
-        Returns
-        -------
-        probabilities : np.ndarray, shape (n_samples,)
-            Probability of the positive class (hallucination).
-        """
-        return self.model.predict_proba(dataset.X)[:, 1]
-
-    def predict_with_threshold(self, dataset: Dataset) -> tuple[np.ndarray, np.ndarray]:
-        """
-        Predict binary labels using the current threshold.
-
-        Unlike the inherited ``predict()`` (which returns raw model
-        output), this applies ``self.threshold`` to produce binary labels.
-
-        Parameters
-        ----------
-        dataset : Dataset
-            Data to classify.
+        threshold : float, optional
+            Decision threshold. Uses ``self.threshold`` when omitted.
 
         Returns
         -------
         labels : np.ndarray, shape (n_samples,)
             Binary predictions (0 or 1).
         probabilities : np.ndarray, shape (n_samples,)
-            Hallucination probabilities.
+            Probability of the positive class (hallucination).
         """
-        probabilities = self.predict_probability(dataset)
-        return (probabilities >= self.threshold).astype(int), probabilities
-
-    def predict_single(
-        self, product_smiles: str, reactants_smiles: str
-    ) -> dict[str, Any]:
-        """Thin wrapper around :func:`predict_single_reaction`."""
-        return predict_single_reaction(self, product_smiles, reactants_smiles)
+        probabilities = self.model.predict_proba(dataset.X)[:, 1]
+        resolved_threshold = resolve_prediction_threshold(threshold, self.threshold)
+        return (probabilities >= resolved_threshold).astype(int), probabilities
 
     # Persistence
 
@@ -399,7 +343,7 @@ class HallucinationClassifier(GBDTModel):
 
         Examples
         --------
-        >>> clf = HallucinationClassifier()  # doctest: +SKIP
+        >>> clf = HallucinationClassifier()
         >>> clf.load("saved_model/")  # doctest: +SKIP
         """
         self.model_dir = str(Path(save_dir))
