@@ -34,11 +34,13 @@ def configure_logging(
     >>> from deepretro.logging import configure_logging
     >>> configure_logging(level="INFO")
     >>> logger = structlog.get_logger(__name__)
-    >>> logger.info("Starting retrosynthesis", molecule="CCO")
+    >>> logger.info("Starting retrosynthesis", molecule="CCO")  # doctest: +ELLIPSIS
+    20... [info     ] Starting retrosynthesis        molecule=CCO
 
     Switch to JSON output when logs are consumed by an external aggregator.
 
     >>> configure_logging(level="DEBUG", json_output=True)
+    >>> structlog.reset_defaults()
     """
     renderer: structlog.types.Processor = (
         structlog.processors.JSONRenderer()

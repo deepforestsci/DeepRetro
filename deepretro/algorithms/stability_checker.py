@@ -70,8 +70,6 @@ Entry points
 * `is_valid_smiles` — quick check that a SMILES string parses.
 """
 
-from __future__ import annotations
-
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 from rdkit.Chem.rdMolDescriptors import (
@@ -104,6 +102,7 @@ def is_valid_smiles(smiles: str) -> bool:
 
     Examples
     --------
+    >>> from deepretro.algorithms.stability_checker import is_valid_smiles
     >>> is_valid_smiles("CCO")
     True
     >>> is_valid_smiles("not_a_molecule")
@@ -184,6 +183,7 @@ def check_molecule_stability(smiles: str) -> dict[str, Any]:
 
     Examples
     --------
+    >>> from deepretro.algorithms.stability_checker import check_molecule_stability
     >>> res = check_molecule_stability("c1ccccc1")  # benzene
     >>> res["assessment"]
     'Likely stable'
@@ -586,7 +586,7 @@ def check_fused_cyclopentane(
     --------
     >>> from rdkit import Chem
     >>> from deepretro.algorithms import check_fused_cyclopentane
-    >>> mol = Chem.MolFromSmiles("C1CC2OCC12")  # epoxycyclopentane
+    >>> mol = Chem.MolFromSmiles("C1CCC2OC12")  # fused cyclopentane + epoxide
     >>> rings = mol.GetRingInfo().AtomRings()
     >>> results = {"issues": []}
     >>> new_score = check_fused_cyclopentane(mol, rings, results, 100)

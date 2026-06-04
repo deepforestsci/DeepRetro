@@ -45,6 +45,7 @@ def is_valid_smiles(smiles: str) -> bool:
 
     Examples
     --------
+    >>> from deepretro.utils.utils_molecule import is_valid_smiles
     >>> is_valid_smiles("CCO")
     True
     >>> is_valid_smiles("not_a_smiles")
@@ -71,6 +72,7 @@ def substructure_matching(target_smiles: str, query_smiles: str) -> int:
 
     Examples
     --------
+    >>> from deepretro.utils.utils_molecule import substructure_matching
     >>> substructure_matching("CCc1ccccc1", "c1ccccc1")
     1
     >>> substructure_matching("CCO", "c1ccccc1")
@@ -119,6 +121,7 @@ def validity_check(
 
     Examples
     --------
+    >>> from deepretro.utils.utils_molecule import validity_check
     >>> original_logger = validity_check.__globals__["logger"]
     >>> class _SilentLogger:
     ...     def info(self, *args, **kwargs):
@@ -198,6 +201,7 @@ def calc_mol_wt(mol: str) -> float:
 
     Examples
     --------
+    >>> from deepretro.utils.utils_molecule import calc_mol_wt
     >>> round(calc_mol_wt("CCO"), 3)
     46.042
     >>> round(calc_mol_wt("C"), 3)
@@ -227,6 +231,7 @@ def calc_chemical_formula(mol: str) -> str:
 
     Examples
     --------
+    >>> from deepretro.utils.utils_molecule import calc_chemical_formula
     >>> calc_chemical_formula("C")
     'CH4'
     >>> calc_chemical_formula("CCO")
@@ -263,6 +268,7 @@ def are_molecules_same(smiles1: str, smiles2: str) -> bool:
 
     Examples
     --------
+    >>> from deepretro.utils.utils_molecule import are_molecules_same
     >>> are_molecules_same("CCO", "OCC")
     True
     >>> are_molecules_same("CCO", "c1ccccc1")
@@ -317,6 +323,7 @@ def compute_fingerprint(
 
     Examples
     --------
+    >>> from deepretro.utils.utils_molecule import compute_fingerprint
     >>> fingerprint = compute_fingerprint("CCO", radius=2, nBits=16)
     >>> len(fingerprint)
     16
@@ -366,6 +373,7 @@ def detect_seven_member_rings(smiles: str) -> bool:
 
     Examples
     --------
+    >>> from deepretro.utils.utils_molecule import detect_seven_member_rings
     >>> detect_seven_member_rings("C1CCCCCC1")
     True
     >>> detect_seven_member_rings("C1CCCCC1")
@@ -395,6 +403,7 @@ def detect_eight_member_rings(smiles: str) -> bool:
 
     Examples
     --------
+    >>> from deepretro.utils.utils_molecule import detect_eight_member_rings
     >>> detect_eight_member_rings("C1CCCCCCC1")
     True
     >>> detect_eight_member_rings("C1CCCCCC1")

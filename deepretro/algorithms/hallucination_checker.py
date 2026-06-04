@@ -193,6 +193,7 @@ def check_ring_substituent_positions(
     Examples
     --------
     >>> from rdkit import Chem
+    >>> from deepretro.algorithms.hallucination_checker import check_ring_substituent_positions
     >>> r_mol = Chem.MolFromSmiles("c1ccc(O)cc1")   # phenol
     >>> p_mol = Chem.MolFromSmiles("c1ccc(O)cc1")   # same phenol
     >>> res = {"detected_issues": [], "substituent_position_changes": []}
@@ -296,6 +297,7 @@ def identify_ring_systems(mol: Chem.Mol) -> list[dict[str, Any]]:
     Examples
     --------
     >>> from rdkit import Chem
+    >>> from deepretro.algorithms.hallucination_checker import identify_ring_systems
     >>> mol = Chem.MolFromSmiles("c1ccccc1")
     >>> rings = identify_ring_systems(mol)
     >>> len(rings)
@@ -354,6 +356,7 @@ def identify_substituents(
     Examples
     --------
     >>> from rdkit import Chem
+    >>> from deepretro.algorithms.hallucination_checker import identify_ring_systems, identify_substituents
     >>> mol = Chem.MolFromSmiles("c1ccc(O)cc1")  # phenol
     >>> rings = identify_ring_systems(mol)
     >>> subs = identify_substituents(mol, rings[0])
@@ -427,6 +430,7 @@ def determine_ring_position(
     Examples
     --------
     >>> from rdkit import Chem
+    >>> from deepretro.algorithms.hallucination_checker import determine_ring_position
     >>> mol = Chem.MolFromSmiles("c1ccc(O)cc1")  # phenol
     >>> ring_atoms = set(range(6))
     >>> pos = determine_ring_position(mol, 3, ring_atoms, 6)
@@ -521,6 +525,7 @@ def get_connected_atoms(
     Examples
     --------
     >>> from rdkit import Chem
+    >>> from deepretro.algorithms.hallucination_checker import get_connected_atoms
     >>> mol = Chem.MolFromSmiles("c1ccc(OC)cc1")  # methoxybenzene
     >>> ring_atoms = set(range(6))
     >>> # atom 6 is the O attached to the ring; BFS from there excluding ring
@@ -571,8 +576,9 @@ def get_substituent_signature(
     Examples
     --------
     >>> from rdkit import Chem
+    >>> from deepretro.algorithms.hallucination_checker import get_substituent_signature
     >>> mol = Chem.MolFromSmiles("c1ccc(O)cc1")  # phenol
-    >>> subst = {"atoms": [6]}  # the oxygen atom
+    >>> subst = {"atoms": [4]}  # the oxygen atom
     >>> get_substituent_signature(mol, subst)
     'O1'
     """
@@ -617,6 +623,7 @@ def get_friendly_substituent_name(signature: str) -> str:
 
     Examples
     --------
+    >>> from deepretro.algorithms.hallucination_checker import get_friendly_substituent_name
     >>> get_friendly_substituent_name("C1")
     'Methyl'
     >>> get_friendly_substituent_name("Br1")

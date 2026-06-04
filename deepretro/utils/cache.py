@@ -104,6 +104,7 @@ def make_args_hash(*args: Any, **kwargs: Any) -> str:
 
     Examples
     --------
+    >>> from deepretro.utils.cache import make_args_hash
     >>> make_args_hash("CCO", az_model="USPTO")
     '6ad01e27a3a319962ad084787e060ab0fa0e661cc7d3e018e96747b06f7bacf7'
     """
@@ -139,6 +140,7 @@ def make_cache_key(namespace: str, *args: Any, version: int = 1, **kwargs: Any) 
 
     Examples
     --------
+    >>> from deepretro.utils.cache import make_cache_key
     >>> make_cache_key("run_az", "CCO", az_model="USPTO", version=1)
     'v1:run_az:6ad01e27a3a319962ad084787e060ab0fa0e661cc7d3e018e96747b06f7bacf7'
     """
@@ -164,7 +166,10 @@ class CacheManager:
 
     Examples
     --------
+    >>> from deepretro.utils.cache import CacheManager, make_cache_key
+    >>> from structlog.testing import CapturingLogger
     >>> cache = CacheManager()
+    >>> cache._log = CapturingLogger()
     >>> key = make_cache_key("call_llm", "CCO", model="gpt-5.4", version=1)
     >>> miss = object()
     >>> cache.get(key, default=miss) is miss
@@ -279,7 +284,10 @@ class CacheManager:
 
         Examples
         --------
+        >>> from deepretro.utils.cache import CacheManager
+        >>> from structlog.testing import CapturingLogger
         >>> cache = CacheManager()
+        >>> cache._log = CapturingLogger()
         >>> miss = object()
         >>> cache.get("missing", default=miss) is miss
         True
@@ -324,7 +332,10 @@ class CacheManager:
 
         Examples
         --------
+        >>> from deepretro.utils.cache import CacheManager
+        >>> from structlog.testing import CapturingLogger
         >>> cache = CacheManager()
+        >>> cache._log = CapturingLogger()
         >>> cache.set("demo", {"smiles": "CCO"}, expire=60, tag="molecule:CCO")
         """
         self.delete_key(key)
@@ -351,7 +362,10 @@ class CacheManager:
 
         Examples
         --------
+        >>> from deepretro.utils.cache import CacheManager
+        >>> from structlog.testing import CapturingLogger
         >>> cache = CacheManager()
+        >>> cache._log = CapturingLogger()
         >>> cache.set("a", 1, tag="batch:1")
         >>> cache.set("b", 2, tag="batch:1")
         >>> cache.evict_tag("batch:1")
@@ -382,7 +396,10 @@ class CacheManager:
 
         Examples
         --------
+        >>> from deepretro.utils.cache import CacheManager
+        >>> from structlog.testing import CapturingLogger
         >>> cache = CacheManager()
+        >>> cache._log = CapturingLogger()
         >>> cache.set("demo", 1)
         >>> stats = cache.stats()
         >>> (stats.hits, stats.misses, stats.num_entries)
