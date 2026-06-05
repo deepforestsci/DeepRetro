@@ -343,7 +343,12 @@ class AutoSolver:
             reactionmetrics = step.setdefault("reactionmetrics", [])
             if not reactionmetrics:
                 reactionmetrics.append({"scalabilityindex": 0, "closestliterature": ""})
-            reactionmetrics[0]["closestliterature"] = result.get("literature", "")
+            # ``literature`` is the recommender payload (typically a
+            # ``{"doi": ...}`` mapping); ``closestliterature`` is a string DOI.
+            literature = result.get("literature", "")
+            if isinstance(literature, dict):
+                literature = literature.get("doi", "")
+            reactionmetrics[0]["closestliterature"] = literature
 
         return parsed_output
 
