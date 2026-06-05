@@ -49,6 +49,7 @@ class SelectiveClassifier:
 
 class TestBuildMlChecker:
     def test_retains_clean_aspirin_precursors(self) -> None:
+        """Clean precursors are all retained and the classifier is called per pathway."""
         classifier = StubClassifier()
         checker = build_ml_checker(classifier)
 
@@ -62,6 +63,7 @@ class TestBuildMlChecker:
         ]
 
     def test_removes_hallucinated_pathway(self) -> None:
+        """A pathway flagged as hallucinated is dropped."""
         classifier = SelectiveClassifier(hallucinated={SALICYLIC_ACID})
         checker = build_ml_checker(classifier)
 
@@ -71,6 +73,7 @@ class TestBuildMlChecker:
         assert retained == [[ACETIC_ACID]]
 
     def test_skips_invalid_smiles_without_calling_classifier(self) -> None:
+        """Invalid SMILES are skipped without invoking the classifier."""
         classifier = StubClassifier()
         checker = build_ml_checker(classifier)
 
@@ -81,6 +84,7 @@ class TestBuildMlChecker:
         assert classifier.calls == []
 
     def test_joins_multi_reactant_pathway_with_dot(self) -> None:
+        """Multi-reactant pathways are dot-joined before classification."""
         classifier = StubClassifier()
         checker = build_ml_checker(classifier)
 
@@ -136,12 +140,15 @@ class TestBuildMlChecker:
         assert classifier.calls == [(ASPIRIN, SALICYLIC_ACID)]
 
     def test_rejects_classifier_without_predict_single(self) -> None:
+        """A classifier lacking predict_single raises TypeError."""
         with pytest.raises(TypeError, match="predict_single"):
             build_ml_checker(object())  # type: ignore[arg-type]
 
 
 class TestFilterWithChecker:
     def test_retains_aligned_metadata_after_filtering(self) -> None:
+        """Explanations and confidence stay aligned with retained pathways."""
+
         def keep_second(
             product: str, pathways: list[list[str]]
         ) -> tuple[int, list[list[str]]]:
@@ -160,6 +167,7 @@ class TestFilterWithChecker:
         assert confidence == [0.9]
 
     def test_none_checker_passes_through(self) -> None:
+        """A None checker returns the inputs unchanged."""
         pathways, explanations, confidence = filter_with_checker(
             ASPIRIN,
             [[SALICYLIC_ACID], [ACETIC_ACID]],
@@ -173,6 +181,8 @@ class TestFilterWithChecker:
         assert confidence == [0.1, 0.9]
 
     def test_non_200_status_drops_everything(self) -> None:
+        """A non-200 checker status drops all pathways and metadata."""
+
         def fail(
             product: str, pathways: list[list[str]]
         ) -> tuple[int, list[list[str]]]:
@@ -183,6 +193,8 @@ class TestFilterWithChecker:
         assert result == ([], [], [])
 
     def test_duplicate_pathways_consume_metadata_in_order(self) -> None:
+        """Duplicate retained pathways consume their metadata in order."""
+
         def return_dupes(
             product: str, pathways: list[list[str]]
         ) -> tuple[int, list[list[str]]]:
@@ -201,6 +213,7 @@ class TestFilterWithChecker:
         assert confidence == [0.1, 0.2]
 
     def test_empty_pathways_returns_empty(self) -> None:
+        """Empty inputs return empty outputs."""
         pathways, explanations, confidence = filter_with_checker(
             ASPIRIN, [], [], [], None
         )
@@ -233,6 +246,7 @@ class TestFilterWithChecker:
             )
 
     def test_shorter_confidence_raises(self) -> None:
+        """A shorter confidence list raises a length-mismatch ValueError."""
         with pytest.raises(ValueError, match="same length"):
             filter_with_checker(
                 ASPIRIN,
@@ -245,20 +259,25 @@ class TestFilterWithChecker:
 
 class TestResolveHallucination:
     def test_none_mode(self) -> None:
+        """'none' mode resolves to no checker."""
         assert resolve_hallucination("none", None) is None
 
     def test_heuristic_mode(self) -> None:
+        """'heuristic' mode resolves to None (handled by the LLM pipeline)."""
         assert resolve_hallucination("heuristic", None) is None
 
     def test_case_insensitive(self) -> None:
+        """Mode strings are matched case-insensitively."""
         assert resolve_hallucination("NONE", None) is None
         assert resolve_hallucination("Heuristic", None) is None
 
     def test_ml_mode_without_classifier_raises(self) -> None:
+        """'ml' mode without a classifier raises ValueError."""
         with pytest.raises(ValueError, match="requires"):
             resolve_hallucination("ml", None)
 
     def test_unknown_mode_raises(self) -> None:
+        """An unrecognized mode raises ValueError."""
         with pytest.raises(ValueError, match="hallucination_mode"):
             resolve_hallucination("unknown", None)
 
