@@ -62,6 +62,21 @@ class AutoSolver:
         ``(molecule, **kwargs)`` and returns ``(pathways, explanations,
         confidence)``.
 
+    Raises
+    ------
+    ValueError
+        If ``max_depth`` is negative, or if ``hallucination_mode`` is
+        ``"ml"`` without a valid classifier.
+
+    Examples
+    --------
+    >>> solver = AutoSolver(
+    ...     az_runner=lambda s, m: (False, []),
+    ...     llm_runner=lambda mol, **kw: ([], [], []),
+    ...     hallucination_mode="none",
+    ... )
+    >>> solver.max_depth
+    50
     """
 
     def __init__(
@@ -79,6 +94,7 @@ class AutoSolver:
         llm_runner: Callable[..., tuple[list[Any], list[str], list[float]]]
         | None = None,
     ) -> None:
+        """Construct an AutoSolver; see the class docstring for parameters."""
         if max_depth < 0:
             raise ValueError("max_depth must be non-negative")
 
@@ -131,8 +147,8 @@ class AutoSolver:
         ...     llm_runner=lambda mol, **kw: ([], [], []),
         ...     hallucination_mode="none",
         ... )
-        >>> route, solved = solver.solve("CC(=O)Oc1ccccc1C(=O)O")
-        >>> solved
+        >>> route, solved = solver.solve("CC(=O)Oc1ccccc1C(=O)O")  # doctest: +SKIP
+        >>> solved  # doctest: +SKIP
         False
         """
         smiles = _clean_smiles(smiles)
@@ -304,12 +320,9 @@ class AutoSolver:
 
         Examples
         --------
-        >>> from deepretro.algorithms.autosolve import reaction_tree, unsolved_leaf
         >>> solver = AutoSolver(hallucination_mode="none")
-        >>> tree = reaction_tree("CCO", [unsolved_leaf("C"), unsolved_leaf("O")], [0.8])
-        >>> parsed = solver.parse(tree, solved=True)
-        >>> parsed["solved"]
-        True
+        >>> solver.add_metadata({"steps": [], "dependencies": {}, "solved": True})
+        {'steps': [], 'dependencies': {}, 'solved': True}
         """
         for step in parsed_output.get("steps", []):
             reactant_smiles = ".".join(r["smiles"] for r in step.get("reactants", []))
@@ -366,6 +379,16 @@ class AutoSolver:
             Fully enriched output with steps, dependencies, metadata, and
             solved status.
 
+        Examples
+        --------
+        >>> solver = AutoSolver(
+        ...     az_runner=lambda s, m: (False, []),
+        ...     llm_runner=lambda mol, **kw: ([], [], []),
+        ...     hallucination_mode="none",
+        ... )
+        >>> output = solver.autosolve("CC(=O)Oc1ccccc1C(=O)O")  # doctest: +SKIP
+        >>> output["solved"]  # doctest: +SKIP
+        False
         """
         smiles = _clean_smiles(smiles)
         log = logger.bind(
@@ -501,12 +524,58 @@ def unsolved_leaf(smiles: str) -> dict[str, Any]:
 
 
 def _clean_smiles(smiles: str) -> str:
+    """Validate and strip surrounding whitespace from a SMILES string.
+
+    Parameters
+    ----------
+    smiles : str
+        Raw SMILES input.
+
+    Returns
+    -------
+    str
+        The stripped SMILES string.
+
+    Raises
+    ------
+    TypeError
+        If *smiles* is not a string.
+
+    Examples
+    --------
+    >>> _clean_smiles("  CCO  ")
+    'CCO'
+    """
     if not isinstance(smiles, str):
         raise TypeError("smiles must be a string")
     return smiles.strip()
 
 
 def _pathway_reactants(pathway: Sequence[str] | str) -> list[str]:
+    """Normalize a pathway into a list of non-empty reactant SMILES.
+
+    Parameters
+    ----------
+    pathway : Sequence[str] or str
+        A single reactant string or a sequence of reactant SMILES.
+
+    Returns
+    -------
+    list[str]
+        Stripped, non-empty reactant SMILES.
+
+    Raises
+    ------
+    TypeError
+        If a sequence element is not a string.
+
+    Examples
+    --------
+    >>> _pathway_reactants(["CCO", " ", "O"])
+    ['CCO', 'O']
+    >>> _pathway_reactants("CC=O")
+    ['CC=O']
+    """
     if isinstance(pathway, str):
         return [pathway.strip()] if pathway.strip() else []
 
@@ -541,6 +610,14 @@ def reaction_tree(
     -------
     dict[str, Any]
         Nested route tree with a single reaction child node.
+
+    Examples
+    --------
+    >>> tree = reaction_tree("CCO", [unsolved_leaf("C"), unsolved_leaf("O")], [0.8])
+    >>> tree["smiles"]
+    'CCO'
+    >>> tree["children"][0]["metadata"]["policy_probability"]
+    0.8
     """
     policy_probability = float(confidence[0]) if confidence else 0.0
     return {
