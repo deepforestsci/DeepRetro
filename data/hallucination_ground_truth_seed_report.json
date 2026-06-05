@@ -1,0 +1,118 @@
+{
+  "row_count": 30,
+  "label_counts_by_source": {
+    "expert": {
+      "1": 20,
+      "0": 10
+    }
+  },
+  "label_counts_by_primary_tag": {
+    "atom_or_mass_balance_error": {
+      "1": 1
+    },
+    "structural_topology_error": {
+      "1": 4
+    },
+    "non_disconnection_or_no_progress": {
+      "1": 12
+    },
+    "regio_or_site_error": {
+      "1": 1
+    },
+    "unstable_or_nonviable_intermediate": {
+      "1": 1
+    },
+    "protecting_group_strategy_error": {
+      "1": 1
+    },
+    "clean_or_plausible_step": {
+      "0": 10
+    }
+  },
+  "label_counts_by_secondary_tag": {
+    "atom_loss": {
+      "1": 1
+    },
+    "ring_size_change": {
+      "1": 1
+    },
+    "major_scaffold_loss": {
+      "1": 1
+    },
+    "no_fragment_simplification": {
+      "1": 8
+    },
+    "wrong_functional_group_position": {
+      "1": 1
+    },
+    "fragment_connector_hallucination": {
+      "1": 1
+    },
+    "strained_intermediate": {
+      "1": 1
+    },
+    "unnecessary_protection": {
+      "1": 1
+    },
+    "core_unchanged": {
+      "1": 4
+    },
+    "invented_ring": {
+      "1": 1
+    }
+  },
+  "taxonomy": {
+    "structural_topology_error": [
+      "ring_size_change",
+      "invented_ring",
+      "invented_attachment",
+      "fragment_connector_hallucination",
+      "major_scaffold_loss"
+    ],
+    "atom_or_mass_balance_error": [
+      "atom_loss",
+      "atom_gain",
+      "hidden_deamination",
+      "carbon_count_increase",
+      "wrong_atom_identity"
+    ],
+    "mechanistic_impossibility": [
+      "reagent_role_error",
+      "fictional_one_pot",
+      "unsupported_ring_closure",
+      "forbidden_bond_rearrangement",
+      "selectivity_without_basis"
+    ],
+    "unstable_or_nonviable_intermediate": [
+      "gem_diamine_instability",
+      "strained_intermediate",
+      "nonisolable_precursor",
+      "hydrolytically_unstable_intermediate"
+    ],
+    "non_disconnection_or_no_progress": [
+      "core_unchanged",
+      "trivial_reduction_only",
+      "no_fragment_simplification",
+      "overbreaking_without_strategy"
+    ],
+    "protecting_group_strategy_error": [
+      "unnecessary_protection",
+      "unnecessary_deprotection",
+      "worse_protecting_group_swap"
+    ],
+    "regio_or_site_error": [
+      "wrong_functional_group_position",
+      "wrong_cleavage_site",
+      "wrong_coupling_site"
+    ],
+    "multi_step_conflation": [
+      "reduction_plus_coupling",
+      "cascade_without_basis"
+    ],
+    "clean_or_plausible_step": [
+      "reasonable_disconnection",
+      "literature_like_transformation",
+      "acceptable_protecting_group_step"
+    ]
+  }
+}
