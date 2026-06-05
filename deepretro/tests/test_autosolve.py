@@ -172,6 +172,7 @@ def aspirin_hydrolysis_tree() -> dict[str, Any]:
 
 class TestUnsolvedLeaf:
     def test_aspirin(self) -> None:
+        """Unsolved leaf for aspirin has the expected mol-node fields."""
         node = unsolved_leaf(ASPIRIN)
         assert node["smiles"] == ASPIRIN
         assert node["type"] == "mol"
@@ -180,6 +181,7 @@ class TestUnsolvedLeaf:
         assert node["children"] == []
 
     def test_caffeine(self) -> None:
+        """Unsolved leaf for caffeine is marked not in stock."""
         node = unsolved_leaf(CAFFEINE)
         assert node["smiles"] == CAFFEINE
         assert node["in_stock"] is False
@@ -187,6 +189,7 @@ class TestUnsolvedLeaf:
 
 class TestReactionTree:
     def test_aspirin_hydrolysis(self) -> None:
+        """Reaction tree nests children and stores confidence as policy_probability."""
         children = [unsolved_leaf(SALICYLIC_ACID), unsolved_leaf(ACETIC_ANHYDRIDE)]
         tree = reaction_tree(ASPIRIN, children, [0.85])
         assert tree["smiles"] == ASPIRIN
@@ -196,12 +199,14 @@ class TestReactionTree:
         assert rxn["children"] == children
 
     def test_empty_confidence(self) -> None:
+        """Empty confidence defaults policy_probability to 0.0."""
         tree = reaction_tree(ASPIRIN, [], [])
         assert tree["children"][0]["metadata"]["policy_probability"] == 0.0
 
 
 class TestConstructor:
     def test_preserves_options(self) -> None:
+        """Constructor stores all explicitly provided options."""
         solver = AutoSolver(
             llm="anthropic/claude-sonnet-4-6",
             az_model="USPTO",
@@ -223,6 +228,7 @@ class TestConstructor:
         assert solver.metadata_model == "anthropic/claude-sonnet-4-6"
 
     def test_defaults(self) -> None:
+        """Constructor applies the documented default options."""
         solver = AutoSolver(hallucination_mode="none")
         assert solver.llm == "anthropic/claude-sonnet-4-6"
         assert solver.az_model == "Pistachio_100+"
@@ -233,16 +239,19 @@ class TestConstructor:
         assert solver.metadata_model == "anthropic/claude-sonnet-4-6"
 
     def test_normalizes_hallucination_mode(self) -> None:
+        """hallucination_mode is lower-cased on construction."""
         solver = AutoSolver(hallucination_mode="NONE")
         assert solver.hallucination_mode == "none"
 
     def test_rejects_negative_max_depth(self) -> None:
+        """A negative max_depth raises ValueError."""
         with pytest.raises(ValueError, match="max_depth"):
             AutoSolver(hallucination_mode="none", max_depth=-1)
 
 
 class TestSolve:
     def test_az_success_returns_route(self) -> None:
+        """AZ success returns the AZ route marked solved."""
         solver = AutoSolver(az_runner=az_solves_all, hallucination_mode="none")
         route, solved = solver.solve(ASPIRIN)
 
@@ -251,6 +260,7 @@ class TestSolve:
         assert route["in_stock"] is True
 
     def test_az_success_skips_llm(self) -> None:
+        """LLM fallback is skipped when AZ already solves the target."""
         llm_runner = RecordingLlmRunner()
         solver = AutoSolver(
             az_runner=az_solves_all,
@@ -261,6 +271,7 @@ class TestSolve:
         assert llm_runner.calls == []
 
     def test_llm_fallback_with_solvable_precursors(self) -> None:
+        """LLM fallback solves when its precursors are AZ-solvable."""
         solver = AutoSolver(
             az_runner=SelectiveAzRunner({SALICYLIC_ACID, ACETIC_ACID}),
             llm_runner=llm_proposes_hydrolysis,
@@ -272,6 +283,7 @@ class TestSolve:
         assert len(route["children"][0]["children"]) == 2
 
     def test_cycle_detection_with_non_canonical_form(self) -> None:
+        """A precursor equal to the target (non-canonical) is detected as a cycle."""
         solver = AutoSolver(
             az_runner=az_always_fails,
             llm_runner=llm_returns_aspirin_self_reference,
@@ -284,6 +296,7 @@ class TestSolve:
         assert canonicalize(child["smiles"]) == canonicalize(ASPIRIN)
 
     def test_max_depth_zero_skips_az(self) -> None:
+        """max_depth=0 returns an unsolved leaf without calling AZ."""
         az_runner = RecordingAzRunner()
         solver = AutoSolver(az_runner=az_runner, hallucination_mode="none", max_depth=0)
         route, solved = solver.solve(ASPIRIN)
@@ -292,6 +305,7 @@ class TestSolve:
         assert az_runner.calls == []
 
     def test_empty_input_skips_az_and_llm(self) -> None:
+        """Blank input short-circuits before AZ and LLM are called."""
         az_runner = RecordingAzRunner()
         llm_runner = RecordingLlmRunner()
         solver = AutoSolver(
@@ -306,6 +320,7 @@ class TestSolve:
         assert llm_runner.calls == []
 
     def test_no_pathways_returns_unsolved(self) -> None:
+        """No LLM pathways yields an unsolved leaf."""
         solver = AutoSolver(
             az_runner=az_always_fails,
             llm_runner=llm_returns_nothing,
@@ -317,6 +332,7 @@ class TestSolve:
         assert route == unsolved_leaf(CAFFEINE)
 
     def test_selects_first_fully_solved_pathway_with_correct_confidence(self) -> None:
+        """The first fully solved pathway is chosen with its own confidence."""
         solver = AutoSolver(
             az_runner=SelectiveAzRunner({ACETIC_ACID}),
             llm_runner=llm_two_pathways,
@@ -331,6 +347,7 @@ class TestSolve:
         )
 
     def test_partial_result_when_nothing_fully_solves(self) -> None:
+        """When nothing fully solves, the first attempted pathway is returned unsolved."""
         solver = AutoSolver(
             az_runner=az_always_fails,
             llm_runner=llm_unsolvable_ibuprofen,
@@ -342,6 +359,7 @@ class TestSolve:
         assert route["children"][0]["children"] == [unsolved_leaf(IBUPROFEN)]
 
     def test_multi_reactant_pathway(self) -> None:
+        """A multi-reactant pathway solves when all reactants are AZ-solvable."""
         solver = AutoSolver(
             az_runner=SelectiveAzRunner({PARA_AMINOPHENOL, ACETIC_ANHYDRIDE}),
             llm_runner=llm_proposes_paracetamol_acetylation,
@@ -353,6 +371,7 @@ class TestSolve:
         assert len(route["children"][0]["children"]) == 2
 
     def test_empty_pathway_is_not_treated_as_solved(self) -> None:
+        """An empty pathway is skipped in favour of the next candidate."""
         solver = AutoSolver(
             az_runner=SelectiveAzRunner({ACETIC_ACID}),
             llm_runner=llm_empty_then_acetic_acid,
@@ -367,6 +386,7 @@ class TestSolve:
         )
 
     def test_llm_runner_receives_correct_kwargs(self) -> None:
+        """Solver forwards its configured options to the LLM runner."""
         llm_runner = CapturingLlmRunner()
         solver = AutoSolver(
             llm="anthropic/claude-sonnet-4-6",
@@ -390,6 +410,7 @@ class TestSolve:
 
 class TestRunLlm:
     def test_returns_pathways_from_injected_runner(self) -> None:
+        """run_llm returns the injected runner's pathways, explanations, and confidence."""
         solver = AutoSolver(llm_runner=llm_stub_reduction, hallucination_mode="none")
         pathways, explanations, confidence = solver.run_llm(ASPIRIN)
 
@@ -398,6 +419,7 @@ class TestRunLlm:
         assert confidence == [0.8]
 
     def test_empty_runner(self) -> None:
+        """run_llm returns empty results when the runner yields nothing."""
         solver = AutoSolver(llm_runner=llm_returns_nothing, hallucination_mode="none")
         pathways, explanations, confidence = solver.run_llm(ASPIRIN)
 
@@ -408,6 +430,7 @@ class TestRunLlm:
 
 class TestSingleStep:
     def test_az_success(self) -> None:
+        """single_step returns the AZ route when AZ solves the target."""
         solver = AutoSolver(az_runner=az_solves_all, hallucination_mode="none")
         route, solved = solver.single_step(ASPIRIN)
 
@@ -415,6 +438,7 @@ class TestSingleStep:
         assert route["smiles"] == ASPIRIN
 
     def test_llm_builds_one_level_tree(self) -> None:
+        """single_step builds a one-level tree of unsolved precursors."""
         solver = AutoSolver(
             az_runner=az_always_fails,
             llm_runner=llm_proposes_hydrolysis,
@@ -428,6 +452,7 @@ class TestSingleStep:
         assert children[1] == unsolved_leaf(ACETIC_ACID)
 
     def test_empty_first_pathway_uses_first_non_empty_candidate(self) -> None:
+        """single_step skips an empty pathway and uses the next candidate."""
         solver = AutoSolver(
             az_runner=az_always_fails,
             llm_runner=llm_empty_then_hydrolysis,
@@ -445,6 +470,7 @@ class TestSingleStep:
         ]
 
     def test_no_pathways(self) -> None:
+        """single_step returns an unsolved leaf when no pathways are produced."""
         solver = AutoSolver(
             az_runner=az_always_fails,
             llm_runner=llm_returns_nothing,
@@ -458,6 +484,7 @@ class TestSingleStep:
 
 class TestParse:
     def test_aspirin_hydrolysis_product(self) -> None:
+        """parse exposes the product SMILES and the solved flag."""
         solver = AutoSolver(hallucination_mode="none")
         result = solver.parse(aspirin_hydrolysis_tree(), solved=True)
 
@@ -466,6 +493,7 @@ class TestParse:
         assert result["steps"][0]["products"][0]["smiles"] == ASPIRIN
 
     def test_solved_false_propagates(self) -> None:
+        """parse propagates solved=False into the output."""
         solver = AutoSolver(hallucination_mode="none")
         tree = reaction_tree(ASPIRIN, [unsolved_leaf(SALICYLIC_ACID)], [0.5])
         result = solver.parse(tree, solved=False)
@@ -473,6 +501,7 @@ class TestParse:
         assert result["solved"] is False
 
     def test_two_step_route_dependencies(self) -> None:
+        """parse emits multiple steps with dependency links for nested routes."""
         inner = reaction_tree(
             PARA_AMINOPHENOL,
             [unsolved_leaf("Nc1ccccc1"), unsolved_leaf("O")],
@@ -504,6 +533,7 @@ class TestAddMetadata:
         spy_literature_recommender,
         recommender_calls,
     ) -> None:
+        """add_metadata fills reagents and conditions from the recommenders."""
         solver = AutoSolver(
             hallucination_mode="none", metadata_model="anthropic/claude-sonnet-4-6"
         )
@@ -524,6 +554,7 @@ class TestAddMetadata:
         self,
         failing_reagent_recommender,
     ) -> None:
+        """A failing reagent recommender leaves the step unchanged."""
         solver = AutoSolver(hallucination_mode="none")
         parsed = solver.parse(aspirin_hydrolysis_tree(), solved=True)
         original_reagents = list(parsed["steps"][0]["reagents"])
@@ -542,6 +573,7 @@ class TestAddMetadata:
         spy_literature_recommender,
         recommender_calls,
     ) -> None:
+        """The configured metadata_model is forwarded to the recommenders."""
         solver = AutoSolver(
             hallucination_mode="none",
             metadata_model="anthropic/claude-sonnet-4-6",
@@ -561,6 +593,7 @@ class TestAddMetadata:
         spy_reagent_recommender,
         recommender_calls,
     ) -> None:
+        """Steps without reactants are skipped (no recommender calls)."""
         parsed: dict[str, Any] = {
             "steps": [
                 {
@@ -588,6 +621,7 @@ class TestAddMetadata:
         spy_conditions_recommender,
         spy_literature_recommender,
     ) -> None:
+        """Missing reactionmetrics are created and closestliterature holds the DOI string."""
         parsed = {
             "steps": [
                 {
@@ -617,6 +651,7 @@ class TestAddMetadata:
 
 class TestAutosolve:
     def test_returns_parsed_result_for_az_solved_target(self) -> None:
+        """autosolve returns a parsed, solved result for an AZ-solved target."""
         solver = AutoSolver(az_runner=az_solves_all, hallucination_mode="none")
         result = solver.autosolve(ASPIRIN)
 
