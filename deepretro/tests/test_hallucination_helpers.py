@@ -112,6 +112,29 @@ class TestBuildMlChecker:
         assert status == 200
         assert retained == []
 
+    def test_normalizes_string_pathway_to_list(self) -> None:
+        """A pathway given as a dot-joined string is normalized to a list."""
+        classifier = StubClassifier()
+        checker = build_ml_checker(classifier)
+        combined = f"{SALICYLIC_ACID}.{ACETIC_ACID}"
+
+        status, retained = checker(ASPIRIN, [combined])
+
+        assert status == 200
+        assert retained == [[combined]]
+        assert classifier.calls == [(ASPIRIN, combined)]
+
+    def test_skips_invalid_pathway_but_keeps_valid_ones(self) -> None:
+        """An invalid pathway is skipped without dropping the valid ones."""
+        classifier = StubClassifier()
+        checker = build_ml_checker(classifier)
+
+        status, retained = checker(ASPIRIN, [["not>>>valid"], [SALICYLIC_ACID]])
+
+        assert status == 200
+        assert retained == [[SALICYLIC_ACID]]
+        assert classifier.calls == [(ASPIRIN, SALICYLIC_ACID)]
+
     def test_rejects_classifier_without_predict_single(self) -> None:
         with pytest.raises(TypeError, match="predict_single"):
             build_ml_checker(object())  # type: ignore[arg-type]
