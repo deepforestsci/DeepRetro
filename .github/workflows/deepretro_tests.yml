@@ -67,7 +67,7 @@ jobs:
 
       - name: Cache AiZynthFinder models
         if: matrix.python-version == '3.11'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .az_models_cache
           key: az-models-v1
