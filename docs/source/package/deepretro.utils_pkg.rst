@@ -75,6 +75,7 @@ Submodules
    deepretro.utils.parse_metrics
    deepretro.utils.cache
    deepretro.utils.llm
+   deepretro.utils.visualize
    deepretro.utils.utils_molecule
 
 API Reference
