@@ -10,8 +10,9 @@ Renders the viewer-ready pathway format used by DeepRetro as a single
 PIL image showing the full synthesis tree:
 
 - Step 0 (the final target) is drawn as a large green circle on the left.
-- Each subsequent step's reactants are drawn as blue circles, stacked
-  vertically and connected to their parent via bezier edges.
+- Each subsequent step usually renders reactants as blue circles, stacked
+  vertically and connected to their parent via bezier edges. Terminal
+  product-only steps fall back to products so they remain visible.
 - Layout traverses the full dependency tree left-to-right.
 
 Scope
@@ -40,6 +41,7 @@ Dependencies
   structures over the colored node circles.
 
 Pillow is treated as an optional visualization dependency.
+Install it with ``pip install "deepretro[viz]"``.
 
 Example
 -------

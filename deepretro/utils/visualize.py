@@ -37,12 +37,48 @@ PAD = 80
 
 
 def _require_pillow() -> None:
-    """Require Pillow only when visualization code is actually used."""
+    """
+    Require Pillow only when visualization code is actually used.
+
+    This helper keeps ``deepretro.utils.visualize`` importable even when
+    Pillow is not installed, while still failing clearly at runtime for
+    visualization operations that need a PIL image backend.
+
+    Raises
+    ------
+    ImportError
+        If Pillow is not available in the current environment.
+    """
     if Image is None or ImageDraw is None or ImageFont is None:
         raise ImportError(
             "Visualization support requires Pillow. "
             "Install the package with the visualization extra."
         )
+
+
+def resample_filter() -> int:
+    """
+    Return a Pillow resize filter across old and new Pillow APIs.
+
+    Pillow exposes Lanczos resampling through different attribute paths
+    depending on version. This helper centralizes that compatibility logic
+    so image resizing code does not need to care which API variant is
+    present.
+
+    Returns
+    -------
+    int
+        Pillow constant representing the Lanczos resize filter.
+
+    Raises
+    ------
+    ImportError
+        If Pillow is not available in the current environment.
+    """
+    _require_pillow()
+
+    resampling = getattr(Image, "Resampling", Image)
+    return resampling.LANCZOS
 
 
 @dataclass
@@ -95,9 +131,12 @@ def build_tree(result: dict[str, Any]) -> Node | None:
 
     def recurse(step_id: str) -> Node:
         step = step_map[step_id]
+        molecules = step.get("reactants", [])
+        if not molecules and not deps.get(step_id):
+            molecules = step.get("products", [])
         node = Node(
             label=f"Step {step_id}",
-            molecules=step.get("reactants", []),
+            molecules=molecules,
         )
         for child_id in deps.get(step_id, []):
             if child_id in step_map:
@@ -109,7 +148,19 @@ def build_tree(result: dict[str, Any]) -> Node | None:
 
 
 def node_height(node: Node) -> int:
-    """Compute total pixel height of a node's subtree."""
+    """
+    Compute the total pixel height required for a node's subtree.
+
+    Parameters
+    ----------
+    node : Node
+        Root node of the subtree whose vertical footprint should be measured.
+
+    Returns
+    -------
+    int
+        Total height in pixels needed to render the node and all descendants.
+    """
     own = max(len(node.molecules), 1) * MOL_CELL_H
     if not node.children:
         return own
@@ -119,7 +170,20 @@ def node_height(node: Node) -> int:
 
 
 def layout(node: Node, x: int, y_start: int, y_end: int) -> None:
-    """Assign ``(x, y)`` coordinates to every node in the tree in-place."""
+    """
+    Assign ``(x, y)`` coordinates to every node in the tree in-place.
+
+    Parameters
+    ----------
+    node : Node
+        Root node of the subtree being positioned.
+    x : int
+        Horizontal coordinate for the current node's column.
+    y_start : int
+        Upper vertical bound available to the subtree.
+    y_end : int
+        Lower vertical bound available to the subtree.
+    """
     node.x = x
     node.y = (y_start + y_end) // 2
 
@@ -137,7 +201,27 @@ def layout(node: Node, x: int, y_start: int, y_end: int) -> None:
 
 
 def render_mol(smiles: str, px: int) -> Image.Image | None:
-    """Render a SMILES string into a transparent-background RGBA image."""
+    """
+    Render a SMILES string into a transparent-background RGBA image.
+
+    Parameters
+    ----------
+    smiles : str
+        Molecule SMILES string to render.
+    px : int
+        Requested width and height of the square render canvas in pixels.
+
+    Returns
+    -------
+    Image.Image | None
+        RGBA image containing the rendered molecule, or ``None`` if the
+        SMILES string cannot be parsed by RDKit.
+
+    Raises
+    ------
+    ImportError
+        If Pillow is not available in the current environment.
+    """
     _require_pillow()
 
     mol = Chem.MolFromSmiles(smiles)
@@ -153,6 +237,8 @@ def render_mol(smiles: str, px: int) -> Image.Image | None:
         drawer.FinishDrawing()
         img = Image.open(BytesIO(drawer.GetDrawingText())).convert("RGBA")
     except Exception:
+        # Any failure in the higher-fidelity Cairo path should degrade to the
+        # simpler RDKit renderer rather than dropping the molecule entirely.
         img = Draw.MolToImage(mol, size=(px, px)).convert("RGBA")
     data = np.array(img)
     data[(data[:, :, :3] > 240).all(axis=2), 3] = 0
@@ -160,7 +246,21 @@ def render_mol(smiles: str, px: int) -> Image.Image | None:
 
 
 def mol_metadata(mol_data: dict[str, Any]) -> tuple[str, str]:
-    """Extract ``(formula, mass_string)`` from a molecule dict."""
+    """
+    Extract ``(formula, mass_string)`` from a molecule dictionary.
+
+    Parameters
+    ----------
+    mol_data : dict[str, Any]
+        Molecule payload containing ``smiles`` and optional metadata fields
+        such as ``product_metadata`` or ``reactant_metadata``.
+
+    Returns
+    -------
+    tuple[str, str]
+        Two-item tuple containing the chemical formula and a formatted mass
+        string. Invalid SMILES fall back to ``(smiles, "?")``.
+    """
     meta = mol_data.get("product_metadata") or mol_data.get("reactant_metadata")
     if meta:
         mass = meta.get("mass", 0)
@@ -178,7 +278,24 @@ def mol_metadata(mol_data: dict[str, Any]) -> tuple[str, str]:
 
 
 def get_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
-    """Return a TrueType font, falling back to Pillow's default."""
+    """
+    Return a TrueType font, falling back to Pillow's default.
+
+    Parameters
+    ----------
+    size : int
+        Requested font size in points.
+
+    Returns
+    -------
+    ImageFont.FreeTypeFont | ImageFont.ImageFont
+        Best available font object for text rendering.
+
+    Raises
+    ------
+    ImportError
+        If Pillow is not available in the current environment.
+    """
     _require_pillow()
 
     for name in ("arial.ttf", "Arial.ttf", "DejaVuSans.ttf"):
@@ -197,13 +314,42 @@ def text_centered(
     font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
     fill: tuple[int, int, int] = TEXT_CLR,
 ) -> None:
-    """Draw *text* horizontally centered at ``(cx, y)``."""
+    """
+    Draw text horizontally centered at ``(cx, y)``.
+
+    Parameters
+    ----------
+    draw : ImageDraw.ImageDraw
+        Pillow drawing context.
+    cx : int
+        Horizontal center coordinate for the text block.
+    y : int
+        Top y-coordinate for the text baseline box.
+    text : str
+        Text content to draw.
+    font : ImageFont.FreeTypeFont | ImageFont.ImageFont
+        Pillow font object used for measurement and rendering.
+    fill : tuple[int, int, int], default=TEXT_CLR
+        RGB text color.
+    """
     bb = draw.textbbox((0, 0), text, font=font)
     draw.text((cx - (bb[2] - bb[0]) // 2, y), text, fill=fill, font=font)
 
 
 def max_x(node: Node) -> int:
-    """Return the rightmost x coordinate anywhere in the tree."""
+    """
+    Return the rightmost x coordinate anywhere in the tree.
+
+    Parameters
+    ----------
+    node : Node
+        Root node of the subtree to scan.
+
+    Returns
+    -------
+    int
+        Largest x-coordinate found in the subtree.
+    """
     result = node.x
     for child in node.children:
         result = max(result, max_x(child))
@@ -211,7 +357,16 @@ def max_x(node: Node) -> int:
 
 
 def draw_edges(draw: ImageDraw.ImageDraw, node: Node) -> None:
-    """Draw bezier connectors from *node* to each descendant."""
+    """
+    Draw bezier connectors from a node to each descendant.
+
+    Parameters
+    ----------
+    draw : ImageDraw.ImageDraw
+        Pillow drawing context used for connector rendering.
+    node : Node
+        Root node whose outgoing edges should be drawn recursively.
+    """
     for child in node.children:
         sx, sy = node.x, node.y
         tx, ty = child.x, child.y
@@ -235,7 +390,22 @@ def draw_node(
     font_lbl: ImageFont.FreeTypeFont | ImageFont.ImageFont,
     font_sm: ImageFont.FreeTypeFont | ImageFont.ImageFont,
 ) -> None:
-    """Render step label, molecule circles, structures, and metadata."""
+    """
+    Render a node's label, molecule circles, structures, and metadata.
+
+    Parameters
+    ----------
+    img : Image.Image
+        Target image canvas that receives pasted molecule renders.
+    draw : ImageDraw.ImageDraw
+        Pillow drawing context used for vector shapes and text.
+    node : Node
+        Visualization node to render.
+    font_lbl : ImageFont.FreeTypeFont | ImageFont.ImageFont
+        Font used for step labels.
+    font_sm : ImageFont.FreeTypeFont | ImageFont.ImageFont
+        Font used for molecular formula and mass text.
+    """
     mols = node.molecules
     count = max(len(mols), 1)
     radius = MAIN_R if node.is_target else SMALL_R
@@ -262,7 +432,7 @@ def draw_node(
         mol_px = int(radius * 1.5)
         mol_img = render_mol(smiles, mol_px + 40)
         if mol_img is not None:
-            mol_img = mol_img.resize((mol_px, mol_px), Image.Resampling.LANCZOS)
+            mol_img = mol_img.resize((mol_px, mol_px), resample_filter())
             img.paste(mol_img, (cx - mol_px // 2, cy - mol_px // 2), mol_img)
 
         if isinstance(mol_data, dict):
@@ -290,6 +460,11 @@ def visualize_pathway(result: dict[str, Any]) -> Image.Image:
     Image.Image
         RGB image of the full pathway, or a placeholder image when no steps
         exist.
+
+    Raises
+    ------
+    ImportError
+        If Pillow is not available in the current environment.
     """
     _require_pillow()
 
