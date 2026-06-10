@@ -47,7 +47,6 @@ Behavior highlights:
 
 - Auto-bypass for trivial/basic molecules via ``BASIC_MOLECULES`` and
   ``is_basic_molecule``.
-- Caching via ``src.cache.cache_results`` decorator.
 - Explicit process-local caching helpers live in ``deepretro.utils.cache`` when
   callers need in-memory caching without shared global state.
 - Returns route dictionaries with metadata and scores from AiZynthFinder.
