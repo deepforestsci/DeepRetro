@@ -159,6 +159,7 @@ def test_visualize_pathway_requires_pillow(monkeypatch: pytest.MonkeyPatch) -> N
 
 def test_resample_filter_falls_back_without_resampling(monkeypatch: pytest.MonkeyPatch) -> None:
     """Older Pillow releases should still expose a usable resize filter."""
+
     class LegacyImageModule:
         LANCZOS = 7
 
@@ -199,8 +200,8 @@ def test_visualize_pathway_smoke() -> None:
     assert img.size[0] > 0 and img.size[1] > 0
 
 
-def test_visualize_pathway_multistep_smoke() -> None:
-    """Multi-step routes should render a canvas wide enough for multiple columns."""
+def test_visualize_pathway_multistep_uses_roomier_default_canvas() -> None:
+    """Multi-step routes should now render with a roomier default canvas."""
     result = _result(
         steps=[
             {
@@ -218,8 +219,8 @@ def test_visualize_pathway_multistep_smoke() -> None:
     )
     img = visualize_pathway(result)
     assert img.mode == "RGB"
-    assert img.size[0] >= 400
-    assert img.size[1] > 0
+    assert img.size[0] >= 1200
+    assert img.size[1] >= 450
 
 
 def test_resample_filter_prefers_modern_resampling_api(

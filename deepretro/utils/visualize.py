@@ -28,12 +28,13 @@ BG = (255, 255, 255)
 LINE_CLR = (180, 180, 180)
 TEXT_CLR = (80, 80, 80)
 
-MAIN_R = 105
-SMALL_R = 68
-COL_GAP = 310
-MOL_CELL_H = 200
-CHILD_GAP = 30
-PAD = 80
+MAIN_R = 140
+SMALL_R = 96
+COL_GAP = 420
+MOL_CELL_H = 260
+CHILD_GAP = 40
+PAD = 110
+MOL_OVERSAMPLE = 2
 
 
 def _require_pillow() -> None:
@@ -227,19 +228,25 @@ def render_mol(smiles: str, px: int) -> Image.Image | None:
     mol = Chem.MolFromSmiles(smiles)
     if mol is None:
         return None
+
+    oversampled_px = max(px * MOL_OVERSAMPLE, px)
     try:
-        drawer = rdMolDraw2D.MolDraw2DCairo(px, px)
+        drawer = rdMolDraw2D.MolDraw2DCairo(oversampled_px, oversampled_px)
         opts = drawer.drawOptions()
         opts.clearBackground = True
-        opts.bondLineWidth = 2.0
-        opts.padding = 0.15
+        opts.bondLineWidth = 2.4
+        opts.padding = 0.12
         drawer.DrawMolecule(mol)
         drawer.FinishDrawing()
         img = Image.open(BytesIO(drawer.GetDrawingText())).convert("RGBA")
     except Exception:
         # Any failure in the higher-fidelity Cairo path should degrade to the
         # simpler RDKit renderer rather than dropping the molecule entirely.
-        img = Draw.MolToImage(mol, size=(px, px)).convert("RGBA")
+        img = Draw.MolToImage(mol, size=(oversampled_px, oversampled_px)).convert("RGBA")
+
+    if oversampled_px != px:
+        img = img.resize((px, px), resample_filter())
+
     data = np.array(img)
     data[(data[:, :, :3] > 240).all(axis=2), 3] = 0
     return Image.fromarray(data)
@@ -411,7 +418,7 @@ def draw_node(
     radius = MAIN_R if node.is_target else SMALL_R
     top_y = node.y - (count * MOL_CELL_H) // 2
 
-    text_centered(draw, node.x, top_y - 24, node.label, font_lbl)
+    text_centered(draw, node.x, top_y - 30, node.label, font_lbl)
 
     for index, mol_data in enumerate(mols):
         cy = top_y + index * MOL_CELL_H + MOL_CELL_H // 2
@@ -423,16 +430,15 @@ def draw_node(
             [cx - radius, cy - radius, cx + radius, cy + radius],
             fill=fill,
             outline=stroke,
-            width=2,
+            width=3,
         )
 
         smiles = (
             mol_data.get("smiles", "") if isinstance(mol_data, dict) else str(mol_data)
         )
-        mol_px = int(radius * 1.5)
-        mol_img = render_mol(smiles, mol_px + 40)
+        mol_px = int(radius * 1.72)
+        mol_img = render_mol(smiles, mol_px)
         if mol_img is not None:
-            mol_img = mol_img.resize((mol_px, mol_px), resample_filter())
             img.paste(mol_img, (cx - mol_px // 2, cy - mol_px // 2), mol_img)
 
         if isinstance(mol_data, dict):
@@ -440,8 +446,8 @@ def draw_node(
         else:
             formula, mass_str = str(mol_data), ""
 
-        text_centered(draw, cx, cy + radius + 6, mass_str, font_sm)
-        text_centered(draw, cx, cy + radius + 22, formula, font_sm)
+        text_centered(draw, cx, cy + radius + 10, mass_str, font_sm)
+        text_centered(draw, cx, cy + radius + 30, formula, font_sm)
 
     for child in node.children:
         draw_node(img, draw, child, font_lbl, font_sm)
@@ -468,8 +474,8 @@ def visualize_pathway(result: dict[str, Any]) -> Image.Image:
     """
     _require_pillow()
 
-    font_lbl = get_font(15)
-    font_sm = get_font(13)
+    font_lbl = get_font(18)
+    font_sm = get_font(15)
 
     root = build_tree(result)
     if root is None:
@@ -481,7 +487,7 @@ def visualize_pathway(result: dict[str, Any]) -> Image.Image:
     tree_h = node_height(root)
     canvas_h = tree_h + PAD * 2
     layout(root, PAD + MAIN_R, PAD, PAD + tree_h)
-    canvas_w = max_x(root) + MAIN_R + PAD + 60
+    canvas_w = max_x(root) + MAIN_R + PAD + 80
 
     img = Image.new("RGBA", (canvas_w, canvas_h), (*BG, 255))
     draw = ImageDraw.Draw(img)
