@@ -72,6 +72,10 @@ Why DeepRetro?
      - Detailed installation instructions and system requirements.
    * - :doc:`user_guide`
      - Usage instructions, tips, and troubleshooting.
+   * - :doc:`knowledge_graph`
+     - Graph view of repo dependencies, file ownership, and cross-tree coupling.
+   * - :doc:`editing_context`
+     - Fast context matrix for knowing what to read before changing hotspot files.
    * - :doc:`api_reference`
      - HTTP API endpoints, models, and error codes.
    * - :doc:`logging`
@@ -92,6 +96,8 @@ Why DeepRetro?
    quickstart
    installation
    user_guide
+   knowledge_graph
+   editing_context
    api_reference
    logging
    prompts
