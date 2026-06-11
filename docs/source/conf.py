@@ -53,6 +53,9 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '*.pyc', '__pycache__']
 
+if os.getenv('SPHINX_DOCTEST_EXCLUDE_AZ') == '1':
+    exclude_patterns.append('package/deepretro.utils.az.rst')
+
 # The suffix of source filenames.
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -175,17 +178,11 @@ autodoc_mock_imports = [
     'diskcache',
     'dotenv',
     'jax',
-    'lightgbm',
-    'numpy',
-    'pandas',
     'PIL',
-    'rdkit',
     'rootutils',
-    'sklearn',
     'structlog',
     'tensorflow',
     'torch',
-    'xgboost',
 ]
 
 # Todo settings
@@ -228,3 +225,6 @@ math_number_all = True
 
 # Suppress warnings
 suppress_warnings = ['autosectionlabel.*']
+
+if os.getenv('SPHINX_DOCTEST_EXCLUDE_AZ') == '1':
+    suppress_warnings.append('toc.excluded')

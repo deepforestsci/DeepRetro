@@ -9,6 +9,10 @@ on:
       - main
     paths:
       - "deepretro/**"
+      - "src/protecting_group.py"
+      - "src/deprotecting_group.py"
+      - "docs/source/**"
+      - ".github/workflows/deepretro_tests.yml"
 
 jobs:
   build:
@@ -60,9 +64,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel
           if [ "${{ matrix.python-version }}" = "3.11" ]; then
-            pip install -e "deepretro/[dev,az]"
+            pip install -e "deepretro/[dev,az,docs]"
           else
-            pip install -e "deepretro/[dev]"
+            pip install -e "deepretro/[dev,docs]"
           fi
 
       - name: Cache AiZynthFinder models
@@ -80,7 +84,7 @@ jobs:
             python -m aizynthfinder.tools.download_public_data .az_models_cache
           fi
 
-      - name: Run tests
+      - name: Run pytest
         env:
           AZ_TEST_MODELS_DIR: ${{ matrix.python-version == '3.11' && '.az_models_cache' || '' }}
         run: |
@@ -89,3 +93,15 @@ jobs:
           else
             pytest deepretro/tests/ -v -m "not slow"
           fi
+
+      - name: Run doctest
+        shell: bash -el {0}
+        run: |
+          pytest -v --ignore-glob='deepretro/tests/test*.py' --ignore='deepretro/utils/az.py' --doctest-modules deepretro src/protecting_group.py src/deprotecting_group.py --doctest-continue-on-failure
+
+      - name: Run Sphinx doctest
+        shell: bash -el {0}
+        env:
+          SPHINX_DOCTEST_EXCLUDE_AZ: "1"
+        run: |
+          sphinx-build -b doctest docs/source docs/build/doctest
