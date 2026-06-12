@@ -18,7 +18,7 @@ dependencies = [
     "pandas",
     "litellm",
     "python-dotenv",
-    "langfuse<3",
+    "langfuse<4",
 ]
 
 [project.optional-dependencies]
