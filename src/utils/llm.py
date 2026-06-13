@@ -364,7 +364,8 @@ def llm_pipeline(
     messages: Optional[list[dict]] = None,
     stability_flag: str = "False",
     hallucination_check: str = "False",
-    use_protecting_group_feature: bool = False
+    use_protecting_group_feature: bool = False,
+    hallucination_method: str = "rule_based"
 ) -> tuple[list[list[str]], list[str], list[float]]:
     """Pipeline to call LLM and validate the results
 
@@ -456,11 +457,13 @@ def llm_pipeline(
         # --------------------
         # Hallucination check
         if hallucination_check.lower() == "true":
+            use_ml_model = hallucination_method.lower() == "ml_model"
+            method_str = "ML model" if use_ml_model else "rule-based"
             log_message(
-                f"Calling hallucination check with pathways: {output_pathways}",
+                f"Calling hallucination check ({method_str}) with pathways: {output_pathways}",
                 logger)
             status_code, hallucination_pathways = hallucination_checker(
-                molecule, output_pathways)
+                molecule, output_pathways, use_ml_model=use_ml_model)
             if status_code != 200:
                 log_message(
                     f"Error in hallucination check: {hallucination_pathways}",

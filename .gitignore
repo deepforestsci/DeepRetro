@@ -4,6 +4,8 @@ __pycache__/
 .env*
 aizynthfinder/
 *.pkl
+!models/xgboost_hallucination_model.pkl
+!models/xgboost_featurizer.pkl
 pistachio/
 .idea/
 .vscode/

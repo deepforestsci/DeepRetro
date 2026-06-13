@@ -337,6 +337,45 @@
                 `;
           serverDiv.appendChild(hallucinationRow);
 
+          // Create hallucination method selector (only shown when hallucination checker is enabled)
+          const hallucinationMethodRow = document.createElement("div");
+          hallucinationMethodRow.className = "toggle-row";
+          hallucinationMethodRow.id = `hallucinationMethodRow${serverNum}`;
+          hallucinationMethodRow.style.display = defaults.hallucination_check ? "block" : "none";
+          hallucinationMethodRow.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="toggle-label" style="min-width: 150px;">Method:</span>
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                            <input type="radio" name="hallucinationMethod${serverNum}" 
+                                   id="hallucinationMethodRule${serverNum}" 
+                                   value="rule_based" 
+                                   ${(defaults.hallucination_method || 'rule_based') === 'rule_based' ? 'checked' : ''}
+                                   data-server="${serverNum}">
+                            <span>Rule-Based</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                            <input type="radio" name="hallucinationMethod${serverNum}" 
+                                   id="hallucinationMethodML${serverNum}" 
+                                   value="ml_model" 
+                                   ${(defaults.hallucination_method || 'rule_based') === 'ml_model' ? 'checked' : ''}
+                                   data-server="${serverNum}">
+                            <span>ML Model</span>
+                        </label>
+                    </div>
+                `;
+          serverDiv.appendChild(hallucinationMethodRow);
+
+          // Show/hide method selector based on hallucination toggle
+          const hallucinationToggle = document.getElementById(`hallucinationToggle${serverNum}`);
+          if (hallucinationToggle) {
+              hallucinationToggle.addEventListener('change', function() {
+                  const methodRow = document.getElementById(`hallucinationMethodRow${serverNum}`);
+                  if (methodRow) {
+                      methodRow.style.display = this.checked ? "block" : "none";
+                  }
+              });
+          }
+
           // Create protecting group feature toggle
           const protectingGroupRow = document.createElement("div");
           protectingGroupRow.className = "toggle-row";
@@ -755,6 +794,12 @@
             use_protecting_group_feature: protectingGroupToggle
               ? protectingGroupToggle.checked.toString()
               : "false",
+            hallucination_method: (() => {
+              const ruleRadio = document.getElementById(`hallucinationMethodRule${serverNum}`);
+              const mlRadio = document.getElementById(`hallucinationMethodML${serverNum}`);
+              if (mlRadio && mlRadio.checked) return "ml_model";
+              return "rule_based"; // Default
+            })(),
           };
 
           console.log("Request body:", JSON.stringify(requestBody));
@@ -1337,6 +1382,12 @@
                 stability_flag: stabilityToggle.checked.toString(),
                 hallucination_check: hallucinationToggle.checked.toString(),
                 use_protecting_group_feature: protectingGroupToggle.checked.toString(),
+                hallucination_method: (() => {
+                  const ruleRadio = document.getElementById(`hallucinationMethodRule${serverNum}`);
+                  const mlRadio = document.getElementById(`hallucinationMethodML${serverNum}`);
+                  if (mlRadio && mlRadio.checked) return "ml_model";
+                  return "rule_based"; // Default
+                })(),
               };
 
               // --- TEMPORARY DEBUG LOGGING --- START ---
@@ -1629,6 +1680,12 @@
               stability_flag: stabilityToggle.checked.toString(),
               hallucination_check: hallucinationToggle.checked.toString(),
               use_protecting_group_feature: protectingGroupToggle.checked.toString(),
+              hallucination_method: (() => {
+                const ruleRadio = document.getElementById(`hallucinationMethodRule${serverNum}`);
+                const mlRadio = document.getElementById(`hallucinationMethodML${serverNum}`);
+                if (mlRadio && mlRadio.checked) return "ml_model";
+                return "rule_based"; // Default
+              })(),
             }),
             // --- End modified request body ---
           });

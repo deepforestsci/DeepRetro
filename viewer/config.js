@@ -6,9 +6,10 @@ const config = {
       defaults: {
         model_type: 'claude4',
         advanced_prompt: true,
-        model_version: 'Pistachio_100+',
+        model_version: 'USPTO',
         stability_flag: true,
-        hallucination_check: true
+        hallucination_check: true,
+        hallucination_method: 'rule_based'
       }
     },
     // // Vm 4
