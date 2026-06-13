@@ -1,12 +1,14 @@
 from rdkit import Chem
 import re
 
-# These are the protecting groups that we want to mask
-PG_MAP = {
-    "OMe": ("OC", "$"),
-    "OBn": ("COCc1ccccc1", "%"),
-    "OEt": ("COC", "&"),
-}
+try:
+    from .config_loader import get_pg_map
+except ImportError:
+    # Handle case where module is imported directly (e.g., in tests)
+    from config_loader import get_pg_map
+
+# Note: PG_MAP is now loaded from configuration files with fallback to defaults
+# Use get_pg_map() to access the current configuration
 
 
 def mask_protecting_groups_multisymbol(smiles: str) -> str:
@@ -67,7 +69,8 @@ def mask_protecting_groups_multisymbol(smiles: str) -> str:
 
     full_smiles = Chem.MolToSmiles(mol, canonical=True)
 
-    for pg_name, (pg_smiles, symbol) in sorted(PG_MAP.items(),
+    pg_map = get_pg_map()
+    for pg_name, (pg_smiles, symbol) in sorted(pg_map.items(),
                                                key=lambda x: len(x[1][0]),
                                                reverse=True):
         full_smiles = full_smiles.replace(pg_smiles, symbol)

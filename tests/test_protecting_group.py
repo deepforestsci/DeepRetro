@@ -6,7 +6,8 @@ import os
 # Add the src directory to the path so we can import the module
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from protecting_group import mask_protecting_groups_multisymbol, PG_MAP
+from protecting_group import mask_protecting_groups_multisymbol
+from config_loader import get_pg_map
 from rdkit import Chem
 
 
@@ -20,13 +21,14 @@ class TestProtectingGroup(unittest.TestCase):
         self.invalid_smiles = "This is not a valid SMILES"
 
     def test_pg_map_structure(self):
-        """Test that PG_MAP has the expected structure."""
-        self.assertIn("OMe", PG_MAP)
-        self.assertIn("OBn", PG_MAP)
-        self.assertIn("OEt", PG_MAP)
+        """Test that protecting groups configuration has the expected structure."""
+        pg_map = get_pg_map()
+
+        # Should have some protecting groups
+        self.assertGreater(len(pg_map), 0)
 
         # Check each entry has the correct format
-        for pg_name, (pg_smiles, symbol) in PG_MAP.items():
+        for pg_name, (pg_smiles, symbol) in pg_map.items():
             self.assertIsInstance(pg_name, str)
             self.assertIsInstance(pg_smiles, str)
             self.assertIsInstance(symbol, str)
@@ -57,19 +59,19 @@ class TestProtectingGroup(unittest.TestCase):
     def test_ome_group_replacement(self):
         """Test replacement of OMe groups (OC -> $)."""
         # Note: COC will match OEt pattern first due to sorting by length
-        # OC gets canonicalized to CO and doesn't match any pattern
+        # COC matches OEt pattern
         result = mask_protecting_groups_multisymbol("COC")
-        self.assertEqual(result, "&")  # Actually matches OEt pattern
+        self.assertEqual(result, "&")  # Matches OEt pattern
 
         # Multiple COC groups - canonicalization removes the dot separator
         result = mask_protecting_groups_multisymbol("COC.COC")
         self.assertEqual(result,
                          "&")  # Becomes single molecule after canonicalization
 
-        # OC in a ring - gets canonicalized to COc1ccccc1
+        # OC in a ring - gets canonicalized to COc1ccccc1, CO part gets masked
         result = mask_protecting_groups_multisymbol("c1ccccc1OC")
-        # After canonicalization becomes COc1ccccc1, no match
-        self.assertEqual(result, "COc1ccccc1")
+        # After canonicalization becomes COc1ccccc1, CO matches methoxy pattern
+        self.assertEqual(result, "$c1ccccc1")
 
     def test_obn_group_replacement(self):
         """Test replacement of OBn groups (COCc1ccccc1 -> %)."""
@@ -113,19 +115,19 @@ class TestProtectingGroup(unittest.TestCase):
     def test_canonical_smiles_conversion(self):
         """Test that SMILES are converted to canonical form."""
         # Different representations of the same molecule
-        # C(C)O is ethanol, canonicalizes to CCO
+        # C(C)O is ethanol, canonicalizes to CCO, now matches ethoxy pattern
         result1 = mask_protecting_groups_multisymbol("C(C)O")
         result2 = mask_protecting_groups_multisymbol("CCO")
         self.assertEqual(result1, result2)
-        self.assertEqual(result1, "CCO")
+        self.assertEqual(result1, "&")  # Now masked as ethoxy
 
         # COC is dimethyl ether, matches OEt pattern
         result3 = mask_protecting_groups_multisymbol("COC")
         self.assertEqual(result3, "&")
 
-        # OC gets canonicalized to CO
+        # OC gets canonicalized to CO, which now matches methoxy pattern
         result4 = mask_protecting_groups_multisymbol("OC")
-        self.assertEqual(result4, "CO")
+        self.assertEqual(result4, "$")  # Now masked as methoxy
 
     def test_edge_case_regex_cleanup(self):
         """Test the regex cleanup for edge cases."""
@@ -163,21 +165,25 @@ class TestProtectingGroup(unittest.TestCase):
     def test_preserves_non_protecting_groups(self):
         """Test that non-protecting group structures are preserved."""
         test_cases = [
-            "CCO",  # Ethanol - not a protecting group
-            "c1ccccc1",  # Benzene - not a protecting group
-            "CC(C)C",  # Isobutane - not a protecting group
-            "C=C",  # Ethene - not a protecting group
+            ("c1ccccc1", "c1ccccc1"),  # Benzene - not a protecting group
+            ("CC(C)C", "CC(C)C"),  # Isobutane - not a protecting group  
+            ("C=C", "C=C"),  # Ethene - not a protecting group
+            ("CCC", "CCC"),  # Propane - not a protecting group
         ]
+        # Note: CCO is now a protecting group pattern (ethoxy), so removed from this test
 
-        for smiles in test_cases:
+        for smiles, expected in test_cases:
             with self.subTest(smiles=smiles):
                 result = mask_protecting_groups_multisymbol(smiles)
                 # Should not contain any protecting group symbols
                 self.assertNotIn("$", result)
                 self.assertNotIn("%", result)
                 self.assertNotIn("&", result)
+                self.assertNotIn("@",
+                                 result)  # Current config uses @ for TBsdsdsd
                 # Should be valid SMILES
                 self.assertNotEqual(result, "INVALID_SMILES")
+                self.assertEqual(result, expected)
 
     def test_complex_real_world_molecule(self):
         """Test with the complex molecule from the main block."""
@@ -274,8 +280,8 @@ class TestProtectingGroup(unittest.TestCase):
         """Test OC pattern behavior after canonicalization."""
         # Test molecules with OC pattern
         test_cases = [
-            ("OC", "CO"),  # OC canonicalizes to CO, no match
-            ("c1ccccc1OC", "COc1ccccc1"),  # Canonicalizes but doesn't match
+            ("OC", "$"),  # OC canonicalizes to CO, matches methoxy pattern
+            ("c1ccccc1OC", "$c1ccccc1"),  # CO part gets masked as methoxy
             ("CCOC", "C&"),  # CCOC has COC which matches OEt
         ]
 

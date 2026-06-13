@@ -1,0 +1,264 @@
+{
+  "version": "1.0",
+  "description": "Protecting groups configuration for Protect*",
+  "protecting_groups": {
+    "OMe": {
+      "smiles": "CO",
+      "symbol": "$",
+      "description": "Methoxy protecting group",
+      "deprotection": "Acidic hydrolysis (HCl/MeOH, TFA)"
+    },
+    "OBn": {
+      "smiles": "COCc1ccccc1",
+      "symbol": "%",
+      "description": "Benzyl protecting group",
+      "deprotection": "Hydrogenolysis (H2/Pd-C), Birch reduction"
+    },
+    "OEt_COC": {
+      "smiles": "COC",
+      "symbol": "&",
+      "description": "Ethoxy protecting group (COC pattern)",
+      "deprotection": "Acidic hydrolysis (HCl/EtOH), basic hydrolysis (NaOH/EtOH)"
+    },
+    "OEt_CCO": {
+      "smiles": "CCO",
+      "symbol": "&",
+      "description": "Ethoxy protecting group (CCO pattern)",
+      "deprotection": "Acidic hydrolysis (HCl/EtOH), basic hydrolysis (NaOH/EtOH)"
+    },
+    "OTMS": {
+      "smiles": "COSi(C)C",
+      "symbol": "!",
+      "description": "Trimethylsilyl ether",
+      "deprotection": "Very labile; installed using TMS-Cl; removed by mild acid or fluoride."
+    },
+    "OTES": {
+      "smiles": "COSi(CC)CC",
+      "symbol": "@",
+      "description": "Triethylsilyl ether",
+      "deprotection": "Moderately stable; removed by fluoride or mild acid."
+    },
+    "OTBS": {
+      "smiles": "COSi(C)C(C)(C)C",
+      "symbol": "^",
+      "description": "tert-Butyldimethylsilyl ether",
+      "deprotection": "Widely used; removed by TBAF or HF·pyridine."
+    },
+    "OTBDPS": {
+      "smiles": "COSi(c1ccccc1)C(C)(C)C",
+      "symbol": "*",
+      "description": "tert-Butyldiphenylsilyl ether",
+      "deprotection": "Acid-stable; removed with strong fluoride reagents."
+    },
+    "OTIPS": {
+      "smiles": "COSi(C(C)C)C(C)C",
+      "symbol": "~",
+      "description": "Triisopropylsilyl ether",
+      "deprotection": "Extremely bulky; fluoride-mediated removal."
+    },
+    "OMe_alkyl": {
+      "smiles": "COC",
+      "symbol": "`",
+      "description": "Methyl ether",
+      "deprotection": "Very stable; removal requires harsh acidic or nucleophilic conditions."
+    },
+    "OBn_ether": {
+      "smiles": "COCC1=CC=CC=C1",
+      "symbol": "?",
+      "description": "Benzyl ether",
+      "deprotection": "Removed by catalytic hydrogenolysis."
+    },
+    "OPMB": {
+      "smiles": "COCC1=CC=C(OC)C=C1",
+      "symbol": ";",
+      "description": "p-Methoxybenzyl ether",
+      "deprotection": "Removed using DDQ or mild oxidants."
+    },
+    "OAllyl": {
+      "smiles": "COCC=C",
+      "symbol": ":",
+      "description": "Allyl ether",
+      "deprotection": "Pd(0)-catalyzed removal; orthogonal protection."
+    },
+    "OAc": {
+      "smiles": "CC(=O)O",
+      "symbol": "_",
+      "description": "Acetate ester",
+      "deprotection": "Base-labile; installed with acetic anhydride."
+    },
+    "OBz": {
+      "smiles": "O=C(O)c1ccccc1",
+      "symbol": "|",
+      "description": "Benzoate ester",
+      "deprotection": "More acid-stable than acetate esters."
+    },
+    "OPiv": {
+      "smiles": "CC(C)(C)C(=O)O",
+      "symbol": "<",
+      "description": "Pivaloyl ester",
+      "deprotection": "Sterically shielding; removed under basic hydrolysis."
+    },
+    "NBoc": {
+      "smiles": "CC(C)(C)OC(=O)N",
+      "symbol": ">",
+      "description": "tert-Butoxycarbonyl",
+      "deprotection": "Acid-labile; removed with TFA or HCl."
+    },
+    "NCbz": {
+      "smiles": "O=C(OCC1=CC=CC=C1)N",
+      "symbol": "{",
+      "description": "Benzyloxycarbonyl (Cbz / Z)",
+      "deprotection": "Hydrogenolysis removal."
+    },
+    "NFmoc": {
+      "smiles": "O=C(OCC1c2ccccc2c3ccccc13)N",
+      "symbol": "}",
+      "description": "9-Fluorenylmethoxycarbonyl",
+      "deprotection": "Removed with piperidine; widely used in peptide synthesis."
+    },
+    "NAlloc": {
+      "smiles": "O=C(OCC=C)N",
+      "symbol": "£",
+      "description": "Allyloxycarbonyl",
+      "deprotection": "Pd(0)-mediated removal."
+    },
+    "NTroc": {
+      "smiles": "O=C(OCC(Cl)(Cl)Cl)N",
+      "symbol": "€",
+      "description": "Trichloroethoxycarbonyl",
+      "deprotection": "Removed with zinc or reductive conditions."
+    },
+    "NAc": {
+      "smiles": "CC(=O)N",
+      "symbol": "¥",
+      "description": "Acetyl amide",
+      "deprotection": "Stable; removed under strong hydrolysis."
+    },
+    "NTs": {
+      "smiles": "O=S(=O)(c1ccc(C)cc1)N",
+      "symbol": "¢",
+      "description": "Tosyl group",
+      "deprotection": "Strongly deactivating; requires harsh conditions for removal."
+    },
+    "NNs": {
+      "smiles": "O=S(=O)(c1ccc(N+[O-])cc1)N",
+      "symbol": "§",
+      "description": "Nosyl group",
+      "deprotection": "Removed by nucleophiles such as thiolates."
+    },
+    "dimethyl_acetal": {
+      "smiles": "COC(OC)",
+      "symbol": "¶",
+      "description": "Dimethyl acetal",
+      "deprotection": "Acid-labile."
+    },
+    "diethyl_acetal": {
+      "smiles": "CCOC(OCC)",
+      "symbol": "•",
+      "description": "Diethyl acetal",
+      "deprotection": "Acid-labile."
+    },
+    "ethylene_acetal": {
+      "smiles": "O1CCOC1",
+      "symbol": "†",
+      "description": "Ethylene acetal",
+      "deprotection": "Stable to base; acid-cleavable."
+    },
+    "acetonide": {
+      "smiles": "CC1(O)COC(O)C1",
+      "symbol": "‡",
+      "description": "Acetonide (isopropylidene)",
+      "deprotection": "Widely used in carbohydrates; acid-labile."
+    },
+    "COOMe": {
+      "smiles": "COC=O",
+      "symbol": "°",
+      "description": "Methyl ester",
+      "deprotection": "Removed by acidic or basic hydrolysis."
+    },
+    "COOEt": {
+      "smiles": "CCOC=O",
+      "symbol": "±",
+      "description": "Ethyl ester",
+      "deprotection": "Mild hydrolysis."
+    },
+    "COOtBu": {
+      "smiles": "CC(C)(C)OC=O",
+      "symbol": "×",
+      "description": "tert-Butyl ester",
+      "deprotection": "Removed using TFA."
+    },
+    "COOBn": {
+      "smiles": "OCC1=CC=CC=C1C=O",
+      "symbol": "÷",
+      "description": "Benzyl ester",
+      "deprotection": "Hydrogenolysis removal."
+    },
+    "COOAllyl": {
+      "smiles": "OCC=C",
+      "symbol": "«",
+      "description": "Allyl ester",
+      "deprotection": "Pd(0)-mediated removal."
+    },
+    "SAc": {
+      "smiles": "CC(=O)S",
+      "symbol": "»",
+      "description": "Thioacetate",
+      "deprotection": "Mildly labile."
+    },
+    "STrt": {
+      "smiles": "SC(c1ccccc1)(c1ccccc1)c1ccccc1",
+      "symbol": "¿",
+      "description": "Trityl thioether",
+      "deprotection": "Acid-labile."
+    },
+    "StBu": {
+      "smiles": "SC(C)(C)C",
+      "symbol": "¬",
+      "description": "tert-Butyl thioether",
+      "deprotection": "Reductive or acidic cleavage."
+    },
+    "PO_OBn": {
+      "smiles": "OP(=O)(OCC1=CC=CC=C1)O",
+      "symbol": "®",
+      "description": "Benzyl phosphate ester",
+      "deprotection": "Removed by hydrogenolysis."
+    },
+    "PO_OCE": {
+      "smiles": "OP(=O)(OCC#N)O",
+      "symbol": "©",
+      "description": "Cyanoethyl phosphate ester (CE)",
+      "deprotection": "Widely used in nucleotide chemistry."
+    },
+    "OSEM": {
+      "smiles": "COCCOSi(C)C",
+      "symbol": "™",
+      "description": "SEM (2-Trimethylsilylethoxymethyl)",
+      "deprotection": "Removed by fluoride or acid."
+    },
+    "OMEM": {
+      "smiles": "COCCOC",
+      "symbol": "µ",
+      "description": "MEM (Methoxyethoxymethyl)",
+      "deprotection": "Mild removal."
+    },
+    "ODMB": {
+      "smiles": "COc1ccc(CO)c(OC)c1",
+      "symbol": "¤",
+      "description": "DMB (2,4-Dimethoxybenzyl)",
+      "deprotection": "Removed oxidatively."
+    },
+    "OLev": {
+      "smiles": "CC(=O)CCC(=O)O",
+      "symbol": "¦",
+      "description": "Levulinyl ester (Lev)",
+      "deprotection": "Chemoselective removal with hydrazine."
+    },
+    "NTFA": {
+      "smiles": "O=C(C(F)(F)F)N",
+      "symbol": "¨",
+      "description": "Trifluoroacetyl group (TFA)",
+      "deprotection": "Removed by base or hydrolysis."
+    }
+  }
+}

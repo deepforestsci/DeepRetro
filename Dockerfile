@@ -27,6 +27,7 @@ COPY src/ ./src/
 COPY config/ ./config/
 COPY viewer/ ./viewer/
 COPY data/ ./data/
+COPY config/ ./config/
 COPY start_backend.sh .
 COPY .project-root .
 
@@ -38,7 +39,7 @@ RUN mkdir -p aizynthfinder/models/
 RUN conda run -n deepretro python -m aizynthfinder.tools.download_public_data aizynthfinder/models/
 
 # Create necessary directories
-RUN mkdir -p logs cache_api
+RUN mkdir -p logs cache_api config
 
 # Make start script executable
 RUN chmod +x start_backend.sh

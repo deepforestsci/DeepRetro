@@ -10,7 +10,7 @@ from src.variables import USER_PROMPT_V4, SYS_PROMPT_V4
 from src.variables import USER_PROMPT_OPENAI, SYS_PROMPT_OPENAI
 from src.variables import USER_PROMPT_DEEPSEEK, SYS_PROMPT_DEEPSEEK
 from src.variables import ADDON_PROMPT_7_MEMBER, USER_PROMPT_DEEPSEEK_V4
-from src.variables import ERROR_MAP, PROTECTING_GROUP_CONTEXT
+from src.variables import ERROR_MAP
 from src.cache import cache_results
 from src.utils.utils_molecule import validity_check, detect_seven_member_rings
 from src.utils.job_context import logger as context_logger
@@ -139,8 +139,9 @@ def call_LLM(molecule: str,
             log_message(
                 f"Detected protecting groups in molecule: {molecule} -> {masked_smiles}",
                 logger)
-            protecting_group_context = PROTECTING_GROUP_CONTEXT.format(
-                molecule=molecule, masked_smiles=masked_smiles)
+            from ..config_loader import generate_protecting_group_context
+            protecting_group_context = generate_protecting_group_context(
+                molecule, masked_smiles)
             add_on += protecting_group_context
 
     sys_prompt_final, user_prompt_final, max_completion_tokens = obtain_prompt(

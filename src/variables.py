@@ -1388,25 +1388,3 @@ ERROR_MAP = {
 AZ_MODEL_LIST = [
     "USPTO", "Pistachio_25", "Pistachio_50", "Pistachio_100", "Pistachio_100+"
 ]
-
-PROTECTING_GROUP_CONTEXT = """
-
-PROTECTING GROUP CONTEXT:
-The molecule contains protecting groups that have been masked:
-Original SMILES: {molecule}
-Masked SMILES: {masked_smiles}
-
-Symbol mapping:
-- '$' represents OMe (methoxy) groups
-- '%' represents OBn (benzyl ether) groups
-- '&' represents OEt (ethoxy) groups
-
-IMPORTANT: In your retrosynthetic analysis:
-1. Return ACTUAL SMILES strings (not the masked symbols) in the 'data' field
-2. Include deprotection steps in your explanations when appropriate
-3. Consider the protecting groups as synthetic handles that may need removal
-4. Suggest specific deprotection conditions:
-   - OMe ($): Acidic hydrolysis (HCl/MeOH, TFA)
-   - OBn (%): Hydrogenolysis (H2/Pd-C), Birch reduction
-   - OEt (&): Acidic hydrolysis (HCl/EtOH), basic hydrolysis (NaOH/EtOH)
-5. Consider protecting group compatibility and orthogonal deprotection strategies"""
