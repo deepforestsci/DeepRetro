@@ -1,6 +1,10 @@
 """Unit tests for hallucination subtype tagging utilities."""
 
 import csv
+import subprocess
+import sys
+
+import pytest
 
 from deepretro.data.subtagging import (
     SUBTYPE_ATOM_COUNT_OR_FORMULA_ERROR,
@@ -264,6 +268,19 @@ def test_subtype_text_classifier_round_trips_json(tmp_path):
     )
 
 
+def test_subtype_text_classifier_rejects_rows_without_supervised_target():
+    rows = [
+        {
+            "product": "unlabelled product",
+            "reactants": "unlabelled reactants",
+            "label": "0",
+        }
+    ]
+
+    with pytest.raises(ValueError, match="supervised subtype target"):
+        SubtypeTextClassifier().fit(rows)
+
+
 def test_train_eval_split_is_deterministic_and_non_empty():
     rows = [{"product": str(index), "reactants": str(index), "label": "0"} for index in range(6)]
     train_rows, eval_rows = train_eval_split(rows, eval_fraction=0.33, seed=7)
@@ -309,3 +326,38 @@ def test_train_eval_predict_script_pipeline(tmp_path):
 
     assert metrics["total"] == 2
     assert rows[0]["predicted_subtype_primary"] == SUBTYPE_BOND_OR_FRAGMENT_CONNECTIVITY_ERROR
+
+
+def test_train_eval_predict_cli_avoids_heavy_data_package_imports(tmp_path):
+    input_path = tmp_path / "tags.csv"
+    model_path = tmp_path / "tag_model.json"
+    with input_path.open("w", newline="", encoding="utf-8") as outfile:
+        writer = csv.DictWriter(
+            outfile,
+            fieldnames=["product", "reactants", "label", "category"],
+        )
+        writer.writeheader()
+        writer.writerow(
+            {
+                "product": "skeletal example",
+                "reactants": "fragment edit",
+                "label": "1",
+                "category": "unsupported_skeletal_edit",
+            }
+        )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/train_eval_predict_subtags.py",
+            "train",
+            str(input_path),
+            str(model_path),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert "A module that was compiled using NumPy 1.x" not in result.stderr
+    assert "tensorflow" not in result.stderr.lower()

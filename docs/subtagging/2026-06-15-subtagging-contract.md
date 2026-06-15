@@ -18,6 +18,7 @@ The reviewed Ohuamine seed CSVs were then layered on top locally, while classifi
 - `scripts/train_eval_predict_subtags.py`
 
 The script supports `train`, `train-eval`, `eval`, and `predict` subcommands. It writes a JSON model artifact and appends `predicted_subtype_primary` during prediction.
+Train and eval inputs must include a supervised subtype target from `subtype_primary`, `category`, or `reason`; prediction inputs do not need those target columns.
 
 ## Canonical Output Columns
 

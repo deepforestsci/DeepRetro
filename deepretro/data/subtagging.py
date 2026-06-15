@@ -308,7 +308,27 @@ def _row_target_subtype(row: dict[str, str]) -> str:
     subtype = row.get("subtype_primary", "").strip()
     if subtype:
         return subtype
-    return enrich_annotation_row(row)["subtype_primary"]
+
+    category = row.get("category", "").strip()
+    if category:
+        category_assignment = _assign_from_category(
+            label=row.get("label", ""),
+            category=category,
+        )
+        if category_assignment is not None:
+            return category_assignment[0]
+
+    reason = row.get("reason", "").strip()
+    if reason:
+        return assign_subtypes(
+            label=row.get("label", ""),
+            reason=reason,
+        )[0]
+
+    raise ValueError(
+        "Rows used for subtype training/evaluation require a supervised subtype target "
+        "via subtype_primary, category, or reason."
+    )
 
 
 def _row_text(row: dict[str, str]) -> str:
