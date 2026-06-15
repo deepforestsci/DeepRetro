@@ -97,6 +97,17 @@ def test_enrich_annotation_row_adds_subtype_columns():
     assert enriched["subtype_secondary"] == ""
 
 
+def test_enrich_annotation_row_uses_reviewed_category_when_reason_missing():
+    row = {
+        "label": "1",
+        "category": "missing_methylene_source",
+        "source": "reviewed_ohuamine",
+    }
+    enriched = enrich_annotation_row(row)
+    assert enriched["subtype_primary"] == SUBTYPE_ATOM_COUNT_OR_FORMULA_ERROR
+    assert enriched["subtype_secondary"] == ""
+
+
 def test_enrich_dataset_writes_enriched_csv(tmp_path):
     input_path = tmp_path / "input.csv"
     output_path = tmp_path / "output.csv"
@@ -130,3 +141,52 @@ def test_enrich_dataset_writes_enriched_csv(tmp_path):
 
     assert rows[0]["subtype_primary"] == SUBTYPE_VALID_CLEAN
     assert rows[1]["subtype_primary"] == SUBTYPE_REGIOCHEMICAL_ERROR
+
+
+def test_enrich_dataset_writes_enriched_csv_for_reviewed_categories(tmp_path):
+    input_path = tmp_path / "reviewed.csv"
+    output_path = tmp_path / "reviewed_tagged.csv"
+    with input_path.open("w", newline="", encoding="utf-8") as outfile:
+        writer = csv.DictWriter(
+            outfile,
+            fieldnames=[
+                "product",
+                "reactants",
+                "target",
+                "label",
+                "hallucination_score",
+                "category",
+                "source",
+            ],
+        )
+        writer.writeheader()
+        writer.writerow(
+            {
+                "product": "A",
+                "reactants": "B",
+                "target": "A",
+                "label": "1",
+                "hallucination_score": "55",
+                "category": "unsupported_skeletal_edit",
+                "source": "reviewed_ohuamine",
+            }
+        )
+        writer.writerow(
+            {
+                "product": "C",
+                "reactants": "D",
+                "target": "C",
+                "label": "0",
+                "hallucination_score": "80",
+                "category": "valid_boc_deprotection",
+                "source": "reviewed_ohuamine",
+            }
+        )
+
+    enrich_dataset(input_path, output_path)
+
+    with output_path.open("r", newline="", encoding="utf-8") as infile:
+        rows = list(csv.DictReader(infile))
+
+    assert rows[0]["subtype_primary"] == SUBTYPE_BOND_OR_FRAGMENT_CONNECTIVITY_ERROR
+    assert rows[1]["subtype_primary"] == SUBTYPE_VALID_CLEAN

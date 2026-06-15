@@ -34,6 +34,28 @@ ALL_SUBTYPES = (
     SUBTYPE_UNCLASSIFIED_HALLUCINATION,
 )
 
+_CATEGORY_SUBTYPE_MAP: dict[str, tuple[str, str | None]] = {
+    "unsupported_skeletal_edit": (
+        SUBTYPE_BOND_OR_FRAGMENT_CONNECTIVITY_ERROR,
+        None,
+    ),
+    "protecting_group_swap_fragment_loss": (
+        SUBTYPE_PROTECTING_GROUP_ISSUE,
+        SUBTYPE_BOND_OR_FRAGMENT_CONNECTIVITY_ERROR,
+    ),
+    "missing_methylene_source": (
+        SUBTYPE_ATOM_COUNT_OR_FORMULA_ERROR,
+        None,
+    ),
+    "valid_hydrogenation": (SUBTYPE_VALID_CLEAN, None),
+    "valid_boc_deprotection": (SUBTYPE_VALID_CLEAN, None),
+    "valid_debenzylation": (SUBTYPE_VALID_CLEAN, None),
+    "valid_lactam_closure": (SUBTYPE_VALID_CLEAN, None),
+    "valid_acid_chloride_formation": (SUBTYPE_VALID_CLEAN, None),
+    "valid_ester_hydrolysis": (SUBTYPE_VALID_CLEAN, None),
+    "valid_reductive_amination": (SUBTYPE_VALID_CLEAN, None),
+}
+
 
 @dataclass(frozen=True)
 class SubtypeRule:
@@ -173,6 +195,25 @@ def _match_secondary_subtype(
     return None
 
 
+def _assign_from_category(
+    label: str | int,
+    category: str | None,
+) -> tuple[str, str | None] | None:
+    """Return a subtype assignment from a reviewed category, if available."""
+
+    category_text = _normalize_text(category)
+    if not category_text:
+        return None
+
+    assignment = _CATEGORY_SUBTYPE_MAP.get(category_text)
+    if assignment is not None:
+        return assignment
+
+    if str(label).strip() == "1":
+        return SUBTYPE_UNCLASSIFIED_HALLUCINATION, None
+    return SUBTYPE_VALID_CLEAN, None
+
+
 def assign_subtypes(
     label: str | int,
     reason: str | None,
@@ -217,10 +258,17 @@ def enrich_annotation_row(row: dict[str, str]) -> dict[str, str]:
     """Return a copy of ``row`` with subtype columns added."""
 
     enriched = dict(row)
-    primary, secondary = assign_subtypes(
+    category_assignment = _assign_from_category(
         label=row.get("label", ""),
-        reason=row.get("reason", ""),
+        category=row.get("category", ""),
     )
+    if category_assignment is not None:
+        primary, secondary = category_assignment
+    else:
+        primary, secondary = assign_subtypes(
+            label=row.get("label", ""),
+            reason=row.get("reason", ""),
+        )
     enriched["subtype_primary"] = primary
     enriched["subtype_secondary"] = secondary or ""
     return enriched

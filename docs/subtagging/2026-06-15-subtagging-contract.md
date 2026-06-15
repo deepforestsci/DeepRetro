@@ -17,12 +17,14 @@ This PR adds deterministic subtype enrichment for hallucination annotation rows.
 
 ## Input Expectations
 
-The enrichment script expects CSV rows with at least:
+The enrichment script expects CSV rows with:
 
 - `label`
-- `reason`
+- either `category` or `reason`
 
-Rows without `reason` are still enriched:
+Reviewed rows use `category` first when present. Free-text rows fall back to `reason`.
+
+Rows without either field are still enriched:
 
 - `label == 0` -> `subtype_primary=valid_clean`
 - `label == 1` -> `subtype_primary=unclassified_hallucination`
