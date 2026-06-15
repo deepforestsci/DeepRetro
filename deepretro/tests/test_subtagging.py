@@ -119,6 +119,17 @@ def test_enrich_annotation_row_uses_reviewed_category_when_reason_missing():
     assert enriched["subtype_secondary"] == ""
 
 
+def test_enrich_annotation_row_uses_reason_when_category_unknown():
+    row = {
+        "label": "1",
+        "category": "typo_category",
+        "reason": "Carbon missing beside acetyl group",
+    }
+    enriched = enrich_annotation_row(row)
+    assert enriched["subtype_primary"] == SUBTYPE_ATOM_COUNT_OR_FORMULA_ERROR
+    assert enriched["subtype_secondary"] == ""
+
+
 def test_enrich_dataset_writes_enriched_csv(tmp_path):
     input_path = tmp_path / "input.csv"
     output_path = tmp_path / "output.csv"
@@ -274,6 +285,48 @@ def test_subtype_text_classifier_rejects_rows_without_supervised_target():
             "product": "unlabelled product",
             "reactants": "unlabelled reactants",
             "label": "0",
+        }
+    ]
+
+    with pytest.raises(ValueError, match="supervised subtype target"):
+        SubtypeTextClassifier().fit(rows)
+
+
+def test_subtype_text_classifier_rejects_invalid_subtype_primary():
+    rows = [
+        {
+            "product": "bad subtype",
+            "reactants": "example",
+            "label": "1",
+            "subtype_primary": "not_a_real_subtype",
+        }
+    ]
+
+    with pytest.raises(ValueError, match="Unknown subtype_primary"):
+        SubtypeTextClassifier().fit(rows)
+
+
+def test_subtype_text_classifier_rejects_unknown_category():
+    rows = [
+        {
+            "product": "bad category",
+            "reactants": "example",
+            "label": "1",
+            "category": "typo_category",
+        }
+    ]
+
+    with pytest.raises(ValueError, match="Unknown subtype category"):
+        SubtypeTextClassifier().fit(rows)
+
+
+def test_subtype_text_classifier_rejects_nullish_reason():
+    rows = [
+        {
+            "product": "bad reason",
+            "reactants": "example",
+            "label": "1",
+            "reason": "N/A",
         }
     ]
 

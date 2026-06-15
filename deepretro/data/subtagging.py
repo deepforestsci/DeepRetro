@@ -41,6 +41,8 @@ ALL_SUBTYPES = (
 )
 
 SUBTYPE_TEXT_FIELDS = ("product", "reactants", "target", "source")
+_ALL_SUBTYPE_SET = frozenset(ALL_SUBTYPES)
+_NULLISH_REASONS = frozenset(("", "n/a", "na", "none", "null", "unknown", "-"))
 
 _CATEGORY_SUBTYPE_MAP: dict[str, tuple[str, str | None]] = {
     "unsupported_skeletal_edit": (
@@ -217,9 +219,7 @@ def _assign_from_category(
     if assignment is not None:
         return assignment
 
-    if str(label).strip() == "1":
-        return SUBTYPE_UNCLASSIFIED_HALLUCINATION, None
-    return SUBTYPE_VALID_CLEAN, None
+    return None
 
 
 def assign_subtypes(
@@ -307,23 +307,23 @@ def _row_target_subtype(row: dict[str, str]) -> str:
 
     subtype = row.get("subtype_primary", "").strip()
     if subtype:
+        if subtype not in _ALL_SUBTYPE_SET:
+            raise ValueError(f"Unknown subtype_primary: {subtype}")
         return subtype
 
     category = row.get("category", "").strip()
     if category:
-        category_assignment = _assign_from_category(
-            label=row.get("label", ""),
-            category=category,
-        )
-        if category_assignment is not None:
-            return category_assignment[0]
+        category_assignment = _CATEGORY_SUBTYPE_MAP.get(_normalize_text(category))
+        if category_assignment is None:
+            raise ValueError(f"Unknown subtype category: {category}")
+        return category_assignment[0]
 
     reason = row.get("reason", "").strip()
-    if reason:
-        return assign_subtypes(
-            label=row.get("label", ""),
-            reason=reason,
-        )[0]
+    reason_text = _normalize_text(reason)
+    if reason_text and reason_text not in _NULLISH_REASONS:
+        reason_target = _match_subtype(reason_text, _PRIMARY_RULES)
+        if reason_target is not None:
+            return reason_target
 
     raise ValueError(
         "Rows used for subtype training/evaluation require a supervised subtype target "
