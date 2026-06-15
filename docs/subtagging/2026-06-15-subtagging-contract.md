@@ -6,6 +6,9 @@ Date: 2026-06-15
 
 This PR adds deterministic subtype enrichment for hallucination annotation rows.
 
+The dataset base for this work was split out from PR `#219` by taking only the merged hallucination dataset artifact.
+The reviewed Ohuamine seed CSVs were then layered on top locally, while classifier and featurizer changes from `#219` were left out.
+
 ## Canonical Module
 
 - `deepretro/data/subtagging.py`
