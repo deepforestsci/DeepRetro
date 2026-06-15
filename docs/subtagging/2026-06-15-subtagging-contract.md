@@ -4,7 +4,7 @@ Date: 2026-06-15
 
 ## Purpose
 
-This PR adds deterministic subtype enrichment for hallucination annotation rows.
+This PR adds deterministic subtype enrichment for hallucination annotation rows and a lightweight supervised train/eval/predict pipeline for subtype tags.
 
 The dataset base for this work was split out from PR `#219` by taking only the merged hallucination dataset artifact.
 The reviewed Ohuamine seed CSVs were then layered on top locally, while classifier and featurizer changes from `#219` were left out.
@@ -12,6 +12,12 @@ The reviewed Ohuamine seed CSVs were then layered on top locally, while classifi
 ## Canonical Module
 
 - `deepretro/data/subtagging.py`
+
+## Pipeline Script
+
+- `scripts/train_eval_predict_subtags.py`
+
+The script supports `train`, `train-eval`, `eval`, and `predict` subcommands. It writes a JSON model artifact and appends `predicted_subtype_primary` during prediction.
 
 ## Canonical Output Columns
 

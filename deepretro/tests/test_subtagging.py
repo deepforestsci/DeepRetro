@@ -13,10 +13,17 @@ from deepretro.data.subtagging import (
     SUBTYPE_UNSTABLE_INTERMEDIATE_OR_PRECURSOR,
     SUBTYPE_VALID_CLEAN,
     SUBTYPE_WRONG_STARTING_MATERIAL_OR_DIRECTION,
+    SubtypeTextClassifier,
     assign_subtypes,
     enrich_annotation_row,
+    train_eval_split,
 )
 from scripts.enrich_hallucination_subtags import enrich_dataset
+from scripts.train_eval_predict_subtags import (
+    evaluate_model_file,
+    predict_file,
+    train_model_file,
+)
 
 
 def test_assign_subtypes_maps_clean_reason():
@@ -190,3 +197,115 @@ def test_enrich_dataset_writes_enriched_csv_for_reviewed_categories(tmp_path):
 
     assert rows[0]["subtype_primary"] == SUBTYPE_BOND_OR_FRAGMENT_CONNECTIVITY_ERROR
     assert rows[1]["subtype_primary"] == SUBTYPE_VALID_CLEAN
+
+
+def test_subtype_text_classifier_trains_evaluates_and_predicts():
+    rows = [
+        {
+            "product": "skeletal-A",
+            "reactants": "fragment-A",
+            "label": "1",
+            "category": "unsupported_skeletal_edit",
+        },
+        {
+            "product": "skeletal-B",
+            "reactants": "fragment-B",
+            "label": "1",
+            "category": "unsupported_skeletal_edit",
+        },
+        {
+            "product": "protecting-A",
+            "reactants": "boc benzyl",
+            "label": "1",
+            "category": "protecting_group_swap_fragment_loss",
+        },
+        {
+            "product": "clean-A",
+            "reactants": "hydrogenation",
+            "label": "0",
+            "category": "valid_hydrogenation",
+        },
+    ]
+    classifier = SubtypeTextClassifier().fit(rows)
+
+    prediction = classifier.predict_row(
+        {"product": "skeletal-C", "reactants": "fragment-C", "label": "1"}
+    )
+    assert prediction == SUBTYPE_BOND_OR_FRAGMENT_CONNECTIVITY_ERROR
+
+    metrics = classifier.evaluate(rows)
+    assert metrics["total"] == 4
+    assert metrics["accuracy"] >= 0.75
+    assert SUBTYPE_BOND_OR_FRAGMENT_CONNECTIVITY_ERROR in metrics["labels"]
+
+
+def test_subtype_text_classifier_round_trips_json(tmp_path):
+    rows = [
+        {
+            "product": "missing methylene",
+            "reactants": "atom count",
+            "label": "1",
+            "category": "missing_methylene_source",
+        },
+        {
+            "product": "clean hydrogenation",
+            "reactants": "alkene",
+            "label": "0",
+            "category": "valid_hydrogenation",
+        },
+    ]
+    model_path = tmp_path / "subtag_model.json"
+    classifier = SubtypeTextClassifier().fit(rows)
+    classifier.save(model_path)
+
+    loaded = SubtypeTextClassifier.load(model_path)
+    assert loaded.predict_row({"product": "missing methylene", "reactants": "atom count"}) == (
+        SUBTYPE_ATOM_COUNT_OR_FORMULA_ERROR
+    )
+
+
+def test_train_eval_split_is_deterministic_and_non_empty():
+    rows = [{"product": str(index), "reactants": str(index), "label": "0"} for index in range(6)]
+    train_rows, eval_rows = train_eval_split(rows, eval_fraction=0.33, seed=7)
+
+    assert len(train_rows) == 4
+    assert len(eval_rows) == 2
+    assert train_eval_split(rows, eval_fraction=0.33, seed=7) == (train_rows, eval_rows)
+
+
+def test_train_eval_predict_script_pipeline(tmp_path):
+    input_path = tmp_path / "tags.csv"
+    model_path = tmp_path / "tag_model.json"
+    output_path = tmp_path / "predictions.csv"
+    with input_path.open("w", newline="", encoding="utf-8") as outfile:
+        writer = csv.DictWriter(
+            outfile,
+            fieldnames=["product", "reactants", "label", "category"],
+        )
+        writer.writeheader()
+        writer.writerow(
+            {
+                "product": "skeletal example",
+                "reactants": "fragment edit",
+                "label": "1",
+                "category": "unsupported_skeletal_edit",
+            }
+        )
+        writer.writerow(
+            {
+                "product": "clean example",
+                "reactants": "hydrogenation",
+                "label": "0",
+                "category": "valid_hydrogenation",
+            }
+        )
+
+    train_model_file(input_path, model_path)
+    metrics = evaluate_model_file(input_path, model_path)
+    predict_file(input_path, model_path, output_path)
+
+    with output_path.open("r", newline="", encoding="utf-8") as infile:
+        rows = list(csv.DictReader(infile))
+
+    assert metrics["total"] == 2
+    assert rows[0]["predicted_subtype_primary"] == SUBTYPE_BOND_OR_FRAGMENT_CONNECTIVITY_ERROR

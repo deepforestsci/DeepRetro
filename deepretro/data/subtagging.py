@@ -7,7 +7,13 @@ without changing the current model-training behavior.
 
 from __future__ import annotations
 
+import json
+import math
+import random
+import re
+from collections import Counter, defaultdict
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Iterable
 
 SUBTYPE_VALID_CLEAN = "valid_clean"
@@ -33,6 +39,8 @@ ALL_SUBTYPES = (
     SUBTYPE_UNSTABLE_INTERMEDIATE_OR_PRECURSOR,
     SUBTYPE_UNCLASSIFIED_HALLUCINATION,
 )
+
+SUBTYPE_TEXT_FIELDS = ("product", "reactants", "target", "source")
 
 _CATEGORY_SUBTYPE_MAP: dict[str, tuple[str, str | None]] = {
     "unsupported_skeletal_edit": (
@@ -272,3 +280,177 @@ def enrich_annotation_row(row: dict[str, str]) -> dict[str, str]:
     enriched["subtype_primary"] = primary
     enriched["subtype_secondary"] = secondary or ""
     return enriched
+
+
+def train_eval_split(
+    rows: list[dict[str, str]],
+    eval_fraction: float = 0.2,
+    seed: int = 42,
+) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+    """Return deterministic train/eval row splits for subtype modelling."""
+
+    if not rows:
+        return [], []
+    if not 0 < eval_fraction < 1:
+        raise ValueError("eval_fraction must be between 0 and 1")
+
+    shuffled = list(rows)
+    random.Random(seed).shuffle(shuffled)
+    eval_size = max(1, round(len(shuffled) * eval_fraction))
+    if eval_size >= len(shuffled):
+        eval_size = len(shuffled) - 1
+    return shuffled[eval_size:], shuffled[:eval_size]
+
+
+def _row_target_subtype(row: dict[str, str]) -> str:
+    """Resolve the supervised target subtype for a labelled row."""
+
+    subtype = row.get("subtype_primary", "").strip()
+    if subtype:
+        return subtype
+    return enrich_annotation_row(row)["subtype_primary"]
+
+
+def _row_text(row: dict[str, str]) -> str:
+    """Build non-label text used as features for subtype prediction."""
+
+    return " ".join(str(row.get(field, "")) for field in SUBTYPE_TEXT_FIELDS)
+
+
+def _tokenize_for_subtype_model(text: str) -> list[str]:
+    """Return simple lexical and character-ngram features."""
+
+    normalized = text.strip().lower()
+    if not normalized:
+        return []
+
+    word_tokens = re.findall(r"[a-z0-9@+\-\[\]\(\)=#/\\]+", normalized)
+    compact = re.sub(r"\s+", "", normalized)
+    char_tokens = [
+        f"char:{compact[index:index + size]}"
+        for size in (2, 3, 4)
+        for index in range(max(0, len(compact) - size + 1))
+    ]
+    return word_tokens + char_tokens
+
+
+@dataclass
+class SubtypeTextClassifier:
+    """Small multinomial Naive Bayes classifier for subtype tags."""
+
+    label_counts: dict[str, int] | None = None
+    token_counts_by_label: dict[str, dict[str, int]] | None = None
+    token_totals_by_label: dict[str, int] | None = None
+    vocabulary: set[str] | None = None
+    alpha: float = 1.0
+
+    def fit(self, rows: list[dict[str, str]]) -> "SubtypeTextClassifier":
+        """Train on labelled CSV rows and return ``self``."""
+
+        label_counts: Counter[str] = Counter()
+        token_counts: dict[str, Counter[str]] = defaultdict(Counter)
+        token_totals: Counter[str] = Counter()
+        vocabulary: set[str] = set()
+
+        for row in rows:
+            label = _row_target_subtype(row)
+            tokens = _tokenize_for_subtype_model(_row_text(row))
+            label_counts[label] += 1
+            token_counts[label].update(tokens)
+            token_totals[label] += len(tokens)
+            vocabulary.update(tokens)
+
+        if not label_counts:
+            raise ValueError("Cannot train subtype classifier without rows")
+
+        self.label_counts = dict(label_counts)
+        self.token_counts_by_label = {
+            label: dict(counts) for label, counts in token_counts.items()
+        }
+        self.token_totals_by_label = dict(token_totals)
+        self.vocabulary = vocabulary
+        return self
+
+    def predict_row(self, row: dict[str, str]) -> str:
+        """Predict ``subtype_primary`` for one row."""
+
+        if not self.label_counts:
+            raise ValueError("SubtypeTextClassifier must be fitted before prediction")
+
+        tokens = _tokenize_for_subtype_model(_row_text(row))
+        total_rows = sum(self.label_counts.values())
+        labels = sorted(self.label_counts)
+        vocabulary_size = max(1, len(self.vocabulary or set()))
+        best_label = labels[0]
+        best_score = -math.inf
+
+        for label in labels:
+            label_count = self.label_counts[label]
+            token_counts = (self.token_counts_by_label or {}).get(label, {})
+            token_total = (self.token_totals_by_label or {}).get(label, 0)
+            score = math.log(label_count / total_rows)
+            denominator = token_total + self.alpha * vocabulary_size
+            for token in tokens:
+                token_count = token_counts.get(token, 0)
+                score += math.log((token_count + self.alpha) / denominator)
+            if score > best_score:
+                best_label = label
+                best_score = score
+
+        return best_label
+
+    def predict(self, rows: list[dict[str, str]]) -> list[str]:
+        """Predict ``subtype_primary`` for multiple rows."""
+
+        return [self.predict_row(row) for row in rows]
+
+    def evaluate(self, rows: list[dict[str, str]]) -> dict[str, object]:
+        """Evaluate subtype predictions against resolved row targets."""
+
+        if not rows:
+            return {"accuracy": 0.0, "correct": 0, "total": 0, "labels": []}
+
+        y_true = [_row_target_subtype(row) for row in rows]
+        y_pred = self.predict(rows)
+        correct = sum(1 for expected, actual in zip(y_true, y_pred) if expected == actual)
+        return {
+            "accuracy": correct / len(rows),
+            "correct": correct,
+            "total": len(rows),
+            "labels": sorted(set(y_true)),
+        }
+
+    def save(self, path: str | Path) -> None:
+        """Persist the trained classifier as JSON."""
+
+        if not self.label_counts:
+            raise ValueError("Cannot save an unfitted subtype classifier")
+
+        output_path = Path(path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "label_counts": self.label_counts,
+            "token_counts_by_label": self.token_counts_by_label or {},
+            "token_totals_by_label": self.token_totals_by_label or {},
+            "vocabulary": sorted(self.vocabulary or set()),
+            "alpha": self.alpha,
+        }
+        output_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+
+    @classmethod
+    def load(cls, path: str | Path) -> "SubtypeTextClassifier":
+        """Load a classifier saved with :meth:`save`."""
+
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+        return cls(
+            label_counts={key: int(value) for key, value in payload["label_counts"].items()},
+            token_counts_by_label={
+                label: {token: int(count) for token, count in counts.items()}
+                for label, counts in payload["token_counts_by_label"].items()
+            },
+            token_totals_by_label={
+                key: int(value) for key, value in payload["token_totals_by_label"].items()
+            },
+            vocabulary=set(payload["vocabulary"]),
+            alpha=float(payload.get("alpha", 1.0)),
+        )
