@@ -76,6 +76,7 @@ Submodules
    deepretro.utils.cache
    deepretro.utils.llm
    deepretro.utils.utils_molecule
+   deepretro.utils.visualize
 
 API Reference
 -------------
