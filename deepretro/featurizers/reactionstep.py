@@ -3,7 +3,7 @@
 import numpy as np
 import deepchem as dc
 from deepchem.feat.graph_data import GraphData
-from deepretro.utils import extract_domain_features_single, NUM_DOMAIN_FEATURES
+from deepretro.utils import extract_domain_features_single
 from typing import Any, Tuple
 
 

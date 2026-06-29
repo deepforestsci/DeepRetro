@@ -1,5 +1,8 @@
 """File to store Variables for the retrosynthesis task"""
 
+from src.variables import USER_PROMPT
+
+
 prompt_old = """Do an one-step retrosynthesis on the given smile - {target_smiles} and provide 
 the list containing the reactants in the smiles format of all the possible pathways. 
 Now put all these outputs to a result list. Do not print anything other than the result.
@@ -18,7 +21,7 @@ USER_PROMPT = """Perform a single-step retrosynthesis on the following molecule,
 
 {target_smiles}
 
-Use chain-of-thought reasoning, enclosed within <thinking></thinking> tags, to analyze the molecule. This reasoning should detail your step-by-step thought process.
+Use chain-of-thought reasoning but keep the response brief, don't print everything in response, enclosed within <thinking></thinking> tags, to analyze the molecule. This reasoning should detail your step-by-step thought process.
 
 Present your final analysis in the following JSON format:
 
@@ -313,6 +316,7 @@ Before beginning the analysis, verify that:
 - The provided SMILES string represents a valid organic molecule
 - The structure is complete and unambiguous
 - The complexity level warrants retrosynthetic analysis
+- If any hallucinated pathway given as feedback, make sure to take those type of hallucinations in consideration and think before generating your responses.
 If any of these checks fail, return a JSON object explaining the issue.
 
 ANALYSIS FRAMEWORK:
@@ -521,7 +525,7 @@ USER_PROMPT_V4 = """
 Analyze the following molecule for single-step retrosynthesis:
 Target SMILES: {target_smiles}
 
-Provide 3-5 strategic disconnection approaches, ensuring thorough documentation of your thinking process. Consider both innovative and practical aspects in your analysis.
+Provide 3-5 strategic disconnection approaches, ensuring thorough documentation of your thinking process (but keep explanation concise). Consider both innovative and practical aspects in your analysis.
 """
 
 ADDON_PROMPT_7_MEMBER = """
