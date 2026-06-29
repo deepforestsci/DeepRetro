@@ -146,9 +146,12 @@ def validity_check(
         res_explanations,
         res_confidence,
     ):
-        candidate_pathway = (
-            [smiles_group] if isinstance(smiles_group, str) else list(smiles_group)
-        )
+        if isinstance(smiles_group, str):
+            candidate_pathway = smiles_group.split(".")
+        else:
+            candidate_pathway = []
+            for smiles in smiles_group:
+                candidate_pathway.extend(smiles.split("."))
         valid_candidates: list[str] = []
 
         for smiles in candidate_pathway:

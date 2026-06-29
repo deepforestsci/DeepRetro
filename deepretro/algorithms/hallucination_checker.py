@@ -16,7 +16,6 @@ reactant and product. Two main entry points are provided:
 
 from collections import Counter
 from typing import Any
-
 from rdkit import Chem
 from rdkit.Chem import rdmolops
 
@@ -797,6 +796,8 @@ def calculate_hallucination_score(
     # Determine severity level based on score
     if final_score >= 80:
         severity = "low"
+    elif final_score >= 55:
+        severity = "low-medium"
     elif final_score >= 40:
         severity = "medium"
     elif final_score >= 20:
