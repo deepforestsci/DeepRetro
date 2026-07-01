@@ -17,12 +17,12 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
-from typing import Any
+from typing import Any, cast
 
 import structlog
 
 from deepretro.agents.tools import build_tool_registry
-from deepretro.utils.llm_helpers import Pathway
+from deepretro.utils.llm_helpers import ChatMessage, Pathway
 
 logger = structlog.get_logger(__name__)
 
@@ -204,7 +204,9 @@ def _make_default_model_call(
 
         params = build_completion_params(
             model=model,
-            messages=messages,
+            # The conversation is an OpenAI-format superset of ChatMessage
+            # (assistant tool-call turns, tool results); litellm accepts it.
+            messages=cast("list[ChatMessage]", messages),
             max_completion_tokens=max_output_tokens or 8192,
             temperature=0.0,
             enable_thinking=enable_thinking,

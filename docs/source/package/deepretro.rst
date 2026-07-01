@@ -61,7 +61,10 @@ Subpackages
 .. toctree::
    :maxdepth: 2
 
+   deepretro.algorithms.autosolve
    deepretro.algorithms.hallucination_checker
+   deepretro.agents
+   deepretro.batch
    deepretro.data.loader
    deepretro.models.hallucination_classifier
    deepretro.metadata
