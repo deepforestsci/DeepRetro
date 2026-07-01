@@ -630,6 +630,7 @@ class AutoSolver:
             model=self.llm,
             tool_backend=self.tool_backend,
             sandbox=self.sandbox,
+            hallucination_checker=self.hallucination_checker,
             enable_thinking=self.enable_thinking,
             max_output_tokens=self.max_output_tokens,
         )
