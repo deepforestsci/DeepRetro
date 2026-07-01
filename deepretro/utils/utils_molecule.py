@@ -54,6 +54,35 @@ def is_valid_smiles(smiles: str) -> bool:
     return _parse_molecule(smiles) is not None
 
 
+def canonicalize(smiles: str) -> str:
+    """Return canonical SMILES, or the original string if parsing fails.
+
+    Parameters
+    ----------
+    smiles : str
+        Input SMILES string.
+
+    Returns
+    -------
+    str
+        Canonical SMILES, or the original string when RDKit cannot parse it.
+        Returning the input unchanged (rather than raising) lets callers use
+        the result as a stable cycle-detection key even for malformed input.
+
+    Examples
+    --------
+    >>> canonicalize("C(O)C")
+    'CCO'
+    >>> canonicalize("not_a_smiles")
+    'not_a_smiles'
+    """
+
+    molecule = _parse_molecule(smiles)
+    if molecule is None:
+        return smiles
+    return Chem.MolToSmiles(molecule, canonical=True)
+
+
 def substructure_matching(target_smiles: str, query_smiles: str) -> int:
     """Check whether a query molecule is a substructure of a target molecule.
 

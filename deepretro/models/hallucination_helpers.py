@@ -10,11 +10,13 @@ Provides:
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Any
 
 from deepretro.models.hallucination_classifier import predict_single_reaction
+from deepretro.utils.llm_helpers import Pathway
+from deepretro.utils.typing import HallucinationChecker
 
 
 class MLChecker:
@@ -143,6 +145,7 @@ def resolve_hallucination(
         return None
     if mode == "heuristic":
         from deepretro.algorithms.pipeline_checks import hallucination_checker
+
         return hallucination_checker
     if mode == "ml":
         from deepretro.models.hallucination_classifier import HallucinationClassifier
@@ -161,3 +164,112 @@ def resolve_hallucination(
     raise ValueError(
         f"hallucination_mode must be 'heuristic', 'ml', or 'none' — got {mode!r}"
     )
+
+
+def _as_pathway(candidate: Pathway | str) -> Pathway:
+    """Normalize one candidate into a list-of-SMILES pathway.
+
+    Parameters
+    ----------
+    candidate : list[str] or str
+        A pathway as a list of reactant SMILES, or a single reactant SMILES.
+
+    Returns
+    -------
+    list[str]
+        The candidate as a list, so string and list pathways compare equal.
+    """
+    return [candidate] if isinstance(candidate, str) else list(candidate)
+
+
+def filter_with_checker(
+    product: str,
+    pathways: list[Pathway],
+    explanations: Iterable[str],
+    confidence: Iterable[float],
+    checker: HallucinationChecker | None,
+) -> tuple[list[Pathway], list[str], list[float]]:
+    """Filter pathways with a checker while keeping metadata aligned.
+
+    A checker returns only the kept pathways, not their indices, so the
+    explanations and confidence scores must be realigned to the surviving
+    pathways. Alignment is by value (order-preserving), which is why a
+    checker must only ever return pathways from its input.
+
+    Parameters
+    ----------
+    product : str
+        Product molecule SMILES.
+    pathways : list[list[str]]
+        Candidate precursor pathways.
+    explanations : Iterable[str]
+        Explanations aligned position-for-position with ``pathways``.
+    confidence : Iterable[float]
+        Confidence scores aligned position-for-position with ``pathways``.
+    checker : HallucinationChecker or None
+        Optional pathway filter ``(product, pathways) -> (status, kept)``.
+        ``None`` disables filtering and returns the inputs unchanged.
+
+    Returns
+    -------
+    tuple[list[list[str]], list[str], list[float]]
+        Retained pathways with explanations and confidence realigned.
+        A checker status other than 200 yields three empty lists.
+
+    Raises
+    ------
+    ValueError
+        If ``pathways``, ``explanations``, and ``confidence`` differ in
+        length, or if the checker returns a pathway absent from the input.
+
+    Examples
+    --------
+    >>> filter_with_checker(
+    ...     "CC(=O)Oc1ccccc1C(=O)O",
+    ...     [["OC(=O)c1ccccc1O"], ["CC(=O)O"]],
+    ...     ["hydrolysis", "deacetylation"],
+    ...     [0.3, 0.9],
+    ...     None,
+    ... )
+    ([['OC(=O)c1ccccc1O'], ['CC(=O)O']], ['hydrolysis', 'deacetylation'], [0.3, 0.9])
+    """
+    explanation_list = list(explanations)
+    confidence_list = list(confidence)
+    if len(pathways) != len(explanation_list) or len(pathways) != len(confidence_list):
+        raise ValueError(
+            f"pathways ({len(pathways)}), explanations ({len(explanation_list)}), "
+            f"and confidence ({len(confidence_list)}) must have the same length"
+        )
+
+    if checker is None or not pathways:
+        return list(pathways), explanation_list, confidence_list
+
+    status, retained_pathways = checker(product, pathways)
+    if status != 200:
+        return [], [], []
+
+    available = [
+        (_as_pathway(pathway), explanation, score)
+        for pathway, explanation, score in zip(
+            pathways, explanation_list, confidence_list
+        )
+    ]
+    matched_pathways: list[Pathway] = []
+    matched_explanations: list[str] = []
+    matched_confidence: list[float] = []
+
+    for retained in retained_pathways:
+        target = _as_pathway(retained)
+        for index, (normalized, explanation, score) in enumerate(available):
+            if normalized == target:
+                matched_pathways.append(retained)
+                matched_explanations.append(explanation)
+                matched_confidence.append(float(score))
+                available.pop(index)
+                break
+        else:
+            raise ValueError(
+                f"Checker returned pathway {retained!r} not present in original input"
+            )
+
+    return matched_pathways, matched_explanations, matched_confidence

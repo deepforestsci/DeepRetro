@@ -253,3 +253,23 @@ class TestDetectEightMemberRings:
     def test_invalid_smiles_raises_value_error(self) -> None:
         with pytest.raises(ValueError, match="Invalid SMILES string provided"):
             utils_molecule.detect_eight_member_rings(INVALID_SMILES)
+
+
+class TestCanonicalize:
+    """Tests for ``utils_molecule.canonicalize``."""
+
+    def test_non_canonical_input_is_canonicalized(self) -> None:
+        assert utils_molecule.canonicalize("C(O)C") == "CCO"
+
+    def test_already_canonical_is_stable(self) -> None:
+        assert utils_molecule.canonicalize(ETHANOL) == "CCO"
+
+    def test_equivalent_smiles_map_to_same_string(self) -> None:
+        aspirin_a = "CC(=O)Oc1ccccc1C(=O)O"
+        aspirin_b = "O=C(O)c1ccccc1OC(C)=O"
+        assert utils_molecule.canonicalize(aspirin_a) == utils_molecule.canonicalize(
+            aspirin_b
+        )
+
+    def test_invalid_smiles_returns_input_unchanged(self) -> None:
+        assert utils_molecule.canonicalize(INVALID_SMILES) == INVALID_SMILES
