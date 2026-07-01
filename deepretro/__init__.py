@@ -5,10 +5,19 @@ Provides DeepChem-compatible featurizers, dataset loaders, algorithms,
 and model wrappers for reaction-step data.
 """
 
-__all__ = ["ReactionStepFeaturizer", "configure_logging", "HallucinationClassifier"]
+__all__ = [
+    "ReactionStepFeaturizer",
+    "configure_logging",
+    "HallucinationClassifier",
+    "AutoSolver",
+]
 
 
 def __getattr__(name: str):
+    if name == "AutoSolver":
+        from deepretro.algorithms.autosolve import AutoSolver
+
+        return AutoSolver
     if name == "ReactionStepFeaturizer":
         from deepretro.featurizers.reactionstep import ReactionStepFeaturizer
 

@@ -19,6 +19,7 @@ dependencies = [
     "litellm",
     "python-dotenv",
     "langfuse<3",
+    "requests",
 ]
 
 [project.optional-dependencies]

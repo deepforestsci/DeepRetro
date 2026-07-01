@@ -121,3 +121,67 @@ def test_inline_classifier_matches_predict_probability_contract() -> None:
 
     assert labels.shape == (1,)
     assert probabilities.shape == (1,)
+
+
+def _drop_second_checker(product: str, pathways: list) -> tuple[int, list]:
+    """Order-preserving checker double: keep every pathway except index 1."""
+    del product
+    kept = [pathway for i, pathway in enumerate(pathways) if i != 1]
+    if kept:
+        return 200, kept
+    return 400, []
+
+
+class TestFilterWithChecker:
+    """Tests for ``hallucination_helpers.filter_with_checker`` realignment."""
+
+    def test_none_checker_passes_everything_through(self) -> None:
+        from deepretro.models.hallucination_helpers import filter_with_checker
+
+        pathways = [["CC"], ["O"]]
+        result = filter_with_checker(
+            "CCO", pathways, ["a", "b"], [0.1, 0.2], None
+        )
+        assert result == (pathways, ["a", "b"], [0.1, 0.2])
+
+    def test_kept_subset_keeps_aligned_explanations_and_confidence(self) -> None:
+        from deepretro.models.hallucination_helpers import filter_with_checker
+
+        pathways = [["A"], ["B"], ["C"]]
+        kept, expl, conf = filter_with_checker(
+            "P",
+            pathways,
+            ["expl_a", "expl_b", "expl_c"],
+            [0.1, 0.2, 0.3],
+            _drop_second_checker,
+        )
+        assert kept == [["A"], ["C"]]
+        assert expl == ["expl_a", "expl_c"]
+        assert conf == [0.1, 0.3]
+
+    def test_rejected_all_returns_empty_lists(self) -> None:
+        from deepretro.models.hallucination_helpers import filter_with_checker
+
+        def reject_all(product: str, pathways: list) -> tuple[int, list]:
+            del product, pathways
+            return 400, []
+
+        assert filter_with_checker(
+            "P", [["A"]], ["e"], [0.5], reject_all
+        ) == ([], [], [])
+
+    def test_length_mismatch_raises(self) -> None:
+        from deepretro.models.hallucination_helpers import filter_with_checker
+
+        with pytest.raises(ValueError, match="same length"):
+            filter_with_checker("P", [["A"], ["B"]], ["only_one"], [0.1, 0.2], None)
+
+    def test_unknown_returned_pathway_raises(self) -> None:
+        from deepretro.models.hallucination_helpers import filter_with_checker
+
+        def invent_pathway(product: str, pathways: list) -> tuple[int, list]:
+            del product, pathways
+            return 200, [["NOT", "IN", "INPUT"]]
+
+        with pytest.raises(ValueError, match="not present in original"):
+            filter_with_checker("P", [["A"]], ["e"], [0.5], invent_pathway)
