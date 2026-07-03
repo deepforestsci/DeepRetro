@@ -65,7 +65,15 @@ class AutoSolver:
     sandbox : Sandbox or None, optional
         Sandbox used by the agent's ``run_python`` tool. Injectable for testing.
     max_depth : int, optional
-        Maximum retrosynthesis recursion depth.
+        Maximum retrosynthesis recursion depth. This is a safety guard against
+        runaway recursion; reaching it is logged as a warning.
+    stop_depth : int or None, optional
+        User-defined recursion cutoff. When set, any molecule reached at
+        ``depth >= stop_depth`` is returned as an ordinary unsolved leaf
+        without being expanded (no AZ or LLM call) and without the
+        ``max_depth`` warning. ``None`` (default) disables the cutoff, leaving
+        ``max_depth`` as the only limit. Independent of ``max_depth``, which
+        still guards against runaway recursion.
     enable_thinking : bool, optional
         Whether provider-supported reasoning controls should be enabled.
     max_output_tokens : int, optional
@@ -85,8 +93,9 @@ class AutoSolver:
     Raises
     ------
     ValueError
-        If ``max_depth`` is negative, ``solve_mode``/``tool_backend`` is
-        unknown, or ``hallucination_mode`` is ``"ml"`` without a classifier.
+        If ``max_depth`` or ``stop_depth`` is negative,
+        ``solve_mode``/``tool_backend`` is unknown, or ``hallucination_mode``
+        is ``"ml"`` without a classifier.
 
     Examples
     --------
@@ -110,6 +119,7 @@ class AutoSolver:
         tool_backend: str = "structured",
         sandbox: Any | None = None,
         max_depth: int = 50,
+        stop_depth: int | None = None,
         enable_thinking: bool = True,
         max_output_tokens: int | None = None,
         metadata_model: str = "anthropic/claude-sonnet-4-6",
@@ -122,6 +132,8 @@ class AutoSolver:
         """Construct an AutoSolver; see the class docstring for parameters."""
         if max_depth < 0:
             raise ValueError("max_depth must be non-negative")
+        if stop_depth is not None and stop_depth < 0:
+            raise ValueError("stop_depth must be non-negative or None")
 
         solve_mode = solve_mode.lower()
         if solve_mode not in VALID_SOLVE_MODES:
@@ -146,6 +158,7 @@ class AutoSolver:
         self.tool_backend = tool_backend
         self.sandbox = sandbox
         self.max_depth = max_depth
+        self.stop_depth = stop_depth
         self.enable_thinking = enable_thinking
         self.max_output_tokens = max_output_tokens
         self.metadata_model = metadata_model
@@ -200,6 +213,13 @@ class AutoSolver:
             return unsolved_leaf(smiles), False
 
         canonical = canonicalize(smiles)
+        if self.stop_depth is not None and depth >= self.stop_depth:
+            logger.debug(
+                "Reached configured stop_depth; truncating branch",
+                molecule=smiles,
+                stop_depth=self.stop_depth,
+            )
+            return unsolved_leaf(smiles), False
         if depth >= self.max_depth:
             logger.warning("Maximum recursion depth reached", molecule=smiles)
             return unsolved_leaf(smiles), False
