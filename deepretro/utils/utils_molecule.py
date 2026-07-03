@@ -144,7 +144,9 @@ def validity_check(
     tuple[list[list[str]], list[str], list[float]]
         Valid precursor pathways, explanations, and confidence scores. A
         pathway is kept only when every precursor is valid, is not identical
-        to the target molecule, and is not a substructure of the target.
+        to the target molecule, and does not contain the target as a
+        substructure (a precursor embedding the intact target means no
+        target bond was disconnected, so recursion would loop).
 
     Examples
     --------
@@ -193,9 +195,9 @@ def validity_check(
                 )
                 continue
 
-            if substructure_matching(molecule, smiles):
+            if substructure_matching(smiles, molecule):
                 logger.warning(
-                    "Molecule is substructure of target",
+                    "Target molecule is substructure of precursor",
                     molecule=molecule,
                     smiles=smiles,
                 )
