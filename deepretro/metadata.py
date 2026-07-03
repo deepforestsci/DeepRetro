@@ -12,7 +12,11 @@ from litellm import completion
 
 from deepretro.utils.cache import CacheManager, make_cache_key
 from deepretro.utils.langfuse_config import get_langfuse_metadata
-from deepretro.utils.llm_helpers import ChatMessage, build_completion_params
+from deepretro.utils.llm_helpers import (
+    ChatMessage,
+    build_completion_params,
+    resolve_model_selection,
+)
 from deepretro.utils.utils_molecule import (
     calc_chemical_formula,
     calc_mol_wt,
@@ -490,7 +494,12 @@ def call_metadata_llm(
         enable_thinking=False,
         metadata=metadata,
     )
-    params["top_p"] = TOP_P
+    # ``build_completion_params`` always sets ``temperature``. Anthropic Claude 4+
+    # and OpenAI reasoning models reject requests that specify both ``temperature``
+    # and ``top_p`` ("cannot both be specified"), so only add ``top_p`` for models
+    # that accept the pair. At ``temperature=0`` dropping ``top_p`` is a no-op.
+    if not resolve_model_selection(model).requires_temperature_one:
+        params["top_p"] = TOP_P
 
     try:
         response = completion(**params)
