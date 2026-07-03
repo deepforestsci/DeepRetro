@@ -216,7 +216,7 @@ class SubprocessSandbox:
             try:
                 stdout, stderr = proc.communicate(timeout=timeout_s)
             except subprocess.TimeoutExpired:
-                _kill_process_group(proc.pid)
+                _kill_process_group(proc)
                 stdout, stderr = proc.communicate()
                 return SandboxResult(
                     False,
@@ -230,9 +230,12 @@ class SubprocessSandbox:
             return SandboxResult(ok, stdout or "", stderr or "", error)
 
 
-def _kill_process_group(pid: int) -> None:
+def _kill_process_group(proc: subprocess.Popen[str]) -> None:
     """Kill the child's process group so no orphaned children survive."""
     try:
-        os.killpg(os.getpgid(pid), 9)
+        if os.name == "nt":
+            proc.kill()
+        else:
+            os.killpg(os.getpgid(proc.pid), 9)
     except (ProcessLookupError, PermissionError, OSError):  # pragma: no cover
         pass
