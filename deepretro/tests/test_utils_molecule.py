@@ -188,10 +188,12 @@ class TestValidityCheck:
         assert explanations == []
         assert confidence == []
 
-    def test_substructure_of_target_filtered_out(self) -> None:
+    def test_precursor_containing_target_filtered_out(self) -> None:
+        # Diethyl ether contains ethanol intact: no target bond was
+        # disconnected, so recursing on it would re-encounter the target.
         molecule = ETHANOL
-        res_molecules = [["CC"]]
-        res_explanations = ["ethyl fragment"]
+        res_molecules = [["CCOCC"]]
+        res_explanations = ["target embedded in precursor"]
         res_confidence = [0.6]
         pathways, explanations, confidence = utils_molecule.validity_check(
             molecule, res_molecules, res_explanations, res_confidence
@@ -199,6 +201,21 @@ class TestValidityCheck:
         assert pathways == []
         assert explanations == []
         assert confidence == []
+
+    def test_precursor_that_is_substructure_of_target_kept(self) -> None:
+        # Most real disconnections yield precursors that appear inside the
+        # target (e.g. salicylic acid + acetic anhydride -> aspirin); they
+        # must NOT be rejected.
+        molecule = "CC(=O)Oc1ccccc1C(=O)O"  # aspirin
+        res_molecules = [["O=C(O)c1ccccc1O", "CC(=O)OC(C)=O"]]
+        res_explanations = ["acetylation of salicylic acid"]
+        res_confidence = [0.95]
+        pathways, explanations, confidence = utils_molecule.validity_check(
+            molecule, res_molecules, res_explanations, res_confidence
+        )
+        assert pathways == [["O=C(O)c1ccccc1O", "CC(=O)OC(C)=O"]]
+        assert explanations == ["acetylation of salicylic acid"]
+        assert confidence == [0.95]
 
     def test_single_smiles_string_instead_of_list(self) -> None:
         molecule = BENZENE
