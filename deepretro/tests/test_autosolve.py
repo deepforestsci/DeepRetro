@@ -248,6 +248,81 @@ class TestConstructor:
         with pytest.raises(ValueError, match="max_depth"):
             AutoSolver(hallucination_mode="none", max_depth=-1)
 
+    def test_stop_depth_defaults_to_none(self) -> None:
+        """stop_depth is disabled by default."""
+        solver = AutoSolver(hallucination_mode="none")
+        assert solver.stop_depth is None
+
+    def test_preserves_stop_depth(self) -> None:
+        """Constructor stores an explicit stop_depth."""
+        solver = AutoSolver(hallucination_mode="none", stop_depth=2)
+        assert solver.stop_depth == 2
+
+    def test_rejects_negative_stop_depth(self) -> None:
+        """A negative stop_depth raises ValueError."""
+        with pytest.raises(ValueError, match="stop_depth"):
+            AutoSolver(hallucination_mode="none", stop_depth=-1)
+
+
+class TestStopDepth:
+    def test_stop_depth_truncates_branch_cleanly(self) -> None:
+        """A molecule at stop_depth becomes a leaf without AZ or LLM calls."""
+        az_runner = RecordingAzRunner()
+        llm_calls: list[str] = []
+
+        def recording_hydrolysis(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
+            llm_calls.append(molecule)
+            return llm_proposes_hydrolysis(molecule, **kwargs)
+
+        solver = AutoSolver(
+            az_runner=az_runner,
+            llm_runner=recording_hydrolysis,
+            hallucination_mode="none",
+            stop_depth=1,
+        )
+        # Depth 0 (aspirin) expands; its depth-1 precursors are truncated leaves.
+        route, solved = solver.solve(ASPIRIN)
+
+        assert solved is False
+        precursors = route["children"][0]["children"]
+        assert precursors == [
+            unsolved_leaf(SALICYLIC_ACID),
+            unsolved_leaf(ACETIC_ACID),
+        ]
+        # AZ/LLM were only ever consulted for the depth-0 target, never the
+        # truncated depth-1 precursors.
+        assert az_runner.calls == [ASPIRIN]
+        assert llm_calls == [ASPIRIN]
+
+    def test_stop_depth_zero_truncates_root(self) -> None:
+        """stop_depth=0 returns the target as a leaf without any AZ/LLM call."""
+        az_runner = RecordingAzRunner()
+        llm_runner = RecordingLlmRunner()
+        solver = AutoSolver(
+            az_runner=az_runner,
+            llm_runner=llm_runner,
+            hallucination_mode="none",
+            stop_depth=0,
+        )
+        route, solved = solver.solve(ASPIRIN)
+
+        assert (route, solved) == (unsolved_leaf(ASPIRIN), False)
+        assert az_runner.calls == []
+        assert llm_runner.calls == []
+
+    def test_no_stop_depth_recurses_normally(self) -> None:
+        """With stop_depth=None recursion proceeds past depth 1."""
+        solver = AutoSolver(
+            az_runner=SelectiveAzRunner({SALICYLIC_ACID, ACETIC_ACID}),
+            llm_runner=llm_proposes_hydrolysis,
+            hallucination_mode="none",
+            stop_depth=None,
+        )
+        _route, solved = solver.solve(ASPIRIN)
+        assert solved is True
+
 
 class TestSolve:
     def test_az_success_returns_route(self) -> None:
