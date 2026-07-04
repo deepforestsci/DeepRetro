@@ -27,6 +27,8 @@ from deepretro.models.hallucination_trainer import HallucinationTrainer
 
 import structlog
 
+from deepretro.score import score_pathway
+
 logger = structlog.get_logger(__name__)
 
 # Solver hook: molecule SMILES -> list of parsed pathway dicts.
@@ -288,6 +290,7 @@ def run_batch(
             pathways = solve(smiles)
             paths: list[str] = []
             for index, pathway in enumerate(pathways, start=1):
+                pathway = _with_pathway_scores(pathway)
                 target = mol_dir / f"pathway_{index}.json"
                 target.write_text(json.dumps(pathway, indent=2), encoding="utf-8")
                 paths.append(str(target))
@@ -303,6 +306,22 @@ def run_batch(
             logger.error("Molecule failed", molecule=smiles, error=str(exc))
 
     return written
+
+
+def _with_pathway_scores(pathway: dict[str, Any]) -> dict[str, Any]:
+    """Attach pathway scoring output without aborting the batch on score errors."""
+    scored_pathway = dict(pathway)
+    try:
+        scored_pathway["scores"] = score_pathway(scored_pathway)
+    except Exception as exc:
+        logger.warning("Pathway scoring failed", error=str(exc))
+        scored_pathway["scores"] = {
+            "step_scores": [],
+            "route_summary": {"n_steps": 0},
+            "warnings": [],
+            "errors": [f"Pathway scoring failed: {exc}"],
+        }
+    return scored_pathway
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
