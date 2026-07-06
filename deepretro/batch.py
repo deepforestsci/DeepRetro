@@ -27,7 +27,7 @@ from deepretro.models.hallucination_trainer import HallucinationTrainer
 
 import structlog
 
-from deepretro.score import score_pathway
+from deepretro.score import empty_pathway_scores, score_pathway
 
 logger = structlog.get_logger(__name__)
 
@@ -315,12 +315,9 @@ def _with_pathway_scores(pathway: dict[str, Any]) -> dict[str, Any]:
         scored_pathway["scores"] = score_pathway(scored_pathway)
     except Exception as exc:
         logger.warning("Pathway scoring failed", error=str(exc))
-        scored_pathway["scores"] = {
-            "step_scores": [],
-            "route_summary": {"n_steps": 0},
-            "warnings": [],
-            "errors": [f"Pathway scoring failed: {exc}"],
-        }
+        scored_pathway["scores"] = empty_pathway_scores(
+            f"Pathway scoring failed: {exc}"
+        )
     return scored_pathway
 
 

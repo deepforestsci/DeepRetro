@@ -1,6 +1,7 @@
 from deepretro.score import (
     SCScoreConfig,
     canonicalize_smiles,
+    empty_pathway_scores,
     sa_score,
     sc_score,
     score_molecule,
@@ -11,6 +12,7 @@ from deepretro.score import (
 __all__ = [
     "SCScoreConfig",
     "canonicalize_smiles",
+    "empty_pathway_scores",
     "sa_score",
     "sc_score",
     "score_molecule",

@@ -43,19 +43,8 @@ def canonicalize_smiles(smiles: str) -> str | None:
 
 def sa_score(smiles: str) -> float | None:
     """Return RDKit Contrib SA_Score for a SMILES string, or None if unavailable/invalid."""
-    chem = _get_chem()
-    scorer = _get_sascorer()
-    canonical = canonicalize_smiles(smiles)
-    if chem is None or scorer is None or canonical is None:
-        return None
-
-    try:
-        mol = chem.MolFromSmiles(canonical)
-        if mol is None:
-            return None
-        return float(scorer.calculateScore(mol))
-    except Exception:
-        return None
+    value, _error = _sa_score_with_error(smiles)
+    return value
 
 
 def sc_score(smiles: str, config: SCScoreConfig | None = None) -> float | None:
@@ -90,9 +79,9 @@ def score_molecule(
             "errors": _dedupe(error_messages),
         }
 
-    sa_value = sa_score(canonical)
+    sa_value, sa_error = _sa_score_with_error(canonical)
     if sa_value is None:
-        warning_messages.append(_sa_warning())
+        warning_messages.append(sa_error or "SA_Score unavailable")
 
     sc_value, sc_error = _sc_score_with_error(canonical, sc_config)
     if sc_value is None:
@@ -193,6 +182,12 @@ def score_pathway(
     }
 
 
+def empty_pathway_scores(error: str | None = None) -> dict[str, Any]:
+    """Return an empty pathway score payload using the standard schema."""
+    errors = [error] if error else []
+    return _pathway_result([], errors)
+
+
 @lru_cache(maxsize=1)
 def _get_chem() -> Any | None:
     try:
@@ -231,6 +226,31 @@ def _sa_warning() -> str:
     if _get_sascorer() is None:
         return "SA_Score unavailable"
     return "SA_Score failed"
+
+
+def _sa_score_with_error(smiles: str) -> tuple[float | None, str | None]:
+    canonical = canonicalize_smiles(smiles)
+    if canonical is None:
+        return (
+            None,
+            "Invalid SMILES" if _get_chem() is not None else "RDKit unavailable",
+        )
+
+    chem = _get_chem()
+    if chem is None:
+        return None, "RDKit unavailable"
+
+    scorer = _get_sascorer()
+    if scorer is None:
+        return None, "SA_Score unavailable"
+
+    try:
+        mol = chem.MolFromSmiles(canonical)
+        if mol is None:
+            return None, "Invalid SMILES"
+        return float(scorer.calculateScore(mol)), None
+    except Exception as exc:
+        return None, _format_error("SA_Score failed", exc)
 
 
 def _sc_score_with_error(

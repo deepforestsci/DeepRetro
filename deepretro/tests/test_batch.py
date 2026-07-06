@@ -9,6 +9,7 @@ from typing import Any
 import pytest
 
 from deepretro import batch
+from deepretro import score
 
 
 class FakeResponse:
@@ -116,3 +117,18 @@ def test_train_hallucination_checker_skips_without_label_column(tmp_path: Path) 
     csv_path.write_text("product,reactants\nCCO,CC\n")
     result = batch.train_hallucination_checker(str(csv_path), str(tmp_path / "model"))
     assert result is None
+
+
+def test_with_pathway_scores_failure_uses_empty_score_schema(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_score_pathway(pathway: dict[str, Any]) -> dict[str, Any]:
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(batch, "score_pathway", fake_score_pathway)
+
+    scored_pathway = batch._with_pathway_scores({"steps": []})
+
+    assert scored_pathway["scores"] == score.empty_pathway_scores(
+        "Pathway scoring failed: boom"
+    )
