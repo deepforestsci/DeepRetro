@@ -1361,6 +1361,21 @@ DEEPSEEK_MODELS = [
     "together_ai/deepseek-ai/DeepSeek-R1"
 ]
 
+# Anthropic models that support extended thinking. Matched as substrings of
+# the model name (provider prefixes like "anthropic/" and suffixes like
+# ":adv" are stripped first), so date-stamped variants and future point
+# releases (e.g. claude-opus-4-1-*) match without editing this list.
+CLAUDE_EXTENDED_THINKING_MODELS = [
+    "claude-3-7-sonnet",
+    "claude-opus-4",
+    "claude-sonnet-4",
+]
+
+# Anthropic requires max_tokens > budget_tokens when thinking is enabled;
+# 13192 is the pre-existing completion allowance, budget rides on top.
+EXTENDED_THINKING_BUDGET_TOKENS = 5000
+EXTENDED_THINKING_MAX_TOKENS = 13192 + EXTENDED_THINKING_BUDGET_TOKENS
+
 ERROR_MAP = {
     200: {
         "description": "SUCCESS",
