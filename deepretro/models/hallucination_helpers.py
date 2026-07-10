@@ -107,7 +107,7 @@ def resolve_hallucination(
     Parameters
     ----------
     mode : str
-        One of ``"default"``, ``"heuristic"``, ``"ml"``, or ``"none"``.
+        One of ``"heuristic"``, ``"ml"``, or ``"none"``.
     classifier : str or Path or Any or None
         Path to a saved ML model directory, or a classifier-like object
         exposing ``predict_probability()``, ``threshold``, and
@@ -133,8 +133,6 @@ def resolve_hallucination(
     >>> from pathlib import Path
     >>> resolve_hallucination("none", None) is None
     True
-    >>> callable(resolve_hallucination("default", None))
-    True
     >>> checker = resolve_hallucination("heuristic", None)  # doctest: +SKIP
     >>> callable(checker)                                    # doctest: +SKIP
     True
@@ -145,10 +143,6 @@ def resolve_hallucination(
     """
     if mode == "none":
         return None
-    if mode == "default":
-        from deepretro.models.hallucination_checker import make_hallucination_checker
-
-        return make_hallucination_checker()
     if mode == "heuristic":
         from deepretro.algorithms.pipeline_checks import hallucination_checker
 
@@ -168,8 +162,7 @@ def resolve_hallucination(
             )
         return MLChecker(clf)
     raise ValueError(
-        f"hallucination_mode must be 'default', 'heuristic', 'ml', or 'none' "
-        f"— got {mode!r}"
+        f"hallucination_mode must be 'heuristic', 'ml', or 'none' — got {mode!r}"
     )
 
 

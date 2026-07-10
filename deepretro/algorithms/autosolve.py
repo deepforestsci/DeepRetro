@@ -49,10 +49,9 @@ class AutoSolver:
         AiZynthFinder model variant.
     stability_check : bool, optional
         Whether LLM candidates should pass the heuristic stability filter.
-    hallucination_mode : {"default", "heuristic", "ml", "none"}, optional
-        Hallucination filter strategy. ``default``, ``heuristic``, and ``ml`` all
-        resolve to a checker that runs inside :meth:`run_llm`; ``none`` disables
-        filtering.
+    hallucination_mode : {"heuristic", "ml", "none"}, optional
+        Hallucination filter strategy. ``heuristic`` and ``ml`` both resolve to
+        a checker that runs inside :meth:`run_llm`; ``none`` disables filtering.
     hallucination_classifier : object or str or Path or None, optional
         For ``hallucination_mode="ml"``, either a loaded classifier exposing
         ``predict_probability``/``threshold``/``featurizer`` or a path to a
