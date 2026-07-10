@@ -107,7 +107,9 @@ def resolve_hallucination(
     Parameters
     ----------
     mode : str
-        One of ``"heuristic"``, ``"ml"``, or ``"none"``.
+        One of ``"heuristic"``, ``"ml"``, ``"none"``, or ``"default"``.
+        ``"default"`` returns the placeholder checker from
+        :func:`deepretro.models.hallucination_checker.make_hallucination_checker`.
     classifier : str or Path or Any or None
         Path to a saved ML model directory, or a classifier-like object
         exposing ``predict_probability()``, ``threshold``, and
@@ -161,8 +163,13 @@ def resolve_hallucination(
                 f"or path to saved model — got {type(classifier)}"
             )
         return MLChecker(clf)
+    if mode == "default":
+        from deepretro.models.hallucination_checker import make_hallucination_checker
+
+        return make_hallucination_checker()
     raise ValueError(
-        f"hallucination_mode must be 'heuristic', 'ml', or 'none' — got {mode!r}"
+        f"hallucination_mode must be 'heuristic', 'ml', 'none', or 'default' "
+        f"— got {mode!r}"
     )
 
 
