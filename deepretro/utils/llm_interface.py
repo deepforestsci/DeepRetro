@@ -22,6 +22,7 @@ from deepretro.utils.llm_helpers import (
     resolve_model_selection,
 )
 from deepretro.utils.utils_molecule import detect_seven_member_rings
+from deepretro.utils.rdkit_desc_prompt import build_rdkit_user_prompt
 from deepretro.utils.variables import (
     ADDON_PROMPT_7_MEMBER,
     SYS_PROMPT,
@@ -195,7 +196,7 @@ class LLMInterface(ABC):
 
         sys_prompt, user_prompt, _ = self.obtain_prompt()
         addon = build_addon_prompt(request.molecule)
-        user_content = user_prompt.replace("{target_smiles}", request.molecule)
+        user_content = user_prompt.replace("{target_smiles}", build_rdkit_user_prompt(request.molecule))
         if addon:
             user_content = f"{user_content}\n\n{addon}"
 

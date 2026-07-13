@@ -176,10 +176,20 @@ def validity_check(
         res_molecules,
         res_explanations,
         res_confidence,
-    ):
-        candidate_pathway = (
-            [smiles_group] if isinstance(smiles_group, str) else list(smiles_group)
-        )
+        ):
+        if isinstance(smiles_group, str):
+            candidate_pathway = [
+                fragment.strip()
+                for fragment in smiles_group.split(".")
+                if fragment.strip()
+            ]
+        else:
+            candidate_pathway = [
+                fragment.strip()
+                for smiles in smiles_group
+                for fragment in smiles.split(".")
+                if fragment.strip()
+            ]
         valid_candidates: list[str] = []
 
         for smiles in candidate_pathway:

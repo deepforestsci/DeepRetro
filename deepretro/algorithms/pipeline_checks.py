@@ -5,7 +5,7 @@ from __future__ import annotations
 from deepretro.algorithms.hallucination_checker import calculate_hallucination_score
 from deepretro.utils.utils_molecule import is_valid_smiles
 
-ALLOWED_HALLUCINATION_SEVERITIES = {"low", "medium"}
+ALLOWED_HALLUCINATION_SEVERITIES = {"low", "low-medium"}
 
 
 def hallucination_checker(product: str, res_smiles: list) -> tuple[int, list]:
