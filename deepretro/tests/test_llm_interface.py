@@ -7,9 +7,11 @@ from typing import Any
 
 from deepretro.utils.llm_helpers import (
     ChatMessage,
+    apply_prompt_caching,
     build_completion_params,
     extract_json_payload,
     infer_provider,
+    resolve_model_selection,
     split_prompt_mode,
 )
 from deepretro.utils.llm_interface import (
@@ -132,6 +134,112 @@ def test_completion_params_follow_provider_contracts() -> None:
         "reasoning_effort": "medium",
     }
 
+
+
+def test_prompt_caching_marks_system_and_final_user_for_anthropic(
+    monkeypatch: Any,
+) -> None:
+    monkeypatch.delenv("DEEPRETRO_PROMPT_CACHING", raising=False)
+    selection = resolve_model_selection("claude-opus-4-6")
+    messages: list[ChatMessage] = [
+        {"role": "system", "content": "system prompt"},
+        {"role": "user", "content": "target molecule"},
+    ]
+
+    cached = apply_prompt_caching(messages, selection)
+
+    assert cached[0]["content"] == [
+        {
+            "type": "text",
+            "text": "system prompt",
+            "cache_control": {"type": "ephemeral"},
+        }
+    ]
+    assert cached[1]["content"] == [
+        {
+            "type": "text",
+            "text": "target molecule",
+            "cache_control": {"type": "ephemeral"},
+        }
+    ]
+    # The original messages are not mutated.
+    assert messages[0]["content"] == "system prompt"
+    assert messages[1]["content"] == "target molecule"
+
+
+def test_prompt_caching_marks_only_system_for_multi_turn_tool_conversation(
+    monkeypatch: Any,
+) -> None:
+    monkeypatch.delenv("DEEPRETRO_PROMPT_CACHING", raising=False)
+    selection = resolve_model_selection("claude-opus-4-6")
+    messages: list[Any] = [
+        {"role": "system", "content": "system prompt"},
+        {"role": "user", "content": "target molecule"},
+        {"role": "assistant", "content": "", "tool_calls": [{"id": "1"}]},
+        {"role": "tool", "tool_call_id": "1", "content": "tool result"},
+    ]
+
+    cached = apply_prompt_caching(messages, selection)
+
+    assert cached[0]["content"][0]["cache_control"] == {"type": "ephemeral"}
+    # The trailing tool message keeps its plain-string content (no breakpoint).
+    assert cached[3]["content"] == "tool result"
+    assert isinstance(cached[1]["content"], str)
+
+
+def test_prompt_caching_is_noop_for_non_anthropic_providers() -> None:
+    messages: list[ChatMessage] = [
+        {"role": "system", "content": "system prompt"},
+        {"role": "user", "content": "target molecule"},
+    ]
+    for model in ("openai/gpt-4o-mini", "deepseek-ai/DeepSeek-R1"):
+        selection = resolve_model_selection(model)
+        assert apply_prompt_caching(messages, selection) is messages
+
+
+def test_prompt_caching_is_noop_without_system_message() -> None:
+    selection = resolve_model_selection("claude-opus-4-6")
+    messages: list[ChatMessage] = [{"role": "user", "content": "target molecule"}]
+    assert apply_prompt_caching(messages, selection) is messages
+
+
+def test_prompt_caching_can_be_disabled_by_env(monkeypatch: Any) -> None:
+    monkeypatch.setenv("DEEPRETRO_PROMPT_CACHING", "off")
+    selection = resolve_model_selection("claude-opus-4-6")
+    messages: list[ChatMessage] = [
+        {"role": "system", "content": "system prompt"},
+        {"role": "user", "content": "target molecule"},
+    ]
+    assert apply_prompt_caching(messages, selection) is messages
+
+
+def test_build_completion_params_adds_cache_control_for_anthropic(
+    monkeypatch: Any,
+) -> None:
+    monkeypatch.delenv("DEEPRETRO_PROMPT_CACHING", raising=False)
+    messages: list[ChatMessage] = [
+        {"role": "system", "content": "system prompt"},
+        {"role": "user", "content": "target molecule"},
+    ]
+
+    anthropic_params = build_completion_params(
+        model="claude-opus-4-6",
+        messages=messages,
+        max_completion_tokens=64,
+        temperature=0.0,
+        enable_thinking=False,
+    )
+    system_block = anthropic_params["messages"][0]["content"][0]
+    assert system_block["cache_control"] == {"type": "ephemeral"}
+
+    openai_params = build_completion_params(
+        model="openai/gpt-4o-mini",
+        messages=messages,
+        max_completion_tokens=64,
+        temperature=0.0,
+    )
+    # OpenAI requests are untouched (string content, no cache_control).
+    assert openai_params["messages"] == messages
 
 
 def test_interface_build_messages_preserves_custom_messages_and_fills_prompt() -> None:
