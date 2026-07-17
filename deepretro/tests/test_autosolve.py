@@ -9,7 +9,9 @@ import pytest
 
 from deepretro.algorithms.autosolve import (
     AutoSolver,
+    _mark_az_generated,
     reaction_tree,
+    summarize_az,
     unsolved_leaf,
 )
 from deepretro.utils.utils_molecule import canonicalize
@@ -594,6 +596,118 @@ class TestParse:
 
         assert len(result["steps"]) >= 2
         assert any(len(v) > 0 for v in result["dependencies"].values())
+
+
+def _llm_aspirin_hydrolysis_only(
+    molecule: str, **kwargs: Any
+) -> tuple[list[list[str]], list[str], list[float]]:
+    """Propose aspirin hydrolysis only for aspirin; nothing for other molecules."""
+    if canonicalize(molecule) == canonicalize(ASPIRIN):
+        return [[SALICYLIC_ACID, ACETIC_ACID]], ["hydrolysis"], [0.9]
+    return [], [], []
+
+
+class TestAzSummary:
+    def test_marks_whole_subtree(self) -> None:
+        node = reaction_tree("T", [unsolved_leaf("A"), unsolved_leaf("B")], [0.5])
+        _mark_az_generated(node)
+        assert node["az_generated"] is True
+        assert node["children"][0]["az_generated"] is True
+        assert node["children"][0]["children"][0]["az_generated"] is True
+
+    def test_summary_all_az_generated(self) -> None:
+        leaf = {
+            "type": "mol",
+            "smiles": "CCO",
+            "in_stock": True,
+            "az_generated": True,
+            "children": [],
+        }
+        summary = summarize_az(leaf)
+        assert summary["az_solved"] is True
+        assert summary["az_solved_all"] is True
+        assert summary["leaves_total"] == 1
+        assert summary["leaves_az_generated"] == 1
+
+    def test_summary_mixed_is_not_all(self) -> None:
+        az_leaf = {
+            "type": "mol",
+            "smiles": "A",
+            "in_stock": True,
+            "az_generated": True,
+            "children": [],
+        }
+        llm_leaf = unsolved_leaf("B")  # not AZ-generated, not in stock
+        tree = reaction_tree("T", [az_leaf, llm_leaf], [0.7])
+        summary = summarize_az(tree)
+        assert summary["az_solved"] is True
+        assert summary["az_solved_all"] is False
+        assert summary["leaves_total"] == 2
+        assert summary["leaves_az_generated"] == 1
+        assert summary["leaves_unsolved"] == 1
+
+    def test_summary_no_az(self) -> None:
+        tree = reaction_tree("T", [unsolved_leaf("A")], [0.4])
+        summary = summarize_az(tree)
+        assert summary["az_solved"] is False
+        assert summary["az_solved_all"] is False
+
+    def test_parse_adds_az_fields(self) -> None:
+        solver = AutoSolver(hallucination_mode="none")
+        result = solver.parse(
+            reaction_tree(ASPIRIN, [unsolved_leaf(SALICYLIC_ACID)], [0.5]),
+            solved=False,
+        )
+        assert result["az_solved"] is False
+        assert "az_summary" in result
+        assert result["az_summary"]["leaves_az_generated"] == 0
+
+    def test_solve_marks_az_solved_target(self) -> None:
+        solver = AutoSolver(az_runner=az_solves_all, hallucination_mode="none")
+        route, solved = solver.solve(ASPIRIN)
+        assert route.get("az_generated") is True
+        result = solver.parse(route, solved=solved)
+        assert result["az_solved"] is True
+        assert result["az_summary"]["az_solved_all"] is True
+
+    def test_solve_mixed_az_and_llm_not_all(self) -> None:
+        solver = AutoSolver(
+            az_runner=SelectiveAzRunner({SALICYLIC_ACID}),
+            llm_runner=_llm_aspirin_hydrolysis_only,
+            hallucination_mode="none",
+        )
+        route, solved = solver.solve(ASPIRIN)
+        result = solver.parse(route, solved=solved)
+        assert result["az_solved"] is True  # salicylic acid solved by AZ
+        assert result["az_summary"]["az_solved_all"] is False  # acetic acid unsolved
+        assert result["az_summary"]["leaves_az_generated"] >= 1
+        assert result["az_summary"]["leaves_unsolved"] >= 1
+
+
+class TestAgentEventCapture:
+    def test_run_agent_forwards_event_sink(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The default agent runner receives the solver's event sink."""
+        import deepretro.agents.loop as loopmod
+
+        def spy(molecule: str, **kwargs: Any):
+            sink = kwargs.get("event_sink")
+            assert sink is not None
+            sink.append(
+                {"molecule": molecule, "kind": "refusal", "content_excerpt": "no"}
+            )
+            return [], [], []
+
+        monkeypatch.setattr(loopmod, "agentic_single_step", spy)
+        solver = AutoSolver(
+            solve_mode="single_step_agent",
+            az_runner=az_always_fails,
+            hallucination_mode="none",
+        )
+        solver._agent_events = []
+        solver.run_llm(ASPIRIN)
+        assert any(e["kind"] == "refusal" for e in solver._agent_events)
 
 
 HAS_LITELLM = importlib.util.find_spec("litellm") is not None

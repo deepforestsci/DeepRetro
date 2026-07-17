@@ -48,6 +48,9 @@ def agentic_single_step(
     llm_runner: ModelCall | None = None,
     enable_thinking: bool = False,
     max_output_tokens: int | None = None,
+    event_sink: list[dict[str, Any]] | None = None,
+    az_tools: bool = False,
+    az_model: str = "Pistachio_100+",
 ) -> tuple[list[Pathway], list[str], list[float]]:
     """Propose precursors for one molecule via a tool-calling agent.
 
@@ -74,6 +77,12 @@ def agentic_single_step(
         block is preserved.
     max_output_tokens : int, optional
         Output-token override for the model call.
+    event_sink : list of dict or None, optional
+        If provided, agent turns that yield no usable pathway append an event
+        describing what happened: a ``refusal`` (the model declined), a
+        ``no_parseable_answer`` (a final message that did not parse), or a
+        ``no_final_answer`` (``max_iterations`` reached without a final
+        message). Lets callers surface model refusals in their output.
 
     Returns
     -------
@@ -91,7 +100,13 @@ def agentic_single_step(
     >>> agentic_single_step("CC=O", "openai/gpt-4o-mini", llm_runner=lambda m: final)
     ([['CCO']], ['reduce'], [0.8])
     """
-    registry = build_tool_registry(hallucination_checker, sandbox, tool_backend)
+    registry = build_tool_registry(
+        hallucination_checker,
+        sandbox,
+        tool_backend,
+        az_tools=az_tools,
+        az_model=az_model,
+    )
     messages = _build_initial_messages(molecule, model)
     call_model = llm_runner or _make_default_model_call(
         model, registry.schemas, enable_thinking, max_output_tokens
@@ -103,7 +118,11 @@ def agentic_single_step(
 
         tool_calls = assistant.get("tool_calls")
         if not tool_calls:
-            return _parse_final_answer(assistant.get("content") or "", model)
+            content = assistant.get("content") or ""
+            result = _parse_final_answer(content, model)
+            if event_sink is not None and not result[0]:
+                event_sink.append(_classify_agent_event(molecule, content))
+            return result
 
         for tool_call in tool_calls:
             function = tool_call.get("function", {})
@@ -123,6 +142,14 @@ def agentic_single_step(
         molecule=molecule,
         max_iterations=max_iterations,
     )
+    if event_sink is not None:
+        event_sink.append(
+            {
+                "molecule": molecule,
+                "kind": "no_final_answer",
+                "detail": f"reached max_iterations={max_iterations}",
+            }
+        )
     return [], [], []
 
 
@@ -158,6 +185,47 @@ def _build_initial_messages(molecule: str, model: str) -> list[dict[str, Any]]:
     if messages and messages[0].get("role") == "system":
         messages[0]["content"] = f"{messages[0].get('content', '')}{_TOOL_INSTRUCTION}"
     return messages
+
+
+_REFUSAL_MARKERS = (
+    "i can't",
+    "i cannot",
+    "i can not",
+    "i'm unable",
+    "i am unable",
+    "i won't",
+    "i will not",
+    "cannot assist",
+    "can't help",
+    "cannot help",
+    "not able to",
+    "i must decline",
+    "i refuse",
+    "against my",
+    "unable to provide",
+    "cannot provide",
+    "can't provide",
+    "not comfortable",
+)
+
+
+def _classify_agent_event(molecule: str, content: str) -> dict[str, Any]:
+    """Classify an empty agent final message as a refusal vs unparseable answer.
+
+    Examples
+    --------
+    >>> _classify_agent_event("CCO", "I can't help with that.")["kind"]
+    'refusal'
+    >>> _classify_agent_event("CCO", "here is my answer")["kind"]
+    'no_parseable_answer'
+    """
+    lowered = content.lower()
+    kind = (
+        "refusal"
+        if any(m in lowered for m in _REFUSAL_MARKERS)
+        else "no_parseable_answer"
+    )
+    return {"molecule": molecule, "kind": kind, "content_excerpt": content[:2000]}
 
 
 def _parse_arguments(arguments: Any) -> dict[str, Any]:

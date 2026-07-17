@@ -67,6 +67,46 @@ def _resolve_config(az_model: str | None = None) -> str:
         )
 
 
+# Cache of loaded AiZynthFinder instances, keyed by resolved config path.
+# Building a finder loads the expansion/filter policies and the (large) ZINC
+# stock, so we keep one per config and reuse it across calls within a process
+# instead of reloading on every AZ call. AiZynthFinder is designed for reuse:
+# the CLI runs many targets through a single instance.
+_FINDER_CACHE: Dict[str, Any] = {}
+
+
+def _get_finder(config_filename: str) -> Any:
+    """Return a cached :class:`AiZynthFinder`, building and configuring once.
+
+    Parameters
+    ----------
+    config_filename : str
+        Path to the AiZynthFinder config file (from :func:`_resolve_config`).
+
+    Returns
+    -------
+    AiZynthFinder
+        A finder with the zinc stock and uspto expansion/filter policies
+        selected. The same instance is returned on subsequent calls with the
+        same config, avoiding repeated model/stock loading.
+    """
+    finder = _FINDER_CACHE.get(config_filename)
+    if finder is not None:
+        return finder
+
+    if AiZynthFinder is None:
+        raise ImportError(
+            "AiZynthFinder support requires optional dependencies. "
+            "Install the package with `deepretro[az]`."
+        )
+    finder = AiZynthFinder(configfile=config_filename)
+    finder.stock.select("zinc")
+    finder.expansion_policy.select("uspto")
+    finder.filter_policy.select("uspto")
+    _FINDER_CACHE[config_filename] = finder
+    return finder
+
+
 def _run_az_core(
     smiles: str, az_model: str | None = None
 ) -> tuple[bool, Sequence[Dict[str, Any]], Any]:
@@ -95,16 +135,7 @@ def _run_az_core(
         return True, _basic_molecule_route(smiles), None
 
     config_filename = _resolve_config(az_model)
-
-    if AiZynthFinder is None:
-        raise ImportError(
-            "AiZynthFinder support requires optional dependencies. "
-            "Install the package with `deepretro[az]`."
-        )
-    finder = AiZynthFinder(configfile=config_filename)
-    finder.stock.select("zinc")
-    finder.expansion_policy.select("uspto")
-    finder.filter_policy.select("uspto")
+    finder = _get_finder(config_filename)
     finder.target_smiles = smiles
     finder.tree_search()
     finder.build_routes()
@@ -260,3 +291,54 @@ def is_basic_molecule(smiles: str) -> bool:
     # if total number of C atoms is less than 5, return True
 
     return False
+
+
+def az_single_step(
+    smiles: str, az_model: str = "Pistachio_100+", top_k: int = 5
+) -> list[Dict[str, Any]]:
+    """Return AiZynthFinder's top-``k`` single-step disconnections for a molecule.
+
+    Runs only the expansion policy for one step (no tree search, no stock), so
+    it is fast and always returns AZ's suggested precursor sets even for
+    molecules AZ cannot fully solve.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES string of the molecule to disconnect.
+    az_model : str, optional
+        Model variant for config resolution (see :func:`run_az`).
+    top_k : int, optional
+        Maximum number of disconnections to return, ranked by policy prior.
+
+    Returns
+    -------
+    list[dict[str, Any]]
+        Each entry is ``{"precursors": [smiles, ...], "probability": float}``,
+        highest-prior first.
+
+    Examples
+    --------
+    >>> az_single_step("CC(=O)Oc1ccccc1C(=O)O")  # doctest: +SKIP
+    [{'precursors': ['CC(=O)OC(C)=O', 'O=C(O)c1ccccc1O'], 'probability': 0.5}, ...]
+    """
+    from aizynthfinder.chem import TreeMolecule
+
+    config_filename = _resolve_config(az_model)
+    finder = _get_finder(config_filename)
+
+    molecule = TreeMolecule(parent=None, smiles=smiles)
+    actions, priors = finder.expansion_policy.get_actions([molecule])
+    ranked = sorted(zip(actions, priors), key=lambda pair: pair[1], reverse=True)
+
+    suggestions: list[Dict[str, Any]] = []
+    for action, prior in ranked[:top_k]:
+        try:
+            reactant_sets = action.reactants
+        except Exception:  # a template can fail to apply; skip it
+            continue
+        if not reactant_sets:
+            continue
+        precursors = [mol.smiles for mol in reactant_sets[0]]
+        suggestions.append({"precursors": precursors, "probability": float(prior)})
+    return suggestions

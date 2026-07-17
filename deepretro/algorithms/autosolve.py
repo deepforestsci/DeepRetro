@@ -64,6 +64,10 @@ class AutoSolver:
         Which tools the agent may call. Ignored when ``solve_mode="pipeline"``.
     sandbox : Sandbox or None, optional
         Sandbox used by the agent's ``run_python`` tool. Injectable for testing.
+    agent_az_tools : bool, optional
+        When ``True`` (and ``solve_mode="single_step_agent"``), expose the
+        ``az_suggest`` / ``az_route`` AiZynthFinder tools to the agent so it can
+        consult AZ for template-grounded disconnections. Ignored otherwise.
     max_depth : int, optional
         Maximum retrosynthesis recursion depth. This is a safety guard against
         runaway recursion; reaching it is logged as a warning.
@@ -118,6 +122,7 @@ class AutoSolver:
         solve_mode: str = "pipeline",
         tool_backend: str = "structured",
         sandbox: Any | None = None,
+        agent_az_tools: bool = False,
         max_depth: int = 50,
         stop_depth: int | None = None,
         enable_thinking: bool = True,
@@ -157,6 +162,7 @@ class AutoSolver:
         self.solve_mode = solve_mode
         self.tool_backend = tool_backend
         self.sandbox = sandbox
+        self.agent_az_tools = agent_az_tools
         self.max_depth = max_depth
         self.stop_depth = stop_depth
         self.enable_thinking = enable_thinking
@@ -165,6 +171,8 @@ class AutoSolver:
         self._az_runner = az_runner if az_runner is not None else run_az
         self._llm_runner = llm_runner
         self._agent_runner = agent_runner
+        # Accumulates agent refusal / no-answer events across a solve run.
+        self._agent_events: list[dict[str, Any]] = []
 
     # ------------------------------------------------------------------
     # Core pipeline methods
@@ -235,7 +243,9 @@ class AutoSolver:
             return unsolved_leaf(smiles), False
         if az_solved and az_routes:
             logger.info("AiZynthFinder solved molecule", molecule=smiles)
-            return dict(az_routes[0]), True
+            route = dict(az_routes[0])
+            _mark_az_generated(route)
+            return route, True
 
         pathways, _explanations, confidence = self.run_llm(smiles)
         if not pathways:
@@ -428,6 +438,9 @@ class AutoSolver:
         """
         output = format_output(route_tree)
         output["solved"] = solved
+        summary = summarize_az(route_tree)
+        output["az_solved"] = summary["az_solved"]
+        output["az_summary"] = summary
         return output
 
     def add_metadata(
@@ -537,9 +550,15 @@ class AutoSolver:
         )
         log.info("AutoSolver starting", molecule=smiles)
 
+        self._agent_events = []
         route_tree, solved = self.solve(smiles)
         output = self.parse(route_tree, solved=solved)
         output = self.add_metadata(output)
+        if self._agent_events:
+            output["agent_events"] = list(self._agent_events)
+            output["agent_refusal"] = any(
+                event.get("kind") == "refusal" for event in self._agent_events
+            )
 
         log.info("AutoSolver completed", molecule=smiles, solved=solved)
         return output
@@ -641,12 +660,7 @@ class AutoSolver:
     def _run_agent(self, molecule: str) -> tuple[list[Pathway], list[str], list[float]]:
         """Get raw pathways from the tool-calling agent."""
         runner = self._agent_runner
-        if runner is None:
-            from deepretro.agents.loop import agentic_single_step
-
-            runner = agentic_single_step
-        return runner(
-            molecule,
+        kwargs: dict[str, Any] = dict(
             model=self.llm,
             tool_backend=self.tool_backend,
             sandbox=self.sandbox,
@@ -654,6 +668,15 @@ class AutoSolver:
             enable_thinking=self.enable_thinking,
             max_output_tokens=self.max_output_tokens,
         )
+        if runner is None:
+            from deepretro.agents.loop import agentic_single_step
+
+            runner = agentic_single_step
+            # Only the built-in runner accepts these; a custom runner may not.
+            kwargs["event_sink"] = self._agent_events
+            kwargs["az_tools"] = self.agent_az_tools
+            kwargs["az_model"] = self.az_model
+        return runner(molecule, **kwargs)
 
     def _apply_safety_filters(
         self,
@@ -741,6 +764,75 @@ def unsolved_leaf(smiles: str) -> dict[str, Any]:
         "is_chemical": True,
         "in_stock": False,
         "children": [],
+    }
+
+
+def _mark_az_generated(node: dict[str, Any]) -> None:
+    """Recursively mark every node of an AiZynthFinder-produced subtree.
+
+    Sets ``az_generated=True`` on each node so that, in a mixed route tree
+    (LLM proposals with AZ-solved sub-branches), the nodes AZ generated can be
+    told apart from the LLM-proposed ones.
+
+    Examples
+    --------
+    >>> node = {"type": "mol", "smiles": "CCO", "children": []}
+    >>> _mark_az_generated(node)
+    >>> node["az_generated"]
+    True
+    """
+    if not isinstance(node, dict):
+        return
+    node["az_generated"] = True
+    for child in node.get("children") or []:
+        _mark_az_generated(child)
+
+
+def _collect_leaf_nodes(node: dict[str, Any], acc: list[dict[str, Any]]) -> None:
+    """Collect every leaf ``mol`` node (a ``mol`` node with no children)."""
+    children = node.get("children") or []
+    if node.get("type") == "mol" and not children:
+        acc.append(node)
+        return
+    for child in children:
+        _collect_leaf_nodes(child, acc)
+
+
+def summarize_az(route_tree: dict[str, Any]) -> dict[str, Any]:
+    """Summarise AiZynthFinder's contribution to a route tree.
+
+    Parameters
+    ----------
+    route_tree : dict[str, Any]
+        Raw route tree from :meth:`AutoSolver.solve`, with AZ-generated
+        subtrees marked by :func:`_mark_az_generated`.
+
+    Returns
+    -------
+    dict[str, Any]
+        ``az_solved`` (AZ generated at least one leaf), ``az_solved_all``
+        (AZ generated *every* leaf, i.e. it closed all terminal branches),
+        and leaf counts (total, AZ-generated, in-stock, unsolved).
+
+    Examples
+    --------
+    >>> leaf = {"type": "mol", "smiles": "CCO", "in_stock": True,
+    ...         "az_generated": True, "children": []}
+    >>> summarize_az(leaf)["az_solved_all"]
+    True
+    """
+    leaves: list[dict[str, Any]] = []
+    _collect_leaf_nodes(route_tree, leaves)
+    total = len(leaves)
+    az_generated = sum(1 for leaf in leaves if leaf.get("az_generated"))
+    in_stock = sum(1 for leaf in leaves if leaf.get("in_stock"))
+    return {
+        "az_solved": az_generated > 0,
+        "az_solved_all": total > 0 and az_generated == total,
+        "leaves_total": total,
+        "leaves_az_generated": az_generated,
+        "leaves_in_stock": in_stock,
+        "leaves_unsolved": total - in_stock,
     }
 
 

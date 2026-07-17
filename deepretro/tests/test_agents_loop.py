@@ -103,6 +103,49 @@ def test_unparseable_final_answer_returns_empty() -> None:
     assert agentic_single_step("CC=O", MODEL, llm_runner=model) == ([], [], [])
 
 
+def test_event_sink_records_refusal() -> None:
+    """A refusal final message is recorded as a 'refusal' event."""
+    model = ScriptedModel([final_turn(content="I can't help with that request.")])
+    sink: list[dict[str, Any]] = []
+    result = agentic_single_step("CC=O", MODEL, llm_runner=model, event_sink=sink)
+    assert result == ([], [], [])
+    assert len(sink) == 1
+    assert sink[0]["kind"] == "refusal"
+    assert sink[0]["molecule"] == "CC=O"
+
+
+def test_event_sink_records_no_parseable_answer() -> None:
+    """A non-refusal, unparseable final message is a 'no_parseable_answer' event."""
+    model = ScriptedModel([final_turn(content="Here is a route but no JSON payload.")])
+    sink: list[dict[str, Any]] = []
+    agentic_single_step("CC=O", MODEL, llm_runner=model, event_sink=sink)
+    assert len(sink) == 1
+    assert sink[0]["kind"] == "no_parseable_answer"
+
+
+def test_event_sink_records_no_final_answer_on_max_iterations() -> None:
+    """Exhausting max_iterations without a final answer records the event."""
+
+    def always_tool(messages: list[dict[str, Any]]) -> dict[str, Any]:
+        return tool_turn()
+
+    sink: list[dict[str, Any]] = []
+    agentic_single_step(
+        "CC=O", MODEL, llm_runner=always_tool, max_iterations=2, event_sink=sink
+    )
+    assert len(sink) == 1
+    assert sink[0]["kind"] == "no_final_answer"
+
+
+def test_event_sink_empty_on_success() -> None:
+    """A successful final answer records no event."""
+    model = ScriptedModel([final_turn()])
+    sink: list[dict[str, Any]] = []
+    result = agentic_single_step("CC=O", MODEL, llm_runner=model, event_sink=sink)
+    assert result[0]  # non-empty pathways
+    assert sink == []
+
+
 def test_orchestrator_raises_not_implemented() -> None:
     """The top-level orchestrator is a scaffold and raises when invoked."""
     with pytest.raises(NotImplementedError, match="orchestrator"):

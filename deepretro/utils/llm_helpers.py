@@ -183,11 +183,23 @@ def looks_like_anthropic_reasoning_model(model: str) -> bool:
     --------
     >>> looks_like_anthropic_reasoning_model("anthropic/claude-sonnet-4-6")
     True
+    >>> looks_like_anthropic_reasoning_model("claude-fable-5")
+    True
     >>> looks_like_anthropic_reasoning_model("claude-3-5-haiku-20241022")
     False
     """
     base_name = strip_provider_prefix(model).lower()
-    return base_name.startswith(("claude-opus-4-", "claude-sonnet-4-"))
+    # Claude 4.x reasoning families and the Claude 5 family (fable/sonnet-5).
+    # These require ``temperature=1`` and accept ``reasoning_effort``.
+    return base_name.startswith(
+        (
+            "claude-opus-4-",
+            "claude-sonnet-4-",
+            "claude-fable-",
+            "claude-sonnet-5",
+            "claude-opus-5",
+        )
+    )
 
 
 def infer_provider(model: str) -> ProviderName:

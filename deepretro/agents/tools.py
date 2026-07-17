@@ -146,6 +146,33 @@ def _make_run_python(sandbox: Any) -> ToolExecutor:
     return _run
 
 
+def _make_az_suggest(az_model: str) -> ToolExecutor:
+    """Bind an ``az_suggest`` executor: AZ's top-k single-step disconnections."""
+
+    def _suggest(smiles: str, top_k: int = 5) -> dict[str, Any]:
+        from deepretro.utils.az import az_single_step
+
+        suggestions = az_single_step(smiles, az_model=az_model, top_k=int(top_k))
+        return {"suggestions": suggestions}
+
+    return _suggest
+
+
+def _make_az_route(az_model: str) -> ToolExecutor:
+    """Bind an ``az_route`` executor: a full AiZynthFinder solve attempt."""
+
+    def _route(smiles: str) -> dict[str, Any]:
+        from deepretro.utils.az import run_az
+
+        solved, routes = run_az(smiles, az_model)
+        return {
+            "solved": bool(solved),
+            "route": routes[0] if routes else None,
+        }
+
+    return _route
+
+
 _VALIDATE_SMILES_SCHEMA = {
     "type": "function",
     "function": {
@@ -229,10 +256,58 @@ _RUN_PYTHON_SCHEMA = {
 }
 
 
+_AZ_SUGGEST_SCHEMA = {
+    "type": "function",
+    "function": {
+        "name": "az_suggest",
+        "description": (
+            "Ask AiZynthFinder's template policy for its top single-step "
+            "disconnections of a molecule (one retro step, no full search). "
+            "Use it for template-grounded ideas on which bonds to break, even "
+            "for molecules AZ cannot fully solve. Returns candidate precursor "
+            "sets with policy probabilities."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "smiles": {"type": "string", "description": "SMILES to disconnect"},
+                "top_k": {
+                    "type": "integer",
+                    "description": "How many suggestions to return (default 5)",
+                },
+            },
+            "required": ["smiles"],
+        },
+    },
+}
+
+_AZ_ROUTE_SCHEMA = {
+    "type": "function",
+    "function": {
+        "name": "az_route",
+        "description": (
+            "Run a full AiZynthFinder tree search on a molecule and report "
+            "whether it is solvable to purchasable building blocks, returning "
+            "the route when solved. Slower than az_suggest; use it to check "
+            "whether a proposed precursor is fully solvable."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "smiles": {"type": "string", "description": "SMILES to solve"},
+            },
+            "required": ["smiles"],
+        },
+    },
+}
+
+
 def build_tool_registry(
     hallucination_checker: HallucinationChecker | None = None,
     sandbox: Any | None = None,
     tool_backend: str = "structured",
+    az_tools: bool = False,
+    az_model: str = "Pistachio_100+",
 ) -> ToolRegistry:
     """Assemble the tool registry for a given backend.
 
@@ -247,6 +322,12 @@ def build_tool_registry(
     tool_backend : {"structured", "sandbox"}, optional
         ``structured`` exposes the read-only check tools. ``sandbox`` adds the
         ``run_python`` code-execution tool.
+    az_tools : bool, optional
+        When ``True``, expose the ``az_suggest`` (single-step expansion) and
+        ``az_route`` (full solve) AiZynthFinder tools so the agent can consult
+        AZ for template-grounded disconnections.
+    az_model : str, optional
+        AiZynthFinder model variant the AZ tools use for config resolution.
 
     Returns
     -------
@@ -259,6 +340,9 @@ def build_tool_registry(
     True
     >>> "run_python" in build_tool_registry(tool_backend="structured").names
     False
+    >>> sorted(set(build_tool_registry(az_tools=True).names)
+    ...        & {"az_suggest", "az_route"})
+    ['az_route', 'az_suggest']
     """
     schemas: list[dict[str, Any]] = [_VALIDATE_SMILES_SCHEMA, _CHECK_STABILITY_SCHEMA]
     executors: dict[str, ToolExecutor] = {
@@ -279,5 +363,11 @@ def build_tool_registry(
             sandbox = SubprocessSandbox()
         schemas.append(_RUN_PYTHON_SCHEMA)
         executors["run_python"] = _make_run_python(sandbox)
+
+    if az_tools:
+        schemas.append(_AZ_SUGGEST_SCHEMA)
+        schemas.append(_AZ_ROUTE_SCHEMA)
+        executors["az_suggest"] = _make_az_suggest(az_model)
+        executors["az_route"] = _make_az_route(az_model)
 
     return ToolRegistry(schemas=schemas, executors=executors)
