@@ -4,12 +4,14 @@ on:
   pull_request:
     branches:
       - main
+      - dev
     paths:
       - ".github/workflows/deepretro_lint.yml"
       - "deepretro/**"
   push:
     branches:
       - main
+      - dev
     paths:
       - ".github/workflows/deepretro_lint.yml"
       - "deepretro/**"
