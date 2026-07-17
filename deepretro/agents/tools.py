@@ -18,7 +18,7 @@ import structlog
 
 from deepretro.algorithms.stability_checker import check_molecule_stability
 from deepretro.utils.typing import HallucinationChecker
-from deepretro.utils.utils_molecule import canonicalize, is_valid_smiles
+from deepretro.utils.utils_molecule import canonicalize, is_valid_smiles, validity_check
 
 logger = structlog.get_logger(__name__)
 
@@ -118,8 +118,16 @@ def _make_check_hallucination(checker: HallucinationChecker) -> ToolExecutor:
     """
 
     def _check(product: str, reactants: str | list[str]) -> dict[str, Any]:
-        pathway = reactants if isinstance(reactants, list) else [reactants]
-        status, kept = checker(product, [pathway])
+        raw_pathway = reactants if isinstance(reactants, list) else [reactants]
+        pathways, _, _ = validity_check(
+            product, [raw_pathway], ["agent tool check"], [1.0]
+        )
+        if not pathways:
+            return {
+                "is_hallucination": True,
+                "note": "pathway failed validity check",
+            }
+        status, kept = checker(product, pathways)  # use normalized pathway
         is_hallucination = status != 200 or not kept
         return {
             "is_hallucination": is_hallucination,

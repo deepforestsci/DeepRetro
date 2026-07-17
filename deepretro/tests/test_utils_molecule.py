@@ -230,6 +230,30 @@ class TestValidityCheck:
         assert explanations[0] == "test"
         assert confidence[0] == 0.7
 
+    def test_dot_separated_string_split_into_reactants(self) -> None:
+        molecule = BENZENE
+        res_molecules = [["CCO.CC=O"]]
+        res_explanations = ["dot-joined reactants"]
+        res_confidence = [0.8]
+        pathways, explanations, confidence = utils_molecule.validity_check(
+            molecule, res_molecules, res_explanations, res_confidence
+        )
+        assert pathways == [["CCO", "CC=O"]]
+        assert explanations == ["dot-joined reactants"]
+        assert confidence == [0.8]
+
+    def test_dot_separated_with_whitespace(self) -> None:
+        molecule = BENZENE
+        res_molecules = ["CCO . CC=O"]
+        res_explanations = ["spaced dot-joined reactants"]
+        res_confidence = [0.75]
+        pathways, explanations, confidence = utils_molecule.validity_check(
+            molecule, res_molecules, res_explanations, res_confidence
+        )
+        assert pathways == [["CCO", "CC=O"]]
+        assert explanations == ["spaced dot-joined reactants"]
+        assert confidence == [0.75]
+
 
 class TestDetectSevenMemberRings:
     """Tests for ``utils_molecule.detect_seven_member_rings``."""

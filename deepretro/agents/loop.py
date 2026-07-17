@@ -44,7 +44,7 @@ def agentic_single_step(
     tool_backend: str = "structured",
     sandbox: Any | None = None,
     hallucination_checker: Any | None = None,
-    max_iterations: int = 6,
+    max_iterations: int = 12,
     llm_runner: ModelCall | None = None,
     enable_thinking: bool = False,
     max_output_tokens: int | None = None,
@@ -129,6 +129,7 @@ def agentic_single_step(
             name = function.get("name", "")
             arguments = _parse_arguments(function.get("arguments"))
             result = registry.execute(name, arguments)
+            logger.info("Agent tool call", tool=name, arguments=arguments, result=result)
             messages.append(
                 {
                     "role": "tool",
