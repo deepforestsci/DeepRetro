@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import dataclass
 from typing import Any, Literal, TypedDict
@@ -13,6 +14,10 @@ ModelFamily = Literal["deepseek", "openai", "default"]
 ProviderName = Literal["anthropic", "openai", "deepseek"]
 ThinkingEffort = Literal["low", "medium", "high", "max"]
 OutputTokenParam = Literal["max_tokens", "max_completion_tokens"]
+
+CACHE_CONTROL_ENV_VAR = "DEEPRETRO_PROMPT_CACHING"
+_CACHE_CONTROL_DISABLED_VALUES = {"0", "false", "no", "off"}
+EPHEMERAL_CACHE_CONTROL: dict[str, str] = {"type": "ephemeral"}
 
 
 class ChatMessage(TypedDict):
@@ -360,6 +365,185 @@ def resolve_output_token_limit(
     return max_output_tokens
 
 
+def prompt_caching_enabled() -> bool:
+    """Return whether Anthropic prompt caching should be applied.
+
+    Caching is on by default and can be disabled by setting the
+    ``DEEPRETRO_PROMPT_CACHING`` environment variable to a falsy value
+    (``0``, ``false``, ``no``, or ``off``).
+
+    Returns
+    -------
+    bool
+        ``True`` when prompt caching is enabled.
+
+    Examples
+    --------
+    >>> import os
+    >>> _ = os.environ.pop("DEEPRETRO_PROMPT_CACHING", None)
+    >>> prompt_caching_enabled()
+    True
+    >>> os.environ["DEEPRETRO_PROMPT_CACHING"] = "off"
+    >>> prompt_caching_enabled()
+    False
+    >>> _ = os.environ.pop("DEEPRETRO_PROMPT_CACHING", None)
+    """
+    raw = os.getenv(CACHE_CONTROL_ENV_VAR)
+    if raw is None:
+        return True
+    return raw.strip().lower() not in _CACHE_CONTROL_DISABLED_VALUES
+
+
+def _cache_breakpoint_indices(messages: list[ChatMessage]) -> list[int]:
+    """Return the message indices that should carry a cache breakpoint.
+
+    A breakpoint is placed on the last ``system`` message (the stable
+    system-prompt and tool-schema prefix shared across every call). When the
+    final message is a ``user`` turn, a second breakpoint caches the
+    ``system + user`` prefix as well, which is reused across the pipeline's
+    temperature-retry attempts and the agent loop's first turn. When there is
+    no ``system`` message, no breakpoint is placed because there is no stable
+    prefix worth caching.
+
+    Parameters
+    ----------
+    messages : list[ChatMessage]
+        Conversation to inspect.
+
+    Returns
+    -------
+    list[int]
+        Sorted, de-duplicated indices to mark. At most two entries.
+
+    Examples
+    --------
+    >>> _cache_breakpoint_indices(
+    ...     [{"role": "system", "content": "s"}, {"role": "user", "content": "u"}]
+    ... )
+    [0, 1]
+    >>> _cache_breakpoint_indices(
+    ...     [
+    ...         {"role": "system", "content": "s"},
+    ...         {"role": "user", "content": "u"},
+    ...         {"role": "tool", "content": "t"},
+    ...     ]
+    ... )
+    [0]
+    >>> _cache_breakpoint_indices([{"role": "user", "content": "u"}])
+    []
+    """
+    last_system_index: int | None = None
+    for index, message in enumerate(messages):
+        if message.get("role") == "system":
+            last_system_index = index
+    if last_system_index is None:
+        return []
+    indices = {last_system_index}
+    if messages and messages[-1].get("role") == "user":
+        indices.add(len(messages) - 1)
+    return sorted(indices)
+
+
+def _mark_cache_control(message: dict[str, Any]) -> dict[str, Any]:
+    """Attach an ephemeral ``cache_control`` marker to a message's content.
+
+    A plain-string content is converted to a single text block carrying the
+    marker; an existing content-block list gets the marker on its last block.
+    Empty content is left untouched (an empty text block is rejected by the
+    Anthropic API).
+
+    Parameters
+    ----------
+    message : dict[str, Any]
+        A message dict (mutated in place and returned).
+
+    Returns
+    -------
+    dict[str, Any]
+        The same dict, with ``cache_control`` attached when possible.
+
+    Examples
+    --------
+    >>> _mark_cache_control({"role": "system", "content": "sys"})
+    {'role': 'system', 'content': [{'type': 'text', 'text': 'sys', 'cache_control': {'type': 'ephemeral'}}]}
+    >>> _mark_cache_control({"role": "user", "content": ""})
+    {'role': 'user', 'content': ''}
+    """
+    content = message.get("content")
+    if isinstance(content, str):
+        if not content:
+            return message
+        message["content"] = [
+            {
+                "type": "text",
+                "text": content,
+                "cache_control": dict(EPHEMERAL_CACHE_CONTROL),
+            }
+        ]
+    elif isinstance(content, list) and content:
+        last_block = dict(content[-1])
+        last_block["cache_control"] = dict(EPHEMERAL_CACHE_CONTROL)
+        message["content"] = [*content[:-1], last_block]
+    return message
+
+
+def apply_prompt_caching(
+    messages: list[ChatMessage],
+    selection: ModelSelection,
+) -> list[ChatMessage]:
+    """Add Anthropic prompt-caching breakpoints to a message list.
+
+    LiteLLM forwards ``cache_control`` markers to Anthropic to cache stable
+    prompt prefixes, cutting cost (~0.1x) and latency on repeated calls. This
+    codebase re-sends the same large system prompt across every
+    temperature-retry attempt, every molecule in a tree search, and every turn
+    of the agent loop, so caching the system-prompt prefix is a direct saving.
+
+    Caching is only applied for the Anthropic provider (OpenAI caches
+    automatically; other providers do not accept the marker) and only when
+    :func:`prompt_caching_enabled` returns ``True``. When neither breakpoint
+    applies the original list is returned unchanged.
+
+    Parameters
+    ----------
+    messages : list[ChatMessage]
+        Conversation to send to LiteLLM.
+    selection : ModelSelection
+        Resolved model configuration; ``selection.provider`` gates the change.
+
+    Returns
+    -------
+    list[ChatMessage]
+        A caching-annotated copy for Anthropic requests, otherwise the input
+        list unchanged.
+
+    Examples
+    --------
+    >>> selection = resolve_model_selection("claude-opus-4-6")
+    >>> messages = [
+    ...     {"role": "system", "content": "sys"},
+    ...     {"role": "user", "content": "hi"},
+    ... ]
+    >>> cached = apply_prompt_caching(messages, selection)
+    >>> cached[0]["content"][0]["cache_control"]
+    {'type': 'ephemeral'}
+    >>> messages[0]["content"]
+    'sys'
+    >>> openai_selection = resolve_model_selection("openai/gpt-4o-mini")
+    >>> apply_prompt_caching(messages, openai_selection) is messages
+    True
+    """
+    if selection.provider != "anthropic" or not prompt_caching_enabled():
+        return messages
+    indices = _cache_breakpoint_indices(messages)
+    if not indices:
+        return messages
+    cached: list[Any] = [dict(message) for message in messages]
+    for index in indices:
+        cached[index] = _mark_cache_control(cached[index])
+    return cached
+
+
 def build_completion_params(
     model: str,
     messages: list[ChatMessage],
@@ -393,7 +577,10 @@ def build_completion_params(
     Returns
     -------
     dict[str, Any]
-        Keyword arguments for ``litellm.completion``.
+        Keyword arguments for ``litellm.completion``. For Anthropic models the
+        ``messages`` carry ``cache_control`` breakpoints (see
+        :func:`apply_prompt_caching`) so the stable system-prompt prefix is
+        served from cache on repeated calls.
 
     Examples
     --------
@@ -413,7 +600,7 @@ def build_completion_params(
     )
     params: dict[str, Any] = {
         "model": selection.completion_model,
-        "messages": messages,
+        "messages": apply_prompt_caching(messages, selection),
         selection.output_token_param: output_token_limit,
         "temperature": (
             1 if selection.requires_temperature_one and enable_thinking else temperature
