@@ -312,7 +312,7 @@ def _install_scscore_shims() -> None:
         warnings.simplefilter("ignore", FutureWarning)
         has_numpy_bool = hasattr(numpy, "bool")
     if not has_numpy_bool:
-        numpy.bool = numpy.bool_  # type: ignore[attr-defined]
+        setattr(numpy, "bool", numpy.bool_)
 
 
 def _load_scscorer_class(module_path: str | None) -> Any:
