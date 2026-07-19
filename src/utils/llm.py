@@ -177,6 +177,7 @@ def call_LLM(molecule: str,
         "seed": 42,
         "top_p": 0.9,
         "metadata": get_langfuse_metadata("retrosynthesis"),
+        "drop_params": True,
     }
 
     if LLM in DEEPSEEK_MODELS:
@@ -187,10 +188,18 @@ def call_LLM(molecule: str,
         params["temperature"] = 1
         params.pop("top_p", None)
         params.pop("max_completion_tokens", None)
-        params['thinking'] = {
-            "type": "enabled",
-            "budget_tokens": EXTENDED_THINKING_BUDGET_TOKENS
-        }
+        try:
+            is_adaptive_thinking_model = bool(
+                litellm.get_model_info(LLM).get("supports_adaptive_thinking"))
+        except Exception:
+            is_adaptive_thinking_model = False
+        if is_adaptive_thinking_model:
+            params['thinking'] = {"type": "adaptive"}
+        else:
+            params['thinking'] = {
+                "type": "enabled",
+                "budget_tokens": EXTENDED_THINKING_BUDGET_TOKENS
+            }
 
     if messages is None:
         messages = [{
