@@ -47,26 +47,19 @@ _MIN_ADDRESS_SPACE_MB = 1024
 class SandboxResult:
     """Outcome of one sandboxed execution.
 
-    Attributes
-    ----------
-    ok : bool
-        ``True`` when the code exited with status 0 within limits.
-    stdout : str
-        Captured standard output.
-    stderr : str
-        Captured standard error (traceback on failure).
-    error : str
-        Sandbox-level error (e.g. a timeout message); empty on success.
-
     Examples
     --------
     >>> SandboxResult(ok=True, stdout="hi\\n", stderr="", error="").ok
     True
     """
 
+    #: ``True`` when the code exited with status 0 within limits.
     ok: bool
+    #: Captured standard output.
     stdout: str
+    #: Captured standard error (traceback on failure).
     stderr: str
+    #: Sandbox-level error (e.g. a timeout message); empty on success.
     error: str
 
 
