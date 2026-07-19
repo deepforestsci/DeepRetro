@@ -154,6 +154,7 @@ def call_LLM(molecule: str,
         "seed": 42,
         "top_p": 0.9,
         "metadata": get_langfuse_metadata("retrosynthesis"),
+        "drop_params": True,
     }
 
     if LLM in DEEPSEEK_MODELS:
