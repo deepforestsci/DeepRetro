@@ -99,7 +99,7 @@ def obtain_prompt(LLM: str):
 
 @cache_results
 def call_LLM(molecule: str,
-             LLM: str = "claude-opus-4-20250514",
+             LLM: str = "claude-opus-4-8",
              temperature: float = 0.0,
              messages: Optional[list[dict]] = None,
              use_protecting_group_feature: bool = False) -> tuple[int, str]:
@@ -110,7 +110,7 @@ def call_LLM(molecule: str,
     molecule : str
         The target molecule for retrosynthesis
     LLM : str, optional
-        The LLM model to be used, by default "claude-opus-4-20250514"
+        The LLM model to be used, by default "claude-opus-4-8"
     temperature : float, optional
         The temperature for sampling, by default 0.0
     messages : Optional[list[dict]], optional

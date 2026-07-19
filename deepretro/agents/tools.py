@@ -29,13 +29,6 @@ ToolExecutor = Callable[..., dict[str, Any]]
 class ToolRegistry:
     """Bundle of LiteLLM tool schemas and their executors.
 
-    Attributes
-    ----------
-    schemas : list[dict]
-        OpenAI function-format tool definitions to pass to ``completion``.
-    executors : dict[str, ToolExecutor]
-        Mapping from tool name to its executor callable.
-
     Examples
     --------
     >>> registry = build_tool_registry()
@@ -43,7 +36,9 @@ class ToolRegistry:
     'CCO'
     """
 
+    #: OpenAI function-format tool definitions to pass to ``completion``.
     schemas: list[dict[str, Any]]
+    #: Mapping from tool name to its executor callable.
     executors: dict[str, ToolExecutor]
 
     @property
