@@ -5,7 +5,7 @@ import numpy as np
 import deepchem as dc
 from deepchem.feat.graph_data import GraphData
 from deepretro.featurizers.reactionstep import FEATURIZER_MAP
-from hallucination_utils import MODEL_CONFIGS, create_model_instance, KFoldRandomHyperparamOpt
+from deepretro.models.hallucination_utils import MODEL_CONFIGS, create_model_instance, KFoldRandomHyperparamOpt
 from sklearn.metrics import precision_recall_curve, accuracy_score, precision_score, recall_score
 from deepretro.data.loader import ReactionDataLoader
 from typing import Any, Optional, Dict, Tuple, List
@@ -48,6 +48,7 @@ class HallucinationTrainer:
         self.model = None 
         self.n_tasks = n_tasks
         self.featurizer = None
+        self.feat_params = None
         
         if model_path is not None:
             config_path = os.path.join(model_path, 'config.json')
@@ -86,11 +87,11 @@ class HallucinationTrainer:
             self.model_params = config['default_params']
             self.param_space = config['param_space']
             self.feat_name = config['default_feat']
-            
+
             # Adopt model default featurizer parameter mappings if none are supplied externally
             if self.feat_params is None:
                 self.feat_params = config['default_feat_params'].copy()
-            
+
             self.model_dir = os.path.join(self.trainer_dir, f"{self.model_type}_model")
             os.makedirs(self.model_dir, exist_ok=True)
         else:

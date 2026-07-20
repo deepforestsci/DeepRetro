@@ -3,7 +3,7 @@
 import numpy as np
 import deepchem as dc
 from deepchem.feat.graph_data import GraphData
-from deepretro.utils import extract_domain_features_single, FEATURIZER_MAP
+from deepretro.utils import extract_domain_features_single
 from typing import Any, Tuple
 
 
@@ -129,3 +129,22 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
             # --- GRAPH ROUTE (MolGraphConv, DMPNN) ---
             combined_smiles = f"{product_smiles}.{reactants_smiles}"
             return self.base_featurizer.featurize(combined_smiles, **kwargs)[0]
+
+
+FEATURIZER_MAP = {
+    "molgraphconv": {
+        "class": dc.feat.MolGraphConvFeaturizer,
+        "type": "graph",
+        "default_params": {}
+    },
+    "circularfingerprint": {
+        "class": dc.feat.CircularFingerprint,
+        "type": "1d_vector",
+        "default_params": {"radius": 2, "size": 2048}
+    },
+    "reactionfeaturizer": {
+        "class": ReactionStepFeaturizer,
+        "type": "composite", 
+        "default_params": {}
+    }
+}

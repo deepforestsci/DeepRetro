@@ -3,7 +3,6 @@ import tempfile
 import numpy as np
 import deepchem as dc
 from xgboost import XGBClassifier
-from deepretro.featurizers.reactionstep import ReactionStepFeaturizer
 
 
 # Unified Infrastructure Model Configuration Mapping (goes with trainer)
@@ -33,24 +32,6 @@ MODEL_CONFIGS = {
 #         'default_feat': 'reactionfeaturizer',
 #         'default_feat_params': {'base_featurizer': 'molgraphconv', 'use_domain_features': False}
 #     }
-}
-
-FEATURIZER_MAP = {
-    "molgraphconv": {
-        "class": dc.feat.MolGraphConvFeaturizer,
-        "type": "graph",
-        "default_params": {}
-    },
-    "circularfingerprint": {
-        "class": dc.feat.CircularFingerprint,
-        "type": "1d_vector",
-        "default_params": {"radius": 2, "size": 2048}
-    },
-    "reactionfeaturizer": {
-        "class": ReactionStepFeaturizer,
-        "type": "composite", 
-        "default_params": {}
-    }
 }
 
 def create_model_instance(model_type, **model_params):

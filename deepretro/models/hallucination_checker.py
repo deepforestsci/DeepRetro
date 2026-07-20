@@ -3,7 +3,8 @@ import json
 import numpy as np
 import deepchem as dc
 from typing import Tuple, Dict, List
-from deepretro.models.hallucination_utils import FEATURIZER_MAP, create_model_instance
+from deepretro.models.hallucination_utils import create_model_instance
+from deepretro.featurizers.reactionstep import FEATURIZER_MAP
 from deepretro.algorithms.pipeline_checks import hallucination_checker as heuristic_checker
 
 class HallucinationChecker:
@@ -112,6 +113,13 @@ class HallucinationChecker:
         else:
             return self._check_pathway_ml(target, reactants)
 
+    def __call__(self, target: str,
+                       pathways: List[str] | List[List[str]]):
+        return self.check_pathways(
+                       target,
+                       pathways)
+        
+
     def check_pathways(self, 
                        target: str,
                        pathways: List[str] | List[List[str]],
@@ -147,7 +155,7 @@ class HallucinationChecker:
                     continue
 
                 pred = self._check_pathway_ml(target, reactants_smi)
-                if not pred.get("is_hallucination", True):
+                if pred == 0:
                     valid_pathways.append(pathway)
 
             return 200, valid_pathways
