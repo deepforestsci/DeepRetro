@@ -97,11 +97,6 @@ def obtain_prompt(LLM: str):
     return sys_prompt_final, user_prompt_final, max_completion_tokens
 
 
-# Anthropic removed temperature/top_p/top_k on Opus 4.7+ and rejects them with a
-# 400; claude-opus-4-* deprecates temperature. `seed` is not a Messages API
-# parameter at all. The claude-opus-4 prefix deliberately covers the whole Opus 4
-# family: dropping a parameter a model tolerates costs sampling control, whereas
-# sending one it rejects is a hard failure.
 NO_SAMPLING_PARAM_PREFIXES = ("claude-opus-4", "claude-sonnet-5",
                               "claude-fable-5")
 

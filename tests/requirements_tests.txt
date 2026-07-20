@@ -6,7 +6,7 @@ rdkit
 aizynthfinder
 anthropic
 openai
-litellm
+litellm==1.78.0
 tqdm
 matplotlib
 python-dotenv
@@ -15,7 +15,7 @@ flask
 flask_cors
 structlog
 diskcache
-langfuse
+langfuse<3
 joblib
 pytest
 pytest-cov
