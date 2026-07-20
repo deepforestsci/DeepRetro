@@ -97,6 +97,31 @@ def obtain_prompt(LLM: str):
     return sys_prompt_final, user_prompt_final, max_completion_tokens
 
 
+# Anthropic removed temperature/top_p/top_k on Opus 4.7+ and rejects them with a
+# 400; claude-opus-4-* deprecates temperature. `seed` is not a Messages API
+# parameter at all. The claude-opus-4 prefix deliberately covers the whole Opus 4
+# family: dropping a parameter a model tolerates costs sampling control, whereas
+# sending one it rejects is a hard failure.
+NO_SAMPLING_PARAM_PREFIXES = ("claude-opus-4", "claude-sonnet-5",
+                              "claude-fable-5")
+
+
+def accepts_sampling_params(model: str) -> bool:
+    """Whether the model accepts temperature/top_p/seed.
+
+    Parameters
+    ----------
+    model : str
+        The LLM model identifier
+
+    Returns
+    -------
+    bool
+        False for Anthropic models that reject sampling parameters
+    """
+    return not model.startswith(NO_SAMPLING_PARAM_PREFIXES)
+
+
 @cache_results
 def call_LLM(molecule: str,
              LLM: str = "claude-opus-4-20250514",
@@ -165,6 +190,11 @@ def call_LLM(molecule: str,
         params.pop("top_p", None)
         params.pop("max_completion_tokens", None)
         params['thinking'] = {"type": "enabled", "budget_tokens": 5000}
+
+    if not accepts_sampling_params(LLM):
+        params.pop("temperature", None)
+        params.pop("top_p", None)
+        params.pop("seed", None)
 
     if messages is None:
         messages = [{
