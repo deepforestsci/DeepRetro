@@ -28,13 +28,19 @@ logger = structlog.get_logger(__name__)
 
 ModelCall = Callable[[list[dict[str, Any]]], dict[str, Any]]
 
+# Updated instruction to enforce the new hallucination checking rules
+MAX_TOOL_CALLS = 5
 _TOOL_INSTRUCTION = (
-    "\n\nYou may call the provided tools to validate SMILES, check stability, "
-    "check for hallucinations, or run Python for any calculation before you "
-    "commit to an answer. When you are done, respond with the final answer in "
-    "exactly the JSON format described above (do not call a tool in that final "
-    "message)."
+    "\n\nYou have access to tools to validate SMILES, check stability, "
+    "check for hallucinations, or run Python. "
+    "You MUST follow this exact workflow:\n"
+    "1. Explore: Call any tools necessary to test and evaluate proposed pathways.\n"
+    "2. Verify (Ongoing): Whenever you feel confident about a pathway, call the `check_hallucination` tool on it.\n"
+    "3. FINAL CHECK: Once you have decided on your final pathways, you MUST call `check_hallucination` one last time on those specific pathways.\n"
+    "4. FINAL ANSWER: ONLY in the turn immediately following the result of your final `check_hallucination` call, you may output your final answer in the requested JSON format. "
+    "Do NOT output JSON if your previous action was not a hallucination check."
 )
+
 
 
 def agentic_single_step(
@@ -44,7 +50,7 @@ def agentic_single_step(
     tool_backend: str = "structured",
     sandbox: Any | None = None,
     hallucination_checker: Any | None = None,
-    max_iterations: int = 12,
+    max_iterations: int = 6,
     llm_runner: ModelCall | None = None,
     enable_thinking: bool = False,
     max_output_tokens: int | None = None,
@@ -92,25 +98,85 @@ def agentic_single_step(
     ([['CCO']], ['reduce'], [0.8])
     """
     registry = build_tool_registry(hallucination_checker, sandbox, tool_backend)
+
     messages = _build_initial_messages(molecule, model)
     call_model = llm_runner or _make_default_model_call(
         model, registry.schemas, enable_thinking, max_output_tokens
     )
 
-    for _iteration in range(max_iterations):
+    # messages = _build_initial_messages(molecule, model)
+    # call_model = llm_runner or _make_default_dual_model_call(
+    #     model, registry.schemas, enable_thinking, max_output_tokens
+    # )
+
+    last_tool_name = None
+
+    # Allow max_iterations + 1 turns to give the agent a final grace turn
+    # to output its final answer after exhausting the budget.
+    for _iteration in range(max_iterations + 1):
+        logger.info("Iteration", iteration=_iteration, molecule=molecule)
+        budget = max_iterations - _iteration
+
+        # (1) Put the remaining budget in the prompt every iteration
+        if messages:
+            first_msg = messages[0]
+            original_content = first_msg.get("content", "")
+            
+            if budget > 0:
+                reminder = f"\n\n[System reminder: {budget} tool-call iterations remaining.]"
+            else:
+                reminder = (
+                    "\n\n[System reminder: 0 tool-call iterations remaining. "
+                    "Budget exhausted. You MUST output the final JSON answer now. Do not call tools.]"
+                )
+            
+            first_msg["content"] = str(original_content) + reminder
+
         assistant = call_model(messages)
+
+        # Revert the injected prompt to keep the core message history clean
+        if messages:
+            first_msg["content"] = original_content
+
         messages.append(assistant)
 
         tool_calls = assistant.get("tool_calls")
         if not tool_calls:
+            # (4) Programmatically enforce the final hallucination check before returning
+            if hallucination_checker is not None and last_tool_name != "check_hallucination" and budget > 0:
+                logger.warning("Agent attempted to output final answer without a hallucination check.")
+                messages.append({
+                    "role": "user",
+                    "content": (
+                        "SYSTEM ALERT: You attempted to output the final JSON answer, but your most "
+                        f"recent tool call was '{last_tool_name}'.\n\n"
+                        "ACTION REQUIRED NOW: You must call the `check_hallucination` tool on your "
+                        "final pathways in this turn. Do NOT output the final JSON yet. "
+                        "Emit ONLY the tool call for the hallucination check."
+                    )
+                })
+                continue
+                
             return _parse_final_answer(assistant.get("content") or "", model)
 
-        for tool_call in tool_calls:
+        for i, tool_call in enumerate(tool_calls):
             function = tool_call.get("function", {})
             name = function.get("name", "")
-            arguments = _parse_arguments(function.get("arguments"))
-            result = registry.execute(name, arguments)
-            logger.info("Agent tool call", tool=name, arguments=arguments, result=result)
+
+            # (3) Force a final answer when the budget reaches zero
+            if budget <= 0:
+                result = {"error": "Budget exhausted. No more tool calls allowed. You MUST provide the final JSON answer."}
+                logger.warning("Agent attempted tool call after budget exhausted", tool=name)
+            # (2) Reject extra tool calls in code
+            elif i > MAX_TOOL_CALLS-1:
+                result = {"error": f"Parallel tool calls exceeding the maximum limit of {MAX_TOOL_CALLS} have been rejected. Please evaluate the results of the accepted tool calls before proceeding."}
+                logger.info("Agent extra tool call rejected", tool=name, error=result)
+            else:
+                last_tool_name = name  # Track the last successfully executed tool
+                arguments = _parse_arguments(function.get("arguments"))
+                result = registry.execute(name, arguments)
+                logger.info("Agent tool call", tool=name, arguments=arguments, result=result)
+
             messages.append(
                 {
                     "role": "tool",
