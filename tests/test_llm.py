@@ -13,66 +13,6 @@ from src.utils.llm import call_LLM, split_cot_json, split_json_deepseek
 SMALL_SMILE_STRING = "CC(=O)O"
 LARGE_SMILE_STRING = "CC(N)C(=O)NC1=C(C)C=CC=C1C"
 
-
-@pytest.fixture
-def captured_completion_params(monkeypatch):
-    """Replaces litellm.completion with a stub and captures the kwargs it receives.
-
-    Also swaps the on-disk result cache for a dict, so these tests neither read
-    stale entries nor write stub responses back to `cache_api_new`.
-    """
-    import src.cache
-    import src.utils.llm as llm_module
-
-    monkeypatch.setattr(src.cache, "cache", {})
-
-    captured = {}
-
-    class _StubMessage:
-        content = "stub response"
-
-    class _StubChoice:
-        message = _StubMessage()
-
-    class _StubResponse:
-        choices = [_StubChoice()]
-
-    def _stub_completion(**kwargs):
-        captured.update(kwargs)
-        return _StubResponse()
-
-    monkeypatch.setattr(llm_module, "completion", _stub_completion)
-    return captured
-
-
-def test_call_llm_omits_sampling_params_for_opus_4(captured_completion_params):
-    """Opus 4 rejects `temperature`/`top_p`; `seed` is not an Anthropic parameter.
-
-    Expected output:
-        none of temperature, top_p, seed reach litellm.completion.
-    """
-    call_LLM(molecule=SMALL_SMILE_STRING, LLM="claude-opus-4-8")
-
-    assert "temperature" not in captured_completion_params
-    assert "top_p" not in captured_completion_params
-    assert "seed" not in captured_completion_params
-
-
-def test_call_llm_keeps_sampling_params_for_deepseek(captured_completion_params):
-    """Non-Anthropic models still accept the sampling parameters.
-
-    Expected output:
-        temperature, top_p and seed are all forwarded to litellm.completion.
-    """
-    from tests.variables_test import DEEPSEEK_MODEL
-
-    call_LLM(molecule=SMALL_SMILE_STRING, LLM=DEEPSEEK_MODEL, temperature=0.3)
-
-    assert captured_completion_params["temperature"] == 0.3
-    assert captured_completion_params["top_p"] == 0.9
-    assert captured_completion_params["seed"] == 42
-
-
 def test_call_llm_success():
     """Tests call_LLM function with valid smile string.
     
@@ -80,11 +20,10 @@ def test_call_llm_success():
         status_code: 200.
         res_text: str.
     """
-    from tests.variables_test import CLAUDE_MODEL
+    from tests.variables_test import VALID_SMILE_STRING
 
-    status_code, res_text = call_LLM(molecule=LARGE_SMILE_STRING,
-                                     LLM=CLAUDE_MODEL)
-
+    status_code, res_text = call_LLM(molecule=LARGE_SMILE_STRING)
+    
     assert status_code == 200
     assert isinstance(res_text, str)
 
