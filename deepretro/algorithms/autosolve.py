@@ -29,8 +29,9 @@ from deepretro.models.hallucination_helpers import (
 from deepretro.utils.az import run_az
 from deepretro.utils.llm_helpers import Pathway
 from deepretro.utils.parse import format_output
-from deepretro.utils.typing import HallucinationChecker, ParseOutput, RouteNode
+from deepretro.utils.typing import ParseOutput, RouteNode
 from deepretro.utils.utils_molecule import canonicalize, validity_check
+from deepretro.models.hallucination_checker import HallucinationChecker
 
 logger = structlog.get_logger(__name__)
 
@@ -151,8 +152,9 @@ class AutoSolver:
         self.az_model = az_model
         self.stability_check = stability_check
         self.hallucination_mode = hallucination_mode.lower()
-        self.hallucination_checker: Optional[HallucinationChecker] = (
-            resolve_hallucination(self.hallucination_mode, hallucination_classifier)
+        self.hallucination_checker = HallucinationChecker(
+            checker_type=self.hallucination_mode,
+            model_path=hallucination_classifier
         )
         self.solve_mode = solve_mode
         self.tool_backend = tool_backend
