@@ -1361,6 +1361,15 @@ DEEPSEEK_MODELS = [
     "together_ai/deepseek-ai/DeepSeek-R1"
 ]
 
+CLAUDE_EXTENDED_THINKING_MODELS = [
+    "claude-3-7-sonnet",
+    "claude-opus-4",
+    "claude-sonnet-4",
+]
+
+EXTENDED_THINKING_BUDGET_TOKENS = 5000
+EXTENDED_THINKING_MAX_TOKENS = 13192 + EXTENDED_THINKING_BUDGET_TOKENS
+
 ERROR_MAP = {
     200: {
         "description": "SUCCESS",

@@ -2,9 +2,9 @@
 VALID_SMILE_STRING = 'CC(=O)CC'
 
 # Claude model
-CLAUDE_MODEL = "claude-opus-4-20250514"
+CLAUDE_MODEL = "claude-opus-4-8"
 
-CLAUDE_ADV_MODEL = "claude-opus-4-20250514:adv"
+CLAUDE_ADV_MODEL = "claude-opus-4-8:adv"
 
 # OpenAI model
 OPENAI_MODEL = "gpt-4o"

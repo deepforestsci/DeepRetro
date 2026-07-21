@@ -11,6 +11,9 @@ from src.variables import USER_PROMPT_OPENAI, SYS_PROMPT_OPENAI
 from src.variables import USER_PROMPT_DEEPSEEK, SYS_PROMPT_DEEPSEEK
 from src.variables import ADDON_PROMPT_7_MEMBER, USER_PROMPT_DEEPSEEK_V4
 from src.variables import ERROR_MAP, PROTECTING_GROUP_CONTEXT
+from src.variables import CLAUDE_EXTENDED_THINKING_MODELS
+from src.variables import EXTENDED_THINKING_BUDGET_TOKENS
+from src.variables import EXTENDED_THINKING_MAX_TOKENS
 from src.cache import cache_results
 from src.utils.utils_molecule import validity_check, detect_seven_member_rings
 from src.utils.job_context import logger as context_logger
@@ -48,6 +51,26 @@ def log_message(message: str, logger=None):
         logger.info(message)
     else:
         print(message)
+
+
+def supports_extended_thinking(LLM: str) -> bool:
+    """Check whether the model supports Anthropic extended thinking.
+
+    Parameters
+    ----------
+    LLM : str
+        The LLM model identifier, possibly with a provider prefix
+        (e.g. "anthropic/claude-sonnet-4-20250514") and/or an ":adv"
+        advanced-prompt suffix.
+
+    Returns
+    -------
+    bool
+        True if extended thinking should be enabled for this model
+    """
+    model_name = LLM.split("/")[-1].split(":")[0]
+    return any(known in model_name
+               for known in CLAUDE_EXTENDED_THINKING_MODELS)
 
 
 def obtain_prompt(LLM: str):
@@ -99,7 +122,7 @@ def obtain_prompt(LLM: str):
 
 @cache_results
 def call_LLM(molecule: str,
-             LLM: str = "claude-opus-4-20250514",
+             LLM: str = "claude-opus-4-8",
              temperature: float = 0.0,
              messages: Optional[list[dict]] = None,
              use_protecting_group_feature: bool = False) -> tuple[int, str]:
@@ -110,7 +133,7 @@ def call_LLM(molecule: str,
     molecule : str
         The target molecule for retrosynthesis
     LLM : str, optional
-        The LLM model to be used, by default "claude-opus-4-20250514"
+        The LLM model to be used, by default "claude-opus-4-8"
     temperature : float, optional
         The temperature for sampling, by default 0.0
     messages : Optional[list[dict]], optional
@@ -154,17 +177,29 @@ def call_LLM(molecule: str,
         "seed": 42,
         "top_p": 0.9,
         "metadata": get_langfuse_metadata("retrosynthesis"),
+        "drop_params": True,
     }
 
     if LLM in DEEPSEEK_MODELS:
         user_prompt_final += add_on
 
-    if "3-7" in LLM:
-        params["max_tokens"] = 13192 + 5000
+    if supports_extended_thinking(LLM):
+        params["max_tokens"] = EXTENDED_THINKING_MAX_TOKENS
         params["temperature"] = 1
         params.pop("top_p", None)
         params.pop("max_completion_tokens", None)
-        params['thinking'] = {"type": "enabled", "budget_tokens": 5000}
+        try:
+            is_adaptive_thinking_model = "claude-opus-4-8" in LLM or bool(
+                litellm.get_model_info(LLM).get("supports_adaptive_thinking"))
+        except Exception:
+            is_adaptive_thinking_model = False
+        if is_adaptive_thinking_model:
+            params['thinking'] = {"type": "adaptive"}
+        else:
+            params['thinking'] = {
+                "type": "enabled",
+                "budget_tokens": EXTENDED_THINKING_BUDGET_TOKENS
+            }
 
     if messages is None:
         messages = [{
