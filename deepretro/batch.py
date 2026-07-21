@@ -16,10 +16,14 @@ import argparse
 import hashlib
 import json
 import re
+import os
 import time
 from collections.abc import Callable
 from pathlib import Path
+import pandas as pd
 from typing import Any
+from sklearn.model_selection import train_test_split
+from deepretro.models.hallucination_trainer import HallucinationTrainer
 
 import structlog
 
@@ -143,6 +147,8 @@ def train_hallucination_checker(csv_path: str, save_dir: str) -> str | None:
     contributor to complete/tune for their dataset; any failure degrades to
     ``None`` rather than aborting the batch.
 
+    Note: Ensure reactants are of the from SMILES-A.SMILES-B....
+
     Parameters
     ----------
     csv_path : str
@@ -155,36 +161,67 @@ def train_hallucination_checker(csv_path: str, save_dir: str) -> str | None:
     str or None
         ``save_dir`` when a model was trained and saved, else ``None``.
     """
-    import pandas as pd
-
-    columns = set(pd.read_csv(csv_path, nrows=0).columns)
-    if not REQUIRED_TRAINING_COLUMNS.issubset(columns):
-        logger.warning(
-            "Training CSV missing required columns; skipping training (template)",
-            required=sorted(REQUIRED_TRAINING_COLUMNS),
-            found=sorted(columns),
-        )
-        return None
-
+    MODEL_TYPE="xgboost"
     try:
-        # --- TEMPLATE: adapt featurization/splitting/hyperparameters as needed ---
-        from deepretro.data.loader import ReactionDataLoader, stratified_split
-        from deepretro.models import HallucinationClassifier
+        # 1. Load CSV and validate columns
+        df = pd.read_csv(csv_path)
+            
+        required_cols = {'product', 'reactants', 'label'}
+        if not required_cols.issubset(df.columns):
+            logger.warning(
+                f"Training aborted: CSV missing required columns {required_cols}. "
+                f"Found {list(df.columns)}. Falling back to heuristic checker."
+            )
+            return None
 
-        loader = ReactionDataLoader()
-        dataset = loader.create_dataset(csv_path)
-        train_ds, _valid_ds, test_ds = stratified_split(dataset)
+        # 2. Setup workspace and data partitions
+        os.makedirs(save_dir, exist_ok=True)
+        train_csv = os.path.join(save_dir, "train.csv")
+        test_csv = os.path.join(save_dir, "test.csv")
 
-        Path(save_dir).mkdir(parents=True, exist_ok=True)
-        classifier = HallucinationClassifier(model_dir=save_dir)
-        classifier.fit(train_ds)
-        classifier.evaluate(test_ds)
-        classifier.save(save_dir)
-        # --- end template ---
-        logger.info("Trained hallucination checker", save_dir=save_dir)
-        return save_dir
-    except Exception as exc:  # ponytail: template; never abort the batch on training
-        logger.error("Hallucination training failed; using heuristic", error=str(exc))
+        # Stratified split based on the label
+        train_df, test_df = train_test_split(
+            df,
+            test_size=0.2,
+            random_state=42,
+            stratify=df["label"]
+        )
+
+        train_df.to_csv(train_csv, index=False)
+        test_df.to_csv(test_csv, index=False)
+        logger.info(f"Saved split datasets to {save_dir}")
+
+        # 3. Initialize Trainer and Load Datasets
+        trainer = HallucinationTrainer(
+            trainer_dir=save_dir,
+            model_type=MODEL_TYPE,
+            n_tasks=1
+        )
+
+        train_dataset, test_dataset = trainer.load_dataset(
+            train_csv=train_csv,
+            test_csv=test_csv,
+            product_col="product",
+            reactants_col="reactants",
+            label_col="label"
+        )
+
+        # 4. Execute Training and Optimization
+        logger.info("Starting automated optimization loop...")
+        final_model, test_performance = trainer.train_model(
+            train_dataset=train_dataset,
+            test_dataset=test_dataset,
+            tune_params=True,
+            n_trials=10,   # Keep low for execution speed
+            k_folds=5
+        )
+
+        logger.info(f"Training Complete. Test Partition Scores: {test_performance}")
+        return os.path.join(save_dir, f"{MODEL_TYPE}_model")
+
+    except Exception as e:
+        # Any failure degrades to None rather than crashing the batch
+        logger.error(f"Failed to train hallucination checker: {str(e)}")
         return None
 
 
