@@ -201,6 +201,7 @@ def call_LLM(molecule: str,
                 "budget_tokens": EXTENDED_THINKING_BUDGET_TOKENS
             }
 
+    params = {k: v for k, v in params.items() if LLM != "claude-opus-4-8" or k not in ("temperature", "top_p", "seed")}
     if messages is None:
         messages = [{
             "role": "system",
