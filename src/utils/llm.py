@@ -167,6 +167,7 @@ def call_LLM(molecule: str,
         params.pop("max_completion_tokens", None)
         params['thinking'] = {"type": "enabled", "budget_tokens": 5000}
 
+    params = {k: v for k, v in params.items() if LLM != "claude-opus-4-8" or k not in ("temperature", "top_p", "seed")}
     if messages is None:
         messages = [{
             "role": "system",
