@@ -189,7 +189,7 @@ def call_LLM(molecule: str,
         params.pop("top_p", None)
         params.pop("max_completion_tokens", None)
         try:
-            is_adaptive_thinking_model = bool(
+            is_adaptive_thinking_model = "claude-opus-4-8" in LLM or bool(
                 litellm.get_model_info(LLM).get("supports_adaptive_thinking"))
         except Exception:
             is_adaptive_thinking_model = False
