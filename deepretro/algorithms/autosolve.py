@@ -13,7 +13,7 @@ from __future__ import annotations
 import os
 import time
 from collections.abc import Callable, Sequence
-from typing import Any, Optional
+from typing import Any
 
 import structlog
 
@@ -24,7 +24,6 @@ from deepretro.metadata_types import (
 )
 from deepretro.models.hallucination_helpers import (
     filter_with_checker,
-    resolve_hallucination,
 )
 from deepretro.utils.az import run_az
 from deepretro.utils.llm_helpers import Pathway
@@ -158,8 +157,7 @@ class AutoSolver:
         self.stability_check = stability_check
         self.hallucination_mode = hallucination_mode.lower()
         self.hallucination_checker = HallucinationChecker(
-            checker_type=self.hallucination_mode,
-            model_path=hallucination_classifier
+            checker_type=self.hallucination_mode, model_path=hallucination_classifier
         )
         self.solve_mode = solve_mode
         self.tool_backend = tool_backend

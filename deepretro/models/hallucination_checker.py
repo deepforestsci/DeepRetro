@@ -2,21 +2,25 @@ import os
 import json
 import numpy as np
 import deepchem as dc
-from typing import Tuple, Dict, List
+from typing import Tuple, List
 from deepretro.models.hallucination_utils import create_model_instance
 from deepretro.featurizers.reactionstep import FEATURIZER_MAP
-from deepretro.algorithms.pipeline_checks import hallucination_checker as heuristic_checker
+from deepretro.algorithms.pipeline_checks import (
+    hallucination_checker as heuristic_checker,
+)
+
 
 class HallucinationChecker:
     """
-    Inference infrastructure for detecting pathway hallucinations using either rule-based heuristics or unified 
+    Inference infrastructure for detecting pathway hallucinations using either rule-based heuristics or unified
     machine learning models.
     """
-    
-    def __init__(self,
-                checker_type: str = "ml",
-                model_path: str | None = None,
-                ) -> None:
+
+    def __init__(
+        self,
+        checker_type: str = "ml",
+        model_path: str | None = None,
+    ) -> None:
         """
         Initializes a hallucination checker.
 
@@ -33,18 +37,22 @@ class HallucinationChecker:
         self.featurizer: dc.feat.Featurizer | None = None
         self.threshold: float = 0.5
         self.model_type: str | None = None
-        
+
         if self.checker_type not in ["heuristic", "ml"]:
-            raise ValueError(f"Unknown checker_type: {self.checker_type}. Allowed: 'heuristic', 'ml'")
-            
+            raise ValueError(
+                f"Unknown checker_type: {self.checker_type}. Allowed: 'heuristic', 'ml'"
+            )
+
         if self.checker_type == "ml":
             if self.model_path is None:
-                raise ValueError("A valid 'model_path' must be provided when checker_type is 'ml'.")
+                raise ValueError(
+                    "A valid 'model_path' must be provided when checker_type is 'ml'."
+                )
             self.load_model(self.model_path)
 
     def load_model(self, model_path: str) -> None:
         """
-        Loads the saved trainer configuration, instantiates the required underlying featurizers, and restores 
+        Loads the saved trainer configuration, instantiates the required underlying featurizers, and restores
         model weights from disk.
 
         Parameters
@@ -52,38 +60,42 @@ class HallucinationChecker:
         model_path : str
             Path to the saved model directory.
         """
-        config_path = os.path.join(model_path, 'config.json')
+        config_path = os.path.join(model_path, "config.json")
         if not os.path.exists(config_path):
-            raise FileNotFoundError(f"No config.json file found in model path: {model_path}")
-            
-        with open(config_path, 'r') as f:
+            raise FileNotFoundError(
+                f"No config.json file found in model path: {model_path}"
+            )
+
+        with open(config_path, "r") as f:
             config = json.load(f)
-            
+
         # Extract metadata directly from the saved JSON configuration
-        self.model_type = config.get('model_type')
-        model_params = config.get('model_params', {})
-        feat_name = config.get('feat_name')
-        feat_params = config.get('feat_params', {})
-        self.threshold = config.get('threshold', 0.5)
-        n_tasks = config.get('n_tasks', 1)
-        
+        self.model_type = config.get("model_type")
+        model_params = config.get("model_params", {})
+        feat_name = config.get("feat_name")
+        feat_params = config.get("feat_params", {})
+        self.threshold = config.get("threshold", 0.5)
+        n_tasks = config.get("n_tasks", 1)
+
         print(f"Restoring saved {self.model_type.upper()} pipeline from disk...")
         print(f"Loaded Decision Threshold: {self.threshold:.4f}")
-        
+
         # 1. Dynamically initialize the custom operational featurizer wrapper
         if feat_name.lower() not in FEATURIZER_MAP:
-            raise ValueError(f"Saved featurizer '{feat_name}' is not registered in FEATURIZER_MAP.")
-            
+            raise ValueError(
+                f"Saved featurizer '{feat_name}' is not registered in FEATURIZER_MAP."
+            )
+
         feat_config = FEATURIZER_MAP[feat_name.lower()]
         merged_feat_params = feat_config["default_params"].copy()
         merged_feat_params.update(feat_params)
         self.featurizer = feat_config["class"](**merged_feat_params)
-        
+
         # 2. Package parameters and construct the model instance using our standalone factory
         params = model_params.copy()
-        params['model_dir'] = model_path
-        params['n_tasks'] = n_tasks
-        
+        params["model_dir"] = model_path
+        params["n_tasks"] = n_tasks
+
         self.model = create_model_instance(self.model_type, **params)
         try:
             self.model.restore()
@@ -92,38 +104,35 @@ class HallucinationChecker:
 
     def check_single_pathway(self, target: str, reactants: str) -> int:
         """
-        Public inference API route. Accepts a single pathway definition step 
+        Public inference API route. Accepts a single pathway definition step
         and routes it to the designated heuristic or ML backend processor.
-        
+
         Parameters
         ----------
         target : str
             SMILES representation of the target molecule (product).
         reactants : str
             SMILES representation of the reactant molecules (dot-separated).
-            
+
         Returns
         -------
         int
             Binary prediction: 1 if it's a hallucination, 0 if it's a valid step.
         """
         if self.checker_type == "heuristic":
-          _, valid_pathways = self._check_pathway_heur(target, [reactants])
-          return 0 if len(valid_pathways) > 0 else 1
+            _, valid_pathways = self._check_pathway_heur(target, [reactants])
+            return 0 if len(valid_pathways) > 0 else 1
         else:
             return self._check_pathway_ml(target, reactants)
 
-    def __call__(self, target: str,
-                       pathways: List[str] | List[List[str]]):
-        return self.check_pathways(
-                       target,
-                       pathways)
-        
+    def __call__(self, target: str, pathways: List[str] | List[List[str]]):
+        return self.check_pathways(target, pathways)
 
-    def check_pathways(self, 
-                       target: str,
-                       pathways: List[str] | List[List[str]],
-                    ) -> Tuple[int, List]:
+    def check_pathways(
+        self,
+        target: str,
+        pathways: List[str] | List[List[str]],
+    ) -> Tuple[int, List]:
         """
         Filters a collection of candidate pathways.
 
@@ -160,11 +169,12 @@ class HallucinationChecker:
 
             return 200, valid_pathways
 
-    def _check_pathway_heur(self,
-                            target: str,
-                            reactants: List[str] | str,
-                        ) -> Tuple[int, List]:
-        """ Evaluates pathways using deterministic chemical heuristics.
+    def _check_pathway_heur(
+        self,
+        target: str,
+        reactants: List[str] | str,
+    ) -> Tuple[int, List]:
+        """Evaluates pathways using deterministic chemical heuristics.
 
         Parameters
         ----------
@@ -200,15 +210,19 @@ class HallucinationChecker:
         """
         datapoint = (target, reactants)
         features = self.featurizer.featurize([datapoint])
-        
+
         # Check if featurization completely failed natively inside DeepChem
-        if features.size == 0 or (isinstance(features[0], np.ndarray) and features[0].size == 0):
-            print("Warning: Featurization failed on input strings. Marking as hallucination by default.")
+        if features.size == 0 or (
+            isinstance(features[0], np.ndarray) and features[0].size == 0
+        ):
+            print(
+                "Warning: Featurization failed on input strings. Marking as hallucination by default."
+            )
             return 1
 
         dataset = dc.data.NumpyDataset(X=features)
         y_pred = self.model.predict(dataset)
-        
+
         # Isolate raw positive-class scalar probabilities across Sklearn vs. GNN shape spaces
         if len(y_pred.shape) == 3 and y_pred.shape[2] == 2:
             prob = y_pred[0, 0, 1]
