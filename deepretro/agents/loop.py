@@ -181,7 +181,16 @@ def agentic_orchestrator(
 
 
 def _build_initial_messages(molecule: str, model: str) -> list[dict[str, Any]]:
-    """Build the [system, user] messages with tool-usage guidance appended."""
+    """Build the system and user messages with tool guidance appended.
+
+    Examples
+    --------
+    >>> messages = _build_initial_messages("CCO", "openai/gpt-4o-mini")
+    >>> [message["role"] for message in messages]
+    ['system', 'user']
+    >>> "You may call" in messages[0]["content"]
+    True
+    """
     from deepretro.utils.llm import build_messages
 
     messages = [dict(message) for message in build_messages(molecule, model)]
@@ -232,7 +241,15 @@ def _classify_agent_event(molecule: str, content: str) -> dict[str, Any]:
 
 
 def _parse_arguments(arguments: Any) -> dict[str, Any]:
-    """Parse tool-call arguments (a JSON string or already a dict)."""
+    """Parse tool-call arguments from a JSON string or existing dictionary.
+
+    Examples
+    --------
+    >>> _parse_arguments('{"smiles": "CCO"}')
+    {'smiles': 'CCO'}
+    >>> _parse_arguments("not JSON")
+    {}
+    """
     if isinstance(arguments, dict):
         return arguments
     if not arguments:
@@ -248,7 +265,17 @@ def _parse_final_answer(
     content: str,
     model: str,
 ) -> tuple[list[Pathway], list[str], list[float]]:
-    """Parse a final assistant message into pathways/explanations/confidence."""
+    """Parse a final assistant message into pipeline result lists.
+
+    Examples
+    --------
+    >>> content = (
+    ...     '<json>{"data": [["CCO"]], "explanation": ["reduce"], '
+    ...     '"confidence_scores": [0.8]}</json>'
+    ... )
+    >>> _parse_final_answer(content, "openai/gpt-4o-mini")
+    ([['CCO']], ['reduce'], [0.8])
+    """
     from deepretro.utils.llm import parse_response, validate_split_json
 
     status, _thinking, json_content = parse_response(content, model)
@@ -266,9 +293,30 @@ def _make_default_model_call(
     enable_thinking: bool,
     max_output_tokens: int | None,
 ) -> ModelCall:
-    """Build the default ``litellm.completion``-backed model call."""
+    """Build the default ``litellm.completion``-backed model call.
 
-    def _call(messages: list[dict[str, Any]]) -> Any:
+    Examples
+    --------
+    >>> call_model = _make_default_model_call(
+    ...     "openai/gpt-4o-mini", [], True, 1024
+    ... )
+    >>> callable(call_model)
+    True
+    """
+
+    def _call(messages: list[dict[str, Any]]) -> object:
+        """Send one conversation turn to LiteLLM and return its raw message.
+
+        Examples
+        --------
+        The closure is obtained through ``_make_default_model_call``:
+
+        >>> call_model = _make_default_model_call(
+        ...     "openai/gpt-4o-mini", [], True, 1024
+        ... )
+        >>> callable(call_model)
+        True
+        """
         from litellm import completion
 
         from deepretro.utils.llm_helpers import build_completion_params

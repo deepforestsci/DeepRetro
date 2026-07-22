@@ -7,6 +7,7 @@ from typing import Any
 
 import pytest
 
+import deepretro.agents.loop as agent_loop
 from deepretro.agents.loop import agentic_orchestrator, agentic_single_step
 
 MODEL = "openai/gpt-4o-mini"
@@ -55,6 +56,17 @@ class ScriptedModel:
         return self.turns[len(self.seen) - 1]
 
 
+class ProviderMessage:
+    """Provider-message stand-in exposing a Pydantic-style serializer."""
+
+    def __init__(self, payload: dict[str, Any]) -> None:
+        self.payload = payload
+
+    def model_dump(self) -> dict[str, Any]:
+        """Return the provider payload."""
+        return self.payload
+
+
 def test_returns_parsed_pathways_from_final_answer() -> None:
     """A final answer is parsed into the pipeline's (pathways, expl, conf) shape."""
     model = ScriptedModel([final_turn()])
@@ -75,6 +87,51 @@ def test_executes_tool_then_returns_final_answer() -> None:
     assert pathways == [["CCO"]]
     second_call_messages = model.seen[1]
     assert any(message.get("role") == "tool" for message in second_call_messages)
+
+
+def test_replays_provider_message_with_reasoning_fields() -> None:
+    """A serialized provider turn is replayed with opaque reasoning intact."""
+    first_payload = tool_turn()
+    first_payload["reasoning_content"] = {"signature": "signed-token"}
+    seen_second_turn: list[dict[str, Any]] = []
+    calls = 0
+
+    def provider_model(messages: list[dict[str, Any]]) -> Any:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            return ProviderMessage(first_payload)
+        first_payload["reasoning_content"]["signature"] = "changed"
+        seen_second_turn.extend(messages)
+        return ProviderMessage(final_turn())
+
+    result = agentic_single_step("CC=O", MODEL, llm_runner=provider_model)
+
+    assistant_turn = next(
+        message for message in seen_second_turn if message["role"] == "assistant"
+    )
+    assert assistant_turn["reasoning_content"] == {"signature": "signed-token"}
+    assert result == ([["CCO"]], ["reduce"], [0.8])
+
+
+def test_thinking_is_enabled_by_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The default model-call factory receives thinking enabled."""
+    captured: dict[str, Any] = {}
+
+    def fake_model_call_factory(
+        model: str,
+        tools: list[dict[str, Any]],
+        enable_thinking: bool,
+        max_output_tokens: int | None,
+    ) -> Any:
+        captured["enable_thinking"] = enable_thinking
+        return lambda messages: final_turn()
+
+    monkeypatch.setattr(agent_loop, "_make_default_model_call", fake_model_call_factory)
+
+    agentic_single_step("CC=O", MODEL)
+
+    assert captured["enable_thinking"] is True
 
 
 def test_tool_result_references_call_id() -> None:

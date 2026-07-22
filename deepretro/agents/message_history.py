@@ -18,7 +18,13 @@ class MessagePreservationError(RuntimeError):
 
 
 def _serialize_message(message: Any) -> Mapping[str, Any]:
-    """Return a complete mapping representation without inspecting its data."""
+    """Return a complete mapping representation without inspecting its data.
+
+    Examples
+    --------
+    >>> _serialize_message({"role": "assistant", "content": "done"})["role"]
+    'assistant'
+    """
     if isinstance(message, Mapping):
         return message
 
@@ -61,6 +67,14 @@ def snapshot_assistant_message(message: Any) -> dict[str, Any]:
     MessagePreservationError
         If the object cannot be serialized, is not an assistant turn, or
         cannot be copied. Error text never includes response data.
+
+    Examples
+    --------
+    >>> original = {"role": "assistant", "metadata": {"signature": "abc"}}
+    >>> snapshot = snapshot_assistant_message(original)
+    >>> original["metadata"]["signature"] = "changed"
+    >>> snapshot["metadata"]["signature"]
+    'abc'
     """
     serialized = _serialize_message(message)
     try:
@@ -85,7 +99,17 @@ def append_assistant_message(
     history: list[dict[str, Any]],
     message: Any,
 ) -> dict[str, Any]:
-    """Snapshot one assistant message, append it, and return the snapshot."""
+    """Snapshot one assistant message, append it, and return the snapshot.
+
+    Examples
+    --------
+    >>> history = []
+    >>> snapshot = append_assistant_message(
+    ...     history, {"role": "assistant", "content": "done"}
+    ... )
+    >>> history == [snapshot]
+    True
+    """
     snapshot = snapshot_assistant_message(message)
     history.append(snapshot)
     return snapshot
