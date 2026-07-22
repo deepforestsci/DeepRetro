@@ -332,23 +332,21 @@ def _load_scscorer_class(module_path: str | None) -> Any:
 
 
 def _sc_paths(config: SCScoreConfig) -> tuple[str | None, str | None]:
-    module_path = (
-        str(Path(config.module_path).expanduser().resolve())
-        if config.module_path
-        else None
-    )
-    weight_path = (
-        str(Path(config.weight_path).expanduser().resolve())
-        if config.weight_path
-        else None
-    )
+    # Fall back to env vars so the SCScore model can be pointed at without
+    # changing call sites: SCSCORE_MODULE_PATH (standalone_model_numpy.py) and
+    # SCSCORE_WEIGHT_PATH (model.ckpt-*.as_numpy.json.gz).
+    raw_module = config.module_path or os.getenv("SCSCORE_MODULE_PATH")
+    raw_weight = config.weight_path or os.getenv("SCSCORE_WEIGHT_PATH")
+    module_path = str(Path(raw_module).expanduser().resolve()) if raw_module else None
+    weight_path = str(Path(raw_weight).expanduser().resolve()) if raw_weight else None
     return module_path, weight_path
 
 
 @contextlib.contextmanager
 def _quiet_output() -> Any:
-    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(
-        io.StringIO()
+    with (
+        contextlib.redirect_stdout(io.StringIO()),
+        contextlib.redirect_stderr(io.StringIO()),
     ):
         yield
 
@@ -388,11 +386,7 @@ def _extract_step_smiles(step: Any) -> tuple[str, list[str]]:
     if "products" in step:
         if "reactants" not in step:
             raise ValueError("mixed or incomplete viewer-style step")
-        if (
-            "product" in step
-            or "product_smiles" in step
-            or "reactants_smiles" in step
-        ):
+        if "product" in step or "product_smiles" in step or "reactants_smiles" in step:
             raise ValueError("mixed viewer-style and simple-style step")
         return _extract_viewer_step_smiles(step)
 
@@ -535,9 +529,8 @@ def _fraction_simplifying(
     scored_steps = [step for step in step_scores if step.get(delta_key) is not None]
     if not scored_steps:
         return None
-    return (
-        sum(1 for step in scored_steps if step.get(simplify_key) is True)
-        / len(scored_steps)
+    return sum(1 for step in scored_steps if step.get(simplify_key) is True) / len(
+        scored_steps
     )
 
 
