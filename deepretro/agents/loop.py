@@ -9,8 +9,8 @@ confidence)`` shape and is *still* run through the deterministic safety filters
 in :meth:`AutoSolver.run_llm`.
 
 The model call is injectable (``llm_runner``) so the loop is unit-tested with no
-network. The default runner calls ``litellm.completion`` with the tool schemas
-and normalizes the returned message to an OpenAI-format assistant dict.
+network. Every returned assistant message crosses a lossless history boundary
+before the loop inspects tool calls or visible content.
 """
 
 from __future__ import annotations
@@ -21,12 +21,13 @@ from typing import Any, cast
 
 import structlog
 
+from deepretro.agents.message_history import append_assistant_message
 from deepretro.agents.tools import build_tool_registry
 from deepretro.utils.llm_helpers import ChatMessage, Pathway
 
 logger = structlog.get_logger(__name__)
 
-ModelCall = Callable[[list[dict[str, Any]]], dict[str, Any]]
+ModelCall = Callable[[list[dict[str, Any]]], Any]
 
 _TOOL_INSTRUCTION = (
     "\n\nYou may call the provided tools to validate SMILES, check stability, "
@@ -46,7 +47,7 @@ def agentic_single_step(
     hallucination_checker: Any | None = None,
     max_iterations: int = 6,
     llm_runner: ModelCall | None = None,
-    enable_thinking: bool = False,
+    enable_thinking: bool = True,
     max_output_tokens: int | None = None,
     event_sink: list[dict[str, Any]] | None = None,
     az_tools: bool = False,
@@ -69,12 +70,15 @@ def agentic_single_step(
     max_iterations : int, optional
         Maximum model turns before giving up.
     llm_runner : callable, optional
-        Injectable model call ``(messages) -> assistant_message_dict``. When
-        ``None``, ``litellm.completion`` is used.
+        Injectable model call ``(messages) -> assistant_message``. The result
+        may be a serialized mapping or an object exposing ``model_dump()``.
+        When ``None``, ``litellm.completion`` is used.
     enable_thinking : bool, optional
-        Reasoning controls. Defaults to ``False``: multi-turn tool use with
-        extended thinking is rejected by Anthropic unless the signed thinking
-        block is preserved.
+        Whether provider-supported reasoning controls should be enabled.
+        Defaults to ``True``. Provider-returned reasoning artifacts are treated
+        as opaque protocol data and retained in memory only for this agent run
+        so signed multi-turn tool conversations can be replayed losslessly.
+        Pass ``False`` to disable provider reasoning explicitly.
     max_output_tokens : int, optional
         Output-token override for the model call.
     event_sink : list of dict or None, optional
@@ -113,8 +117,7 @@ def agentic_single_step(
     )
 
     for _iteration in range(max_iterations):
-        assistant = call_model(messages)
-        messages.append(assistant)
+        assistant = append_assistant_message(messages, call_model(messages))
 
         tool_calls = assistant.get("tool_calls")
         if not tool_calls:
@@ -265,7 +268,7 @@ def _make_default_model_call(
 ) -> ModelCall:
     """Build the default ``litellm.completion``-backed model call."""
 
-    def _call(messages: list[dict[str, Any]]) -> dict[str, Any]:
+    def _call(messages: list[dict[str, Any]]) -> Any:
         from litellm import completion
 
         from deepretro.utils.llm_helpers import build_completion_params
@@ -282,7 +285,6 @@ def _make_default_model_call(
         )
         params["tools"] = tools
         response = completion(**params)
-        message = response.choices[0].message
-        return message.model_dump()
+        return response.choices[0].message
 
     return _call
