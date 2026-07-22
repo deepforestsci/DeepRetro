@@ -163,12 +163,12 @@ def train_hallucination_checker(csv_path: str, save_dir: str) -> str | None:
     str or None
         ``save_dir`` when a model was trained and saved, else ``None``.
     """
-    MODEL_TYPE="xgboost"
+    MODEL_TYPE = "xgboost"
     try:
         # 1. Load CSV and validate columns
         df = pd.read_csv(csv_path)
-            
-        required_cols = {'product', 'reactants', 'label'}
+
+        required_cols = {"product", "reactants", "label"}
         if not required_cols.issubset(df.columns):
             logger.warning(
                 f"Training aborted: CSV missing required columns {required_cols}. "
@@ -183,10 +183,7 @@ def train_hallucination_checker(csv_path: str, save_dir: str) -> str | None:
 
         # Stratified split based on the label
         train_df, test_df = train_test_split(
-            df,
-            test_size=0.2,
-            random_state=42,
-            stratify=df["label"]
+            df, test_size=0.2, random_state=42, stratify=df["label"]
         )
 
         train_df.to_csv(train_csv, index=False)
@@ -195,9 +192,7 @@ def train_hallucination_checker(csv_path: str, save_dir: str) -> str | None:
 
         # 3. Initialize Trainer and Load Datasets
         trainer = HallucinationTrainer(
-            trainer_dir=save_dir,
-            model_type=MODEL_TYPE,
-            n_tasks=1
+            trainer_dir=save_dir, model_type=MODEL_TYPE, n_tasks=1
         )
 
         train_dataset, test_dataset = trainer.load_dataset(
@@ -205,7 +200,7 @@ def train_hallucination_checker(csv_path: str, save_dir: str) -> str | None:
             test_csv=test_csv,
             product_col="product",
             reactants_col="reactants",
-            label_col="label"
+            label_col="label",
         )
 
         # 4. Execute Training and Optimization
@@ -214,8 +209,8 @@ def train_hallucination_checker(csv_path: str, save_dir: str) -> str | None:
             train_dataset=train_dataset,
             test_dataset=test_dataset,
             tune_params=True,
-            n_trials=10,   # Keep low for execution speed
-            k_folds=5
+            n_trials=10,  # Keep low for execution speed
+            k_folds=5,
         )
 
         logger.info(f"Training Complete. Test Partition Scores: {test_performance}")
@@ -227,8 +222,10 @@ def train_hallucination_checker(csv_path: str, save_dir: str) -> str | None:
         return None
 
 
-def solve_molecule(solver: Any, smiles: str, top_k: int) -> list[dict[str, Any]]:
-    """Solve one molecule into up to ``top_k`` parsed, enriched pathway dicts.
+def solve_molecule(
+    solver: Any, smiles: str, top_k: int, *, include_metadata: bool = True
+) -> list[dict[str, Any]]:
+    """Solve one molecule into up to ``top_k`` parsed pathway dicts.
 
     Parameters
     ----------
@@ -238,6 +235,10 @@ def solve_molecule(solver: Any, smiles: str, top_k: int) -> list[dict[str, Any]]
         Target molecule SMILES.
     top_k : int
         Maximum number of candidate routes.
+    include_metadata : bool, optional
+        When ``True`` (default) each pathway is enriched via
+        ``solver.add_metadata`` (reagent/condition/literature LLM calls). Set
+        to ``False`` to skip that stage entirely (saves cost/time).
 
     Returns
     -------
@@ -247,7 +248,8 @@ def solve_molecule(solver: Any, smiles: str, top_k: int) -> list[dict[str, Any]]
     pathways: list[dict[str, Any]] = []
     for route, solved in solver.solve_multiple(smiles, k=top_k):
         parsed = solver.parse(route, solved=solved)
-        parsed = solver.add_metadata(parsed)
+        if include_metadata:
+            parsed = solver.add_metadata(parsed)
         parsed["target"] = smiles
         pathways.append(parsed)
     return pathways
@@ -352,13 +354,32 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--tool-backend", choices=["structured", "sandbox"], default="structured"
     )
     parser.add_argument("--model", default="anthropic/claude-sonnet-4-6")
-    parser.add_argument("--az-model", default="USPTO")
+    parser.add_argument("--az-model", default="Pistachio_100+")
     parser.add_argument(
         "--classifier",
         default=None,
         help="Path to a trained hallucination model dir (enables ML mode)",
     )
     parser.add_argument("--top-k", type=int, default=3)
+    parser.add_argument(
+        "--max-depth",
+        type=int,
+        default=6,
+        help="Maximum retrosynthesis recursion depth (cost control)",
+    )
+    parser.add_argument(
+        "--skip-metadata",
+        action="store_true",
+        help="Skip the add_metadata enrichment stage (saves cost/time)",
+    )
+    parser.add_argument(
+        "--hallucination-mode",
+        choices=["auto", "heuristic", "ml"],
+        default="auto",
+        help="'heuristic' forces the heuristic checker (no training); 'ml' "
+        "trains (or uses --classifier); 'auto' trains only if labelled data is "
+        "present, else heuristic.",
+    )
     return parser
 
 
@@ -373,11 +394,24 @@ def main(argv: list[str] | None = None) -> None:
     args = _build_arg_parser().parse_args(argv)
     timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
 
-    download_sheet_csv(args.sheet_url, args.csv)
+    # Resolve the hallucination checker. 'heuristic' skips training (and the
+    # sheet download); 'ml'/'auto' train from the labelled sheet unless a
+    # pre-trained --classifier is supplied.
+    classifier_dir: str | None = None
+    if args.hallucination_mode != "heuristic":
+        if args.classifier:
+            classifier_dir = args.classifier
+        else:
+            download_sheet_csv(args.sheet_url, args.csv)
+            classifier_dir = train_hallucination_checker(
+                args.csv, str(Path(args.out) / "hallucination_model")
+            )
+        if args.hallucination_mode == "ml" and not classifier_dir:
+            raise SystemExit(
+                "hallucination-mode=ml requested but no classifier was trained "
+                "(check the sheet's product/reactants/label columns)."
+            )
 
-    classifier_dir = args.classifier or train_hallucination_checker(
-        args.csv, str(Path(args.out) / "hallucination_model")
-    )
     hallucination_mode = "ml" if classifier_dir else "heuristic"
 
     molecules = read_molecules(args.molecules)
@@ -387,6 +421,8 @@ def main(argv: list[str] | None = None) -> None:
         timestamp=timestamp,
         solve_mode=args.solve_mode,
         hallucination_mode=hallucination_mode,
+        max_depth=args.max_depth,
+        metadata=not args.skip_metadata,
     )
 
     from deepretro.algorithms.autosolve import AutoSolver
@@ -398,13 +434,16 @@ def main(argv: list[str] | None = None) -> None:
         tool_backend=args.tool_backend,
         hallucination_mode=hallucination_mode,
         hallucination_classifier=classifier_dir,
+        max_depth=args.max_depth,
     )
 
     run_batch(
         molecules,
         args.out,
         timestamp=timestamp,
-        solve=lambda smiles: solve_molecule(solver, smiles, args.top_k),
+        solve=lambda smiles: solve_molecule(
+            solver, smiles, args.top_k, include_metadata=not args.skip_metadata
+        ),
     )
 
 
