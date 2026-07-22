@@ -19,6 +19,73 @@ CACHE_CONTROL_ENV_VAR = "DEEPRETRO_PROMPT_CACHING"
 _CACHE_CONTROL_DISABLED_VALUES = {"0", "false", "no", "off"}
 EPHEMERAL_CACHE_CONTROL: dict[str, str] = {"type": "ephemeral"}
 
+# Per-request LLM safety limits. Without a request timeout a hung provider
+# socket blocks forever; without a retry cap a deep recursive solve can re-bill
+# full tokens on every transient error. Both are attached to every completion
+# call via :func:`build_completion_params` and are env-overridable.
+LLM_TIMEOUT_ENV_VAR = "DEEPRETRO_LLM_TIMEOUT"
+LLM_NUM_RETRIES_ENV_VAR = "DEEPRETRO_LLM_NUM_RETRIES"
+DEFAULT_LLM_TIMEOUT_SECONDS = 600.0
+DEFAULT_LLM_NUM_RETRIES = 3
+
+
+def resolve_llm_timeout() -> float:
+    """Return the per-request LLM timeout in seconds.
+
+    Reads ``DEEPRETRO_LLM_TIMEOUT`` (seconds) when set to a positive number,
+    otherwise falls back to :data:`DEFAULT_LLM_TIMEOUT_SECONDS`. Invalid or
+    non-positive values are ignored in favour of the default so a bad
+    environment cannot silently disable the timeout.
+
+    Returns
+    -------
+    float
+        Timeout in seconds passed to ``litellm.completion``.
+
+    Examples
+    --------
+    >>> resolve_llm_timeout() > 0
+    True
+    """
+    raw = os.getenv(LLM_TIMEOUT_ENV_VAR)
+    if raw is not None:
+        try:
+            value = float(raw)
+        except ValueError:
+            return DEFAULT_LLM_TIMEOUT_SECONDS
+        if value > 0:
+            return value
+    return DEFAULT_LLM_TIMEOUT_SECONDS
+
+
+def resolve_llm_num_retries() -> int:
+    """Return the maximum number of retries for an LLM call.
+
+    Reads ``DEEPRETRO_LLM_NUM_RETRIES`` when set to a non-negative integer,
+    otherwise falls back to :data:`DEFAULT_LLM_NUM_RETRIES`. ``0`` disables
+    retries (a single attempt). Invalid or negative values fall back to the
+    default.
+
+    Returns
+    -------
+    int
+        Retry count passed to ``litellm.completion`` as ``num_retries``.
+
+    Examples
+    --------
+    >>> resolve_llm_num_retries() >= 0
+    True
+    """
+    raw = os.getenv(LLM_NUM_RETRIES_ENV_VAR)
+    if raw is not None:
+        try:
+            value = int(raw)
+        except ValueError:
+            return DEFAULT_LLM_NUM_RETRIES
+        if value >= 0:
+            return value
+    return DEFAULT_LLM_NUM_RETRIES
+
 
 class ChatMessage(TypedDict):
     """Chat message sent to LiteLLM."""
@@ -605,6 +672,11 @@ def build_completion_params(
         "temperature": (
             1 if selection.requires_temperature_one and enable_thinking else temperature
         ),
+        # Bound every call: a request deadline so a silent provider socket cannot
+        # hang indefinitely, and a retry cap so transient errors cannot re-bill
+        # full tokens without limit. Both are env-overridable.
+        "timeout": resolve_llm_timeout(),
+        "num_retries": resolve_llm_num_retries(),
     }
 
     if selection.supports_seed:
@@ -750,11 +822,11 @@ def extract_json_payload(response_text: str) -> str | None:
 
 def is_enabled(flag: str | bool) -> bool:
     """Normalize string and boolean feature flags.
-    
+
     Note:
     -----
-    This function is added for backwards compatibility, ideally we should 
-    not have this as type safety is altered with this, we should remove this 
+    This function is added for backwards compatibility, ideally we should
+    not have this as type safety is altered with this, we should remove this
     once we make sure type safety is maintained.
 
     Parameters

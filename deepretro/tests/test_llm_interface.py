@@ -6,11 +6,15 @@ import re
 from typing import Any
 
 from deepretro.utils.llm_helpers import (
+    DEFAULT_LLM_NUM_RETRIES,
+    DEFAULT_LLM_TIMEOUT_SECONDS,
     ChatMessage,
     apply_prompt_caching,
     build_completion_params,
     extract_json_payload,
     infer_provider,
+    resolve_llm_num_retries,
+    resolve_llm_timeout,
     resolve_model_selection,
     split_prompt_mode,
 )
@@ -86,6 +90,8 @@ def test_completion_params_follow_provider_contracts() -> None:
         "temperature": 0.2,
         "seed": 42,
         "metadata": {"task": "retrosynthesis"},
+        "timeout": 600.0,
+        "num_retries": 3,
     }
 
     # added seperately to test reasoning effort, reasoning requires temperature=1
@@ -115,6 +121,8 @@ def test_completion_params_follow_provider_contracts() -> None:
         "messages": messages,
         "max_tokens": 64,
         "temperature": 0.2,
+        "timeout": 600.0,
+        "num_retries": 3,
     }
 
     # added seperately to test reasoning effort, reasoning requires temperature=1,
@@ -132,8 +140,43 @@ def test_completion_params_follow_provider_contracts() -> None:
         "max_tokens": 8192,
         "temperature": 1,
         "reasoning_effort": "medium",
+        "timeout": 600.0,
+        "num_retries": 3,
     }
 
+
+def test_completion_params_carry_timeout_and_retry_limits(monkeypatch: Any) -> None:
+    monkeypatch.delenv("DEEPRETRO_LLM_TIMEOUT", raising=False)
+    monkeypatch.delenv("DEEPRETRO_LLM_NUM_RETRIES", raising=False)
+    messages: list[ChatMessage] = [{"role": "user", "content": "Return OK."}]
+
+    params = build_completion_params(
+        model="openai/gpt-4o-mini",
+        messages=messages,
+        max_completion_tokens=64,
+        temperature=0.0,
+    )
+    # Every call is bounded, even without any env override.
+    assert params["timeout"] == DEFAULT_LLM_TIMEOUT_SECONDS
+    assert params["num_retries"] == DEFAULT_LLM_NUM_RETRIES
+
+
+def test_llm_limits_respect_and_validate_env_overrides(monkeypatch: Any) -> None:
+    # Valid overrides are honoured.
+    monkeypatch.setenv("DEEPRETRO_LLM_TIMEOUT", "45")
+    monkeypatch.setenv("DEEPRETRO_LLM_NUM_RETRIES", "0")
+    assert resolve_llm_timeout() == 45.0
+    assert resolve_llm_num_retries() == 0  # 0 disables retries (single attempt)
+
+    # Garbage and non-positive/negative values fall back to defaults so a bad
+    # environment cannot silently disable the timeout or the retry cap.
+    monkeypatch.setenv("DEEPRETRO_LLM_TIMEOUT", "not-a-number")
+    monkeypatch.setenv("DEEPRETRO_LLM_NUM_RETRIES", "-3")
+    assert resolve_llm_timeout() == DEFAULT_LLM_TIMEOUT_SECONDS
+    assert resolve_llm_num_retries() == DEFAULT_LLM_NUM_RETRIES
+
+    monkeypatch.setenv("DEEPRETRO_LLM_TIMEOUT", "0")
+    assert resolve_llm_timeout() == DEFAULT_LLM_TIMEOUT_SECONDS
 
 
 def test_prompt_caching_marks_system_and_final_user_for_anthropic(
@@ -299,5 +342,3 @@ def test_json_payload_helpers() -> None:
     assert extract_json_payload('```json\n{"data": []}\n```') == '{"data": []}'
     assert extract_json_payload("prefix [1, 2] suffix") == "[1, 2]"
     assert extract_json_payload("No JSON here") is None
-
-
