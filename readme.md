@@ -1,5 +1,21 @@
 # DeepRetro - AI-Powered Retrosynthesis Tool
 Find the detailed documentation with tutorials at: https://deep-forest-sciences-deepretro.readthedocs-hosted.com/en/latest/
+<p align="center">
+  <img src="docs/source/_static/deep_retro_fig1.png" alt="DeepRetro Pipeline Overview" width="600"/>
+</p>
+
+<details>
+<summary><strong>DeepRetro Framework Overview</strong> (click to expand)</summary>
+
+**(a) The DeepRetro framework:** The process starts with a template-based tool. If it fails, an LLM proposes steps, which undergo validation checks. If proposed molecules are not available in a vendor database, the molecule continues in the pipeline. It then moves into an optional human intervention before recursive evaluation.
+
+**(b) Molecule checks:** DeepRetro incorporates multiple checks, including Validity checks (valency, allowed atoms), Stability Checks (see Section 5), and Hallucination Checks (verifying that the LLM provides sensible outputs).
+
+**(c) Human interventions:** DeepRetro supports selective regeneration (regenerating erroneous parts), direct interactive guidance (chemists make small changes to fix hallucinations), and other interventions.
+
+**(d) Scalable architecture:** DeepRetro operates a head node that controls several worker nodes. The number of worker nodes can be scaled for complex syntheses.
+
+</details>
 
 Retrosynthesis—the identification of precursor molecules for a target compound—is pivotal for chemical synthesis, but discovering novel pathways beyond predefined templates remains a challenge.
 
