@@ -9,7 +9,7 @@ from src.utils.job_context import logger as context_logger
 def rec_run_prithvi(
         molecule: str,
         job_id: str,
-        llm: str = "claude-opus-4-20250514",
+        llm: str = "claude-opus-4-8",
         az_model: str = "USPTO",
         stability_flag: str = "False",
         hallucination_check: str = "False",
@@ -26,7 +26,7 @@ def rec_run_prithvi(
     job_id : str
         Job ID
     llm : str, optional
-        LLM to be used, by default "claude-opus-4-20250514"
+        LLM to be used, by default "claude-opus-4-8"
     az_model : str, optional
         AZ model to be used, by default "USPTO"
     stability_flag : str, optional
@@ -146,7 +146,7 @@ def rec_run_prithvi(
 
 def single_run_DeepRetro(
         molecule: str,
-        llm: str = "anthropic/claude-opus-4-20250514",
+        llm: str = "anthropic/claude-opus-4-8",
         az_model: str = "USPTO",
         stability_flag: str = "False",
         hallucination_check: str = "False",
@@ -158,7 +158,7 @@ def single_run_DeepRetro(
     molecule : str
         Molecule SMILES
     llm : str, optional
-        LLM to be used, by default "claude-opus-4-20250514"
+        LLM to be used, by default "claude-opus-4-8"
     az_model : str, optional
         AZ model to be used, by default "USPTO"
     stability_flag : str, optional
