@@ -45,6 +45,9 @@ az = [
 [project.urls]
 Repository = "https://github.com/deepforestsci/DeepRetro"
 
+[project.scripts]
+deepretro-evaluate = "deepretro.evaluation.cli:main"
+
 [tool.setuptools.packages.find]
 where = [".."]
 include = ["deepretro*"]

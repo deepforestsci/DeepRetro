@@ -18,3 +18,13 @@ coverage/
 docs/build/
 docs/_build/
 *.egg-info/
+
+# Local ChemCensor evaluation databases, caches, and generated artifacts.
+# Keep these outside Git even when their paths are used by the evaluation CLI.
+artifacts/chemcensor/
+benchmark_reports/
+chem-censor-cache/
+*.chemcensor.sqlite
+*.chemcensor.sqlite-shm
+*.chemcensor.sqlite-wal
+tmp/
