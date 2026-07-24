@@ -1,7 +1,9 @@
 # DeepRetro - AI-Powered Retrosynthesis Tool
 Find the detailed documentation with tutorials at: https://deep-forest-sciences-deepretro.readthedocs-hosted.com/en/latest/
 <p align="center">
-  <img src="docs/source/_static/deep_retro_fig1.png" alt="DeepRetro Pipeline Overview" width="600"/>
+  <a href="https://www.nature.com/articles/s41598-026-38821-z/figures/1">
+    <img src="docs/source/_static/deepretro_paper_fig1.png" alt="Final DeepRetro framework showing the planning loop, molecule checks, human interventions, scalable worker architecture, and graphical interface" width="700"/>
+  </a>
 </p>
 
 <details>
@@ -28,25 +30,7 @@ The final, peer-reviewed DeepRetro paper is published in *Scientific Reports*:
 - [Nature Scientific Reports article](https://www.nature.com/articles/s41598-026-38821-z)
 - [DOI: 10.1038/s41598-026-38821-z](https://doi.org/10.1038/s41598-026-38821-z)
 
-### Final Paper Figures
-
-<p align="center">
-  <a href="https://www.nature.com/articles/s41598-026-38821-z/figures/1">
-    <img src="docs/source/_static/deepretro_paper_fig1.png" alt="Final DeepRetro framework showing the planning loop, molecule checks, human interventions, scalable worker architecture, and graphical interface" width="700"/>
-  </a>
-</p>
-
-<p align="center"><em><strong>Figure 1.</strong> The complete DeepRetro framework combines vendor and template-based search, iterative LLM reasoning, validation checks, human intervention, scalable workers, and the graphical interface.</em></p>
-
-<p align="center">
-  <a href="https://www.nature.com/articles/s41598-026-38821-z/figures/2">
-    <img src="docs/source/_static/deepretro_paper_fig2_ohauamine_c.png" alt="Final DeepRetro retrosynthetic strategy for Ohauamine C using inter- and intramolecular peptide bond formation" width="900"/>
-  </a>
-</p>
-
-<p align="center"><em><strong>Figure 2.</strong> The Ohauamine C case study demonstrates a concise route from amino acid derivatives through inter- and intramolecular peptide bond formation.</em></p>
-
-> **Figure attribution:** Figures 1 and 2 are reproduced unchanged from the [final paper](https://www.nature.com/articles/s41598-026-38821-z), © The Author(s) 2026, under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](https://creativecommons.org/licenses/by-nc-nd/4.0/). These figures are not covered by the repository's MIT license; the article license permits non-commercial sharing with attribution and does not permit sharing adapted material.
+> **Figure attribution:** Figure 1 is reproduced unchanged from the [final paper](https://www.nature.com/articles/s41598-026-38821-z), © The Author(s) 2026, under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](https://creativecommons.org/licenses/by-nc-nd/4.0/). This figure is not covered by the repository's MIT license; the article license permits non-commercial sharing with attribution and does not permit sharing adapted material.
 
 ## Key Features
 
