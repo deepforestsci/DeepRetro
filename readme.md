@@ -1,7 +1,9 @@
 # DeepRetro - AI-Powered Retrosynthesis Tool
 Find the detailed documentation with tutorials at: https://deep-forest-sciences-deepretro.readthedocs-hosted.com/en/latest/
 <p align="center">
-  <img src="docs/source/_static/deep_retro_fig1.png" alt="DeepRetro Pipeline Overview" width="600"/>
+  <a href="https://www.nature.com/articles/s41598-026-38821-z/figures/1">
+    <img src="docs/source/_static/deepretro_paper_fig1.png" alt="Final DeepRetro framework showing the planning loop, molecule checks, human interventions, scalable worker architecture, and graphical interface" width="700"/>
+  </a>
 </p>
 
 <details>
@@ -20,6 +22,15 @@ Find the detailed documentation with tutorials at: https://deep-forest-sciences-
 Retrosynthesis—the identification of precursor molecules for a target compound—is pivotal for chemical synthesis, but discovering novel pathways beyond predefined templates remains a challenge.
 
 **DeepRetro** is an open-source, hybrid retrosynthesis planning tool that combines the strengths of conventional template-based/MCTS tools with the generative power of Large Language Models (LLMs) in a step-wise, feedback-driven loop.
+
+## Publication
+
+The final, peer-reviewed DeepRetro paper is published in *Scientific Reports*:
+
+- [Nature Scientific Reports article](https://www.nature.com/articles/s41598-026-38821-z)
+- [DOI: 10.1038/s41598-026-38821-z](https://doi.org/10.1038/s41598-026-38821-z)
+
+> **Figure attribution:** Figure 1 is reproduced unchanged from the [final paper](https://www.nature.com/articles/s41598-026-38821-z), © The Author(s) 2026, under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](https://creativecommons.org/licenses/by-nc-nd/4.0/). This figure is not covered by the repository's MIT license; the article license permits non-commercial sharing with attribution and does not permit sharing adapted material.
 
 ## Key Features
 
