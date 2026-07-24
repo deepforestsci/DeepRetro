@@ -31,7 +31,7 @@ from src.utils.langfuse_config import get_langfuse_metadata
 @cache_results
 def reagent_agent(reactants: list[dict],
                   product: list[dict],
-                  LLM: str = "claude-opus-4-20250514",
+                  LLM: str = "claude-opus-4-8",
                   temperature: float = 0.0):
     """Calls the LLM model to predict the reagents used in the reaction
 
@@ -42,7 +42,7 @@ def reagent_agent(reactants: list[dict],
     product : list[dict]
         Product dict with SMILES and metadata
     LLM : str, optional
-        LLM model to use, by default "claude-opus-4-20250514"
+        LLM model to use, by default "claude-opus-4-8"
     temperature : float, optional
         Temperature for the LLM model, by default 0.0
 
@@ -102,7 +102,7 @@ def reagent_agent(reactants: list[dict],
 @cache_results
 def reagent_llm_call(reactants: list[str],
                      product: str,
-                     LLM: str = "claude-opus-4-20250514",
+                     LLM: str = "claude-opus-4-8",
                      temperature: float = 0.0):
     """Calls the LLM model to predict the reagents used in the reaction
 
@@ -113,7 +113,7 @@ def reagent_llm_call(reactants: list[str],
     product : list[str]
         Product SMILES
     LLM : str, optional
-        LLM model to use, by default "claude-opus-4-20250514"
+        LLM model to use, by default "claude-opus-4-8"
     temperature : float, optional
         Temperature for the LLM model, by default 0.0
 
@@ -165,7 +165,7 @@ def reagent_llm_call(reactants: list[str],
 def conditions_agent(reactants: list[dict],
                      product: list[dict],
                      reagents: list[dict],
-                     LLM: str = "claude-opus-4-20250514",
+                     LLM: str = "claude-opus-4-8",
                      temperature: float = 0.0):
     """Calls the LLM model to predict the reaction conditions
 
@@ -178,7 +178,7 @@ def conditions_agent(reactants: list[dict],
     reagents : list[str]
         List of reagents SMILES
     LLM : str, optional
-        LLM model to use, by default "claude-opus-4-20250514"
+        LLM model to use, by default "claude-opus-4-8"
     temperature : float, optional
         Temperature for the LLM model, by default 0.0
 
@@ -216,7 +216,7 @@ def conditions_agent(reactants: list[dict],
 def conditions_llm_call(reactants: list[str],
                         product: str,
                         reagents: list[str],
-                        LLM: str = "claude-opus-4-20250514",
+                        LLM: str = "claude-opus-4-8",
                         temperature: float = 0.0):
     """Calls the LLM model to predict the reaction conditions
 
@@ -229,7 +229,7 @@ def conditions_llm_call(reactants: list[str],
     reagents : list[str]
         List of reagents SMILES
     LLM : str, optional
-        LLM model to use, by default "claude-opus-4-20250514"
+        LLM model to use, by default "claude-opus-4-8"
     temperature : float, optional
         Temperature for the LLM model, by default 0.0
 
@@ -284,7 +284,7 @@ def literature_agent(reactants: list[str],
                      product: str,
                      reagents: list[str],
                      conditions: str,
-                     LLM: str = "claude-opus-4-20250514",
+                     LLM: str = "claude-opus-4-8",
                      temperature: float = 0.0):
     """Calls the LLM model to predict the nearest literature references
 
@@ -299,7 +299,7 @@ def literature_agent(reactants: list[str],
     conditions : str
         Reaction conditions
     LLM : str, optional
-        LLM model to use, by default "claude-opus-4-20250514"
+        LLM model to use, by default "claude-opus-4-8"
     temperature : float, optional
         Temperature for the LLM model, by default 0.0
 

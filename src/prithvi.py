@@ -18,7 +18,7 @@ date_dir = f'{root_dir}/logs/{time.strftime("%Y-%m-%d")}'
 
 
 def run_prithvi(molecule: str,
-                llm="claude-opus-4-20250514",
+                llm="claude-opus-4-8",
                 az_model: str = "USPTO",
                 stability_flag: str = "False",
                 hallucination_check: str = "False",
@@ -30,7 +30,7 @@ def run_prithvi(molecule: str,
     molecule : str
         SMILE String of the molecule.
     llm : str, optional
-        LLM Model, by default "claude-opus-4-20250514"
+        LLM Model, by default "claude-opus-4-8"
 
     Returns
     -------

@@ -14,7 +14,7 @@ df = pd.read_csv(f"{root_dir}/results/dfs/dataset.csv")
 mols_dfs = df['smiles'].to_list()
 
 mapper = {
-    'm0p0': 'anthropic/claude-opus-4-20250514', 'm0p1': 'anthropic/claude-3-7-sonnet-20250219:adv',
+    'm0p0': 'anthropic/claude-opus-4-8', 'm0p1': 'anthropic/claude-3-7-sonnet-20250219:adv',
     'm1p0': 'fireworks_ai/accounts/fireworks/models/deepseek-r1', 'm1p1': 'fireworks_ai/accounts/fireworks/models/deepseek-r1:adv',
 }
 

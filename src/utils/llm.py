@@ -97,9 +97,29 @@ def obtain_prompt(LLM: str):
     return sys_prompt_final, user_prompt_final, max_completion_tokens
 
 
+NO_SAMPLING_PARAM_PREFIXES = ("claude-opus-4", "claude-sonnet-5",
+                              "claude-fable-5")
+
+
+def accepts_sampling_params(model: str) -> bool:
+    """Whether the model accepts temperature/top_p/seed.
+
+    Parameters
+    ----------
+    model : str
+        The LLM model identifier
+
+    Returns
+    -------
+    bool
+        False for Anthropic models that reject sampling parameters
+    """
+    return not model.startswith(NO_SAMPLING_PARAM_PREFIXES)
+
+
 @cache_results
 def call_LLM(molecule: str,
-             LLM: str = "claude-opus-4-20250514",
+             LLM: str = "claude-opus-4-8",
              temperature: float = 0.0,
              messages: Optional[list[dict]] = None,
              use_protecting_group_feature: bool = False) -> tuple[int, str]:
@@ -110,7 +130,7 @@ def call_LLM(molecule: str,
     molecule : str
         The target molecule for retrosynthesis
     LLM : str, optional
-        The LLM model to be used, by default "claude-opus-4-20250514"
+        The LLM model to be used, by default "claude-opus-4-8"
     temperature : float, optional
         The temperature for sampling, by default 0.0
     messages : Optional[list[dict]], optional
@@ -165,6 +185,11 @@ def call_LLM(molecule: str,
         params.pop("top_p", None)
         params.pop("max_completion_tokens", None)
         params['thinking'] = {"type": "enabled", "budget_tokens": 5000}
+
+    if not accepts_sampling_params(LLM):
+        params.pop("temperature", None)
+        params.pop("top_p", None)
+        params.pop("seed", None)
 
     if messages is None:
         messages = [{
@@ -360,7 +385,7 @@ def validate_split_json(
 
 def llm_pipeline(
     molecule: str,
-    LLM: str = "claude-opus-4-20250514",
+    LLM: str = "claude-opus-4-8",
     messages: Optional[list[dict]] = None,
     stability_flag: str = "False",
     hallucination_check: str = "False",
@@ -373,7 +398,7 @@ def llm_pipeline(
     molecule : str
         The target molecule for retrosynthesis
     LLM : str, optional
-        LLM to be used for retrosynthesis , by default "claude-opus-4-20250514"
+        LLM to be used for retrosynthesis , by default "claude-opus-4-8"
     messages : Optional[list[dict]], optional
         Conversation history, by default None
 
@@ -399,7 +424,7 @@ def llm_pipeline(
         # Selecting the model based on the run number
         current_model = LLM
         if LLM in DEEPSEEK_MODELS and run > 0.0:
-            current_model = "claude-opus-4-20250514"
+            current_model = "claude-opus-4-8"
 
         # --------------------
         # Call LLM
