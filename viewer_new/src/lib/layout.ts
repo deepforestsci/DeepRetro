@@ -71,21 +71,15 @@ function getMoleculeSizing(stepNode: NormalizedStepNode) {
 }
 
 function toFlowEdges(graph: NormalizedPathwayGraph) {
+  // Edge and marker colors are theme-driven from global.css.
   return graph.edges.map((edge) => ({
     ...edge,
     type: "smoothstep" as const,
     animated: false,
     markerEnd: {
       type: MarkerType.ArrowClosed,
-      width: 24,
-      height: 24,
-      color: "#ffffff",
-    },
-    style: {
-      stroke: "#ffffff",
-      strokeOpacity: 1,
-      strokeWidth: 4,
-      filter: "drop-shadow(0 0 10px rgba(255, 255, 255, 0.55))",
+      width: 18,
+      height: 18,
     },
   }));
 }

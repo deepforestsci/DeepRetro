@@ -245,24 +245,12 @@ function GraphCanvasInner({
           nodeTypes={nodeTypes}
           minZoom={0.35}
           maxZoom={2.2}
-          defaultEdgeOptions={{
-            style: {
-              stroke: "#ffffff",
-              strokeWidth: 4,
-            },
-          }}
           onNodeClick={(_, node) => onSelectStep(node.data.stepNode.stepId)}
           proOptions={{ hideAttribution: true }}
         >
-          <MiniMap
-            pannable
-            zoomable
-            nodeColor={(node) =>
-              node.id === "step-0" ? "#7ad2ac" : node.selected ? "#ff8663" : "#8fa7ca"
-            }
-          />
+          <MiniMap pannable zoomable />
           <Controls position="bottom-left" showInteractive={false} />
-          <Background gap={24} size={1.2} color="#213043" />
+          <Background gap={22} size={1.1} />
         </ReactFlow>
       </div>
     </div>
