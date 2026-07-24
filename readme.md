@@ -1,25 +1,52 @@
 # DeepRetro - AI-Powered Retrosynthesis Tool
 Find the detailed documentation with tutorials at: https://deep-forest-sciences-deepretro.readthedocs-hosted.com/en/latest/
-<p align="center">
-  <img src="docs/source/_static/deep_retro_fig1.png" alt="DeepRetro Pipeline Overview" width="600"/>
-</p>
-
-<details>
-<summary><strong>DeepRetro Framework Overview</strong> (click to expand)</summary>
-
-**(a) The DeepRetro framework:** The process starts with a template-based tool. If it fails, an LLM proposes steps, which undergo validation checks. If proposed molecules are not available in a vendor database, the molecule continues in the pipeline. It then moves into an optional human intervention before recursive evaluation.
-
-**(b) Molecule checks:** DeepRetro incorporates multiple checks, including Validity checks (valency, allowed atoms), Stability Checks (see Section 5), and Hallucination Checks (verifying that the LLM provides sensible outputs).
-
-**(c) Human interventions:** DeepRetro supports selective regeneration (regenerating erroneous parts), direct interactive guidance (chemists make small changes to fix hallucinations), and other interventions.
-
-**(d) Scalable architecture:** DeepRetro operates a head node that controls several worker nodes. The number of worker nodes can be scaled for complex syntheses.
-
-</details>
 
 Retrosynthesis—the identification of precursor molecules for a target compound—is pivotal for chemical synthesis, but discovering novel pathways beyond predefined templates remains a challenge.
 
 **DeepRetro** is an open-source, hybrid retrosynthesis planning tool that combines the strengths of conventional template-based/MCTS tools with the generative power of Large Language Models (LLMs) in a step-wise, feedback-driven loop.
+
+## Publication and Citation
+
+The final, peer-reviewed DeepRetro paper is published in *Scientific Reports*:
+
+> Sathyanarayana, S. V., Hiremath, S. D., Rahil Kirankumar, S. et al. DeepRetro discovers retrosynthetic pathways through iterative large language model reasoning. *Scientific Reports* **16**, 8448 (2026).
+
+- [Nature Scientific Reports article](https://www.nature.com/articles/s41598-026-38821-z)
+- [DOI: 10.1038/s41598-026-38821-z](https://doi.org/10.1038/s41598-026-38821-z)
+
+### Final Paper Figures
+
+<p align="center">
+  <a href="https://www.nature.com/articles/s41598-026-38821-z/figures/1">
+    <img src="docs/source/_static/deepretro_paper_fig1.png" alt="Final DeepRetro framework showing the planning loop, molecule checks, human interventions, scalable worker architecture, and graphical interface" width="700"/>
+  </a>
+</p>
+
+<p align="center"><em><strong>Figure 1.</strong> The complete DeepRetro framework combines vendor and template-based search, iterative LLM reasoning, validation checks, human intervention, scalable workers, and the graphical interface.</em></p>
+
+<p align="center">
+  <a href="https://www.nature.com/articles/s41598-026-38821-z/figures/2">
+    <img src="docs/source/_static/deepretro_paper_fig2_ohauamine_c.png" alt="Final DeepRetro retrosynthetic strategy for Ohauamine C using inter- and intramolecular peptide bond formation" width="900"/>
+  </a>
+</p>
+
+<p align="center"><em><strong>Figure 2.</strong> The Ohauamine C case study demonstrates a concise route from amino acid derivatives through inter- and intramolecular peptide bond formation.</em></p>
+
+> **Figure attribution:** Figures 1 and 2 are reproduced unchanged from the [final paper](https://www.nature.com/articles/s41598-026-38821-z), © The Author(s) 2026, under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](https://creativecommons.org/licenses/by-nc-nd/4.0/). These figures are not covered by the repository's MIT license; the article license permits non-commercial sharing with attribution and does not permit sharing adapted material.
+
+```bibtex
+@article{Sathyanarayana2026DeepRetro,
+  title = {DeepRetro discovers retrosynthetic pathways through iterative large language model reasoning},
+  author = {Sathyanarayana, Shreyas Vinaya and Hiremath, Sharanabasava D. and Rahil Kirankumar, Shah and Panda, Rishikesh and Jana, Rahul and Singh, Riya and Irfan, Rida and Murali, Ashwin and Ramsundar, Bharath},
+  journal = {Scientific Reports},
+  year = {2026},
+  volume = {16},
+  number = {1},
+  pages = {8448},
+  doi = {10.1038/s41598-026-38821-z},
+  url = {https://doi.org/10.1038/s41598-026-38821-z}
+}
+```
 
 ## Key Features
 
@@ -305,20 +332,3 @@ This project is licensed under the MIT License.
 ## Contributing
 
 We welcome contributions! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-## Citing DeepRetro
-
-If you have used DeepRetrp in the course of your research, we ask that you cite the "DeepRetro: Retrosynthetic Pathway Discovery using Iterative LLM Reasoning" paper by the DeepRetro core team.
-
-To cite this paper, please use this bibtex entry:
-```
-@misc{sathyanarayana2025deepretroretrosyntheticpathwaydiscovery,
-      title={DeepRetro: Retrosynthetic Pathway Discovery using Iterative LLM Reasoning}, 
-      author={Shreyas Vinaya Sathyanarayana and Rahil Shah and Sharanabasava D. Hiremath and Rishikesh Panda and Rahul Jana and Riya Singh and Rida Irfan and Ashwin Murali and Bharath Ramsundar},
-      year={2025},
-      eprint={2507.07060},
-      archivePrefix={arXiv},
-      primaryClass={q-bio.QM},
-      url={https://arxiv.org/abs/2507.07060}, 
-}
-```
