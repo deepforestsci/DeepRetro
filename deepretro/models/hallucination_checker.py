@@ -1,3 +1,18 @@
+"""Inference-time hallucination checking for retrosynthetic steps.
+
+This module exposes :class:`HallucinationChecker`, the *inference* entry point
+that decides whether a proposed ``product <- reactants`` step is chemically
+plausible or a model hallucination. It supports two interchangeable backends:
+
+* ``"heuristic"`` -- deterministic rule-based checks from
+  :mod:`deepretro.algorithms.pipeline_checks`; needs no trained model.
+* ``"ml"`` -- a trained DeepChem/XGBoost classifier loaded from a directory
+  produced by :class:`~deepretro.models.hallucination_trainer.HallucinationTrainer`.
+
+For the offline *training* side of this pipeline see
+:mod:`deepretro.models.hallucination_trainer`.
+"""
+
 import os
 import json
 import numpy as np
@@ -14,6 +29,24 @@ class HallucinationChecker:
     """
     Inference infrastructure for detecting pathway hallucinations using either rule-based heuristics or unified
     machine learning models.
+
+    Examples
+    --------
+    The heuristic backend needs no trained model and classifies a single step,
+    returning ``0`` for a plausible step and ``1`` for a hallucination:
+
+    >>> from deepretro.models.hallucination_checker import HallucinationChecker
+    >>> checker = HallucinationChecker(checker_type="heuristic")
+    >>> checker.check_single_pathway(
+    ...     "Cn1nccc1[C@]1(O)CCCC[C@H]1O", "Cn1nccc1Br.O=C1CCCC[C@H]1O"
+    ... )
+    0
+
+    The ML backend loads a directory previously written by
+    :class:`~deepretro.models.hallucination_trainer.HallucinationTrainer`::
+
+        checker = HallucinationChecker(checker_type="ml", model_path="my_model")
+        status, valid_pathways = checker(product, candidate_pathways)
     """
 
     def __init__(
@@ -126,6 +159,20 @@ class HallucinationChecker:
             return self._check_pathway_ml(target, reactants)
 
     def __call__(self, target: str, pathways: List[str] | List[List[str]]):
+        """Filter candidate pathways -- a convenience alias for :meth:`check_pathways`.
+
+        Parameters
+        ----------
+        target : str
+            Product molecule SMILES.
+        pathways : List[str] or List[List[str]]
+            Candidate pathways as reactant SMILES strings or lists thereof.
+
+        Returns
+        -------
+        Tuple[int, List]
+            Status code and the subset of pathways classified as valid.
+        """
         return self.check_pathways(target, pathways)
 
     def check_pathways(

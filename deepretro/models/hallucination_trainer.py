@@ -1,3 +1,14 @@
+"""Offline training pipeline for hallucination-detection models.
+
+This module exposes :class:`HallucinationTrainer`, which turns labelled
+``product / reactants / label`` CSVs into a saved DeepChem model directory that
+:class:`~deepretro.models.hallucination_checker.HallucinationChecker` can later
+load for inference. It wraps dataset loading and featurization, optional
+hyperparameter tuning (single-split or K-Fold via
+:class:`~deepretro.models.hallucination_utils.KFoldRandomHyperparamOpt`),
+decision-threshold optimisation, evaluation, and config persistence.
+"""
+
 import os
 import json
 import shutil
@@ -22,6 +33,18 @@ from typing import Any, Optional, Dict, Tuple, List
 class HallucinationTrainer:
     """
     A DeepChem-based ML infrastructure for training models to detect hallucinations.
+
+    Examples
+    --------
+    Train an xgboost checker from labelled CSVs and persist it for inference::
+
+        from deepretro.models.hallucination_trainer import HallucinationTrainer
+
+        trainer = HallucinationTrainer(trainer_dir="artifacts", model_type="xgboost")
+        train_ds, test_ds = trainer.load_dataset("train.csv", "test.csv")
+        model, scores = trainer.train_model(train_ds, test_ds)
+        # trainer.model_dir now holds config.json + model weights, ready for
+        # HallucinationChecker(checker_type="ml", model_path=trainer.model_dir).
     """
 
     def __init__(

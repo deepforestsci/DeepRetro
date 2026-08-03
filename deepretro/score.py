@@ -22,7 +22,26 @@ class SCScoreConfig:
 
 
 def canonicalize_smiles(smiles: str) -> str | None:
-    """Return canonical isomeric SMILES, or None for invalid input/unavailable RDKit."""
+    """Return canonical isomeric SMILES, or None for invalid input/unavailable RDKit.
+
+    Parameters
+    ----------
+    smiles : str
+        A SMILES string to canonicalise. Whitespace is stripped.
+
+    Returns
+    -------
+    str | None
+        The canonical isomeric SMILES, or ``None`` when the input is empty,
+        unparseable, or RDKit is unavailable.
+
+    Examples
+    --------
+    >>> canonicalize_smiles("C1=CC=CC=C1")
+    'c1ccccc1'
+    >>> canonicalize_smiles("not_a_smiles!!!") is None
+    True
+    """
     text = str(smiles).strip() if smiles is not None else ""
     if not text:
         return None
@@ -42,13 +61,56 @@ def canonicalize_smiles(smiles: str) -> str | None:
 
 
 def sa_score(smiles: str) -> float | None:
-    """Return RDKit Contrib SA_Score for a SMILES string, or None if unavailable/invalid."""
+    """Return RDKit Contrib SA_Score for a SMILES string, or None if unavailable/invalid.
+
+    The Synthetic Accessibility (SA) score ranges from 1 (easy to make) to 10
+    (hard). Requires RDKit's optional ``Contrib/SA_Score`` module.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES string to score.
+
+    Returns
+    -------
+    float | None
+        The SA score, or ``None`` for invalid input or an unavailable backend.
+
+    Examples
+    --------
+    >>> sa_score("not_a_smiles!!!") is None
+    True
+    >>> sa_score("c1ccccc1")  # doctest: +SKIP
+    1.0
+    """
     value, _error = _sa_score_with_error(smiles)
     return value
 
 
 def sc_score(smiles: str, config: SCScoreConfig | None = None) -> float | None:
-    """Return optional SCScore for a SMILES string, or None if unavailable/invalid."""
+    """Return optional SCScore for a SMILES string, or None if unavailable/invalid.
+
+    The Synthetic Complexity (SC) score ranges from 1 (simple) to 5 (complex).
+    Requires the optional SCScore model; returns ``None`` when it is not
+    configured or installed.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES string to score.
+    config : SCScoreConfig, optional
+        Overrides for the SCScore module/weight paths and fingerprint settings.
+
+    Returns
+    -------
+    float | None
+        The SC score, or ``None`` for invalid input or an unavailable backend.
+
+    Examples
+    --------
+    >>> sc_score("not_a_smiles!!!") is None
+    True
+    """
     value, _error = _sc_score_with_error(smiles, config)
     return value
 
@@ -56,7 +118,30 @@ def sc_score(smiles: str, config: SCScoreConfig | None = None) -> float | None:
 def score_molecule(
     smiles: str, sc_config: SCScoreConfig | None = None
 ) -> dict[str, Any]:
-    """Score one molecule; unavailable optional metrics are None with warnings."""
+    """Score one molecule; unavailable optional metrics are None with warnings.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES string of the molecule to score.
+    sc_config : SCScoreConfig, optional
+        Optional SCScore configuration override.
+
+    Returns
+    -------
+    dict[str, Any]
+        A record with ``input_smiles``, ``canonical_smiles``, ``valid``,
+        ``sa_score``, ``sc_score``, ``warnings``, and ``errors``. Invalid input
+        yields ``valid=False`` and an ``errors`` entry.
+
+    Examples
+    --------
+    >>> result = score_molecule("c1ccccc1")
+    >>> result["valid"]
+    True
+    >>> score_molecule("not_a_smiles!!!")["valid"]
+    False
+    """
     warning_messages: list[str] = []
     error_messages: list[str] = []
     canonical = canonicalize_smiles(smiles)
@@ -103,7 +188,33 @@ def score_step(
     reactants_smiles: str | list[str],
     sc_config: SCScoreConfig | None = None,
 ) -> dict[str, Any]:
-    """Score a retrosynthesis step with dot-separated or list reactant SMILES."""
+    """Score a retrosynthesis step with dot-separated or list reactant SMILES.
+
+    Parameters
+    ----------
+    product_smiles : str
+        SMILES of the step's product molecule.
+    reactants_smiles : str | list[str]
+        Reactant SMILES, either dot-separated (``"A.B"``) or a list.
+    sc_config : SCScoreConfig, optional
+        Optional SCScore configuration override.
+
+    Returns
+    -------
+    dict[str, Any]
+        Per-molecule scores for the product and each reactant plus aggregate
+        reactant statistics, product-vs-reactant delta metrics, the boolean
+        ``sa_simplifies``/``sc_simplifies`` flags, and ``warnings``/``errors``.
+        A step with no reactant SMILES is reported via ``errors``.
+
+    Examples
+    --------
+    >>> result = score_step("CCO", "CC=O")
+    >>> result["errors"]
+    []
+    >>> score_step("CCO", "")["errors"]
+    ['Malformed step: missing reactant SMILES']
+    """
     reactant_inputs = _split_reactants(reactants_smiles)
     if not reactant_inputs:
         return _malformed_step_score("Malformed step: missing reactant SMILES")
@@ -155,7 +266,32 @@ def score_pathway(
     pathway: dict[str, Any] | list[dict[str, Any]],
     sc_config: SCScoreConfig | None = None,
 ) -> dict[str, Any]:
-    """Score viewer-style {'steps': [...]} pathways or a raw list of step dicts."""
+    """Score viewer-style {'steps': [...]} pathways or a raw list of step dicts.
+
+    Parameters
+    ----------
+    pathway : dict[str, Any] | list[dict[str, Any]]
+        Either a viewer-style mapping with a ``"steps"`` list, or a bare list
+        of step dicts.
+    sc_config : SCScoreConfig, optional
+        Optional SCScore configuration override.
+
+    Returns
+    -------
+    dict[str, Any]
+        A record with ``step_scores`` (one per step), a ``route_summary`` of
+        aggregate metrics (``n_steps``, mean deltas, simplifying fractions,
+        ...), and merged ``warnings``/``errors``. Malformed input yields an
+        empty ``step_scores`` and an ``errors`` entry.
+
+    Examples
+    --------
+    >>> result = score_pathway([{"product": "CCO", "reactants": "CC=O"}])
+    >>> result["route_summary"]["n_steps"]
+    1
+    >>> score_pathway("bad")["errors"]
+    ['Malformed pathway: expected dict or list']
+    """
     steps, pathway_error = _get_pathway_steps(pathway)
     if pathway_error is not None:
         return _pathway_result([], [pathway_error])
@@ -183,7 +319,30 @@ def score_pathway(
 
 
 def empty_pathway_scores(error: str | None = None) -> dict[str, Any]:
-    """Return an empty pathway score payload using the standard schema."""
+    """Return an empty pathway score payload using the standard schema.
+
+    Useful for degrading gracefully: callers can emit a well-formed pathway
+    result (same keys as :func:`score_pathway`) carrying an error message
+    instead of raising.
+
+    Parameters
+    ----------
+    error : str, optional
+        Error message to include in the payload's ``errors`` list.
+
+    Returns
+    -------
+    dict[str, Any]
+        A pathway payload with an empty ``step_scores`` and, when provided, the
+        given ``error`` in ``errors``.
+
+    Examples
+    --------
+    >>> empty_pathway_scores("boom")["errors"]
+    ['boom']
+    >>> empty_pathway_scores()["step_scores"]
+    []
+    """
     errors = [error] if error else []
     return _pathway_result([], errors)
 
