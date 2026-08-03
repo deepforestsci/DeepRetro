@@ -4,8 +4,8 @@
 
 Improve test coverage and API documentation for production Python files newly
 added on the DeepRetro `dev` branch. The cleanup will add meaningful tests and
-NumPy-style docstrings with realistic examples without changing production
-behavior.
+NumPy-style docstrings with realistic examples. Production-file edits are
+limited strictly to docstring text and must not change executable code.
 
 ## Frozen Diff Boundary
 
@@ -41,8 +41,22 @@ Files that existed on `main` and were only modified on `dev` are excluded.
 Examples include `deepretro/metadata.py`, `deepretro/utils/llm_helpers.py`, and
 `deepretro/featurizers/reactionstep.py`.
 
-Tests and this specification may be added or edited as needed to verify the
-eligible production files. Unrelated dirty-worktree files are out of scope.
+Tests and project documentation may be added or edited as needed to verify and
+document the eligible production files. Unrelated dirty-worktree files are out
+of scope.
+
+## Allowed Change Types
+
+The final implementation diff may contain only:
+
+- docstring additions or revisions inside eligible production files;
+- test additions or revisions under `deepretro/tests/`; and
+- project documentation for this cleanup.
+
+Executable statements, imports, annotations, decorators, signatures, constants,
+formatting outside docstrings, configuration, and runtime behavior must remain
+unchanged. If a new test exposes a production defect, the defect will be
+reported separately instead of fixed in this cleanup.
 
 ## Coverage Boundary
 
@@ -72,7 +86,7 @@ valid local construction or data-transformation path without pretending to run
 the unavailable integration.
 
 Docstrings must describe existing behavior. This task will not alter production
-semantics to make an example easier to write.
+semantics or non-docstring code to make an example easier to write.
 
 ## Test Strategy
 
@@ -149,7 +163,8 @@ Verification will include:
 - the package's configured type checks;
 - `python -m py_compile` for changed Python files;
 - `git diff --check`;
-- a scope audit showing production edits are limited to eligible files; and
+- a scope audit showing production edits are limited to docstrings in eligible
+  files;
 - a scan proving newly added tests contain no forbidden mocking constructs.
 
 ## Success Criteria
@@ -159,7 +174,8 @@ The cleanup is complete when:
 1. all eligible public APIs have accurate NumPy-style docstrings and examples;
 2. meaningful public behavior and important private branching are directly
    tested without mocks or live services;
-3. no production behavior changes are introduced;
+3. production-file changes contain docstrings only, with no executable-code,
+   configuration, formatting, or behavior changes;
 4. focused and package-wide validation pass, or any environment limitation is
    isolated and reported with exact evidence;
 5. the final diff contains only approved production files, corresponding tests,
