@@ -19,7 +19,6 @@ from deepretro.models.hallucination_utils import (
     MODEL_CONFIGS,
     create_model_instance,
     KFoldRandomHyperparamOpt,
-    _hyperparam_score_key,
 )
 from sklearn.metrics import (
     precision_recall_curve,
@@ -341,8 +340,9 @@ class HallucinationTrainer:
 
             best_threshold = np.mean(fold_thresholds)
 
-        best_score = all_scores[_hyperparam_score_key(best_params)]
-        best_params = best_params.copy()
+        best_score = all_scores.get(
+            dc.hyper.base_classes._convert_hyperparam_dict_to_filename(best_params), 0.0
+        )
         best_params.pop("n_tasks", None)
         best_params.pop("model_dir", None)
 
