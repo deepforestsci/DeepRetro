@@ -29,7 +29,7 @@ jobs:
 
       - name: Run ruff check
         run: |
-          uvx ruff check deepretro \
+          uvx ruff==0.15.20 check deepretro \
             --exclude 'deepretro/tests/**' \
             --extend-per-file-ignores 'deepretro/data/loader.py:F401'
 
