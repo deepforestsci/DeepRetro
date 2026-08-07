@@ -21,32 +21,38 @@ from xgboost import XGBClassifier
 
 # Unified Infrastructure Model Configuration Mapping (goes with trainer)
 MODEL_CONFIGS = {
-    'xgboost': {
-        'model_class': dc.models.SklearnModel,
-        'base_estimator': XGBClassifier,
-        'is_sklearn': True,
-        'default_params': {'max_depth': 3},
+    "xgboost": {
+        "model_class": dc.models.SklearnModel,
+        "base_estimator": XGBClassifier,
+        "is_sklearn": True,
+        "default_params": {"max_depth": 3},
         # 'param_space': {'max_depth': [3, 5, 7], 'learning_rate': [0.01, 0.05, 0.1]},
-        'param_space' : {'eta': [0.01, 0.05, 0.1, 0.2, 0.3],
-                        'max_depth': [3, 4, 5, 6, 7, 8, 10],
-                        'gamma': [0.0, 0.1, 0.2, 0.5, 1.0, 5.0],
-                        'min_child_weight': [1, 3, 5, 10],
-                        'subsample': [0.6, 0.7, 0.8, 0.9, 1.0],
-                        'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1.0],
-                        'reg_lambda': [0.0, 0.1, 1.0, 5.0, 10.0],
-                        'reg_alpha': [0.0, 0.1, 1.0, 5.0, 10.0]},
-        'default_feat': 'reactionfeaturizer',
-        'default_feat_params': {'base_featurizer': 'circularfingerprint', 'use_domain_features': True}
+        "param_space": {
+            "eta": [0.01, 0.05, 0.1, 0.2, 0.3],
+            "max_depth": [3, 4, 5, 6, 7, 8, 10],
+            "gamma": [0.0, 0.1, 0.2, 0.5, 1.0, 5.0],
+            "min_child_weight": [1, 3, 5, 10],
+            "subsample": [0.6, 0.7, 0.8, 0.9, 1.0],
+            "colsample_bytree": [0.6, 0.7, 0.8, 0.9, 1.0],
+            "reg_lambda": [0.0, 0.1, 1.0, 5.0, 10.0],
+            "reg_alpha": [0.0, 0.1, 1.0, 5.0, 10.0],
+        },
+        "default_feat": "reactionfeaturizer",
+        "default_feat_params": {
+            "base_featurizer": "circularfingerprint",
+            "use_domain_features": True,
+        },
     },
-#     'gcn': {
-#         'model_class': dc.models.GCNModel,
-#         'is_sklearn': False,
-#         'default_params': {'batch_size': 32, 'learning_rate': 0.001},
-#         'param_space': {'batch_size': [16, 32, 64], 'learning_rate': [1e-4, 1e-3, 1e-2]},
-#         'default_feat': 'reactionfeaturizer',
-#         'default_feat_params': {'base_featurizer': 'molgraphconv', 'use_domain_features': False}
-#     }
+    #     'gcn': {
+    #         'model_class': dc.models.GCNModel,
+    #         'is_sklearn': False,
+    #         'default_params': {'batch_size': 32, 'learning_rate': 0.001},
+    #         'param_space': {'batch_size': [16, 32, 64], 'learning_rate': [1e-4, 1e-3, 1e-2]},
+    #         'default_feat': 'reactionfeaturizer',
+    #         'default_feat_params': {'base_featurizer': 'molgraphconv', 'use_domain_features': False}
+    #     }
 }
+
 
 def create_model_instance(model_type, **model_params):
     """Reconstruct a DeepChem model from the registry and caller parameters.
@@ -87,30 +93,40 @@ def create_model_instance(model_type, **model_params):
     >>> model.model.get_params()["max_depth"]
     3
     """
-    model_dir = model_params.pop('model_dir', None)
-    n_tasks = model_params.pop('n_tasks', 1)
-    
+    model_dir = model_params.pop("model_dir", None)
+    n_tasks = model_params.pop("n_tasks", 1)
+
     config = MODEL_CONFIGS[model_type.lower()]
-    model_class = config['model_class']
-    is_sklearn = config.get('is_sklearn', False)
+    model_class = config["model_class"]
+    is_sklearn = config.get("is_sklearn", False)
 
     if is_sklearn:
-        base_estimator_class = config['base_estimator']
+        base_estimator_class = config["base_estimator"]
         base_estimator = base_estimator_class(**model_params)
         return model_class(base_estimator, model_dir=model_dir)
     else:
         kwargs = model_params.copy()
-        kwargs['n_tasks'] = n_tasks
-        kwargs['mode'] = 'classification'
-        kwargs['model_dir'] = model_dir
+        kwargs["n_tasks"] = n_tasks
+        kwargs["mode"] = "classification"
+        kwargs["model_dir"] = model_dir
         return model_class(**kwargs)
+
+
+def _hyperparam_score_key(model_params):
+    scoring_params = {
+        key: value for key, value in model_params.items() if key != "model_dir"
+    }
+    return dc.hyper.base_classes._convert_hyperparam_dict_to_filename(scoring_params)
 
 
 class KFoldRandomHyperparamOpt(dc.hyper.RandomHyperparamOpt):
     """
     Child class of DeepChem's RandomHyperparamOpt that introduces K-Fold cross-validation support.
     """
-    def hyperparam_kfold_search(self, params_dict, folds, metric, use_max=True, logdir=None, **kwargs):
+
+    def hyperparam_kfold_search(
+        self, params_dict, folds, metric, use_max=True, logdir=None, **kwargs
+    ):
         """Search hyperparameters, scoring each combination by K-Fold CV.
 
         For every randomly sampled hyperparameter combination, a model is
@@ -145,8 +161,10 @@ class KFoldRandomHyperparamOpt(dc.hyper.RandomHyperparamOpt):
             ``all_scores`` maps each combination's filename-encoded key to its
             average validation score.
         """
-        hyperparameter_combs = self.generate_random_hyperparam_values(params_dict, self.max_iter)
-        
+        hyperparameter_combs = self.generate_random_hyperparam_values(
+            params_dict, self.max_iter
+        )
+
         if use_max:
             best_validation_score = -np.inf
         else:
@@ -157,20 +175,21 @@ class KFoldRandomHyperparamOpt(dc.hyper.RandomHyperparamOpt):
         all_scores = {}
 
         for ind, model_params in enumerate(hyperparameter_combs):
-            hp_str = dc.hyper.base_classes._convert_hyperparam_dict_to_filename(model_params)
+            hp_str = _hyperparam_score_key(model_params)
             fold_scores = []
             current_fold_models = []
-            
+
             for fold_idx, (train_dataset, valid_dataset) in enumerate(folds):
                 if logdir is not None:
                     model_dir = os.path.join(logdir, hp_str, f"fold_{fold_idx}")
                     os.makedirs(model_dir, exist_ok=True)
                 else:
                     model_dir = tempfile.mkdtemp()
-                    
-                model_params['model_dir'] = model_dir
-                model = self.model_builder(**model_params)
-                
+
+                fold_params = model_params.copy()
+                fold_params["model_dir"] = model_dir
+                model = self.model_builder(**fold_params)
+
                 try:
                     model.fit(train_dataset, **kwargs)
                 except TypeError:
@@ -183,9 +202,11 @@ class KFoldRandomHyperparamOpt(dc.hyper.RandomHyperparamOpt):
             avg_valid_score = np.mean(fold_scores)
             all_scores[hp_str] = avg_valid_score
 
-            if (use_max and avg_valid_score >= best_validation_score) or (not use_max and avg_valid_score <= best_validation_score):
+            if (use_max and avg_valid_score >= best_validation_score) or (
+                not use_max and avg_valid_score <= best_validation_score
+            ):
                 best_validation_score = avg_valid_score
-                best_hyperparams = model_params
+                best_hyperparams = model_params.copy()
                 best_models = current_fold_models
 
         return best_models, best_hyperparams, all_scores
