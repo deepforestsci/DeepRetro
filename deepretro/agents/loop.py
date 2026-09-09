@@ -32,7 +32,22 @@ ModelCall = Callable[[list[dict[str, Any]]], Any]
 _TOOL_INSTRUCTION = (
     "\n\nYou may call the provided tools to validate SMILES, check stability, "
     "check for hallucinations, or run Python for any calculation before you "
-    "commit to an answer. When you are done, respond with the final answer in "
+    "commit to an answer. When existing protecting groups distract from the "
+    "core transformation, call handle_protection to mask supported motifs. "
+    "Treat the returned mapped dummy atoms as unchanged protected substituents, "
+    "not disconnection targets. Motif matches alone do not establish a protecting "
+    "role; consider compatibility with the proposed conditions. After reasoning "
+    "about the exposed core, call handle_deprotection with the returned mask_id "
+    "and mode='restore' for each masked precursor to restore the full structure. "
+    "To explore actual chemical deprotection, use handle_deprotection with "
+    "mode='propose' and full protected SMILES, without a mask_id. Those candidates "
+    "describe forward protected-substrate to deprotected-product transformations, "
+    "not retro precursors of the protected input. For a retro deprotection step, "
+    "test your proposed protected precursor and compare its deprotected product "
+    "with the target. Assess conditions, selectivity, "
+    "and compatibility; the tool does not validate these. Validate restored SMILES "
+    "and never include dummy atoms in final pathways. When you are done, "
+    "respond with the final answer in "
     "exactly the JSON format described above (do not call a tool in that final "
     "message)."
 )
@@ -123,6 +138,18 @@ def agentic_single_step(
         if not tool_calls:
             content = assistant.get("content") or ""
             result = _parse_final_answer(content, model)
+            if _contains_dummy_atoms(result[0]):
+                messages.append(
+                    {
+                        "role": "user",
+                        "content": (
+                            "Your answer contains unresolved dummy atoms. Restore each "
+                            "masked precursor with handle_deprotection and its mask_id, "
+                            "then return full molecular SMILES in the required JSON format."
+                        ),
+                    }
+                )
+                continue
             if event_sink is not None and not result[0]:
                 event_sink.append(_classify_agent_event(molecule, content))
             return result
@@ -154,6 +181,18 @@ def agentic_single_step(
             }
         )
     return [], [], []
+
+
+def _contains_dummy_atoms(pathways: list[Pathway]) -> bool:
+    """Check parsed pathways for graph placeholders, which are not molecules."""
+    from rdkit import Chem
+
+    for pathway in pathways:
+        for smiles in pathway:
+            mol = Chem.MolFromSmiles(smiles)
+            if mol is not None and any(a.GetAtomicNum() == 0 for a in mol.GetAtoms()):
+                return True
+    return False
 
 
 def agentic_orchestrator(

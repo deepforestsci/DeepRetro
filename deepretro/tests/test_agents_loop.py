@@ -89,6 +89,103 @@ def test_executes_tool_then_returns_final_answer() -> None:
     assert any(message.get("role") == "tool" for message in second_call_messages)
 
 
+@pytest.mark.parametrize("backend", ["structured", "sandbox"])
+def test_mask_reason_restore_workflow(backend: str) -> None:
+    """Tools and guidance reach the model; only restored precursors escape."""
+    calls = 0
+
+    def model(messages: list[dict[str, Any]]) -> dict[str, Any]:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            assert "handle_protection" in messages[0]["content"]
+            assert "handle_deprotection" in messages[0]["content"]
+            return tool_turn("handle_protection", {"smiles": "COc1ccc(C=O)cc1"})
+        result = json.loads(messages[-1]["content"])
+        if calls == 2:
+            assert result["matched"]
+            assert "exposed core" in result["guidance"]
+            marker = result["groups"][0]["marker"]
+            return tool_turn(
+                "handle_deprotection",
+                {"smiles": f"{marker}Oc1ccc(CO)cc1", "mask_id": result["mask_id"]},
+                call_id="restore",
+            )
+        return final_turn(
+            "<json>"
+            + json.dumps(
+                {
+                    "data": [[result["smiles"]]],
+                    "explanation": ["Transform the core with methoxy intact"],
+                    "confidence_scores": [0.8],
+                }
+            )
+            + "</json>"
+        )
+
+    pathways, _, _ = agentic_single_step(
+        "COc1ccc(C=O)cc1", MODEL, llm_runner=model, tool_backend=backend
+    )
+    assert pathways == [["COc1ccc(CO)cc1"]]
+    assert calls == 3
+
+
+def test_unresolved_masked_final_answer_requests_repair() -> None:
+    bad = '<json>{"data": [["CO[*:1]"]], "explanation": ["x"], "confidence_scores": [0.8]}</json>'
+    model = ScriptedModel([final_turn(bad), final_turn()])
+    assert agentic_single_step("CC=O", MODEL, llm_runner=model)[0] == [["CCO"]]
+    assert "unresolved dummy atoms" in model.seen[1][-1]["content"]
+
+
+@pytest.mark.parametrize("backend", ["structured", "sandbox"])
+def test_agent_can_propose_chemical_deprotection(backend: str) -> None:
+    """The model tests a protected precursor and receives its forward product."""
+    precursor = "CCNC(=O)OC(C)(C)C"
+    calls = 0
+
+    def model(messages: list[dict[str, Any]]) -> dict[str, Any]:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            assert "mode='propose'" in messages[0]["content"]
+            return tool_turn(
+                "handle_deprotection",
+                {"smiles": precursor, "mode": "propose", "groups": ["Boc"]},
+            )
+        result = json.loads(messages[-1]["content"])
+        assert result["direction"] == "forward"
+        assert result["candidates"][0]["product_smiles"] == "CCN"
+        return final_turn(
+            "<json>"
+            + json.dumps(
+                {
+                    "data": [[precursor]],
+                    "explanation": ["Candidate Boc removal"],
+                    "confidence_scores": [0.5],
+                }
+            )
+            + "</json>"
+        )
+
+    assert agentic_single_step("CCN", MODEL, llm_runner=model, tool_backend=backend)[
+        0
+    ] == [[precursor]]
+
+
+def test_unresolved_masks_exhaust_budget_without_returning_pathway() -> None:
+    bad = '<json>{"data": [["CO[*:1]"]], "explanation": ["x"], "confidence_scores": [0.8]}</json>'
+    events: list[dict[str, Any]] = []
+    result = agentic_single_step(
+        "COC",
+        MODEL,
+        llm_runner=lambda _: final_turn(bad),
+        max_iterations=2,
+        event_sink=events,
+    )
+    assert result == ([], [], [])
+    assert events[0]["kind"] == "no_final_answer"
+
+
 def test_replays_provider_message_with_reasoning_fields() -> None:
     """A serialized provider turn is replayed with opaque reasoning intact."""
     first_payload = tool_turn()

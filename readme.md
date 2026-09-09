@@ -226,6 +226,36 @@ curl -X POST \
   http://localhost:5000/api/retrosynthesis
 ```
 
+## Agent protecting-group tools
+
+In `solve_mode="single_step_agent"`, the LLM can call `handle_protection` to
+hide supported existing protecting-group motifs while reasoning about the core,
+then `handle_deprotection` with `mode="restore"` (the default) to restore full
+precursor SMILES. It also supports `mode="propose"` to generate one-site chemical
+deprotection product candidates from full protected SMILES. Both agent tool
+backends include these tools; no additional configuration is needed.
+
+```python
+from deepretro.agents.tools import build_tool_registry
+
+tools = build_tool_registry()
+masked = tools.execute("handle_protection", {"smiles": "COc1ccccc1"})
+restored = tools.execute("handle_deprotection", {
+    "smiles": masked["masked_smiles"], "mask_id": masked["mask_id"]
+})
+assert restored["smiles"] == "COc1ccccc1"
+
+proposed = tools.execute("handle_deprotection", {
+    "smiles": "CCNC(=O)OC(C)(C)C", "mode": "propose", "groups": ["Boc"]
+})
+assert proposed["candidates"][0]["product_smiles"] == "CCN"
+```
+
+Chemical proposals describe forward substrate-to-product transformations;
+conditions and selectivity are unverified. Supported motifs and limitations
+are documented in the [agent tools reference](docs/source/package/deepretro.agents.rst).
+
+
 ## Model Configuration
 
 ### Supported LLM Models
