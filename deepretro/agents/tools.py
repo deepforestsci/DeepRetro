@@ -17,6 +17,7 @@ from typing import Any
 import structlog
 
 from deepretro.algorithms.stability_checker import check_molecule_stability
+from deepretro.agents.protection import SUPPORTED_GROUPS, ProtectionContext
 from deepretro.utils.typing import HallucinationChecker
 from deepretro.utils.utils_molecule import canonicalize, is_valid_smiles
 
@@ -250,6 +251,75 @@ _RUN_PYTHON_SCHEMA = {
     },
 }
 
+_HANDLE_PROTECTION_SCHEMA = {
+    "type": "function",
+    "function": {
+        "name": "handle_protection",
+        "description": (
+            "Mask existing candidate protecting groups to focus on core "
+            "retrosynthetic transformations. Returns masked SMILES, a group "
+            "legend, reasoning guidance, and a mask_id for restoration. "
+            "Does not install protecting groups or predict a reaction."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "smiles": {"type": "string", "description": "Full molecular SMILES"},
+                "groups": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": list(SUPPORTED_GROUPS),
+                    },
+                    "description": "Optional motifs to mask; omitted means all supported motifs",
+                },
+            },
+            "required": ["smiles"],
+        },
+    },
+}
+
+_HANDLE_DEPROTECTION_SCHEMA = {
+    "type": "function",
+    "function": {
+        "name": "handle_deprotection",
+        "description": (
+            "Two modes: 'restore' (default) restores masked groups using a mask_id "
+            "from handle_protection, before validation or final output. 'propose' "
+            "takes full protected SMILES and proposes one-site forward chemical "
+            "deprotection products. Proposals have unverified conditions and "
+            "selectivity; they are not retro precursors of the protected input."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "smiles": {
+                    "type": "string",
+                    "description": "Masked SMILES for restore; full protected SMILES for propose",
+                },
+                "mask_id": {
+                    "type": "string",
+                    "description": "Required for restore; omit for propose",
+                },
+                "mode": {
+                    "type": "string",
+                    "enum": ["restore", "propose"],
+                    "default": "restore",
+                },
+                "groups": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": list(SUPPORTED_GROUPS),
+                    },
+                    "description": "Propose only: optional motif filter; omitted means all",
+                },
+            },
+            "required": ["smiles"],
+        },
+    },
+}
+
 
 _AZ_SUGGEST_SCHEMA = {
     "type": "function",
@@ -315,7 +385,7 @@ def build_tool_registry(
         Sandbox for ``run_python``. A default :class:`SubprocessSandbox` is
         created when needed and none is supplied.
     tool_backend : {"structured", "sandbox"}, optional
-        ``structured`` exposes the read-only check tools. ``sandbox`` adds the
+        ``structured`` exposes check and reversible masking tools. ``sandbox`` adds the
         ``run_python`` code-execution tool.
     az_tools : bool, optional
         When ``True``, expose the ``az_suggest`` (single-step expansion) and
@@ -339,10 +409,18 @@ def build_tool_registry(
     ...        & {"az_suggest", "az_route"})
     ['az_route', 'az_suggest']
     """
-    schemas: list[dict[str, Any]] = [_VALIDATE_SMILES_SCHEMA, _CHECK_STABILITY_SCHEMA]
+    protection = ProtectionContext()
+    schemas: list[dict[str, Any]] = [
+        _VALIDATE_SMILES_SCHEMA,
+        _CHECK_STABILITY_SCHEMA,
+        _HANDLE_PROTECTION_SCHEMA,
+        _HANDLE_DEPROTECTION_SCHEMA,
+    ]
     executors: dict[str, ToolExecutor] = {
         "validate_smiles": _validate_smiles,
         "check_stability": _check_stability,
+        "handle_protection": protection.handle_protection,
+        "handle_deprotection": protection.handle_deprotection,
     }
 
     if hallucination_checker is not None:

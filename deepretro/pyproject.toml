@@ -57,3 +57,6 @@ markers = [
 
 [tool.ty.analysis]
 replace-imports-with-any = ["rdkit.**"]
+
+[tool.ruff]
+line-length = 88
