@@ -6,7 +6,6 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-
 from deepchem.data import NumpyDataset
 
 from deepretro.models.hallucination_helpers import MLChecker, resolve_hallucination
@@ -139,9 +138,7 @@ class TestFilterWithChecker:
         from deepretro.models.hallucination_helpers import filter_with_checker
 
         pathways = [["CC"], ["O"]]
-        result = filter_with_checker(
-            "CCO", pathways, ["a", "b"], [0.1, 0.2], None
-        )
+        result = filter_with_checker("CCO", pathways, ["a", "b"], [0.1, 0.2], None)
         assert result == (pathways, ["a", "b"], [0.1, 0.2])
 
     def test_kept_subset_keeps_aligned_explanations_and_confidence(self) -> None:
@@ -166,9 +163,11 @@ class TestFilterWithChecker:
             del product, pathways
             return 400, []
 
-        assert filter_with_checker(
-            "P", [["A"]], ["e"], [0.5], reject_all
-        ) == ([], [], [])
+        assert filter_with_checker("P", [["A"]], ["e"], [0.5], reject_all) == (
+            [],
+            [],
+            [],
+        )
 
     def test_length_mismatch_raises(self) -> None:
         from deepretro.models.hallucination_helpers import filter_with_checker

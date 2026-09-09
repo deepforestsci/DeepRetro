@@ -15,18 +15,19 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import re
 import os
+import re
 import time
 from collections.abc import Callable
 from pathlib import Path
-import pandas as pd
 from typing import Any
-from sklearn.model_selection import train_test_split
-from deepretro.models.hallucination_trainer import HallucinationTrainer
 
+import pandas as pd
 import structlog
+from rdkit import Chem
+from sklearn.model_selection import train_test_split
 
+from deepretro.models.hallucination_trainer import HallucinationTrainer
 from deepretro.score import empty_pathway_scores, score_pathway
 
 logger = structlog.get_logger(__name__)
@@ -288,6 +289,21 @@ def run_batch(
     for smiles in molecules:
         mol_dir = run_dir / slugify_molecule(smiles)
         mol_dir.mkdir(parents=True, exist_ok=True)
+
+        # Invalid targets receive an error artifact without invoking the solver.
+        if Chem.MolFromSmiles(smiles) is None:
+            error_file = mol_dir / "error.json"
+            error_file.write_text(
+                json.dumps(
+                    {"smiles": smiles, "error": "target SMILES does not parse"},
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+            written[smiles] = [str(error_file)]
+            logger.error("Target SMILES does not parse; skipping", molecule=smiles)
+            continue
+
         try:
             pathways = solve(smiles)
             paths: list[str] = []
@@ -330,9 +346,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--sheet-url",
-        required=True,
-        help="Google Sheets /export?format=csv URL (public/link-shared). "
-        "TODO: supply the sheet URL.",
+        help="Public Google Sheets CSV export URL; required when training a classifier.",
     )
     parser.add_argument(
         "--molecules",
@@ -352,6 +366,14 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--tool-backend", choices=["structured", "sandbox"], default="structured"
+    )
+    parser.add_argument(
+        "--hallucination-weights",
+        default=None,
+        help=(
+            "Path to heuristic penalty weights as HallucinationWeights JSON. "
+            "Omit to use the default weights; ignored outside heuristic mode."
+        ),
     )
     parser.add_argument("--model", default="anthropic/claude-sonnet-4-6")
     parser.add_argument("--az-model", default="Pistachio_100+")
@@ -374,9 +396,10 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--hallucination-mode",
-        choices=["auto", "heuristic", "ml"],
+        choices=["auto", "heuristic", "ml", "none"],
         default="auto",
-        help="'heuristic' forces the heuristic checker (no training); 'ml' "
+        help="'none' disables hallucination checking; 'heuristic' forces the "
+        "heuristic checker (no training); 'ml' "
         "trains (or uses --classifier); 'auto' trains only if labelled data is "
         "present, else heuristic.",
     )
@@ -391,17 +414,20 @@ def main(argv: list[str] | None = None) -> None:
     argv : list[str], optional
         Argument vector (defaults to ``sys.argv``).
     """
-    args = _build_arg_parser().parse_args(argv)
+    parser = _build_arg_parser()
+    args = parser.parse_args(argv)
     timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
 
     # Resolve the hallucination checker. 'heuristic' skips training (and the
     # sheet download); 'ml'/'auto' train from the labelled sheet unless a
     # pre-trained --classifier is supplied.
     classifier_dir: str | None = None
-    if args.hallucination_mode != "heuristic":
+    if args.hallucination_mode not in ("heuristic", "none"):
         if args.classifier:
             classifier_dir = args.classifier
         else:
+            if not args.sheet_url:
+                parser.error("--sheet-url is required when training a classifier")
             download_sheet_csv(args.sheet_url, args.csv)
             classifier_dir = train_hallucination_checker(
                 args.csv, str(Path(args.out) / "hallucination_model")
@@ -412,7 +438,19 @@ def main(argv: list[str] | None = None) -> None:
                 "(check the sheet's product/reactants/label columns)."
             )
 
-    hallucination_mode = "ml" if classifier_dir else "heuristic"
+    if args.hallucination_mode == "none":
+        hallucination_mode = "none"
+    else:
+        hallucination_mode = "ml" if classifier_dir else "heuristic"
+
+    hallucination_weights = None
+    if hallucination_mode == "heuristic" and args.hallucination_weights:
+        from deepretro.algorithms.hallucination_weights import HallucinationWeights
+
+        hallucination_weights = HallucinationWeights.from_json(
+            args.hallucination_weights
+        )
+        logger.info("Loaded heuristic weights", path=args.hallucination_weights)
 
     molecules = read_molecules(args.molecules)
     logger.info(
@@ -434,6 +472,7 @@ def main(argv: list[str] | None = None) -> None:
         tool_backend=args.tool_backend,
         hallucination_mode=hallucination_mode,
         hallucination_classifier=classifier_dir,
+        hallucination_weights=hallucination_weights,
         max_depth=args.max_depth,
     )
 

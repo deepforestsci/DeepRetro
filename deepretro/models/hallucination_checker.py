@@ -1,13 +1,20 @@
-import os
 import json
-import numpy as np
+import os
+from typing import List, Tuple
+
 import deepchem as dc
-from typing import Tuple, List
-from deepretro.models.hallucination_utils import create_model_instance
-from deepretro.featurizers.reactionstep import FEATURIZER_MAP
+import numpy as np
+
+from deepretro.algorithms.hallucination_checker import calculate_hallucination_score
+from deepretro.algorithms.hallucination_weights import (
+    DEFAULT_WEIGHTS,
+    HallucinationWeights,
+)
 from deepretro.algorithms.pipeline_checks import (
     hallucination_checker as heuristic_checker,
 )
+from deepretro.featurizers.reactionstep import FEATURIZER_MAP
+from deepretro.models.hallucination_utils import create_model_instance
 
 
 class HallucinationChecker:
@@ -20,6 +27,7 @@ class HallucinationChecker:
         self,
         checker_type: str = "ml",
         model_path: str | None = None,
+        weights: "HallucinationWeights | None" = None,
     ) -> None:
         """
         Initializes a hallucination checker.
@@ -30,9 +38,14 @@ class HallucinationChecker:
             Backend used for hallucination detection. Supported values are ``"heuristic"`` and ``"ml"``, default="ml"
         model_path : str, optional
             Path to a saved model directory. Required when ``checker_type="ml"``.
+        weights : HallucinationWeights, optional
+            Penalty weights for the heuristic backend. ``None`` (the default)
+            uses the original hardcoded values. Ignored when
+            ``checker_type="ml"``.
         """
         self.checker_type: str = checker_type.lower()
         self.model_path: str | None = model_path
+        self.weights = weights
         self.model: dc.models.Model | None = None
         self.featurizer: dc.feat.Featurizer | None = None
         self.threshold: float = 0.5
@@ -117,15 +130,34 @@ class HallucinationChecker:
         Returns
         -------
         int
-            Binary prediction: 1 if it's a hallucination, 0 if it's a valid step.
+            Binary flag: 1 if unsupported or below the configured threshold, else 0.
+            A zero heuristic flag is not proof of chemical correctness.
         """
         if self.checker_type == "heuristic":
-            _, valid_pathways = self._check_pathway_heur(target, [reactants])
-            return 0 if len(valid_pathways) > 0 else 1
+            report = calculate_hallucination_score(reactants, target, self.weights)
+            threshold = (self.weights or DEFAULT_WEIGHTS).reject_below
+            return int(report.get("unassessable", False) or report["score"] < threshold)
         else:
             return self._check_pathway_ml(target, reactants)
 
-    def __call__(self, target: str, pathways: List[str] | List[List[str]]):
+    def __call__(
+        self, target: str, pathways: List[str] | List[List[str]]
+    ) -> Tuple[int, List]:
+        """Apply the selected backend to candidate pathways.
+
+        Parameters
+        ----------
+        target : str
+            Product SMILES.
+        pathways : list of str or list of list of str
+            Candidate precursor sets.
+
+        Returns
+        -------
+        tuple of int and list
+            Status and retained candidates. Heuristic fallback candidates may
+            remain flagged; retention is not a validity verdict.
+        """
         return self.check_pathways(target, pathways)
 
     def check_pathways(
@@ -134,7 +166,7 @@ class HallucinationChecker:
         pathways: List[str] | List[List[str]],
     ) -> Tuple[int, List]:
         """
-        Filters a collection of candidate pathways.
+        Rank heuristic candidates or filter candidates with the ML backend.
 
         Parameters
         ----------
@@ -146,7 +178,8 @@ class HallucinationChecker:
         Returns
         -------
         Tuple[int, List]
-            Status code and the subset of pathways classified as valid.
+            Status code and retained pathways. Heuristic fallback candidates may
+            remain flagged; use check_single_pathway for an individual verdict.
         """
         if self.checker_type == "heuristic":
             return self._check_pathway_heur(target, pathways)
@@ -172,7 +205,7 @@ class HallucinationChecker:
     def _check_pathway_heur(
         self,
         target: str,
-        reactants: List[str] | str,
+        reactants: List[str] | List[List[str]] | str,
     ) -> Tuple[int, List]:
         """Evaluates pathways using deterministic chemical heuristics.
 
@@ -188,7 +221,7 @@ class HallucinationChecker:
         Tuple[int, List]
             Status code and valid pathways.
         """
-        status_code, valid_pathways = heuristic_checker(target, reactants)
+        status_code, valid_pathways = heuristic_checker(target, reactants, self.weights)
         return status_code, valid_pathways
 
     def _check_pathway_ml(self, target: str, reactants: str) -> int:

@@ -1,0 +1,5 @@
+prune tests
+prune .venv
+prune build
+prune deepretro
+global-exclude __pycache__ *.py[cod]

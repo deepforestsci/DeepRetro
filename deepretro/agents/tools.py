@@ -107,19 +107,25 @@ def _check_stability(smiles: str) -> dict[str, Any]:
 def _make_check_hallucination(checker: HallucinationChecker) -> ToolExecutor:
     """Bind a resolved hallucination checker into a tool executor.
 
-    TEMPLATE seam: the executor delegates entirely to *checker*. In heuristic
-    mode this is the working package heuristic; the ML wiring is completed by
-    a downstream contributor by passing a trained-classifier checker.
+    Single-pathway classifiers report the decision independently of candidate
+    ranking, which can retain flagged reactions as search fallbacks. Callable
+    filters without a single-pathway API retain their filtering contract.
     """
 
     def _check(product: str, reactants: str | list[str]) -> dict[str, Any]:
         pathway = reactants if isinstance(reactants, list) else [reactants]
-        status, kept = checker(product, [pathway])
-        is_hallucination = status != 200 or not kept
+        classify = getattr(checker, "check_single_pathway", None)
+        if callable(classify):
+            is_hallucination = bool(classify(product, ".".join(pathway)))
+        else:
+            status, kept = checker(product, [pathway])
+            is_hallucination = status != 200 or not kept
         return {
             "is_hallucination": is_hallucination,
             "note": (
-                "kept by checker" if not is_hallucination else "flagged by checker"
+                "not flagged by checker"
+                if not is_hallucination
+                else "flagged by checker"
             ),
         }
 
