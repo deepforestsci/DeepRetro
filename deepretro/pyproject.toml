@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "deepretro"
 version = "0.1.0"
 description = "DeepRetro package for retrosynthesis"
+readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "deepchem",
@@ -45,9 +46,20 @@ az = [
 [project.urls]
 Repository = "https://github.com/deepforestsci/DeepRetro"
 
-[tool.setuptools.packages.find]
-where = [".."]
-include = ["deepretro*"]
+[tool.setuptools]
+# The project directory is also the import package; keep discovery local so
+# source distributions can build wheels without the parent checkout.
+packages = [
+    "deepretro",
+    "deepretro.agents",
+    "deepretro.algorithms",
+    "deepretro.data",
+    "deepretro.featurizers",
+    "deepretro.models",
+    "deepretro.utils",
+]
+package-dir = {deepretro = "."}
+include-package-data = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -59,8 +71,11 @@ markers = [
 replace-imports-with-any = ["rdkit.**"]
 
 [tool.ruff]
+target-version = "py310"
 line-length = 88
 
 [tool.ruff.lint]
-# Preserve the established Ruff 0.15 rule set when CI installs newer Ruff.
 select = ["E4", "E7", "E9", "F"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["deepretro"]

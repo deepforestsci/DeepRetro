@@ -352,3 +352,11 @@ To cite this paper, please use this bibtex entry:
       url={https://arxiv.org/abs/2507.07060}, 
 }
 ```
+
+### Heuristic reaction checking
+
+Use `AutoSolver(hallucination_mode="heuristic")` for structural candidate ranking,
+or `hallucination_mode="none"` to disable it. Flagged candidates may remain as
+fallbacks; exported route summaries retain their warnings. Scores are not
+chemical-validity probabilities. See the
+[checker guide](docs/source/heuristic_checker.rst) for configuration and examples.
