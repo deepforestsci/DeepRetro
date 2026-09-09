@@ -96,6 +96,7 @@ Why DeepRetro?
    quickstart
    installation
    user_guide
+   heuristic_checker
    knowledge_graph
    editing_context
    api_reference

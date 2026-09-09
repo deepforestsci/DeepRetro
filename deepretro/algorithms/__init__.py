@@ -5,13 +5,16 @@ from .hallucination_checker import (
     hallucination_compare_molecules,
     interpret_score,
 )
-
+from .hallucination_weights import (
+    DEFAULT_WEIGHTS,
+    HallucinationWeights,
+)
 from .stability_checker import (
+    check_carbenes,
+    check_carbocations,
+    check_fused_cyclopentane,
     check_molecule_stability,
     is_valid_smiles,
-    check_carbocations,
-    check_carbenes,
-    check_fused_cyclopentane,
 )
 
 __all__ = [
@@ -19,6 +22,8 @@ __all__ = [
     "calculate_hallucination_score",
     "hallucination_compare_molecules",
     "interpret_score",
+    "DEFAULT_WEIGHTS",
+    "HallucinationWeights",
     "check_molecule_stability",
     "is_valid_smiles",
     "check_carbocations",

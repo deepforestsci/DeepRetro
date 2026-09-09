@@ -1,0 +1,160 @@
+[
+  {
+    "reactants": "c1ccccc1",
+    "product": "c1ccccc1",
+    "keys": [
+      "message",
+      "penalties",
+      "penalty_total",
+      "score",
+      "severity",
+      "unassessable"
+    ],
+    "score": 0,
+    "severity": "critical",
+    "message": "Degenerate step - the reactants are the product, so nothing is decomposed",
+    "penalties": []
+  },
+  {
+    "reactants": "CCOCCN",
+    "product": "ClC(=O)c1ccccc1Br",
+    "keys": [
+      "message",
+      "penalties",
+      "penalty_total",
+      "score",
+      "severity"
+    ],
+    "score": 0,
+    "severity": "critical",
+    "message": "Severe structural inconsistencies; review required (score 0/100)",
+    "penalties": [
+      "Atom count inconsistency: -15 points",
+      "Atom count inconsistency: -5 points",
+      "Atom count inconsistency: -5 points",
+      "Atom count inconsistency: -5 points",
+      "Ring structure changes: -25 points",
+      "Significant aromaticity changes: -40 points",
+      "Unnecessary bond formations: -25 points"
+    ]
+  },
+  {
+    "reactants": "Cn1nccc1Br.O=C1CCCC[C@H]1O",
+    "product": "Cn1nccc1[C@]1(O)CCCC[C@H]1O",
+    "keys": [
+      "message",
+      "penalties",
+      "penalty_total",
+      "score",
+      "severity"
+    ],
+    "score": 95,
+    "severity": "low",
+    "message": "Transformation looks consistent (score 95/100)",
+    "penalties": [
+      "Atom count inconsistency: -5 points"
+    ]
+  },
+  {
+    "reactants": "Cc1ccc(O)cc1",
+    "product": "Cc1cccc(O)c1",
+    "keys": [
+      "message",
+      "penalties",
+      "penalty_total",
+      "score",
+      "severity"
+    ],
+    "score": 0,
+    "severity": "critical",
+    "message": "Severe structural inconsistencies; review required (score 0/100)",
+    "penalties": [
+      "Substituent position changes: -100 points"
+    ]
+  },
+  {
+    "reactants": "C1CCCCC1",
+    "product": "C1CCCC1",
+    "keys": [
+      "message",
+      "penalties",
+      "penalty_total",
+      "score",
+      "severity"
+    ],
+    "score": 45,
+    "severity": "medium",
+    "message": "Minor inconsistencies; review recommended (score 45/100)",
+    "penalties": [
+      "Atom count inconsistency: -5 points",
+      "Ring structure changes: -50 points"
+    ]
+  },
+  {
+    "reactants": "c1ccccc1",
+    "product": "C1CCCCC1",
+    "keys": [
+      "message",
+      "penalties",
+      "penalty_total",
+      "score",
+      "severity"
+    ],
+    "score": 60,
+    "severity": "medium",
+    "message": "Minor inconsistencies; review recommended (score 60/100)",
+    "penalties": [
+      "Significant aromaticity changes: -40 points"
+    ]
+  },
+  {
+    "reactants": "CCO",
+    "product": "CCOCC",
+    "keys": [
+      "message",
+      "penalties",
+      "penalty_total",
+      "score",
+      "severity"
+    ],
+    "score": 80,
+    "severity": "low",
+    "message": "Transformation looks consistent (score 80/100)",
+    "penalties": [
+      "Atom count inconsistency: -10 points",
+      "Unnecessary bond formations: -10 points"
+    ]
+  },
+  {
+    "reactants": "not_a_smiles",
+    "product": "c1ccccc1",
+    "keys": [
+      "message",
+      "penalties",
+      "penalty_total",
+      "score",
+      "severity",
+      "unassessable"
+    ],
+    "score": 0,
+    "severity": "critical",
+    "message": "Invalid SMILES string detected - cannot assess transformation",
+    "penalties": []
+  },
+  {
+    "reactants": "c1ccccc1",
+    "product": "also_not_a_smiles",
+    "keys": [
+      "message",
+      "penalties",
+      "penalty_total",
+      "score",
+      "severity",
+      "unassessable"
+    ],
+    "score": 0,
+    "severity": "critical",
+    "message": "Invalid SMILES string detected - cannot assess transformation",
+    "penalties": []
+  }
+]

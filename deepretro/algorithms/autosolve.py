@@ -17,11 +17,13 @@ from typing import Any
 
 import structlog
 
+from deepretro.algorithms.hallucination_weights import HallucinationWeights
 from deepretro.metadata_types import (
     ConditionsRecommender,
     LiteratureRecommender,
     ReagentRecommender,
 )
+from deepretro.models.hallucination_checker import HallucinationChecker
 from deepretro.models.hallucination_helpers import (
     filter_with_checker,
 )
@@ -30,7 +32,6 @@ from deepretro.utils.llm_helpers import Pathway
 from deepretro.utils.parse import format_output
 from deepretro.utils.typing import ParseOutput, RouteNode
 from deepretro.utils.utils_molecule import canonicalize, validity_check
-from deepretro.models.hallucination_checker import HallucinationChecker
 
 logger = structlog.get_logger(__name__)
 
@@ -56,6 +57,9 @@ class AutoSolver:
         For ``hallucination_mode="ml"``, either a loaded classifier exposing
         ``predict_probability``/``threshold``/``featurizer`` or a path to a
         saved model directory. Ignored for the other modes.
+    hallucination_weights : HallucinationWeights or None, optional
+        Heuristic penalty weights and warning threshold. ``None`` uses the
+        default weights; ignored in ML and disabled modes.
     solve_mode : {"pipeline", "single_step_agent", "orchestrator"}, optional
         ``pipeline`` (default) uses the non-agentic LLM pipeline. ``single_step_agent``
         lets a tool-calling agent propose and self-check precursors. ``orchestrator``
@@ -133,6 +137,7 @@ class AutoSolver:
         | None = None,
         agent_runner: Callable[..., tuple[list[Any], list[str], list[float]]]
         | None = None,
+        hallucination_weights: HallucinationWeights | None = None,
     ) -> None:
         """Construct an AutoSolver; see the class docstring for parameters."""
         if max_depth < 0:
@@ -156,8 +161,24 @@ class AutoSolver:
         self.az_model = az_model
         self.stability_check = stability_check
         self.hallucination_mode = hallucination_mode.lower()
-        self.hallucination_checker = HallucinationChecker(
-            checker_type=self.hallucination_mode, model_path=hallucination_classifier
+        if self.hallucination_mode not in ("heuristic", "ml", "none"):
+            raise ValueError(
+                f"Unknown hallucination_mode: {hallucination_mode!r}. "
+                f"Allowed: 'heuristic', 'ml', 'none'"
+            )
+        # "none" is a documented mode and both consumers -- filter_with_checker
+        # and the agent tool path -- already treat a None checker as "skip".
+        # Constructing HallucinationChecker unconditionally made the mode raise,
+        # which meant the gate could never be switched off to measure whether it
+        # helps at all.
+        self.hallucination_checker = (
+            None
+            if self.hallucination_mode == "none"
+            else HallucinationChecker(
+                checker_type=self.hallucination_mode,
+                model_path=hallucination_classifier,
+                weights=hallucination_weights,
+            )
         )
         self.solve_mode = solve_mode
         self.tool_backend = tool_backend
@@ -254,6 +275,7 @@ class AutoSolver:
 
         first_attempted_children: list[dict[str, Any]] | None = None
         first_attempted_confidence: list[float] = []
+        first_attempted_pathway: Any = None
         for i, pathway in enumerate(pathways):
             candidate_children, candidate_solved = self._solve_pathway(
                 pathway,
@@ -264,13 +286,19 @@ class AutoSolver:
                 continue
             if first_attempted_children is None:
                 first_attempted_children = candidate_children
+                first_attempted_pathway = pathway
                 first_attempted_confidence = (
                     [confidence[i]] if i < len(confidence) else []
                 )
             if candidate_solved:
                 selected_confidence = [confidence[i]] if i < len(confidence) else []
                 return (
-                    reaction_tree(smiles, candidate_children, selected_confidence),
+                    reaction_tree(
+                        smiles,
+                        candidate_children,
+                        selected_confidence,
+                        self._verdict_for(pathway, smiles),
+                    ),
                     True,
                 )
 
@@ -278,7 +306,10 @@ class AutoSolver:
             return unsolved_leaf(smiles), False
 
         return reaction_tree(
-            smiles, first_attempted_children, first_attempted_confidence
+            smiles,
+            first_attempted_children,
+            first_attempted_confidence,
+            self._verdict_for(first_attempted_pathway, smiles),
         ), False
 
     def single_step(
@@ -441,6 +472,10 @@ class AutoSolver:
         summary = summarize_az(route_tree)
         output["az_solved"] = summary["az_solved"]
         output["az_summary"] = summary
+        # format_output rebuilds the schema from scratch and drops the reaction
+        # node metadata, so the verdict recorded on the tree never reached the
+        # delivered route. Lift it out the same way the AZ summary is lifted.
+        output["hallucination_summary"] = summarize_hallucination(route_tree)
         return output
 
     def add_metadata(
@@ -615,6 +650,56 @@ class AutoSolver:
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+
+    def _verdict_for(self, pathway: Any, product: str) -> dict[str, Any] | None:
+        """Score one chosen pathway so its verdict can be stored on the route.
+
+        Parameters
+        ----------
+        pathway : list[str] or str or None
+            The precursors selected for this step.
+        product : str
+            The molecule being disconnected.
+
+        Returns
+        -------
+        dict or None
+            ``score``, ``severity`` and ``flagged``, or ``None`` when the
+            checker is disabled or the pathway is unusable.
+
+        Examples
+        --------
+        >>> AutoSolver(hallucination_mode="none")._verdict_for(["CCO"], "CC=O")
+        """
+        if self.hallucination_checker is None or not pathway:
+            return None
+        # A heuristic score would misattribute an ML decision.
+        if self.hallucination_mode != "heuristic":
+            return {"source": self.hallucination_mode, "score": None, "flagged": None}
+        try:
+            from deepretro.algorithms.hallucination_checker import (
+                calculate_hallucination_score,
+            )
+            from deepretro.algorithms.hallucination_weights import DEFAULT_WEIGHTS
+
+            reactants = ".".join(pathway) if isinstance(pathway, list) else str(pathway)
+            weights = getattr(self.hallucination_checker, "weights", None)
+            report = calculate_hallucination_score(reactants, product, weights)
+            threshold = (weights or DEFAULT_WEIGHTS).reject_below
+            return {
+                "source": "heuristic",
+                "score": report["score"],
+                "severity": report["severity"],
+                # Flagged candidates remain available as search fallbacks.
+                "flagged": report["score"] < threshold,
+            }
+        except Exception as exc:  # noqa: BLE001 - must never break a solve
+            logger.warning(
+                "Could not compute hallucination verdict",
+                molecule=product,
+                error=str(exc),
+            )
+            return None
 
     def _reject_orchestrator(self) -> None:
         """Raise for the not-yet-implemented top-level orchestrator mode."""
@@ -798,6 +883,55 @@ def _collect_leaf_nodes(node: dict[str, Any], acc: list[dict[str, Any]]) -> None
         _collect_leaf_nodes(child, acc)
 
 
+def summarize_hallucination(route_tree: dict[str, Any]) -> dict[str, Any]:
+    """Collect the checker's verdicts from every reaction node in a route.
+
+    ``format_output`` rebuilds the delivered schema and discards reaction-node
+    metadata, so a verdict written by :func:`reaction_tree` never survived into
+    the route JSON. Ranking means a flagged step can reach a finished route, and
+    the whole point of recording the verdict is that this should not be silent.
+
+    Parameters
+    ----------
+    route_tree : dict
+        Raw route tree as built by :func:`reaction_tree`.
+
+    Returns
+    -------
+    dict
+        ``n_steps``, ``n_flagged``, ``min_score`` and ``flagged_steps`` (each
+        with the product SMILES and its verdict). ``n_steps`` counts only steps
+        that carry a verdict, so a gate-off run reports zeros.
+
+    Examples
+    --------
+    >>> summarize_hallucination(unsolved_leaf("CCO"))["n_flagged"]
+    0
+    """
+    verdicts: list[dict[str, Any]] = []
+
+    def walk(node: dict[str, Any], parent_smiles: str | None) -> None:
+        if not isinstance(node, dict):
+            return
+        smiles = node.get("smiles", parent_smiles)
+        if node.get("type") == "reaction":
+            verdict = (node.get("metadata") or {}).get("hallucination")
+            if verdict:
+                verdicts.append({"product": parent_smiles, **verdict})
+        for child in node.get("children", []) or []:
+            walk(child, smiles)
+
+    walk(route_tree, route_tree.get("smiles"))
+    flagged = [v for v in verdicts if v.get("flagged")]
+    scores = [v["score"] for v in verdicts if isinstance(v.get("score"), int)]
+    return {
+        "n_steps": len(verdicts),
+        "n_flagged": len(flagged),
+        "min_score": min(scores) if scores else None,
+        "flagged_steps": flagged,
+    }
+
+
 def summarize_az(route_tree: dict[str, Any]) -> dict[str, Any]:
     """Summarise AiZynthFinder's contribution to a route tree.
 
@@ -906,6 +1040,7 @@ def reaction_tree(
     molecule: str,
     children: Sequence[RouteNode],
     confidence: Sequence[float],
+    hallucination: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build the route-tree shape consumed by ``RetrosynthesisRouteParser``.
 
@@ -918,6 +1053,10 @@ def reaction_tree(
     confidence : Sequence[float]
         Confidence scores from the LLM pipeline; the first value is used as
         ``policy_probability``.
+    hallucination : dict or None, optional
+        The checker's verdict for this step, recorded under
+        ``metadata["hallucination"]``. Candidates are demoted rather than
+        dropped, so a completed route can contain flagged steps.
 
     Returns
     -------
@@ -933,6 +1072,9 @@ def reaction_tree(
     0.8
     """
     policy_probability = float(confidence[0]) if confidence else 0.0
+    metadata: dict[str, Any] = {"policy_probability": policy_probability}
+    if hallucination is not None:
+        metadata["hallucination"] = hallucination
     return {
         "type": "mol",
         "smiles": molecule,
@@ -942,7 +1084,7 @@ def reaction_tree(
             {
                 "type": "reaction",
                 "is_reaction": True,
-                "metadata": {"policy_probability": policy_probability},
+                "metadata": metadata,
                 "children": list(children),
             }
         ],
