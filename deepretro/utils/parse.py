@@ -228,11 +228,13 @@ class RetrosynthesisRouteParser:
 
     def _create_step(self, data: RouteNode, step_id: int) -> Optional[Step]:
         """Create a reaction step for route nodes that produce a molecule."""
-        if "children" not in data:
+        if "children" not in data or (
+            data.get("type") == "mol" and not data.get("children")
+        ):
             return None
 
         product_smiles = self._smiles(data)
-        return {
+        step: Step = {
             "step": str(step_id),
             "reactants": [],
             "reagents": [],
@@ -245,6 +247,18 @@ class RetrosynthesisRouteParser:
                 }
             ],
         }
+
+        # Provenance belongs to the reaction producing this product, not to
+        # its precursors (which may have been independently solved by AZ).
+        reactions = data.get("children") or []
+        if reactions:
+            reaction = reactions[0]
+            source = reaction.get("solved_by")
+            if source is None and reaction.get("az_generated"):
+                source = "az"
+            if source in ("az", "llm"):
+                step["solved_by"] = source
+        return step
 
     def _attach_to_parent(
         self,

@@ -62,6 +62,53 @@ def test_parse_step_creates_product_only_step_for_empty_children(
     assert output["steps"][0]["reagents"] == []
 
 
+@pytest.mark.parametrize("in_stock", [True, False])
+def test_parse_step_skips_explicit_terminal_molecule(
+    route_parser_factory: Callable[..., RetrosynthesisRouteParser],
+    in_stock: bool,
+) -> None:
+    """Explicit terminal molecules are starting materials, not reactions."""
+    output = route_parser_factory().format_output(
+        {"type": "mol", "smiles": "CCO", "children": [], "in_stock": in_stock}
+    )
+    assert output == {"dependencies": {}, "steps": []}
+
+
+@pytest.mark.parametrize("source", ["az", "llm"])
+def test_format_output_preserves_reaction_provenance(
+    route_parser_factory: Callable[..., RetrosynthesisRouteParser],
+    source: str,
+) -> None:
+    """Step provenance comes from the reaction, and leaves add no steps."""
+    output = route_parser_factory().format_output(
+        {
+            "type": "mol",
+            "smiles": "CCO",
+            "children": [
+                {
+                    "type": "reaction",
+                    "solved_by": source,
+                    "children": [{"type": "mol", "smiles": "CC", "children": []}],
+                }
+            ],
+        }
+    )
+    assert len(output["steps"]) == 1
+    assert output["steps"][0]["solved_by"] == source
+    assert output["steps"][0]["reactants"][0]["smiles"] == "CC"
+    assert output["dependencies"] == {"1": []}
+
+
+def test_format_output_does_not_guess_unknown_reaction_provenance(
+    route_parser_factory: Callable[..., RetrosynthesisRouteParser],
+) -> None:
+    """Legacy external routes without source metadata must stay unclassified."""
+    output = route_parser_factory().format_output(
+        {"smiles": "CCO", "children": [{"children": [{"smiles": "CC"}]}]}
+    )
+    assert "solved_by" not in output["steps"][0]
+
+
 def test_parse_step_appends_to_existing_accumulators(
     route_parser_factory: Callable[..., RetrosynthesisRouteParser],
 ) -> None:

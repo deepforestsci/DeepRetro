@@ -29,6 +29,31 @@ path can never bypass the safety checks.
    # Top-K candidate routes for the batch runner:
    routes = agent_solver.solve_multiple("CC(=O)Oc1ccccc1C(=O)O", k=3)
 
+Route metadata
+--------------
+
+``solved`` is true when AZ returns a successful route for the target, or when
+AZ successfully closes every terminal branch of an LLM-proposed route.
+``az_solved`` is true only for a complete route whose reactions all came from
+AZ. A completed mixed LLM/AZ route therefore has ``solved=True`` and
+``az_solved=False``. A target AZ recognizes as available without reactions
+has both flags true and an empty ``steps`` list.
+
+Every reaction produced by autosolve carries ``solved_by`` with value ``"llm"``
+or ``"az"``, both on the raw reaction node and on the parsed step. For example,
+an LLM disconnection followed by an AZ reaction yields step sources
+``["llm", "az"]``. The tag identifies the source of the disconnection; an LLM
+step can still appear in an incomplete route. Terminal molecules are not
+reaction steps. Agent proposals use the ``"llm"`` tag, including proposals
+made after consulting AZ tools.
+
+``az_summary.az_solved_all`` reports whether AZ closed every terminal branch,
+so it can be true for mixed routes. The leaf counts remain available for
+debugging. Older outputs used ``az_solved`` to mean that *any* leaf came from
+AZ; consumers should use ``az_summary.leaves_az_generated > 0`` for that query.
+Generic externally supplied trees with unknown provenance are not assigned
+an inferred source.
+
 Modes
 -----
 
