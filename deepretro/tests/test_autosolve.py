@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+from copy import deepcopy
 from typing import Any
 
 import pytest
@@ -197,6 +198,7 @@ class TestReactionTree:
         assert tree["smiles"] == ASPIRIN
         rxn = tree["children"][0]
         assert rxn["type"] == "reaction"
+        assert rxn["solved_by"] == "llm"
         assert rxn["metadata"]["policy_probability"] == pytest.approx(0.85)
         assert rxn["children"] == children
 
@@ -613,6 +615,7 @@ class TestAzSummary:
         _mark_az_generated(node)
         assert node["az_generated"] is True
         assert node["children"][0]["az_generated"] is True
+        assert node["children"][0]["solved_by"] == "az"
         assert node["children"][0]["children"][0]["az_generated"] is True
 
     def test_summary_all_az_generated(self) -> None:
@@ -640,7 +643,7 @@ class TestAzSummary:
         llm_leaf = unsolved_leaf("B")  # not AZ-generated, not in stock
         tree = reaction_tree("T", [az_leaf, llm_leaf], [0.7])
         summary = summarize_az(tree)
-        assert summary["az_solved"] is True
+        assert summary["az_solved"] is False
         assert summary["az_solved_all"] is False
         assert summary["leaves_total"] == 2
         assert summary["leaves_az_generated"] == 1
@@ -678,10 +681,106 @@ class TestAzSummary:
         )
         route, solved = solver.solve(ASPIRIN)
         result = solver.parse(route, solved=solved)
-        assert result["az_solved"] is True  # salicylic acid solved by AZ
+        assert result["solved"] is False
+        assert result["az_solved"] is False  # one closed branch is not an AZ route
         assert result["az_summary"]["az_solved_all"] is False  # acetic acid unsolved
         assert result["az_summary"]["leaves_az_generated"] >= 1
         assert result["az_summary"]["leaves_unsolved"] >= 1
+
+
+class TestSolverProvenance:
+    @pytest.mark.parametrize("method", ["solve", "single_step", "solve_multiple"])
+    def test_multistep_az_success_is_annotated_without_mutating_runner_data(
+        self, method: str
+    ) -> None:
+        """All entry points preserve AZ success and mark each actual reaction."""
+        source = reaction_tree(
+            ASPIRIN,
+            [reaction_tree(SALICYLIC_ACID, [solved_route("c1ccccc1")], [0.7])],
+            [0.8],
+        )
+        # Model the raw AZ schema, which carries no LLM provenance.
+        source["children"][0].pop("solved_by", None)
+        source["children"][0]["children"][0]["children"][0].pop("solved_by", None)
+        original = deepcopy(source)
+
+        def az_runner(smiles: str, az_model: str) -> tuple[bool, list[Any]]:
+            return True, [source]
+
+        solver = AutoSolver(az_runner=az_runner, hallucination_mode="none")
+        returned = getattr(solver, method)(ASPIRIN)
+        route, solved = returned[0] if method == "solve_multiple" else returned
+        result = solver.parse(route, solved=solved)
+
+        assert solved is True
+        assert result["solved"] is True
+        assert result["az_solved"] is True
+        assert result["az_summary"]["az_solved_all"] is True
+        assert [step["solved_by"] for step in result["steps"]] == ["az", "az"]
+        assert result["dependencies"] == {"1": ["2"], "2": []}
+        assert route["children"][0]["solved_by"] == "az"
+        inner_reaction = route["children"][0]["children"][0]["children"][0]
+        assert inner_reaction["solved_by"] == "az"
+        assert source == original
+        inner_reaction["metadata"]["policy_probability"] = 0.1
+        assert source == original
+
+    @pytest.mark.parametrize("method", ["solve", "single_step", "solve_multiple"])
+    def test_az_stock_success_has_no_phantom_step(self, method: str) -> None:
+        """An AZ stock hit is solved even when its leaf explicitly has children."""
+        source = {**solved_route(ASPIRIN), "children": []}
+
+        def az_runner(smiles: str, az_model: str) -> tuple[bool, list[Any]]:
+            return True, [source]
+
+        solver = AutoSolver(az_runner=az_runner, hallucination_mode="none")
+        returned = getattr(solver, method)(ASPIRIN)
+        route, solved = returned[0] if method == "solve_multiple" else returned
+        result = solver.parse(route, solved=solved)
+        assert result["solved"] is True
+        assert result["az_solved"] is True
+        assert result["steps"] == []
+        assert result["dependencies"] == {}
+        assert "az_generated" not in source
+
+    def test_completed_mixed_multistep_route_preserves_step_sources(self) -> None:
+        """Closing every LLM branch with AZ does not make an AZ-only route."""
+        az_source = reaction_tree(SALICYLIC_ACID, [solved_route("c1ccccc1")], [0.7])
+        az_source["children"][0].pop("solved_by", None)
+        original = deepcopy(az_source)
+
+        def az_runner(smiles: str, az_model: str) -> tuple[bool, list[Any]]:
+            if canonicalize(smiles) == canonicalize(SALICYLIC_ACID):
+                return True, [az_source]
+            if canonicalize(smiles) == canonicalize(ACETIC_ACID):
+                return True, [{**solved_route(smiles), "children": []}]
+            return False, []
+
+        solver = AutoSolver(
+            az_runner=az_runner,
+            llm_runner=_llm_aspirin_hydrolysis_only,
+            hallucination_mode="none",
+        )
+        route, solved = solver.solve(ASPIRIN)
+        result = solver.parse(route, solved=solved)
+        assert result["solved"] is True
+        assert result["az_solved"] is False
+        assert result["az_summary"]["az_solved_all"] is True
+        assert result["az_summary"]["leaves_unsolved"] == 0
+        assert [step["solved_by"] for step in result["steps"]] == ["llm", "az"]
+        assert result["dependencies"] == {"1": ["2"], "2": []}
+        assert route["children"][0]["solved_by"] == "llm"
+        assert az_source == original
+
+    def test_incomplete_az_marked_tree_is_not_az_solved(self) -> None:
+        """Provenance alone cannot turn an unresolved AZ leaf into a solution."""
+        route = reaction_tree(ASPIRIN, [unsolved_leaf(SALICYLIC_ACID)], [0.7])
+        _mark_az_generated(route)
+        solver = AutoSolver(hallucination_mode="none")
+        result = solver.parse(route, solved=False)
+        assert result["solved"] is False
+        assert result["az_solved"] is False
+        assert result["az_summary"]["leaves_unsolved"] == 1
 
 
 class TestAgentEventCapture:

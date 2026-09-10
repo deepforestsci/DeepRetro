@@ -13,6 +13,7 @@ from __future__ import annotations
 import os
 import time
 from collections.abc import Callable, Sequence
+from copy import deepcopy
 from typing import Any
 
 import structlog
@@ -264,7 +265,7 @@ class AutoSolver:
             return unsolved_leaf(smiles), False
         if az_solved and az_routes:
             logger.info("AiZynthFinder solved molecule", molecule=smiles)
-            route = dict(az_routes[0])
+            route = deepcopy(az_routes[0])
             _mark_az_generated(route)
             return route, True
 
@@ -351,7 +352,9 @@ class AutoSolver:
         if az_errored:
             return unsolved_leaf(smiles), False
         if az_solved and az_routes:
-            return dict(az_routes[0]), True
+            route = deepcopy(az_routes[0])
+            _mark_az_generated(route)
+            return route, True
 
         pathways, _explanations, confidence = self.run_llm(smiles)
         if not pathways:
@@ -411,7 +414,9 @@ class AutoSolver:
         if az_errored:
             return [(unsolved_leaf(smiles), False)]
         if az_solved and az_routes:
-            return [(dict(az_routes[0]), True)]
+            route = deepcopy(az_routes[0])
+            _mark_az_generated(route)
+            return [(route, True)]
 
         pathways, _explanations, confidence = self.run_llm(smiles)
         if not pathways:
@@ -470,7 +475,7 @@ class AutoSolver:
         output = format_output(route_tree)
         output["solved"] = solved
         summary = summarize_az(route_tree)
-        output["az_solved"] = summary["az_solved"]
+        output["az_solved"] = solved and summary["az_solved"]
         output["az_summary"] = summary
         # format_output rebuilds the schema from scratch and drops the reaction
         # node metadata, so the verdict recorded on the tree never reached the
@@ -869,6 +874,8 @@ def _mark_az_generated(node: dict[str, Any]) -> None:
     if not isinstance(node, dict):
         return
     node["az_generated"] = True
+    if node.get("type") == "reaction" or node.get("is_reaction"):
+        node["solved_by"] = "az"
     for child in node.get("children") or []:
         _mark_az_generated(child)
 
@@ -944,8 +951,9 @@ def summarize_az(route_tree: dict[str, Any]) -> dict[str, Any]:
     Returns
     -------
     dict[str, Any]
-        ``az_solved`` (AZ generated at least one leaf), ``az_solved_all``
-        (AZ generated *every* leaf, i.e. it closed all terminal branches),
+        ``az_solved`` (every reaction and terminal branch came from AZ),
+        ``az_solved_all`` (AZ closed every terminal branch, including mixed
+        LLM/AZ routes),
         and leaf counts (total, AZ-generated, in-stock, unsolved).
 
     Examples
@@ -960,9 +968,20 @@ def summarize_az(route_tree: dict[str, Any]) -> dict[str, Any]:
     total = len(leaves)
     az_generated = sum(1 for leaf in leaves if leaf.get("az_generated"))
     in_stock = sum(1 for leaf in leaves if leaf.get("in_stock"))
+    all_closed_by_az = total > 0 and all(
+        leaf.get("az_generated") and leaf.get("in_stock") for leaf in leaves
+    )
+
+    def all_steps_az(node: dict[str, Any]) -> bool:
+        """Check reaction provenance without confusing leaves with steps."""
+        if node.get("type") == "reaction" or node.get("is_reaction"):
+            if node.get("solved_by") != "az" and not node.get("az_generated"):
+                return False
+        return all(all_steps_az(child) for child in node.get("children") or [])
+
     return {
-        "az_solved": az_generated > 0,
-        "az_solved_all": total > 0 and az_generated == total,
+        "az_solved": all_closed_by_az and all_steps_az(route_tree),
+        "az_solved_all": all_closed_by_az,
         "leaves_total": total,
         "leaves_az_generated": az_generated,
         "leaves_in_stock": in_stock,
@@ -1084,6 +1103,7 @@ def reaction_tree(
             {
                 "type": "reaction",
                 "is_reaction": True,
+                "solved_by": "llm",
                 "metadata": metadata,
                 "children": list(children),
             }
