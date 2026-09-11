@@ -20,11 +20,24 @@ _PATTERNS = {
     "Boc": "[N;X3]-C(=O)-O-C(C)(C)C",
     "Cbz": "[N;X3]-C(=O)-O-[CH2]-c1ccccc1",
     "TBS": "[O;X2]-[Si]([CH3])([CH3])-C([CH3])([CH3])[CH3]",
+    "TES": "[O;X2]-[Si]([CH2][CH3])([CH2][CH3])[CH2][CH3]",
+    "TBDPS": "[O;X2]-[Si](c1ccccc1)(c1ccccc1)C([CH3])([CH3])[CH3]",
     "OBn": "[O;X2]-[CH2]-c1ccccc1",
     "OEt": "[O;X2]-[CH2]-[CH3]",
     "OMe": "[O;X2]-[CH3]",
 }
 SUPPORTED_GROUPS = tuple(_PATTERNS)
+
+# Every pattern above anchors on an O whose *other* substituent is left
+# unconstrained by the SMARTS itself — intentionally, so the same pattern
+# matches the anchor sitting on any carbon scaffold. But that also means an
+# anchor O bonded to something else entirely (e.g. a phosphonate's P-O-CH3)
+# satisfies the SMARTS just as well as a real alkyl ether does, even though
+# it isn't a protecting group at all — it's a reactive handle (see
+# architecture discussion: HWE phosphonate esters). Enforced separately below
+# rather than folded into each SMARTS, since it's the same rule for all of
+# them: the scaffold-side neighbor of an oxygen anchor must be carbon.
+_OXYGEN_ANCHOR_GROUPS = {"TBS", "TES", "TBDPS", "OBn", "OEt", "OMe"}
 
 
 @dataclass(frozen=True)
@@ -81,7 +94,18 @@ def _find_sites(
             ):
                 continue
             # Exclude terminal OH and fragments with multiple attachments.
-            if mol.GetAtomWithIdx(anchor).GetDegree() < 2:
+            anchor_atom = mol.GetAtomWithIdx(anchor)
+            if anchor_atom.GetDegree() < 2:
+                continue
+            # An oxygen-anchored pattern (ether/silyl ether) is only a real
+            # protecting group when the scaffold side of the anchor is
+            # carbon. A P-O-CH3 (phosphonate/phosphate ester) or S-O-CH3
+            # (sulfonate ester) satisfies the same SMARTS but is a reactive
+            # functional group, not a masked alcohol — see _OXYGEN_ANCHOR_GROUPS.
+            if name in _OXYGEN_ANCHOR_GROUPS and any(
+                neighbor.GetIdx() not in hidden and neighbor.GetSymbol() != "C"
+                for neighbor in anchor_atom.GetNeighbors()
+            ):
                 continue
             boundary = [
                 bond
