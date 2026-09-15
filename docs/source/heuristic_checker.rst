@@ -42,7 +42,7 @@ contain flagged steps. Retention is not a clean verdict::
 Pass ``rank_only=False`` for hard filtering. The wrapper's
 ``check_single_pathway(product, reactants)`` returns 1 for a flag or an unsupported
 input, and 0 otherwise; it uses the threshold rather than candidate retention.
-The LLM tool uses the same individual verdict.
+The LLM tool uses a detailed assessment with a nullable verdict, described below.
 
 Enable heuristic checking in the solver with
 ``AutoSolver(hallucination_mode="heuristic")``. Use
@@ -50,6 +50,39 @@ Enable heuristic checking in the solver with
 ``hallucination_summary`` with the number of annotated steps, flagged steps and
 minimum score. This summary covers recorded solver verdicts; it is not a complete
 chemical audit of all AiZynthFinder or ML-generated steps.
+
+Agent explanations
+------------------
+
+The agent's ``check_hallucination`` tool returns ``score``, ``severity``,
+``penalties``, ``message`` and an ``explanation`` object. The explanation contains
+``detected_issues``, ``ring_size_changes`` and ``substituent_position_changes``.
+Issue strings identify structural differences such as the mismatched element and
+its reactant/product counts. Substituent changes include relative positions;
+these are not exact atom or bond identifiers.
+
+The same assessment is available directly (product first)::
+
+   from deepretro.models.hallucination_checker import HallucinationChecker
+
+   checker = HallucinationChecker(checker_type="heuristic")
+   report = checker.assess("c1ccccc1", ["CC"])
+   assert report["flagged"] is True
+   assert report["score"] == 0
+   assert "Atom count mismatch for C: Reactant has 2, Product has 6" in (
+       report["explanation"]["detected_issues"]
+   )
+
+The tool copies ``flagged`` to ``is_hallucination``. For assessable inputs, the
+flag uses ``score < reject_below`` independently of candidate retention and
+severity display cutoffs. Unassessable inputs return ``unassessable=True`` and
+``is_hallucination=null`` (``None`` in Python); ``message`` explains why assessment
+was unavailable. This includes invalid SMILES, unchanged steps and unsupported
+carbon radicals. A clean comparison has an empty ``detected_issues`` list.
+
+Both AutoSolver and ``resolve_hallucination("heuristic", None)`` expose this
+assessment. Existing callable-only filters retain their original tool behavior.
+The lower-level comparison and scoring APIs keep their existing output formats.
 
 Configuration
 -------------
