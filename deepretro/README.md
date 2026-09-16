@@ -45,3 +45,22 @@ experimental feasibility or assess unspecified reaction conditions.
 
 See the [project documentation](https://github.com/deepforestsci/DeepRetro/tree/dev/docs)
 for solver configuration, custom weights, and development instructions.
+
+### Agent feedback
+
+The agent's `check_hallucination` tool returns heuristic `score`, `severity`,
+`penalties`, and `explanation.detected_issues`. Inspect the same assessment locally:
+
+```python
+from deepretro.models.hallucination_checker import HallucinationChecker
+
+checker = HallucinationChecker(checker_type="heuristic")
+report = checker.assess("c1ccccc1", ["CC"])
+print(report["flagged"])  # True, even if search retains this fallback
+print(report["explanation"]["detected_issues"])
+```
+
+The tool exposes `flagged` as `is_hallucination`. For unassessable inputs it is
+`None` (`null` in JSON); inspect `message` for the reason. Explanations include
+ring-size and relative substituent-position changes, without exact atom/bond
+localization.

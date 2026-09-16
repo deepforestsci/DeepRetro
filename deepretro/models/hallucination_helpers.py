@@ -120,7 +120,8 @@ def resolve_hallucination(
     Callable or None
         ``None`` when *mode* is ``"none"`` (skip checking).  Otherwise a
         callable with signature ``(product: str, pathways: list) -> (int, list)``
-        that filters out hallucinated pathways.
+        that ranks heuristic candidates or filters ML candidates. The heuristic
+        checker also exposes ``assess(product, reactants)`` for detailed feedback.
 
     Raises
     ------
@@ -144,9 +145,9 @@ def resolve_hallucination(
     if mode == "none":
         return None
     if mode == "heuristic":
-        from deepretro.algorithms.pipeline_checks import hallucination_checker
+        from deepretro.models.hallucination_checker import HallucinationChecker
 
-        return hallucination_checker
+        return HallucinationChecker(checker_type="heuristic")
     if mode == "ml":
         from deepretro.models.hallucination_classifier import HallucinationClassifier
 

@@ -114,6 +114,10 @@ def _make_check_hallucination(checker: HallucinationChecker) -> ToolExecutor:
     """
 
     def _check(product: str, reactants: str | list[str]) -> dict[str, Any]:
+        assess = getattr(checker, "assess", None)
+        if callable(assess):
+            assessment = assess(product, reactants)
+            return {**assessment, "is_hallucination": assessment.get("flagged")}
         pathway = reactants if isinstance(reactants, list) else [reactants]
         classify = getattr(checker, "check_single_pathway", None)
         if callable(classify):
@@ -221,7 +225,11 @@ _CHECK_HALLUCINATION_SCHEMA = {
         "name": "check_hallucination",
         "description": (
             "Check whether a proposed retrosynthesis step is a likely "
-            "hallucination given the product and its reactants."
+            "hallucination given the product and its reactants. In heuristic mode, "
+            "returns score, severity and explanation.detected_issues describing "
+            "structural warnings. is_hallucination is null for unassessable inputs; "
+            "read message for the reason. Warnings are not proof of chemical "
+            "impossibility, and an unflagged step is not validated chemistry."
         ),
         "parameters": {
             "type": "object",

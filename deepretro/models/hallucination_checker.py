@@ -1,11 +1,15 @@
 import json
 import os
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 import deepchem as dc
 import numpy as np
 
-from deepretro.algorithms.hallucination_checker import calculate_hallucination_score
+from deepretro.algorithms.hallucination_checker import (
+    calculate_hallucination_score,
+    hallucination_compare_molecules,
+    score_from_comparison,
+)
 from deepretro.algorithms.hallucination_weights import (
     DEFAULT_WEIGHTS,
     HallucinationWeights,
@@ -139,6 +143,59 @@ class HallucinationChecker:
             return int(report.get("unassessable", False) or report["score"] < threshold)
         else:
             return self._check_pathway_ml(target, reactants)
+
+    def assess(self, product: str, reactants: str | list[str]) -> dict[str, Any]:
+        """Assess one step independently of candidate retention.
+
+        Parameters
+        ----------
+        product : str
+            Target product SMILES.
+        reactants : str or list[str]
+            Dot-joined precursor SMILES or a list of precursor SMILES.
+
+        Returns
+        -------
+        dict[str, Any]
+            Backend source and ``flagged`` verdict. Heuristic results include
+            score, severity, penalties and ``explanation.detected_issues``.
+            Unassessable heuristic inputs have ``flagged=None``; their reason
+            is in ``message``. Structural warnings are not chemical proof.
+
+        Examples
+        --------
+        >>> checker = HallucinationChecker(checker_type="heuristic")
+        >>> result = checker.assess("c1ccccc1", ["CC"])
+        >>> result["flagged"], result["score"]
+        (True, 0)
+        >>> result["explanation"]["detected_issues"][0]
+        'Atom count mismatch for C: Reactant has 2, Product has 6'
+        """
+        smiles = ".".join(reactants) if isinstance(reactants, list) else reactants
+        if self.checker_type == "ml":
+            return {
+                "source": "ml",
+                "flagged": bool(self.check_single_pathway(product, smiles)),
+            }
+        weights = self.weights or DEFAULT_WEIGHTS
+        comparison = hallucination_compare_molecules(
+            smiles, product, arom_trigger=weights.arom_trigger
+        )
+        report = score_from_comparison(comparison, weights)
+        unassessable = bool(report.get("unassessable", False))
+        return {
+            **report,
+            "source": "heuristic",
+            "unassessable": unassessable,
+            "flagged": None if unassessable else report["score"] < weights.reject_below,
+            "explanation": {
+                "detected_issues": comparison["detected_issues"],
+                "ring_size_changes": comparison["ring_size_changes"],
+                "substituent_position_changes": comparison[
+                    "substituent_position_changes"
+                ],
+            },
+        }
 
     def __call__(
         self, target: str, pathways: List[str] | List[List[str]]
