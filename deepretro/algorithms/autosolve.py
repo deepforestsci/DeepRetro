@@ -14,6 +14,7 @@ import os
 import time
 from collections.abc import Callable, Sequence
 from copy import deepcopy
+from pathlib import Path
 from typing import Any
 
 import structlog
@@ -30,6 +31,7 @@ from deepretro.models.hallucination_helpers import (
 )
 from deepretro.utils.az import run_az
 from deepretro.utils.llm_helpers import Pathway
+from deepretro.utils.llm_trace import molecule_slug, molecule_trace, node_depth
 from deepretro.utils.parse import format_output
 from deepretro.utils.typing import ParseOutput, RouteNode
 from deepretro.utils.utils_molecule import canonicalize, validity_check
@@ -107,6 +109,13 @@ class AutoSolver:
         Replacement for the default tool-calling agent (``single_step_agent`` mode).
         Accepts ``(molecule, **kwargs)`` and returns ``(pathways, explanations,
         confidence)``.
+    llm_log_dir : str or Path or None, optional
+        Root directory for per-molecule LLM call logs. When set,
+        :meth:`autosolve` writes every LLM call it makes to
+        ``<llm_log_dir>/<molecule-slug>/llm_calls.jsonl``. Ignored when an
+        outer trace is already active (the batch runner opens one per
+        molecule), so the log never splits across two directories. ``None``
+        (default) disables local LLM call logging.
 
     Raises
     ------
@@ -152,6 +161,7 @@ class AutoSolver:
         agent_runner: Callable[..., tuple[list[Any], list[str], list[float]]]
         | None = None,
         hallucination_weights: HallucinationWeights | None = None,
+        llm_log_dir: str | Path | None = None,
     ) -> None:
         """Construct an AutoSolver; see the class docstring for parameters."""
         if max_depth < 0:
@@ -211,6 +221,7 @@ class AutoSolver:
         self.enable_thinking = enable_thinking
         self.max_output_tokens = max_output_tokens
         self.metadata_model = metadata_model
+        self.llm_log_dir = None if llm_log_dir is None else Path(llm_log_dir)
         self._az_runner = az_runner if az_runner is not None else run_az
         self._llm_runner = llm_runner
         self._agent_runner = agent_runner
@@ -290,7 +301,8 @@ class AutoSolver:
             _mark_az_generated(route)
             return route, True
 
-        pathways, _explanations, confidence = self.run_llm(smiles, depth=depth)
+        with node_depth(depth, molecule=smiles):
+            pathways, _explanations, confidence = self.run_llm(smiles, depth=depth)
         if not pathways:
             logger.info("LLM fallback returned no usable pathways", molecule=smiles)
             return unsolved_leaf(smiles), False
@@ -377,7 +389,8 @@ class AutoSolver:
             _mark_az_generated(route)
             return route, True
 
-        pathways, _explanations, confidence = self.run_llm(smiles)
+        with node_depth(0, molecule=smiles):
+            pathways, _explanations, confidence = self.run_llm(smiles)
         if not pathways:
             return unsolved_leaf(smiles), False
 
@@ -439,7 +452,8 @@ class AutoSolver:
             _mark_az_generated(route)
             return [(route, True)]
 
-        pathways, _explanations, confidence = self.run_llm(smiles)
+        with node_depth(0, molecule=smiles):
+            pathways, _explanations, confidence = self.run_llm(smiles)
         if not pathways:
             return [(unsolved_leaf(smiles), False)]
 
@@ -611,18 +625,26 @@ class AutoSolver:
         )
         log.info("AutoSolver starting", molecule=smiles)
 
-        self._agent_events = []
-        route_tree, solved = self.solve(smiles)
-        output = self.parse(route_tree, solved=solved)
-        output = self.add_metadata(output)
-        if self._agent_events:
-            output["agent_events"] = list(self._agent_events)
-            output["agent_refusal"] = any(
-                event.get("kind") == "refusal" for event in self._agent_events
-            )
+        log_dir = (
+            None
+            if self.llm_log_dir is None
+            else self.llm_log_dir / molecule_slug(smiles)
+        )
+        # Reuses an outer trace (the batch runner opens one per molecule), so
+        # every LLM call of this run lands in one Langfuse session and one log.
+        with molecule_trace(smiles, log_dir=log_dir):
+            self._agent_events = []
+            route_tree, solved = self.solve(smiles)
+            output = self.parse(route_tree, solved=solved)
+            output = self.add_metadata(output)
+            if self._agent_events:
+                output["agent_events"] = list(self._agent_events)
+                output["agent_refusal"] = any(
+                    event.get("kind") == "refusal" for event in self._agent_events
+                )
 
-        log.info("AutoSolver completed", molecule=smiles, solved=solved)
-        return output
+            log.info("AutoSolver completed", molecule=smiles, solved=solved)
+            return output
 
     def run_llm(
         self,

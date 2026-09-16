@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import json
+import time
 from typing import TypeGuard, cast
 
 import litellm
@@ -17,6 +18,7 @@ from deepretro.utils.llm_helpers import (
     build_completion_params,
     resolve_model_selection,
 )
+from deepretro.utils.llm_trace import elapsed_ms, langfuse_metadata, record_llm_call
 from deepretro.utils.utils_molecule import (
     calc_chemical_formula,
     calc_mol_wt,
@@ -492,7 +494,7 @@ def call_metadata_llm(
         max_completion_tokens=MAX_COMPLETION_TOKENS,
         temperature=temperature,
         enable_thinking=False,
-        metadata=metadata,
+        metadata=langfuse_metadata(metadata, stage="metadata"),
     )
     # ``build_completion_params`` always sets ``temperature``. Anthropic Claude 4+
     # and OpenAI reasoning models reject requests that specify both ``temperature``
@@ -501,23 +503,75 @@ def call_metadata_llm(
     if not resolve_model_selection(model).requires_temperature_one:
         params["top_p"] = TOP_P
 
+    started = time.perf_counter()
     try:
         response = completion(**params)
-        return 200, str(response.choices[0].message.content)
     except (litellm.AuthenticationError, litellm.PermissionDeniedError) as exc:
+        _record_metadata_call(model, messages, None, str(exc), started, attempt=1)
         logger.warning("metadata.llm_auth_failed", model=model, error=str(exc))
         return 404, ""
     except litellm.APIError as exc:
+        _record_metadata_call(model, messages, None, str(exc), started, attempt=1)
         logger.info("metadata.llm_call_failed", model=model, error=str(exc))
+    else:
+        _record_metadata_call(model, messages, response, None, started, attempt=1)
+        return 200, str(response.choices[0].message.content)
 
+    # Retry without metadata: some proxies reject unknown metadata keys.
     retry_params = dict(params)
     retry_params.pop("metadata", None)
+    started = time.perf_counter()
     try:
         response = completion(**retry_params)
-        return 200, str(response.choices[0].message.content)
     except litellm.APIError as exc:
+        _record_metadata_call(model, messages, None, str(exc), started, attempt=2)
         logger.info("metadata.llm_retry_failed", model=model, error=str(exc))
         return 404, ""
+    _record_metadata_call(model, messages, response, None, started, attempt=2)
+    return 200, str(response.choices[0].message.content)
+
+
+def _record_metadata_call(
+    model: str,
+    messages: list[ChatMessage],
+    response: object | None,
+    error: str | None,
+    started: float,
+    *,
+    attempt: int,
+) -> None:
+    """Mirror one metadata completion to the active molecule trace's call log.
+
+    Parameters
+    ----------
+    model : str
+        LiteLLM model identifier used for the call.
+    messages : list[ChatMessage]
+        Chat messages that were sent.
+    response : object or None
+        LiteLLM response, or ``None`` when the call failed.
+    error : str or None
+        Error text when the call failed.
+    started : float
+        :func:`time.perf_counter` mark taken before the call.
+    attempt : int
+        ``1`` for the metadata-carrying call, ``2`` for the bare retry.
+
+    Examples
+    --------
+    >>> _record_metadata_call(
+    ...     "claude-opus-4-20250514", [], None, "boom", time.perf_counter(), attempt=1
+    ... )
+    """
+    record_llm_call(
+        stage="metadata",
+        model=model,
+        messages=messages,
+        response=response,
+        error=error,
+        latency_ms=elapsed_ms(started),
+        iteration=attempt,
+    )
 
 
 def reagent_agent(

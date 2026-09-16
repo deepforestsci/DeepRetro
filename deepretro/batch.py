@@ -3,7 +3,9 @@
 End-to-end driver: download a CSV from a public Google Sheet, (optionally) train
 the hallucination checker, read target molecules from a text file, run each
 through :class:`deepretro.algorithms.autosolve.AutoSolver`, and dump the routes
-as ``<out>/<timestamp>/<molecule>/pathway_<i>.json``.
+as ``<out>/<timestamp>/<molecule>/pathway_<i>.json``. Each molecule directory
+also receives ``llm_calls.jsonl``, one JSON line per LLM call made for that
+target (see :mod:`deepretro.utils.llm_trace`).
 
 The training step is a **template** (see :func:`train_hallucination_checker`): it
 runs only when the CSV carries the expected labelled columns, and otherwise logs
@@ -29,6 +31,7 @@ from sklearn.model_selection import train_test_split
 
 from deepretro.models.hallucination_trainer import HallucinationTrainer
 from deepretro.score import empty_pathway_scores, score_pathway
+from deepretro.utils.llm_trace import molecule_trace
 
 logger = structlog.get_logger(__name__)
 
@@ -266,6 +269,9 @@ def run_batch(
     """Run each molecule and write its routes under ``out_dir/timestamp/molecule``.
 
     A per-molecule failure writes ``error.json`` and never aborts the batch.
+    Each molecule is solved inside a :func:`deepretro.utils.llm_trace.molecule_trace`
+    so its LLM calls are grouped into one Langfuse session and mirrored to
+    ``llm_calls.jsonl`` next to that molecule's pathway files.
 
     Parameters
     ----------
@@ -305,7 +311,10 @@ def run_batch(
             continue
 
         try:
-            pathways = solve(smiles)
+            # The trace must be active for the whole call, failures included, so
+            # ``llm_calls.jsonl`` lands beside pathway_<i>.json / error.json.
+            with molecule_trace(smiles, log_dir=mol_dir):
+                pathways = solve(smiles)
             paths: list[str] = []
             for index, pathway in enumerate(pathways, start=1):
                 pathway = _with_pathway_scores(pathway)

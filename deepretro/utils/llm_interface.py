@@ -21,6 +21,7 @@ from deepretro.utils.llm_helpers import (
     extract_tag_content,
     resolve_model_selection,
 )
+from deepretro.utils.llm_trace import elapsed_ms, langfuse_metadata, record_llm_call
 from deepretro.utils.utils_molecule import detect_seven_member_rings
 from deepretro.utils.variables import (
     ADDON_PROMPT_7_MEMBER,
@@ -242,7 +243,9 @@ class LLMInterface(ABC):
             temperature=request.temperature,
             enable_thinking=request.enable_thinking,
             thinking_effort=request.thinking_effort,
-            metadata={"task": "retrosynthesis"},
+            metadata=langfuse_metadata(
+                {"task": "retrosynthesis"}, stage="retrosynthesis"
+            ),
         )
 
     @abstractmethod
@@ -298,16 +301,36 @@ class LLMInterface(ABC):
 
         last_error = ""
         for attempt in range(1, MAX_API_RETRIES + 1):
+            started = time.perf_counter()
             try:
                 response = completion(**params)
                 content = response.choices[0].message.content
                 response_text = coerce_response_text(content)
+                record_llm_call(
+                    stage="retrosynthesis",
+                    model=self.selection.completion_model,
+                    messages=messages,
+                    response=response,
+                    latency_ms=elapsed_ms(started),
+                    iteration=attempt,
+                    node_molecule=request.molecule,
+                )
                 logger.debug(
                     "Received LLM response", response_length=len(response_text)
                 )
                 return LLMResponse(status_code=200, text=response_text)
             except Exception as exc:
                 last_error = str(exc)
+                record_llm_call(
+                    stage="retrosynthesis",
+                    model=self.selection.completion_model,
+                    messages=messages,
+                    response=None,
+                    error=str(exc),
+                    latency_ms=elapsed_ms(started),
+                    iteration=attempt,
+                    node_molecule=request.molecule,
+                )
                 logger.warning(
                     "LLM call attempt failed",
                     attempt=attempt,

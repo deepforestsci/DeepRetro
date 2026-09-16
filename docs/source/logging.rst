@@ -122,9 +122,140 @@ from deeply nested functions:
 This replaces the previous ``contextvars.ContextVar`` / ``job_context`` pattern.
 There is no need to pass loggers through function arguments.
 
+Per-molecule LLM call logs
+--------------------------
+
+Structured logs record *what the solver did*; the per-molecule LLM call log
+records *what was sent to and returned by the model*. Both are written for every
+target molecule the batch runner solves.
+
+Where the file lives
+~~~~~~~~~~~~~~~~~~~~
+
+:func:`deepretro.batch.run_batch` opens a trace around each molecule, so the log
+lands next to that molecule's routes::
+
+   <out>/<timestamp>/<molecule-slug>/
+       pathway_1.json
+       pathway_2.json
+       llm_calls.jsonl      <-- one JSON object per line, one line per LLM call
+       error.json           (only when the molecule failed)
+
+Outside the batch runner, pass ``llm_log_dir`` to
+:class:`deepretro.algorithms.autosolve.AutoSolver` and
+:meth:`~deepretro.algorithms.autosolve.AutoSolver.autosolve` writes to
+``<llm_log_dir>/<molecule-slug>/llm_calls.jsonl``:
+
+.. code-block:: python
+
+   from deepretro.algorithms.autosolve import AutoSolver
+
+   solver = AutoSolver(llm_log_dir="llm_logs")
+   solver.autosolve("CC(=O)Oc1ccccc1C(=O)O")
+
+Nothing is written when neither is configured, and a write failure is logged
+once as a warning and then ignored — logging never breaks a run.
+
+Record fields
+~~~~~~~~~~~~~
+
+Each line is one JSON object:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Field
+     - Meaning
+   * - ``timestamp``
+     - ISO 8601 UTC time the call finished.
+   * - ``session_id``
+     - Langfuse session id shared by every call of this run.
+   * - ``target``
+     - Root molecule the run is solving.
+   * - ``node_molecule``
+     - Molecule of the tree node that made the call.
+   * - ``depth``
+     - Retrosynthesis recursion depth of that node (``0`` at the root).
+   * - ``stage``
+     - ``retrosynthesis`` (LLM pipeline), ``retrosynthesis_agent`` (agent loop),
+       or ``metadata`` (reagent/conditions/literature enrichment).
+   * - ``iteration``
+     - Agent loop turn or provider retry attempt, 1-based.
+   * - ``model``
+     - LiteLLM model identifier.
+   * - ``messages``
+     - Conversation sent to the provider.
+   * - ``response``
+     - Assistant content string, or the serialized message when the turn only
+       requested tools.
+   * - ``tool_calls``
+     - Tool calls the assistant requested, if any.
+   * - ``usage``
+     - ``prompt_tokens`` / ``completion_tokens`` / ``total_tokens`` when the
+       provider reports them.
+   * - ``latency_ms``
+     - Wall-clock duration of the provider call.
+   * - ``error``
+     - Error text when the call failed, otherwise ``null``.
+
+Reading a log back is ordinary JSON Lines:
+
+.. code-block:: python
+
+   import json
+   from pathlib import Path
+
+   path = Path("batch_output/2026-07-01_00-00-00/CCO_1b0ef7e2/llm_calls.jsonl")
+   records = [json.loads(line) for line in path.read_text().splitlines()]
+   total_tokens = sum((r["usage"] or {}).get("total_tokens", 0) for r in records)
+
+How Langfuse traces are grouped
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+LiteLLM's Langfuse callback sees one completion at a time, so DeepRetro supplies
+the grouping itself. :func:`deepretro.utils.llm_trace.langfuse_metadata` adds the
+keys LiteLLM's Langfuse integration understands to every completion's
+``metadata``:
+
+* ``session_id`` — the same value for every call of one target molecule, so the
+  whole retrosynthesis appears as one Langfuse session. Generated as
+  ``autosolve_<molecule-slug>_<YYYYmmdd_HHMMSS>_<pid>``.
+* ``trace_name`` — always ``autosolve``.
+* ``generation_name`` — the ``stage`` of the call.
+* ``trace_metadata`` — ``molecule``, ``node_molecule``, and ``depth``.
+* ``tags`` — ``deepretro``, ``autosolve``, and the stage.
+
+Langfuse itself is enabled by LiteLLM through ``LANGFUSE_SECRET_KEY``,
+``LANGFUSE_PUBLIC_KEY``, and ``LANGFUSE_HOST``. The local ``llm_calls.jsonl`` is
+independent of it and needs no account or network access.
+
+Traces nest by reuse, never by replacement: the batch runner opens the outer
+trace per molecule and ``AutoSolver.autosolve`` reuses it, so one run never
+splits across two sessions or two log files.
+
 API reference
 -------------
 
 .. currentmodule:: deepretro.logging
 
 .. autofunction:: configure_logging
+
+.. currentmodule:: deepretro.utils.llm_trace
+
+.. autoclass:: MoleculeTrace
+   :members:
+
+.. autofunction:: molecule_trace
+
+.. autofunction:: current_trace
+
+.. autofunction:: current_depth
+
+.. autofunction:: current_node_molecule
+
+.. autofunction:: node_depth
+
+.. autofunction:: langfuse_metadata
+
+.. autofunction:: record_llm_call
