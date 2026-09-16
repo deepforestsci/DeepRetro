@@ -17,9 +17,15 @@ Command line
        --molecules molecules.txt \
        --out batch_output \
        --solve-mode single_step_agent \
-       --tool-backend sandbox
+       --tool-backend sandbox \
+       --agent-min-iterations 5 \
+       --agent-max-iterations 15 \
+       --agent-iteration-decay 0.75
 
-``--sheet-url`` and ``--molecules`` are required. The training step is a
+``--sheet-url`` and ``--molecules`` are required. The three ``--agent-*``
+flags size the per-node agent turn budget
+(``clamp(carbons * decay**depth, min, max)``); the values shown are the
+defaults. The training step is a
 **template**: it runs only when the CSV carries ``product``/``reactants``/``label``
 columns, otherwise the batch falls back to the heuristic hallucination checker.
 

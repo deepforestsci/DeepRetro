@@ -83,7 +83,10 @@ only in the registry that created them. Unknown or duplicate markers and
 altered attachment types return tool errors. Full structures retain atom maps,
 stereochemistry, and disconnected components. The agent is instructed to
 restore before validation; final answers containing dummy atoms trigger a
-repair turn within the existing iteration budget.
+repair turn within the existing iteration budget. That budget is sized per
+node by :func:`deepretro.agents.loop.iteration_budget` from the molecule's
+carbon count and recursion depth (default caps 5 and 15, decay 0.75 per
+level).
 
 Matches identify structural motifs, not their intended synthetic role. The
 optional ``groups`` list restricts matching for masking and proposal mode

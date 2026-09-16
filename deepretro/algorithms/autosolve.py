@@ -83,6 +83,15 @@ class AutoSolver:
         ``max_depth`` warning. ``None`` (default) disables the cutoff, leaving
         ``max_depth`` as the only limit. Independent of ``max_depth``, which
         still guards against runaway recursion.
+    agent_min_iterations : int, optional
+        Lower cap on the per-node agent turn budget (``single_step_agent``
+        mode). Defaults to 5.
+    agent_max_iterations : int, optional
+        Upper cap on the per-node agent turn budget. Defaults to 15.
+    agent_iteration_decay : float, optional
+        Multiplier applied to the budget once per recursion level. The budget
+        for a node is ``clamp(carbons * decay ** depth, min, max)``; see
+        :func:`deepretro.agents.loop.iteration_budget`. Defaults to 0.75.
     enable_thinking : bool, optional
         Whether provider-supported reasoning controls should be enabled.
     max_output_tokens : int, optional
@@ -102,7 +111,8 @@ class AutoSolver:
     Raises
     ------
     ValueError
-        If ``max_depth`` or ``stop_depth`` is negative,
+        If ``max_depth`` or ``stop_depth`` is negative, the agent iteration
+        budget parameters are out of range,
         ``solve_mode``/``tool_backend`` is unknown, or ``hallucination_mode``
         is ``"ml"`` without a classifier.
 
@@ -130,6 +140,9 @@ class AutoSolver:
         agent_az_tools: bool = False,
         max_depth: int = 50,
         stop_depth: int | None = None,
+        agent_min_iterations: int = 5,
+        agent_max_iterations: int = 15,
+        agent_iteration_decay: float = 0.75,
         enable_thinking: bool = True,
         max_output_tokens: int | None = None,
         metadata_model: str = "anthropic/claude-sonnet-4-6",
@@ -145,6 +158,11 @@ class AutoSolver:
             raise ValueError("max_depth must be non-negative")
         if stop_depth is not None and stop_depth < 0:
             raise ValueError("stop_depth must be non-negative or None")
+        from deepretro.agents.loop import validate_iteration_budget
+
+        validate_iteration_budget(
+            agent_min_iterations, agent_max_iterations, agent_iteration_decay
+        )
 
         solve_mode = solve_mode.lower()
         if solve_mode not in VALID_SOLVE_MODES:
@@ -187,6 +205,9 @@ class AutoSolver:
         self.agent_az_tools = agent_az_tools
         self.max_depth = max_depth
         self.stop_depth = stop_depth
+        self.agent_min_iterations = agent_min_iterations
+        self.agent_max_iterations = agent_max_iterations
+        self.agent_iteration_decay = agent_iteration_decay
         self.enable_thinking = enable_thinking
         self.max_output_tokens = max_output_tokens
         self.metadata_model = metadata_model
@@ -269,7 +290,7 @@ class AutoSolver:
             _mark_az_generated(route)
             return route, True
 
-        pathways, _explanations, confidence = self.run_llm(smiles)
+        pathways, _explanations, confidence = self.run_llm(smiles, depth=depth)
         if not pathways:
             logger.info("LLM fallback returned no usable pathways", molecule=smiles)
             return unsolved_leaf(smiles), False
@@ -606,6 +627,7 @@ class AutoSolver:
     def run_llm(
         self,
         molecule: str,
+        depth: int = 0,
     ) -> tuple[list[Pathway], list[str], list[float]]:
         """Obtain candidate pathways and apply all safety filters.
 
@@ -620,6 +642,11 @@ class AutoSolver:
         ----------
         molecule : str
             Target molecule SMILES for the LLM/agent call.
+        depth : int, optional
+            Recursion depth of the node. Sizes the agent's turn budget in
+            ``single_step_agent`` mode (see
+            :func:`deepretro.agents.loop.iteration_budget`); ignored by the
+            pipeline mode. Defaults to ``0`` (the target).
 
         Returns
         -------
@@ -637,7 +664,7 @@ class AutoSolver:
         [['CCO']]
         """
         if self.solve_mode == "single_step_agent":
-            pathways, explanations, confidence = self._run_agent(molecule)
+            pathways, explanations, confidence = self._run_agent(molecule, depth)
             pathways, explanations, confidence = self._apply_safety_filters(
                 molecule, pathways, explanations, confidence
             )
@@ -747,8 +774,27 @@ class AutoSolver:
             max_output_tokens=self.max_output_tokens,
         )
 
-    def _run_agent(self, molecule: str) -> tuple[list[Pathway], list[str], list[float]]:
-        """Get raw pathways from the tool-calling agent."""
+    def _run_agent(
+        self, molecule: str, depth: int = 0
+    ) -> tuple[list[Pathway], list[str], list[float]]:
+        """Get raw pathways from the tool-calling agent.
+
+        The agent's turn budget is sized per node from the molecule's carbon
+        count and the recursion depth; see
+        :func:`deepretro.agents.loop.iteration_budget`.
+        """
+        from deepretro.agents.loop import iteration_budget
+
+        budget = iteration_budget(
+            molecule,
+            depth,
+            min_iterations=self.agent_min_iterations,
+            max_iterations=self.agent_max_iterations,
+            decay=self.agent_iteration_decay,
+        )
+        logger.info(
+            "Agent iteration budget", molecule=molecule, depth=depth, budget=budget
+        )
         runner = self._agent_runner
         kwargs: dict[str, Any] = dict(
             model=self.llm,
@@ -757,6 +803,7 @@ class AutoSolver:
             hallucination_checker=self.hallucination_checker,
             enable_thinking=self.enable_thinking,
             max_output_tokens=self.max_output_tokens,
+            max_iterations=budget,
         )
         if runner is None:
             from deepretro.agents.loop import agentic_single_step
