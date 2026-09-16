@@ -13,6 +13,10 @@ a time. This module carries that missing grouping in a
 * :func:`record_llm_call` mirrors each call to a local ``llm_calls.jsonl`` file
   inside the molecule's output directory, so a run can be inspected offline and
   without a Langfuse account.
+* :func:`record_tool_results` logs every tool the agent ran (name, arguments,
+  output) both to that file and, when Langfuse credentials are configured, as
+  Langfuse *events* inside the same trace, so tool outputs render online next
+  to the model turns that requested them.
 
 Both are best-effort observability: neither ever raises into the solver.
 
@@ -32,10 +36,11 @@ import json
 import os
 import re
 import time
+import uuid
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from contextvars import ContextVar
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -61,6 +66,13 @@ _node_molecule_var: ContextVar[str | None] = ContextVar(
 # A broken log destination must warn once, not once per LLM call.
 _write_failure_logged = False
 
+#: Message keys that hold opaque provider replay data (Anthropic thinking
+#: signatures). Required on the wire, useless and large in a log.
+_OPAQUE_MESSAGE_KEYS = ("thinking_blocks", "provider_specific_fields")
+
+_client_cache: Any | None = None
+_client_checked = False
+
 
 @dataclass(frozen=True)
 class MoleculeTrace:
@@ -75,6 +87,10 @@ class MoleculeTrace:
     log_path : Path or None
         Destination of the local JSONL call log, or ``None`` when local
         logging is disabled.
+    trace_id : str
+        Langfuse trace id shared by every generation and tool event of this
+        run. Passed to LiteLLM as ``metadata["trace_id"]`` and used directly
+        by the Langfuse client for tool events. Generated when omitted.
 
     Examples
     --------
@@ -85,6 +101,7 @@ class MoleculeTrace:
     molecule: str
     session_id: str
     log_path: Path | None = None
+    trace_id: str = field(default_factory=lambda: uuid.uuid4().hex)
 
     @property
     def depth(self) -> int:
@@ -224,12 +241,101 @@ def molecule_trace(
     trace_token = _trace_var.set(trace)
     depth_token = _depth_var.set(0)
     node_token = _node_molecule_var.set(None)
+    _open_langfuse_trace(trace)
     try:
         yield trace
     finally:
         _node_molecule_var.reset(node_token)
         _depth_var.reset(depth_token)
         _trace_var.reset(trace_token)
+        _flush_langfuse()
+
+
+def build_langfuse_client() -> Any | None:
+    """Build (once) the Langfuse client used for tool events.
+
+    Returns ``None`` when ``LANGFUSE_PUBLIC_KEY`` or ``LANGFUSE_SECRET_KEY`` is
+    missing, when the ``langfuse`` package is unavailable, or when the client
+    cannot be constructed. The result is cached for the process.
+
+    Returns
+    -------
+    Any or None
+        A ``langfuse.Langfuse`` instance, or ``None`` when disabled.
+
+    Examples
+    --------
+    >>> import os
+    >>> os.environ.pop("LANGFUSE_PUBLIC_KEY", None) and None
+    >>> build_langfuse_client() is None  # doctest: +SKIP
+    True
+    """
+    global _client_cache, _client_checked
+    if _client_checked:
+        return _client_cache
+    _client_checked = True
+    if not (os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY")):
+        return None
+    try:
+        from langfuse import Langfuse
+
+        _client_cache = Langfuse()
+    except Exception as exc:  # pragma: no cover - depends on the environment
+        logger.warning("llm_trace.langfuse_client_unavailable", error=str(exc))
+        _client_cache = None
+    return _client_cache
+
+
+def _langfuse_client() -> Any | None:
+    """Indirection over :func:`build_langfuse_client` so tests can swap it.
+
+    Examples
+    --------
+    >>> _langfuse_client() is build_langfuse_client()
+    True
+    """
+    return build_langfuse_client()
+
+
+def _open_langfuse_trace(trace: MoleculeTrace) -> None:
+    """Create the Langfuse trace shell so tool events can attach to it.
+
+    LiteLLM upserts the same trace id on every generation, so the shell only
+    needs to exist; failures are logged once and ignored.
+
+    Examples
+    --------
+    >>> _open_langfuse_trace(MoleculeTrace(molecule="CCO", session_id="s"))
+    """
+    client = _langfuse_client()
+    if client is None:
+        return
+    try:
+        client.trace(
+            id=trace.trace_id,
+            name=TRACE_NAME,
+            session_id=trace.session_id,
+            metadata={"molecule": trace.molecule},
+            tags=["deepretro", TRACE_NAME],
+        )
+    except Exception as exc:
+        _warn_once("llm_trace.langfuse_trace_failed", str(exc))
+
+
+def _flush_langfuse() -> None:
+    """Flush queued Langfuse events when a molecule trace closes.
+
+    Examples
+    --------
+    >>> _flush_langfuse()
+    """
+    client = _langfuse_client()
+    if client is None:
+        return
+    try:
+        client.flush()
+    except Exception as exc:
+        _warn_once("llm_trace.langfuse_flush_failed", str(exc))
 
 
 def current_trace() -> MoleculeTrace | None:
@@ -327,9 +433,11 @@ def langfuse_metadata(
 ) -> dict[str, Any]:
     """Merge caller metadata with the active trace's Langfuse grouping keys.
 
-    Only the keys LiteLLM's Langfuse integration reads are added
-    (``session_id``, ``trace_name``, ``generation_name``, ``trace_metadata``,
-    ``tags``); no custom keys are invented.
+    Adds the keys LiteLLM's Langfuse integration reads (``trace_id``,
+    ``session_id``, ``trace_name``, ``generation_name``, ``trace_metadata``,
+    ``tags``) plus ``depth`` and ``node_molecule``, which LiteLLM forwards as
+    per-generation metadata so each generation shows where in the tree it
+    happened.
 
     Parameters
     ----------
@@ -360,20 +468,112 @@ def langfuse_metadata(
     if trace is None:
         return metadata
 
+    node_molecule = _node_molecule_var.get()
+    depth = _depth_var.get()
     metadata.update(
         {
+            "trace_id": trace.trace_id,
             "session_id": trace.session_id,
             "trace_name": TRACE_NAME,
             "generation_name": stage,
             "trace_metadata": {
                 "molecule": trace.molecule,
-                "node_molecule": _node_molecule_var.get(),
-                "depth": _depth_var.get(),
+                "node_molecule": node_molecule,
+                "depth": depth,
             },
             "tags": ["deepretro", TRACE_NAME, stage],
+            "depth": depth,
+            "node_molecule": node_molecule,
         }
     )
     return metadata
+
+
+def serialize_tool_calls(tool_calls: Any) -> Any:
+    """Turn provider tool-call objects into plain JSON-friendly dicts.
+
+    Parameters
+    ----------
+    tool_calls : Any
+        ``None``, or a sequence of dicts / Pydantic-like objects exposing
+        ``model_dump()``.
+
+    Returns
+    -------
+    Any
+        ``None``, or a list of dicts (``str`` for anything unrecognised).
+
+    Examples
+    --------
+    >>> serialize_tool_calls(None) is None
+    True
+    >>> serialize_tool_calls([{"id": "c1"}])
+    [{'id': 'c1'}]
+    """
+    if tool_calls is None:
+        return None
+    serialized: list[Any] = []
+    for call in tool_calls:
+        if isinstance(call, dict):
+            serialized.append(call)
+            continue
+        dump = getattr(call, "model_dump", None)
+        if callable(dump):
+            try:
+                serialized.append(dump())
+                continue
+            except Exception:  # pragma: no cover - provider serializers may fail
+                pass
+        serialized.append(str(call))
+    return serialized
+
+
+def sanitize_messages(messages: Sequence[Any] | None) -> list[Any] | None:
+    """Copy a conversation for logging, without opaque provider blobs.
+
+    Anthropic returns signed ``thinking_blocks`` that must be replayed on the
+    wire but are several kilobytes of base64 per turn with no readable
+    content. They and ``provider_specific_fields`` are dropped, an empty
+    ``reasoning_content`` is dropped, and tool calls are converted to plain
+    dicts. The caller's messages are never modified.
+
+    Parameters
+    ----------
+    messages : sequence or None
+        Conversation as sent to the provider.
+
+    Returns
+    -------
+    list or None
+        Cleaned copies, or ``None`` when ``messages`` is ``None``.
+
+    Examples
+    --------
+    >>> sanitize_messages([{"role": "assistant", "content": "x",
+    ...                     "thinking_blocks": [{"signature": "..."}]}])
+    [{'role': 'assistant', 'content': 'x'}]
+    """
+    if messages is None:
+        return None
+    cleaned: list[Any] = []
+    for message in messages:
+        dump = getattr(message, "model_dump", None)
+        if not isinstance(message, dict) and callable(dump):
+            try:
+                message = dump()
+            except Exception:  # pragma: no cover - provider serializers may fail
+                cleaned.append(str(message))
+                continue
+        if not isinstance(message, dict):
+            cleaned.append(str(message))
+            continue
+        copy = {k: v for k, v in message.items() if k not in _OPAQUE_MESSAGE_KEYS}
+        if not copy.get("reasoning_content"):
+            copy.pop("reasoning_content", None)
+        if copy.get("tool_calls") is not None:
+            copy["tool_calls"] = serialize_tool_calls(copy["tool_calls"])
+        cleaned.append(copy)
+    return cleaned
 
 
 def _response_message(response: Any) -> Any:
@@ -433,12 +633,10 @@ def _extract_usage(response: Any) -> dict[str, int] | None:
     if usage is None:
         return None
     counts: dict[str, int] = {}
-    for field in ("prompt_tokens", "completion_tokens", "total_tokens"):
-        value = (
-            usage.get(field) if isinstance(usage, dict) else getattr(usage, field, None)
-        )
+    for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
+        value = usage.get(key) if isinstance(usage, dict) else getattr(usage, key, None)
         if isinstance(value, int):
-            counts[field] = value
+            counts[key] = value
     return counts or None
 
 
@@ -508,32 +706,144 @@ def record_llm_call(
     # Serialization touches provider objects, so keep it inside the guard: an
     # exotic response must never abort the LLM call it is describing.
     try:
-        record = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "session_id": trace.session_id,
-            "target": trace.molecule,
-            "node_molecule": node_molecule or _node_molecule_var.get(),
-            "depth": _depth_var.get(),
-            "stage": stage,
-            "iteration": iteration,
-            "model": model,
-            "messages": list(messages) if messages is not None else None,
-            "response": _serialize_response(response),
-            "tool_calls": tool_calls,
-            "usage": usage if usage is not None else _extract_usage(response),
-            "latency_ms": latency_ms,
-            "error": error,
-        }
-        line = json.dumps(record, default=str)
+        record = _envelope(trace, "llm_call", stage, iteration, node_molecule)
+        record.update(
+            {
+                "model": model,
+                "messages": sanitize_messages(messages),
+                "response": _serialize_response(response),
+                "tool_calls": serialize_tool_calls(tool_calls),
+                "usage": usage if usage is not None else _extract_usage(response),
+                "latency_ms": latency_ms,
+                "error": error,
+            }
+        )
     except Exception as exc:  # pragma: no cover - default=str makes this rare
         _warn_once("llm_trace.serialize_failed", str(exc))
         return
+    _write_record(trace, record)
 
+
+def record_tool_results(
+    *,
+    stage: str,
+    iteration: int | None,
+    results: Sequence[dict[str, Any]],
+) -> None:
+    """Log the tools the agent ran after one model turn.
+
+    Writes one ``kind="tool_results"`` line to the local log and, when a
+    Langfuse client is configured, one Langfuse *event* per tool inside the
+    molecule's trace (``name="tool:<tool name>"``, ``input`` = arguments,
+    ``output`` = tool result) so the outputs render online beside the model
+    turns. A no-op without an active trace. Never raises.
+
+    Parameters
+    ----------
+    stage : str
+        Call site, normally ``retrosynthesis_agent``.
+    iteration : int or None
+        1-based agent turn whose tool calls these results answer.
+    results : sequence of dict
+        One mapping per executed tool with keys ``tool_call_id``, ``name``,
+        ``arguments`` and ``output``.
+
+    Examples
+    --------
+    >>> import tempfile
+    >>> with tempfile.TemporaryDirectory() as tmp:
+    ...     with molecule_trace("CCO", log_dir=tmp, session_id="s") as trace:
+    ...         record_tool_results(
+    ...             stage="retrosynthesis_agent",
+    ...             iteration=1,
+    ...             results=[{"tool_call_id": "c", "name": "validate_smiles",
+    ...                       "arguments": {"smiles": "CCO"},
+    ...                       "output": {"valid": True}}],
+    ...         )
+    ...     json.loads(trace.log_path.read_text())["kind"]
+    'tool_results'
+    """
+    trace = _trace_var.get()
+    if trace is None:
+        return
+    results = list(results)
+
+    if trace.log_path is not None:
+        try:
+            record = _envelope(trace, "tool_results", stage, iteration, None)
+            record["tool_results"] = results
+        except Exception as exc:  # pragma: no cover - plain dicts; defensive
+            _warn_once("llm_trace.serialize_failed", str(exc))
+        else:
+            _write_record(trace, record)
+
+    client = _langfuse_client()
+    if client is None:
+        return
+    depth = _depth_var.get()
+    node_molecule = _node_molecule_var.get()
+    for result in results:
+        try:
+            client.event(
+                trace_id=trace.trace_id,
+                name=f"tool:{result.get('name', 'unknown')}",
+                input=result.get("arguments"),
+                output=result.get("output"),
+                metadata={
+                    "stage": stage,
+                    "iteration": iteration,
+                    "depth": depth,
+                    "node_molecule": node_molecule,
+                    "tool_call_id": result.get("tool_call_id"),
+                },
+            )
+        except Exception as exc:
+            _warn_once("llm_trace.langfuse_event_failed", str(exc))
+
+
+def _envelope(
+    trace: MoleculeTrace,
+    kind: str,
+    stage: str,
+    iteration: int | None,
+    node_molecule: str | None,
+) -> dict[str, Any]:
+    """Build the fields every log line shares.
+
+    Examples
+    --------
+    >>> t = MoleculeTrace(molecule="CCO", session_id="s")
+    >>> _envelope(t, "llm_call", "retrosynthesis", 1, None)["kind"]
+    'llm_call'
+    """
+    return {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "kind": kind,
+        "session_id": trace.session_id,
+        "trace_id": trace.trace_id,
+        "target": trace.molecule,
+        "node_molecule": node_molecule or _node_molecule_var.get(),
+        "depth": _depth_var.get(),
+        "stage": stage,
+        "iteration": iteration,
+    }
+
+
+def _write_record(trace: MoleculeTrace, record: dict[str, Any]) -> None:
+    """Append one JSON line to the trace's log; filesystem errors warn once.
+
+    Examples
+    --------
+    >>> _write_record(MoleculeTrace(molecule="CCO", session_id="s"), {})
+    """
+    if trace.log_path is None:
+        return
     try:
+        line = json.dumps(record, default=str)
         trace.log_path.parent.mkdir(parents=True, exist_ok=True)
         with trace.log_path.open("a", encoding="utf-8") as handle:
             handle.write(line + "\n")
-    except OSError as exc:
+    except (OSError, TypeError, ValueError) as exc:
         _warn_once("llm_trace.write_failed", str(exc))
 
 

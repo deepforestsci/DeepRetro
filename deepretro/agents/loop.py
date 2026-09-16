@@ -26,7 +26,12 @@ import structlog
 from deepretro.agents.message_history import append_assistant_message
 from deepretro.agents.tools import build_tool_registry
 from deepretro.utils.llm_helpers import ChatMessage, Pathway
-from deepretro.utils.llm_trace import elapsed_ms, langfuse_metadata, record_llm_call
+from deepretro.utils.llm_trace import (
+    elapsed_ms,
+    langfuse_metadata,
+    record_llm_call,
+    record_tool_results,
+)
 
 logger = structlog.get_logger(__name__)
 
@@ -260,6 +265,7 @@ def agentic_single_step(
                 event_sink.append(_classify_agent_event(molecule, content))
             return result
 
+        executed: list[dict[str, Any]] = []
         for tool_call in tool_calls:
             function = tool_call.get("function", {})
             name = function.get("name", "")
@@ -272,6 +278,19 @@ def agentic_single_step(
                     "content": json.dumps(result),
                 }
             )
+            executed.append(
+                {
+                    "tool_call_id": tool_call.get("id", ""),
+                    "name": name,
+                    "arguments": arguments,
+                    "output": result,
+                }
+            )
+        # Tool outputs are logged in their own right (and as Langfuse events),
+        # so they survive even when this was the agent's last allowed turn.
+        record_tool_results(
+            stage="retrosynthesis_agent", iteration=_iteration + 1, results=executed
+        )
 
     logger.warning(
         "Agent reached max_iterations without a final answer",

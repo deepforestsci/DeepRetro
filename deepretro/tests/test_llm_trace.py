@@ -375,3 +375,212 @@ def test_molecule_trace_dataclass_is_constructible() -> None:
     trace = MoleculeTrace(molecule="CCO", session_id="s", log_path=None)
     assert trace.molecule == "CCO"
     assert trace.depth == 0
+
+
+# ---------------------------------------------------------------------------
+# Record slimming, tool results, Langfuse events
+# ---------------------------------------------------------------------------
+
+
+class FakeToolCall:
+    """Pydantic-like tool call object as LiteLLM returns it."""
+
+    def __init__(self, call_id: str, name: str, arguments: str) -> None:
+        self.id = call_id
+        self.function = {"name": name, "arguments": arguments}
+
+    def model_dump(self) -> dict[str, Any]:
+        return {"id": self.id, "type": "function", "function": self.function}
+
+
+class FakeLangfuse:
+    """Recorder standing in for the Langfuse v2 client."""
+
+    def __init__(self) -> None:
+        self.traces: list[dict[str, Any]] = []
+        self.events: list[dict[str, Any]] = []
+        self.flushed = 0
+
+    def trace(self, **kwargs: Any) -> None:
+        self.traces.append(kwargs)
+
+    def event(self, **kwargs: Any) -> None:
+        self.events.append(kwargs)
+
+    def flush(self) -> None:
+        self.flushed += 1
+
+
+def _read(tmp_path: Path) -> list[dict[str, Any]]:
+    path = tmp_path / LOG_FILENAME
+    return [json.loads(line) for line in path.read_text().splitlines() if line]
+
+
+def test_llm_call_records_carry_kind_and_drop_thinking_signatures(
+    tmp_path: Path,
+) -> None:
+    messages = [
+        {"role": "user", "content": "hi"},
+        {
+            "role": "assistant",
+            "content": None,
+            "tool_calls": [FakeToolCall("c1", "validate_smiles", '{"smiles": "CCO"}')],
+            "reasoning_content": "",
+            "thinking_blocks": [{"type": "thinking", "signature": "x" * 5000}],
+            "provider_specific_fields": {"thinking_blocks": [{"signature": "y"}]},
+        },
+    ]
+    with molecule_trace("CCO", log_dir=tmp_path, session_id="s"):
+        record_llm_call(
+            stage="retrosynthesis_agent",
+            model="m",
+            messages=messages,
+            response="done",
+            latency_ms=1.0,
+            tool_calls=[FakeToolCall("c2", "check_hallucination", "{}")],
+        )
+    (record,) = _read(tmp_path)
+    assert record["kind"] == "llm_call"
+    assistant = record["messages"][1]
+    assert "thinking_blocks" not in assistant
+    assert "provider_specific_fields" not in assistant
+    assert "reasoning_content" not in assistant  # empty string dropped
+    assert assistant["tool_calls"][0] == {
+        "id": "c1",
+        "type": "function",
+        "function": {"name": "validate_smiles", "arguments": '{"smiles": "CCO"}'},
+    }
+    assert record["tool_calls"][0]["function"]["name"] == "check_hallucination"
+    assert len(json.dumps(record)) < 1500
+    # The caller's message list is not mutated.
+    assert "thinking_blocks" in messages[1]
+
+
+def test_non_empty_reasoning_content_is_kept() -> None:
+    cleaned = llm_trace.sanitize_messages(
+        [{"role": "assistant", "content": "x", "reasoning_content": "because"}]
+    )
+    assert cleaned[0]["reasoning_content"] == "because"
+
+
+def test_record_tool_results_writes_a_tool_results_line(tmp_path: Path) -> None:
+    with molecule_trace("CCO", log_dir=tmp_path, session_id="s"):
+        with node_depth(1, molecule="CC=O"):
+            llm_trace.record_tool_results(
+                stage="retrosynthesis_agent",
+                iteration=2,
+                results=[
+                    {
+                        "tool_call_id": "c1",
+                        "name": "validate_smiles",
+                        "arguments": {"smiles": "CCO"},
+                        "output": {"valid": True},
+                    }
+                ],
+            )
+    (record,) = _read(tmp_path)
+    assert record["kind"] == "tool_results"
+    assert record["stage"] == "retrosynthesis_agent"
+    assert record["iteration"] == 2
+    assert record["depth"] == 1
+    assert record["node_molecule"] == "CC=O"
+    assert record["tool_results"][0]["name"] == "validate_smiles"
+    assert record["tool_results"][0]["output"] == {"valid": True}
+
+
+def test_record_tool_results_is_a_noop_without_a_trace(tmp_path: Path) -> None:
+    llm_trace.record_tool_results(
+        stage="retrosynthesis_agent", iteration=1, results=[{"name": "x"}]
+    )
+    assert not (tmp_path / LOG_FILENAME).exists()
+
+
+def test_trace_has_a_stable_langfuse_trace_id_used_by_metadata() -> None:
+    with molecule_trace("CCO", session_id="s") as trace:
+        assert trace.trace_id
+        with node_depth(2, molecule="CC=O"):
+            meta = langfuse_metadata({"task": "t"}, stage="retrosynthesis_agent")
+    assert meta["trace_id"] == trace.trace_id
+    # Per-generation keys so Langfuse shows them on each generation online.
+    assert meta["depth"] == 2
+    assert meta["node_molecule"] == "CC=O"
+    assert meta["trace_metadata"] == {
+        "molecule": "CCO",
+        "node_molecule": "CC=O",
+        "depth": 2,
+    }
+
+
+def test_tool_results_become_langfuse_events_in_the_same_trace(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake = FakeLangfuse()
+    monkeypatch.setattr(llm_trace, "_langfuse_client", lambda: fake)
+
+    with molecule_trace("CCO", log_dir=tmp_path, session_id="s") as trace:
+        with node_depth(1, molecule="CC=O"):
+            llm_trace.record_tool_results(
+                stage="retrosynthesis_agent",
+                iteration=3,
+                results=[
+                    {
+                        "tool_call_id": "c1",
+                        "name": "validate_smiles",
+                        "arguments": {"smiles": "CCO"},
+                        "output": {"valid": True},
+                    },
+                    {
+                        "tool_call_id": "c2",
+                        "name": "check_hallucination",
+                        "arguments": {"product": "CC=O"},
+                        "output": {"score": 90},
+                    },
+                ],
+            )
+
+    # The trace shell is created up front so events can attach to it.
+    assert fake.traces and fake.traces[0]["id"] == trace.trace_id
+    assert fake.traces[0]["session_id"] == "s"
+    assert fake.traces[0]["name"] == llm_trace.TRACE_NAME
+    assert [e["name"] for e in fake.events] == [
+        "tool:validate_smiles",
+        "tool:check_hallucination",
+    ]
+    event = fake.events[0]
+    assert event["trace_id"] == trace.trace_id
+    assert event["input"] == {"smiles": "CCO"}
+    assert event["output"] == {"valid": True}
+    assert event["metadata"]["depth"] == 1
+    assert event["metadata"]["iteration"] == 3
+    assert event["metadata"]["tool_call_id"] == "c1"
+    assert fake.flushed == 1  # flushed once when the trace closes
+
+
+def test_langfuse_client_failures_never_propagate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class Broken:
+        def trace(self, **kwargs: Any) -> None:
+            raise RuntimeError("boom")
+
+        def event(self, **kwargs: Any) -> None:
+            raise RuntimeError("boom")
+
+        def flush(self) -> None:
+            raise RuntimeError("boom")
+
+    monkeypatch.setattr(llm_trace, "_langfuse_client", lambda: Broken())
+    with molecule_trace("CCO", log_dir=tmp_path, session_id="s"):
+        llm_trace.record_tool_results(
+            stage="retrosynthesis_agent",
+            iteration=1,
+            results=[{"tool_call_id": "c", "name": "n", "arguments": {}, "output": 1}],
+        )
+    assert len(_read(tmp_path)) == 1
+
+
+def test_no_langfuse_client_without_keys(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("LANGFUSE_PUBLIC_KEY", raising=False)
+    monkeypatch.delenv("LANGFUSE_SECRET_KEY", raising=False)
+    monkeypatch.setattr(llm_trace, "_client_cache", None)
+    assert llm_trace.build_langfuse_client() is None

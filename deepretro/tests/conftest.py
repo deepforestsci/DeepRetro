@@ -292,3 +292,15 @@ def failing_reagent_recommender() -> ReagentRecommender:
         return 404, ""
 
     return _recommender
+
+
+@pytest.fixture(autouse=True)
+def _offline_langfuse_events(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep the suite offline: never build a real Langfuse client in tests.
+
+    Tests that want to observe events monkeypatch ``_langfuse_client`` again
+    with a recorder.
+    """
+    from deepretro.utils import llm_trace
+
+    monkeypatch.setattr(llm_trace, "_langfuse_client", lambda: None)

@@ -447,10 +447,17 @@ def test_default_model_call_records_each_iteration(
         result = agentic_single_step("CC=O", MODEL)
 
     assert result == ([["CCO"]], ["reduce"], [0.8])
-    records = read_log(tmp_path)
+    all_records = read_log(tmp_path)
+    assert [record["kind"] for record in all_records] == [
+        "llm_call",
+        "tool_results",
+        "llm_call",
+    ]
+    records = [record for record in all_records if record["kind"] == "llm_call"]
     assert [record["iteration"] for record in records] == [1, 2]
     assert {record["stage"] for record in records} == {"retrosynthesis_agent"}
     assert records[0]["tool_calls"][0]["id"] == "call_1"
+    assert all_records[1]["tool_results"][0]["name"] == "validate_smiles"
     assert records[1]["response"] == FINAL_ANSWER
     assert records[1]["usage"] == {
         "prompt_tokens": 3,
@@ -488,3 +495,24 @@ def test_default_model_call_without_a_trace_writes_nothing(
     assert not (tmp_path / LOG_FILENAME).exists()
     assert "session_id" not in seen[0]["metadata"]
     assert seen[0]["metadata"]["task"] == "retrosynthesis_agent"
+
+
+def test_agent_loop_records_tool_results_per_turn(tmp_path: Path) -> None:
+    """Every tool the agent runs is logged with its name, arguments and output."""
+    turns = iter([tool_turn("validate_smiles", {"smiles": "C(C)O"}), final_turn()])
+
+    with molecule_trace("CC=O", log_dir=tmp_path, session_id="sess-tools"):
+        result = agentic_single_step("CC=O", MODEL, llm_runner=lambda m: next(turns))
+
+    assert result == ([["CCO"]], ["reduce"], [0.8])
+    records = [r for r in read_log(tmp_path) if r["kind"] == "tool_results"]
+    assert len(records) == 1
+    record = records[0]
+    assert record["iteration"] == 1
+    assert record["stage"] == "retrosynthesis_agent"
+    (tool,) = record["tool_results"]
+    assert tool["tool_call_id"] == "call_1"
+    assert tool["name"] == "validate_smiles"
+    assert tool["arguments"] == {"smiles": "C(C)O"}
+    assert tool["output"]["valid"] is True
+    assert tool["output"]["canonical_smiles"] == "CCO"

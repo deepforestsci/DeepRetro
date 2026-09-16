@@ -159,7 +159,8 @@ once as a warning and then ignored — logging never breaks a run.
 Record fields
 ~~~~~~~~~~~~~
 
-Each line is one JSON object:
+Each line is one JSON object. ``kind`` says which of the two record shapes it
+is; the first nine fields are shared by both:
 
 .. list-table::
    :header-rows: 1
@@ -168,9 +169,14 @@ Each line is one JSON object:
    * - Field
      - Meaning
    * - ``timestamp``
-     - ISO 8601 UTC time the call finished.
+     - ISO 8601 UTC time the record was written.
+   * - ``kind``
+     - ``llm_call`` (one model call) or ``tool_results`` (the tools the agent
+       ran after one model turn).
    * - ``session_id``
-     - Langfuse session id shared by every call of this run.
+     - Langfuse session id shared by every record of this run.
+   * - ``trace_id``
+     - Langfuse trace id shared by every generation and tool event of this run.
    * - ``target``
      - Root molecule the run is solving.
    * - ``node_molecule``
@@ -182,15 +188,26 @@ Each line is one JSON object:
        or ``metadata`` (reagent/conditions/literature enrichment).
    * - ``iteration``
      - Agent loop turn or provider retry attempt, 1-based.
+
+``llm_call`` records add:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Field
+     - Meaning
    * - ``model``
      - LiteLLM model identifier.
    * - ``messages``
-     - Conversation sent to the provider.
+     - Conversation sent to the provider. Opaque provider replay data
+       (Anthropic ``thinking_blocks`` signatures, ``provider_specific_fields``)
+       is stripped and tool calls are stored as plain JSON objects.
    * - ``response``
      - Assistant content string, or the serialized message when the turn only
        requested tools.
    * - ``tool_calls``
-     - Tool calls the assistant requested, if any.
+     - Tool calls the assistant requested, if any, as JSON objects.
    * - ``usage``
      - ``prompt_tokens`` / ``completion_tokens`` / ``total_tokens`` when the
        provider reports them.
@@ -198,6 +215,20 @@ Each line is one JSON object:
      - Wall-clock duration of the provider call.
    * - ``error``
      - Error text when the call failed, otherwise ``null``.
+
+``tool_results`` records add:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Field
+     - Meaning
+   * - ``tool_results``
+     - One object per executed tool: ``tool_call_id``, ``name``, ``arguments``
+       (parsed) and ``output`` (the tool's return value). Written after the
+       tools run, so the outputs of the agent's last allowed turn are kept
+       even when no further model call follows.
 
 Reading a log back is ordinary JSON Lines:
 
@@ -208,10 +239,25 @@ Reading a log back is ordinary JSON Lines:
 
    path = Path("batch_output/2026-07-01_00-00-00/CCO_1b0ef7e2/llm_calls.jsonl")
    records = [json.loads(line) for line in path.read_text().splitlines()]
-   total_tokens = sum((r["usage"] or {}).get("total_tokens", 0) for r in records)
+   calls = [r for r in records if r["kind"] == "llm_call"]
+   total_tokens = sum((r["usage"] or {}).get("total_tokens", 0) for r in calls)
+   tool_outputs = [
+       t for r in records if r["kind"] == "tool_results" for t in r["tool_results"]
+   ]
 
 How Langfuse traces are grouped
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Every record of one run carries the same ``trace_id`` and ``session_id``.
+LiteLLM receives both in the completion ``metadata``, so all of the run's
+generations land in one Langfuse trace, each tagged with its ``stage``,
+``depth`` and ``node_molecule`` as generation metadata. When
+``LANGFUSE_PUBLIC_KEY`` and ``LANGFUSE_SECRET_KEY`` are set, every tool the
+agent runs is also sent as a Langfuse *event* in that trace
+(``name="tool:<tool name>"``, ``input`` = the tool arguments, ``output`` = the
+tool result), so tool outputs render online beside the model turns that
+requested them. Without the keys, only the local file is written.
+
 
 LiteLLM's Langfuse callback sees one completion at a time, so DeepRetro supplies
 the grouping itself. :func:`deepretro.utils.llm_trace.langfuse_metadata` adds the
