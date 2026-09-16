@@ -64,6 +64,25 @@ Modes
   ``"sandbox"`` (adds a ``run_python`` code-execution tool). Ignored in
   ``pipeline`` mode.
 
+Agent iteration budget
+----------------------
+
+In ``single_step_agent`` mode each node gets its own turn budget instead of a
+fixed ``max_iterations``. The budget is derived from the molecule's carbon
+count and shrinks with recursion depth::
+
+   budget = clamp(round(carbons * decay ** depth), min_iterations, max_iterations)
+
+with defaults ``min_iterations=5``, ``max_iterations=15`` and ``decay=0.75``.
+A 20-carbon target therefore gets 15 turns at the root, 11 at depth 2 and the
+floor of 5 from depth 5 onward; a molecule RDKit cannot parse, or one without
+carbon, gets the floor. Tune the three values through
+``AutoSolver(agent_min_iterations=..., agent_max_iterations=...,
+agent_iteration_decay=...)`` or the batch flags ``--agent-min-iterations``,
+``--agent-max-iterations`` and ``--agent-iteration-decay``. The chosen budget
+is logged per node as ``Agent iteration budget``. See
+:func:`deepretro.agents.loop.iteration_budget`.
+
 API
 ---
 

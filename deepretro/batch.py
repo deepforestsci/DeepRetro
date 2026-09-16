@@ -390,6 +390,25 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         help="Maximum retrosynthesis recursion depth (cost control)",
     )
     parser.add_argument(
+        "--agent-min-iterations",
+        type=int,
+        default=5,
+        help="Lower cap on the per-node agent turn budget (single_step_agent)",
+    )
+    parser.add_argument(
+        "--agent-max-iterations",
+        type=int,
+        default=15,
+        help="Upper cap on the per-node agent turn budget (single_step_agent)",
+    )
+    parser.add_argument(
+        "--agent-iteration-decay",
+        type=float,
+        default=0.75,
+        help="Per-depth multiplier on the agent turn budget: "
+        "clamp(carbons * decay**depth, min, max)",
+    )
+    parser.add_argument(
         "--skip-metadata",
         action="store_true",
         help="Skip the add_metadata enrichment stage (saves cost/time)",
@@ -460,6 +479,11 @@ def main(argv: list[str] | None = None) -> None:
         solve_mode=args.solve_mode,
         hallucination_mode=hallucination_mode,
         max_depth=args.max_depth,
+        agent_iterations=(
+            args.agent_min_iterations,
+            args.agent_max_iterations,
+            args.agent_iteration_decay,
+        ),
         metadata=not args.skip_metadata,
     )
 
@@ -474,6 +498,9 @@ def main(argv: list[str] | None = None) -> None:
         hallucination_classifier=classifier_dir,
         hallucination_weights=hallucination_weights,
         max_depth=args.max_depth,
+        agent_min_iterations=args.agent_min_iterations,
+        agent_max_iterations=args.agent_max_iterations,
+        agent_iteration_decay=args.agent_iteration_decay,
     )
 
     run_batch(

@@ -1131,3 +1131,90 @@ class TestAgentModeSafetyNet:
 
         assert solved is True
         assert len(route["children"][0]["children"]) == 2
+
+
+class TestDynamicIterationBudget:
+    """The solver sizes the agent's iteration budget per node."""
+
+    def test_agent_runner_receives_budget_for_root_and_children(self) -> None:
+        seen: list[tuple[str, int]] = []
+
+        def runner(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
+            seen.append((canonicalize(molecule), kwargs["max_iterations"]))
+            if canonicalize(molecule) == canonicalize(ASPIRIN):
+                return [[OCTANE, DECANE]], ["split"], [0.8]
+            return [], [], []
+
+        solver = AutoSolver(
+            solve_mode="single_step_agent",
+            az_runner=lambda s, m: (False, []),
+            agent_runner=runner,
+            hallucination_mode="none",
+            stability_check=False,
+        )
+        solver.solve(ASPIRIN)
+
+        # aspirin has 9 carbons at depth 0 -> 9; octane 8 * 0.75 = 6;
+        # decane 10 * 0.75 = 7.5 -> 8.
+        assert seen == [
+            (canonicalize(ASPIRIN), 9),
+            (canonicalize(OCTANE), 6),
+            (canonicalize(DECANE), 8),
+        ]
+
+    def test_custom_bounds_flow_to_agent(self) -> None:
+        seen: list[int] = []
+
+        def runner(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
+            seen.append(kwargs["max_iterations"])
+            return [], [], []
+
+        solver = AutoSolver(
+            solve_mode="single_step_agent",
+            az_runner=lambda s, m: (False, []),
+            agent_runner=runner,
+            hallucination_mode="none",
+            stability_check=False,
+            agent_min_iterations=3,
+            agent_max_iterations=4,
+        )
+        solver.solve(ASPIRIN)
+        assert seen == [4]
+
+    def test_run_llm_defaults_to_root_depth(self) -> None:
+        seen: list[int] = []
+
+        def runner(
+            molecule: str, **kwargs: Any
+        ) -> tuple[list[list[str]], list[str], list[float]]:
+            seen.append(kwargs["max_iterations"])
+            return [], [], []
+
+        solver = AutoSolver(
+            solve_mode="single_step_agent",
+            agent_runner=runner,
+            hallucination_mode="none",
+            stability_check=False,
+        )
+        solver.run_llm(DECANE)
+        solver.run_llm(DECANE, depth=2)
+        assert seen == [10, 6]  # 10 * 0.75**2 = 5.625 -> 6
+
+    @pytest.mark.parametrize(
+        "kwargs",
+        [
+            {"agent_min_iterations": 0},
+            {"agent_min_iterations": 6, "agent_max_iterations": 5},
+            {"agent_iteration_decay": 0.0},
+            {"agent_iteration_decay": 1.5},
+        ],
+    )
+    def test_constructor_rejects_bad_budget_parameters(
+        self, kwargs: dict[str, Any]
+    ) -> None:
+        with pytest.raises(ValueError):
+            AutoSolver(hallucination_mode="none", **kwargs)

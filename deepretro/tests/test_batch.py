@@ -116,3 +116,48 @@ def test_train_hallucination_checker_skips_without_label_column(tmp_path: Path) 
     csv_path.write_text("product,reactants\nCCO,CC\n")
     result = batch.train_hallucination_checker(str(csv_path), str(tmp_path / "model"))
     assert result is None
+
+
+def test_arg_parser_exposes_agent_iteration_budget_flags() -> None:
+    args = batch._build_arg_parser().parse_args(["--molecules", "m.txt"])
+    assert args.agent_min_iterations == 5
+    assert args.agent_max_iterations == 15
+    assert args.agent_iteration_decay == 0.75
+
+
+def test_main_passes_agent_iteration_budget_to_solver(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import deepretro.algorithms.autosolve as autosolve_module
+
+    captured: dict[str, Any] = {}
+
+    class RecordingSolver:
+        def __init__(self, **kwargs: Any) -> None:
+            captured.update(kwargs)
+
+    monkeypatch.setattr(autosolve_module, "AutoSolver", RecordingSolver)
+    monkeypatch.setattr(batch, "run_batch", lambda *a, **kw: None)
+    molecules = tmp_path / "m.txt"
+    molecules.write_text("CCO\n")
+
+    batch.main(
+        [
+            "--molecules",
+            str(molecules),
+            "--out",
+            str(tmp_path / "out"),
+            "--hallucination-mode",
+            "none",
+            "--agent-min-iterations",
+            "4",
+            "--agent-max-iterations",
+            "12",
+            "--agent-iteration-decay",
+            "0.5",
+        ]
+    )
+
+    assert captured["agent_min_iterations"] == 4
+    assert captured["agent_max_iterations"] == 12
+    assert captured["agent_iteration_decay"] == 0.5

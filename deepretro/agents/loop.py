@@ -16,6 +16,7 @@ before the loop inspects tool calls or visible content.
 from __future__ import annotations
 
 import json
+import math
 from collections.abc import Callable
 from typing import Any, cast
 
@@ -28,6 +29,109 @@ from deepretro.utils.llm_helpers import ChatMessage, Pathway
 logger = structlog.get_logger(__name__)
 
 ModelCall = Callable[[list[dict[str, Any]]], Any]
+
+DEFAULT_MIN_ITERATIONS = 5
+DEFAULT_MAX_ITERATIONS = 15
+DEFAULT_ITERATION_DECAY = 0.75
+
+
+def validate_iteration_budget(
+    min_iterations: int, max_iterations: int, decay: float
+) -> None:
+    """Validate the parameters of :func:`iteration_budget`.
+
+    Parameters
+    ----------
+    min_iterations : int
+        Lower cap on the budget; must be at least 1.
+    max_iterations : int
+        Upper cap on the budget; must be at least ``min_iterations``.
+    decay : float
+        Per-depth multiplier; must satisfy ``0 < decay <= 1``.
+
+    Raises
+    ------
+    ValueError
+        If any parameter is out of range.
+
+    Examples
+    --------
+    >>> validate_iteration_budget(5, 15, 0.75)
+    >>> validate_iteration_budget(6, 5, 0.75)
+    Traceback (most recent call last):
+        ...
+    ValueError: max_iterations must be >= min_iterations
+    """
+    if min_iterations < 1:
+        raise ValueError("min_iterations must be at least 1")
+    if max_iterations < min_iterations:
+        raise ValueError("max_iterations must be >= min_iterations")
+    if not 0.0 < decay <= 1.0:
+        raise ValueError("decay must be in the interval (0, 1]")
+
+
+def iteration_budget(
+    smiles: str,
+    depth: int,
+    *,
+    min_iterations: int = DEFAULT_MIN_ITERATIONS,
+    max_iterations: int = DEFAULT_MAX_ITERATIONS,
+    decay: float = DEFAULT_ITERATION_DECAY,
+) -> int:
+    """Size the agent's turn budget for one node from carbon count and depth.
+
+    The budget starts at the number of carbon atoms in ``smiles`` and shrinks
+    geometrically with recursion depth (``carbons * decay ** depth``), so a
+    large target gets many turns at the root while small, deep intermediates
+    get few. The value is rounded half-up and clamped to
+    ``[min_iterations, max_iterations]``. Molecules RDKit cannot parse, or
+    that contain no carbon, receive ``min_iterations``.
+
+    Parameters
+    ----------
+    smiles : str
+        Molecule at the current node.
+    depth : int
+        Recursion depth of the node (``0`` for the target).
+    min_iterations : int, optional
+        Lower cap on the budget. Defaults to 5.
+    max_iterations : int, optional
+        Upper cap on the budget. Defaults to 15.
+    decay : float, optional
+        Multiplier applied once per depth level. Defaults to 0.75.
+
+    Returns
+    -------
+    int
+        Maximum number of model turns for this node.
+
+    Raises
+    ------
+    ValueError
+        If ``depth`` is negative or the caps/decay are out of range.
+
+    Examples
+    --------
+    >>> iteration_budget("C" * 20, depth=0)
+    15
+    >>> iteration_budget("C" * 20, depth=2)
+    11
+    >>> iteration_budget("CCO", depth=0)
+    5
+    """
+    from rdkit import Chem
+
+    validate_iteration_budget(min_iterations, max_iterations, decay)
+    if depth < 0:
+        raise ValueError("depth must be non-negative")
+
+    mol = Chem.MolFromSmiles(smiles) if isinstance(smiles, str) else None
+    if mol is None:
+        return min_iterations
+    carbons = sum(1 for atom in mol.GetAtoms() if atom.GetAtomicNum() == 6)
+    raw = math.floor(carbons * decay**depth + 0.5)
+    return max(min_iterations, min(max_iterations, raw))
+
 
 _TOOL_INSTRUCTION = (
     "\n\nYou may call the provided tools to validate SMILES, check stability, "

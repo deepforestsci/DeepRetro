@@ -304,3 +304,52 @@ def test_orchestrator_raises_not_implemented() -> None:
     """The top-level orchestrator is a scaffold and raises when invoked."""
     with pytest.raises(NotImplementedError, match="orchestrator"):
         agentic_orchestrator("CCO", MODEL)
+
+
+class TestIterationBudget:
+    """Per-node agent iteration budget from carbon count and depth."""
+
+    def test_large_molecule_at_root_hits_max_cap(self) -> None:
+        assert agent_loop.iteration_budget("C" * 20, depth=0) == 15
+
+    def test_budget_decays_with_depth(self) -> None:
+        # 20 carbons: 20, 15, 11.25, 8.44, 6.33, 4.75 -> clamped to [5, 15]
+        budgets = [agent_loop.iteration_budget("C" * 20, depth=d) for d in range(6)]
+        assert budgets == [15, 15, 11, 8, 6, 5]
+
+    def test_half_rounds_up_not_to_even(self) -> None:
+        # 10 carbons at depth 1 -> 7.5 -> 8 (not banker's rounding to 8/7 mix)
+        assert agent_loop.iteration_budget("C" * 10, depth=1) == 8
+        # 6 carbons at depth 1 -> 4.5 -> 5 after rounding, also the floor
+        assert agent_loop.iteration_budget("C" * 6, depth=1) == 5
+
+    def test_small_molecule_gets_min_cap(self) -> None:
+        assert agent_loop.iteration_budget("CCO", depth=0) == 5
+
+    def test_no_carbon_gets_min_cap(self) -> None:
+        assert agent_loop.iteration_budget("O=S(=O)(O)O", depth=0) == 5
+
+    def test_unparseable_gets_min_cap(self) -> None:
+        assert agent_loop.iteration_budget("not-a-smiles", depth=0) == 5
+
+    def test_custom_bounds_and_decay(self) -> None:
+        budget = agent_loop.iteration_budget(
+            "C" * 10, depth=1, min_iterations=2, max_iterations=8, decay=0.5
+        )
+        assert budget == 5
+
+    @pytest.mark.parametrize(
+        "kwargs",
+        [
+            {"min_iterations": 0},
+            {"min_iterations": 6, "max_iterations": 5},
+            {"decay": 0.0},
+            {"decay": 1.5},
+            {"depth": -1},
+        ],
+    )
+    def test_rejects_bad_parameters(self, kwargs: dict[str, Any]) -> None:
+        params: dict[str, Any] = {"depth": 0}
+        params.update(kwargs)
+        with pytest.raises(ValueError):
+            agent_loop.iteration_budget("CCO", **params)
