@@ -66,7 +66,7 @@ _write_failure_logged = False
 class MoleculeTrace:
     """Grouping context for every LLM call made for one target molecule.
 
-    Attributes
+    Parameters
     ----------
     molecule : str
         Target (root) molecule SMILES the current run is solving.
