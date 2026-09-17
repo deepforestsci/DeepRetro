@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from copy import deepcopy
 from typing import Any
 
@@ -15,6 +16,7 @@ from deepretro.algorithms.autosolve import (
     summarize_az,
     unsolved_leaf,
 )
+from deepretro.utils import llm_trace
 from deepretro.utils.utils_molecule import canonicalize
 
 ASPIRIN = "CC(=O)Oc1ccccc1C(=O)O"
@@ -1218,3 +1220,131 @@ class TestDynamicIterationBudget:
     ) -> None:
         with pytest.raises(ValueError):
             AutoSolver(hallucination_mode="none", **kwargs)
+
+
+# ---------------------------------------------------------------------------
+# Per-molecule LLM trace context
+# ---------------------------------------------------------------------------
+
+
+def test_autosolve_activates_a_molecule_trace(tmp_path: Any) -> None:
+    """The LLM runner sees an active trace naming the target molecule."""
+    seen: dict[str, Any] = {}
+
+    def llm_runner(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+        trace = llm_trace.current_trace()
+        seen["session_id"] = None if trace is None else trace.session_id
+        seen["target"] = None if trace is None else trace.molecule
+        seen["log_path"] = None if trace is None else trace.log_path
+        seen["depth"] = llm_trace.current_depth()
+        seen["node"] = llm_trace.current_node_molecule()
+        return [], [], []
+
+    solver = AutoSolver(
+        az_runner=az_always_fails,
+        llm_runner=llm_runner,
+        hallucination_mode="none",
+        llm_log_dir=tmp_path,
+    )
+    solver.autosolve(ACETIC_ACID)
+
+    assert seen["target"] == ACETIC_ACID
+    assert seen["session_id"]
+    assert seen["depth"] == 0
+    assert seen["node"] == ACETIC_ACID
+    assert seen["log_path"] == (
+        tmp_path / llm_trace.molecule_slug(ACETIC_ACID) / llm_trace.LOG_FILENAME
+    )
+
+
+def test_autosolve_without_log_dir_still_groups_calls() -> None:
+    """Without ``llm_log_dir`` the trace is active but writes nothing locally."""
+    seen: dict[str, Any] = {}
+
+    def llm_runner(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+        trace = llm_trace.current_trace()
+        seen["log_path"] = None if trace is None else trace.log_path
+        seen["active"] = trace is not None
+        return [], [], []
+
+    AutoSolver(
+        az_runner=az_always_fails,
+        llm_runner=llm_runner,
+        hallucination_mode="none",
+    ).autosolve(ACETIC_ACID)
+
+    assert seen["active"] is True
+    assert seen["log_path"] is None
+
+
+def test_autosolve_reuses_an_outer_trace(tmp_path: Any) -> None:
+    """An outer (batch) trace wins over the solver's own ``llm_log_dir``."""
+    seen: dict[str, Any] = {}
+
+    def llm_runner(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+        trace = llm_trace.current_trace()
+        seen["session_id"] = None if trace is None else trace.session_id
+        seen["log_path"] = None if trace is None else trace.log_path
+        return [], [], []
+
+    solver = AutoSolver(
+        az_runner=az_always_fails,
+        llm_runner=llm_runner,
+        hallucination_mode="none",
+        llm_log_dir=tmp_path / "ignored",
+    )
+    outer_dir = tmp_path / "outer"
+    with llm_trace.molecule_trace(ACETIC_ACID, log_dir=outer_dir, session_id="outer"):
+        solver.autosolve(ACETIC_ACID)
+
+    assert seen["session_id"] == "outer"
+    assert seen["log_path"] == outer_dir / llm_trace.LOG_FILENAME
+
+
+def test_solve_records_the_depth_of_each_node() -> None:
+    """Recursive LLM calls carry the depth of the node being expanded."""
+    seen: list[tuple[str, int]] = []
+
+    def llm_runner(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+        seen.append((molecule, llm_trace.current_depth()))
+        if molecule == ACETIC_ACID:
+            return [["CCC"]], ["alkylation"], [0.9]
+        return [], [], []
+
+    solver = AutoSolver(
+        az_runner=az_always_fails,
+        llm_runner=llm_runner,
+        hallucination_mode="none",
+    )
+    # ``solve`` (not ``autosolve``) keeps the test off the metadata LLM path.
+    with llm_trace.molecule_trace(ACETIC_ACID):
+        solver.solve(ACETIC_ACID)
+
+    assert seen == [(ACETIC_ACID, 0), ("CCC", 1)]
+
+
+def test_autosolve_writes_llm_calls_log(tmp_path: Any) -> None:
+    """LLM calls made during a solve are mirrored to the molecule's log file."""
+
+    def llm_runner(molecule: str, **kwargs: Any) -> tuple[list, list, list]:
+        llm_trace.record_llm_call(
+            stage="retrosynthesis",
+            model="openai/gpt-4o-mini",
+            messages=[{"role": "user", "content": molecule}],
+            response="no route",
+            latency_ms=1.0,
+        )
+        return [], [], []
+
+    AutoSolver(
+        az_runner=az_always_fails,
+        llm_runner=llm_runner,
+        hallucination_mode="none",
+        llm_log_dir=tmp_path,
+    ).autosolve(ACETIC_ACID)
+
+    log_path = tmp_path / llm_trace.molecule_slug(ACETIC_ACID) / llm_trace.LOG_FILENAME
+    records = [json.loads(line) for line in log_path.read_text().splitlines()]
+    assert len(records) == 1
+    assert records[0]["target"] == ACETIC_ACID
+    assert records[0]["node_molecule"] == ACETIC_ACID

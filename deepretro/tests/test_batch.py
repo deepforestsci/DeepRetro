@@ -9,6 +9,7 @@ from typing import Any
 import pytest
 
 from deepretro import batch
+from deepretro.utils.llm_trace import LOG_FILENAME, current_trace, record_llm_call
 
 
 class FakeResponse:
@@ -161,3 +162,68 @@ def test_main_passes_agent_iteration_budget_to_solver(
     assert captured["agent_min_iterations"] == 4
     assert captured["agent_max_iterations"] == 12
     assert captured["agent_iteration_decay"] == 0.5
+
+
+def test_run_batch_writes_llm_call_log_in_the_molecule_dir(tmp_path: Path) -> None:
+    """LLM calls made while solving land in the molecule's ``llm_calls.jsonl``."""
+
+    def solve(smiles: str) -> list[dict[str, Any]]:
+        record_llm_call(
+            stage="retrosynthesis",
+            model="openai/gpt-4o-mini",
+            messages=[{"role": "user", "content": smiles}],
+            response="ok",
+            latency_ms=2.0,
+        )
+        return [{"target": smiles, "solved": True}]
+
+    batch.run_batch(
+        ["CCO"], str(tmp_path), timestamp="2026-07-01_00-00-00", solve=solve
+    )
+    log_path = (
+        tmp_path / "2026-07-01_00-00-00" / batch.slugify_molecule("CCO") / LOG_FILENAME
+    )
+    lines = log_path.read_text().splitlines()
+    assert len(lines) == 1
+    record = json.loads(lines[0])
+    assert record["target"] == "CCO"
+    assert record["stage"] == "retrosynthesis"
+
+
+def test_run_batch_trace_is_active_when_the_solver_raises(tmp_path: Path) -> None:
+    """A failing molecule still writes its call log and its error.json."""
+
+    def solve(smiles: str) -> list[dict[str, Any]]:
+        record_llm_call(
+            stage="retrosynthesis",
+            model="m",
+            messages=[],
+            response=None,
+            error="provider down",
+            latency_ms=1.0,
+        )
+        raise RuntimeError("solver exploded")
+
+    batch.run_batch(
+        ["CCO"], str(tmp_path), timestamp="2026-07-01_00-00-00", solve=solve
+    )
+    mol_dir = tmp_path / "2026-07-01_00-00-00" / batch.slugify_molecule("CCO")
+    assert "solver exploded" in (mol_dir / "error.json").read_text()
+    record = json.loads((mol_dir / LOG_FILENAME).read_text().splitlines()[0])
+    assert record["error"] == "provider down"
+
+
+def test_run_batch_gives_each_molecule_its_own_session(tmp_path: Path) -> None:
+    """Two targets never share a Langfuse session id or a log file."""
+    sessions: list[str] = []
+
+    def solve(smiles: str) -> list[dict[str, Any]]:
+        trace = current_trace()
+        assert trace is not None
+        sessions.append(trace.session_id)
+        return [{"target": smiles}]
+
+    batch.run_batch(
+        ["CCO", "CCC"], str(tmp_path), timestamp="2026-07-01_00-00-00", solve=solve
+    )
+    assert len(set(sessions)) == 2

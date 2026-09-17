@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import math
+import time
 from collections.abc import Callable
 from typing import Any, cast
 
@@ -25,6 +26,12 @@ import structlog
 from deepretro.agents.message_history import append_assistant_message
 from deepretro.agents.tools import build_tool_registry
 from deepretro.utils.llm_helpers import ChatMessage, Pathway
+from deepretro.utils.llm_trace import (
+    elapsed_ms,
+    langfuse_metadata,
+    record_llm_call,
+    record_tool_results,
+)
 
 logger = structlog.get_logger(__name__)
 
@@ -258,6 +265,7 @@ def agentic_single_step(
                 event_sink.append(_classify_agent_event(molecule, content))
             return result
 
+        executed: list[dict[str, Any]] = []
         for tool_call in tool_calls:
             function = tool_call.get("function", {})
             name = function.get("name", "")
@@ -270,6 +278,19 @@ def agentic_single_step(
                     "content": json.dumps(result),
                 }
             )
+            executed.append(
+                {
+                    "tool_call_id": tool_call.get("id", ""),
+                    "name": name,
+                    "arguments": arguments,
+                    "output": result,
+                }
+            )
+        # Tool outputs are logged in their own right (and as Langfuse events),
+        # so they survive even when this was the agent's last allowed turn.
+        record_tool_results(
+            stage="retrosynthesis_agent", iteration=_iteration + 1, results=executed
+        )
 
     logger.warning(
         "Agent reached max_iterations without a final answer",
@@ -447,6 +468,9 @@ def _make_default_model_call(
     True
     """
 
+    # One model call per agent loop turn, so the call count is the iteration.
+    iteration = 0
+
     def _call(messages: list[dict[str, Any]]) -> object:
         """Send one conversation turn to LiteLLM and return its raw message.
 
@@ -460,10 +484,13 @@ def _make_default_model_call(
         >>> callable(call_model)
         True
         """
+        nonlocal iteration
+
         from litellm import completion
 
         from deepretro.utils.llm_helpers import build_completion_params
 
+        iteration += 1
         params = build_completion_params(
             model=model,
             # The conversation is an OpenAI-format superset of ChatMessage
@@ -472,10 +499,36 @@ def _make_default_model_call(
             max_completion_tokens=max_output_tokens or 8192,
             temperature=0.0,
             enable_thinking=enable_thinking,
-            metadata={"task": "retrosynthesis_agent"},
+            metadata=langfuse_metadata(
+                {"task": "retrosynthesis_agent"}, stage="retrosynthesis_agent"
+            ),
         )
         params["tools"] = tools
-        response = completion(**params)
-        return response.choices[0].message
+        started = time.perf_counter()
+        try:
+            response = completion(**params)
+        except Exception as exc:
+            record_llm_call(
+                stage="retrosynthesis_agent",
+                model=model,
+                messages=messages,
+                response=None,
+                error=str(exc),
+                latency_ms=elapsed_ms(started),
+                iteration=iteration,
+            )
+            raise
+        latency_ms = elapsed_ms(started)
+        message = response.choices[0].message
+        record_llm_call(
+            stage="retrosynthesis_agent",
+            model=model,
+            messages=messages,
+            response=response,
+            latency_ms=latency_ms,
+            tool_calls=getattr(message, "tool_calls", None),
+            iteration=iteration,
+        )
+        return message
 
     return _call

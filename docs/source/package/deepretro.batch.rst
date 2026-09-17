@@ -7,6 +7,21 @@ from a text file, runs each through
 :class:`deepretro.algorithms.autosolve.AutoSolver`, and dumps the routes as
 ``<out>/<timestamp>/<molecule>/pathway_<i>.json``.
 
+Output layout
+-------------
+
+::
+
+   <out>/<timestamp>/<molecule-slug>/
+       pathway_1.json       parsed, scored route
+       pathway_2.json       ...
+       llm_calls.jsonl      one JSON line per LLM call made for this target
+       error.json           written instead of pathways when the molecule failed
+
+``llm_calls.jsonl`` is described in :doc:`../logging` (section
+"Per-molecule LLM call logs"); its records carry the Langfuse ``session_id`` that
+groups the same calls server-side.
+
 Command line
 ------------
 

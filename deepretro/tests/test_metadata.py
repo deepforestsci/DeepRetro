@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import json
 import os
+from pathlib import Path
 from typing import cast
 
 import pytest
 
 from deepretro import metadata
 from deepretro.utils.cache import CacheManager, make_cache_key
+from deepretro.utils.llm_trace import LOG_FILENAME, molecule_trace
 
 OPUS_MODEL = os.getenv("DEEPRETRO_METADATA_TEST_MODEL", metadata.DEFAULT_METADATA_MODEL)
 
@@ -301,3 +304,94 @@ def test_metadata_agents_hit_real_opus() -> None:
     assert metadata.valid_conditions_payload(recommendation_payload["conditions"])
     assert recommendation_payload["reagents"]
     assert str(recommendation_payload["literature"]).strip()
+
+
+# ---------------------------------------------------------------------------
+# Per-molecule LLM call logging
+# ---------------------------------------------------------------------------
+
+
+class _FakeMetadataMessage:
+    """Assistant message stand-in for the metadata completion."""
+
+    def __init__(self, content: str) -> None:
+        self.content = content
+
+    def model_dump(self) -> dict[str, object]:
+        return {"role": "assistant", "content": self.content}
+
+
+class _FakeMetadataResponse:
+    """Minimal LiteLLM response stand-in for the metadata completion."""
+
+    def __init__(self, content: str = "{}") -> None:
+        self.choices = [
+            type("_Choice", (), {"message": _FakeMetadataMessage(content)})()
+        ]
+        self.usage = {"total_tokens": 4}
+
+
+def test_call_metadata_llm_records_the_call(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The metadata call is grouped into the trace and mirrored to its log."""
+    seen: list[dict[str, object]] = []
+
+    def fake_completion(**params: object) -> _FakeMetadataResponse:
+        seen.append(params)
+        return _FakeMetadataResponse("{}")
+
+    monkeypatch.setattr(metadata, "completion", fake_completion)
+    monkeypatch.setattr(metadata, "_ensure_litellm_configured", lambda: None)
+
+    with molecule_trace("CCO", log_dir=tmp_path, session_id="sess-1"):
+        status, text = metadata.call_metadata_llm(
+            [{"role": "user", "content": "Return {}"}], OPUS_MODEL, 0.0
+        )
+
+    assert (status, text) == (200, "{}")
+    assert cast(dict, seen[0]["metadata"])["session_id"] == "sess-1"
+    assert cast(dict, seen[0]["metadata"])["generation_name"] == "metadata"
+
+    record = json.loads((tmp_path / LOG_FILENAME).read_text().splitlines()[0])
+    assert record["stage"] == "metadata"
+    assert record["target"] == "CCO"
+    assert record["iteration"] == 1
+    assert record["error"] is None
+
+
+def test_call_metadata_llm_records_the_metadata_free_retry(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An APIError is recorded, then the bare retry is recorded as attempt 2."""
+    import litellm
+
+    calls: list[dict[str, object]] = []
+
+    def fake_completion(**params: object) -> _FakeMetadataResponse:
+        calls.append(params)
+        if len(calls) == 1:
+            raise litellm.APIError(
+                status_code=500,
+                message="boom",
+                llm_provider="test",
+                model="test",
+            )
+        return _FakeMetadataResponse("{}")
+
+    monkeypatch.setattr(metadata, "completion", fake_completion)
+    monkeypatch.setattr(metadata, "_ensure_litellm_configured", lambda: None)
+
+    with molecule_trace("CCO", log_dir=tmp_path, session_id="sess-1"):
+        status, _text = metadata.call_metadata_llm(
+            [{"role": "user", "content": "Return {}"}], OPUS_MODEL, 0.0
+        )
+
+    assert status == 200
+    assert "metadata" not in calls[1]
+    records = [
+        json.loads(line) for line in (tmp_path / LOG_FILENAME).read_text().splitlines()
+    ]
+    assert [record["iteration"] for record in records] == [1, 2]
+    assert "boom" in records[0]["error"]
+    assert records[1]["error"] is None

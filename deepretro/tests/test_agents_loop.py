@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any
 
 import pytest
 
 import deepretro.agents.loop as agent_loop
 from deepretro.agents.loop import agentic_orchestrator, agentic_single_step
+from deepretro.utils.llm_trace import LOG_FILENAME, molecule_trace
 
 MODEL = "openai/gpt-4o-mini"
 FINAL_ANSWER = (
@@ -353,3 +355,164 @@ class TestIterationBudget:
         params.update(kwargs)
         with pytest.raises(ValueError):
             agent_loop.iteration_budget("CCO", **params)
+# ---------------------------------------------------------------------------
+# Per-molecule LLM call logging (default litellm-backed model call)
+# ---------------------------------------------------------------------------
+
+
+class FakeCompletionMessage:
+    """Assistant message stand-in returned by the patched ``litellm.completion``."""
+
+    def __init__(
+        self,
+        content: str | None,
+        tool_calls: list[dict[str, Any]] | None = None,
+    ) -> None:
+        self.content = content
+        self.tool_calls = tool_calls
+
+    def model_dump(self) -> dict[str, Any]:
+        dumped: dict[str, Any] = {"role": "assistant", "content": self.content}
+        if self.tool_calls is not None:
+            dumped["tool_calls"] = self.tool_calls
+        return dumped
+
+
+class FakeCompletionResponse:
+    """Minimal LiteLLM ``ModelResponse`` stand-in."""
+
+    def __init__(
+        self,
+        content: str | None,
+        tool_calls: list[dict[str, Any]] | None = None,
+    ) -> None:
+        self.choices = [FakeChoice(FakeCompletionMessage(content, tool_calls))]
+        self.usage = {"prompt_tokens": 3, "completion_tokens": 5, "total_tokens": 8}
+
+
+class FakeChoice:
+    """LiteLLM choice stand-in exposing one assistant message."""
+
+    def __init__(self, message: FakeCompletionMessage) -> None:
+        self.message = message
+
+
+def patch_completion(
+    monkeypatch: pytest.MonkeyPatch, responses: list[Any]
+) -> list[dict[str, Any]]:
+    """Patch ``litellm.completion`` with scripted responses; return seen params."""
+    import litellm
+
+    seen: list[dict[str, Any]] = []
+
+    def fake_completion(**params: Any) -> Any:
+        seen.append(params)
+        result = responses[len(seen) - 1]
+        if isinstance(result, Exception):
+            raise result
+        return result
+
+    monkeypatch.setattr(litellm, "completion", fake_completion)
+    return seen
+
+
+def read_log(log_dir: Path) -> list[dict[str, Any]]:
+    """Read the JSONL call log written under *log_dir*."""
+    path = log_dir / LOG_FILENAME
+    return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+
+
+def test_default_model_call_records_each_iteration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Each agent turn writes one record carrying its 1-based iteration."""
+    tool_answer = FakeCompletionResponse(
+        None,
+        [
+            {
+                "id": "call_1",
+                "type": "function",
+                "function": {
+                    "name": "validate_smiles",
+                    "arguments": json.dumps({"smiles": "CCO"}),
+                },
+            }
+        ],
+    )
+    seen = patch_completion(
+        monkeypatch, [tool_answer, FakeCompletionResponse(FINAL_ANSWER)]
+    )
+
+    with molecule_trace("CC=O", log_dir=tmp_path, session_id="sess-1"):
+        result = agentic_single_step("CC=O", MODEL)
+
+    assert result == ([["CCO"]], ["reduce"], [0.8])
+    all_records = read_log(tmp_path)
+    assert [record["kind"] for record in all_records] == [
+        "llm_call",
+        "tool_results",
+        "llm_call",
+    ]
+    records = [record for record in all_records if record["kind"] == "llm_call"]
+    assert [record["iteration"] for record in records] == [1, 2]
+    assert {record["stage"] for record in records} == {"retrosynthesis_agent"}
+    assert records[0]["tool_calls"][0]["id"] == "call_1"
+    assert all_records[1]["tool_results"][0]["name"] == "validate_smiles"
+    assert records[1]["response"] == FINAL_ANSWER
+    assert records[1]["usage"] == {
+        "prompt_tokens": 3,
+        "completion_tokens": 5,
+        "total_tokens": 8,
+    }
+    assert seen[0]["metadata"]["session_id"] == "sess-1"
+    assert seen[0]["metadata"]["generation_name"] == "retrosynthesis_agent"
+    assert seen[0]["metadata"]["task"] == "retrosynthesis_agent"
+
+
+def test_default_model_call_records_failures_and_reraises(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A provider error is recorded and then propagated unchanged."""
+    patch_completion(monkeypatch, [RuntimeError("provider down")])
+
+    with molecule_trace("CC=O", log_dir=tmp_path, session_id="sess-1"):
+        with pytest.raises(RuntimeError, match="provider down"):
+            agentic_single_step("CC=O", MODEL)
+
+    record = read_log(tmp_path)[0]
+    assert record["error"] == "provider down"
+    assert record["response"] is None
+
+
+def test_default_model_call_without_a_trace_writes_nothing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Outside a molecule trace no log file is created and no ids are sent."""
+    seen = patch_completion(monkeypatch, [FakeCompletionResponse(FINAL_ANSWER)])
+
+    agentic_single_step("CC=O", MODEL)
+
+    assert not (tmp_path / LOG_FILENAME).exists()
+    assert "session_id" not in seen[0]["metadata"]
+    assert seen[0]["metadata"]["task"] == "retrosynthesis_agent"
+
+
+def test_agent_loop_records_tool_results_per_turn(tmp_path: Path) -> None:
+    """Every tool the agent runs is logged with its name, arguments and output."""
+    turns = iter([tool_turn("validate_smiles", {"smiles": "C(C)O"}), final_turn()])
+
+    with molecule_trace("CC=O", log_dir=tmp_path, session_id="sess-tools"):
+        result = agentic_single_step("CC=O", MODEL, llm_runner=lambda m: next(turns))
+
+    assert result == ([["CCO"]], ["reduce"], [0.8])
+    records = [r for r in read_log(tmp_path) if r["kind"] == "tool_results"]
+    assert len(records) == 1
+    record = records[0]
+    assert record["iteration"] == 1
+    assert record["stage"] == "retrosynthesis_agent"
+    (tool,) = record["tool_results"]
+    assert tool["tool_call_id"] == "call_1"
+    assert tool["name"] == "validate_smiles"
+    assert tool["arguments"] == {"smiles": "C(C)O"}
+    assert tool["output"]["valid"] is True
+    assert tool["output"]["canonical_smiles"] == "CCO"
