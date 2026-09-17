@@ -32,6 +32,7 @@ from sklearn.model_selection import train_test_split
 from deepretro.models.hallucination_trainer import HallucinationTrainer
 from deepretro.score import empty_pathway_scores, score_pathway
 from deepretro.utils.llm_trace import molecule_trace
+from deepretro.utils.utils_molecule import canonicalize, try_canonicalize
 
 logger = structlog.get_logger(__name__)
 
@@ -44,10 +45,12 @@ REQUIRED_TRAINING_COLUMNS = {"product", "reactants", "label"}
 
 
 def read_molecules(path: str) -> list[str]:
-    """Read target SMILES from a text file (one per line).
+    """Read target SMILES from a text file (one per line), canonicalized.
 
     Blank lines and lines starting with ``#`` are skipped; surrounding
-    whitespace is stripped.
+    whitespace is stripped. Every parseable line is rewritten to its RDKit
+    canonical form (stereochemistry preserved). Unparseable lines are kept
+    verbatim and logged so the downstream ``error.json`` path still triggers.
 
     Parameters
     ----------
@@ -57,13 +60,13 @@ def read_molecules(path: str) -> list[str]:
     Returns
     -------
     list[str]
-        Target SMILES strings.
+        Target SMILES strings, canonical where RDKit could parse them.
 
     Examples
     --------
     >>> import tempfile, os
     >>> path = os.path.join(tempfile.mkdtemp(), "m.txt")
-    >>> _ = open(path, "w").write("CCO\\n# note\\n\\nCCN\\n")
+    >>> _ = open(path, "w").write("C(C)O\\n# note\\n\\nCCN\\n")
     >>> read_molecules(path)
     ['CCO', 'CCN']
     """
@@ -72,7 +75,15 @@ def read_molecules(path: str) -> list[str]:
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
             continue
-        molecules.append(stripped)
+        canonical = try_canonicalize(stripped)
+        if canonical is None:
+            logger.warning(
+                "Target SMILES does not parse; keeping verbatim",
+                molecule=stripped,
+            )
+            molecules.append(stripped)
+        else:
+            molecules.append(canonical)
     return molecules
 
 
@@ -292,7 +303,8 @@ def run_batch(
     run_dir = Path(out_dir) / timestamp
     written: dict[str, list[str]] = {}
 
-    for smiles in molecules:
+    for raw_smiles in molecules:
+        smiles = canonicalize(raw_smiles)
         mol_dir = run_dir / slugify_molecule(smiles)
         mol_dir.mkdir(parents=True, exist_ok=True)
 

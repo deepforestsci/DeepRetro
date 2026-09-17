@@ -22,6 +22,10 @@ Output layout
 "Per-molecule LLM call logs"); its records carry the Langfuse ``session_id`` that
 groups the same calls server-side.
 
+Input molecules are canonicalized when the molecules file is read and again in
+``run_batch``, so the per-molecule output directory is keyed by canonical
+SMILES. Unparseable lines are kept verbatim and get an ``error.json``.
+
 Command line
 ------------
 

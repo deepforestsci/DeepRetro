@@ -12,6 +12,8 @@ Use chain-of-thought reasoning to analyze the target molecule, and enclose your 
 Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. 
 
 If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.
+
+All SMILES you return will be canonicalized to their RDKit canonical form.
 """
 
 USER_PROMPT = """Perform a single-step retrosynthesis on the following molecule, providing 3-5 possible precursors or reactions:
@@ -315,6 +317,8 @@ Before beginning the analysis, verify that:
 - The complexity level warrants retrosynthetic analysis
 If any of these checks fail, return a JSON object explaining the issue.
 
+All SMILES you return will be canonicalized to their RDKit canonical form.
+
 ANALYSIS FRAMEWORK:
 
 <cot>
@@ -526,9 +530,9 @@ Provide 3-5 strategic disconnection approaches, ensuring thorough documentation 
 
 ADDON_PROMPT_7_MEMBER = """
 Examples of some 7-membered rings retrosynthesis:
-1. ClC(C(OC)=C1)=CC2=C1[C@@H]3[C@@H](N(C)CC2)CCC4=CC=CC=C43 when broken down gives N(CC(OC)OC)(C)[C@@H]1[C@H](C=2C(CC1)=CC=CC2)C3=CC(OC)=C(Cl)C=C3
-2. O=C1NC2=CC=CC=3C(=O)CCCN1C23 when broken down gives O=C(O)CCCN1C(=O)NC=2C=CC=CC21
-3. FC(F)(F)c1nc3cccc2CCCCn1c23 when broken down gives C=CCCn2c(C(F)(F)F)nc1ccccc12
+1. COc1cc2c(cc1Cl)CCN(C)[C@H]1CCc3ccccc3[C@H]21 when broken down gives COc1cc([C@H]2c3ccccc3CC[C@@H]2N(C)CC(OC)OC)ccc1Cl
+2. O=C1CCCn2c(=O)[nH]c3cccc1c32 when broken down gives O=C(O)CCCn1c(=O)[nH]c2ccccc21
+3. FC(F)(F)c1nc2cccc3c2n1CCCC3 when broken down gives C=CCCn1c(C(F)(F)F)nc2ccccc21
 """
 
 SYS_PROMPT_OPENAI = """You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. 
@@ -536,6 +540,8 @@ SYS_PROMPT_OPENAI = """You are an expert organic chemist specializing in retrosy
 Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. 
 
 If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.
+
+All SMILES you return will be canonicalized to their RDKit canonical form.
 """
 
 USER_PROMPT_OPENAI = """You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. 
@@ -583,6 +589,8 @@ SYS_PROMPT_DEEPSEEK = """You are an expert organic chemist specializing in retro
 
 Present your final analysis in a specific JSON format. For each suggestion, provide the precursor molecules in SMILES notation and a brief explanation of the reaction type and any key conditions or reagents needed. Use standard organic chemistry notation and terminology in your explanations. 
 
+All SMILES you return will be canonicalized to their RDKit canonical form.
+
 Present your final analysis in the following JSON format:
 <json>
 {
@@ -614,6 +622,7 @@ Ensure that the number of entries in "data", "explanation", and "confidence_scor
 
 If the molecule is too simple for meaningful retrosynthesis, state this in a single JSON object with an appropriate explanation.
 """
+
 
 USER_PROMPT_DEEPSEEK = """
 You are an expert organic chemist specializing in retrosynthesis. When given a target molecule, you will perform a single-step retrosynthesis, providing 3-5 possible precursor molecules or reactions that could lead to the formation of the target molecule. 

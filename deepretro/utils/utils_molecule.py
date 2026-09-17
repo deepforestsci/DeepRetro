@@ -83,6 +83,35 @@ def canonicalize(smiles: str) -> str:
     return Chem.MolToSmiles(molecule, canonical=True)
 
 
+def try_canonicalize(smiles: str) -> str | None:
+    """Return canonical SMILES, or ``None`` when RDKit cannot parse the input.
+
+    The strict counterpart of :func:`canonicalize`, for callers that must
+    distinguish "already canonical" from "unparseable, returned unchanged".
+
+    Parameters
+    ----------
+    smiles : str
+        Input SMILES string.
+
+    Returns
+    -------
+    str or None
+        Canonical SMILES, or ``None`` when the string does not parse.
+
+    Examples
+    --------
+    >>> try_canonicalize("C(O)C")
+    'CCO'
+    >>> try_canonicalize("not_a_smiles") is None
+    True
+    """
+    molecule = _parse_molecule(smiles)
+    if molecule is None:
+        return None
+    return Chem.MolToSmiles(molecule, canonical=True)
+
+
 def substructure_matching(target_smiles: str, query_smiles: str) -> int:
     """Check whether a query molecule is a substructure of a target molecule.
 
