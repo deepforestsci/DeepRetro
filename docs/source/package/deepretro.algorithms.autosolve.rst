@@ -54,6 +54,21 @@ AZ; consumers should use ``az_summary.leaves_az_generated > 0`` for that query.
 Generic externally supplied trees with unknown provenance are not assigned
 an inferred source.
 
+SMILES canonicalization
+-----------------------
+
+Every target SMILES is rewritten to its RDKit canonical form at the entry
+point of ``solve``, ``single_step``, ``solve_multiple`` and ``autosolve``.
+Model-proposed reactants are canonicalized in ``run_llm`` before the safety
+filters. This means the recursion, the cycle-detection visited set, and the
+emitted route tree all use one spelling per molecule. Unparseable strings are
+left as-is and rejected by the validity filter. Batch input is also
+canonicalized when the molecules file is read
+(:func:`deepretro.batch.read_molecules`). Every system prompt tells the model
+that its SMILES will be canonicalized. The ``autosolve`` output carries
+``"smiles_canonicalized": true`` so downstream consumers know the route tree
+uses canonical SMILES.
+
 Modes
 -----
 

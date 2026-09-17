@@ -294,7 +294,7 @@ class TestStopDepth:
         assert solved is False
         precursors = route["children"][0]["children"]
         assert precursors == [
-            unsolved_leaf(SALICYLIC_ACID),
+            unsolved_leaf(canonicalize(SALICYLIC_ACID)),
             unsolved_leaf(ACETIC_ACID),
         ]
         # AZ/LLM were only ever consulted for the depth-0 target, never the
@@ -437,7 +437,9 @@ class TestSolve:
         route, solved = solver.solve(ASPIRIN)
 
         assert solved is False
-        assert route["children"][0]["children"] == [unsolved_leaf(IBUPROFEN)]
+        assert route["children"][0]["children"] == [
+            unsolved_leaf(canonicalize(IBUPROFEN))
+        ]
 
     def test_multi_reactant_pathway(self) -> None:
         """A multi-reactant pathway solves when all reactants are AZ-solvable."""
@@ -531,7 +533,7 @@ class TestSingleStep:
 
         assert solved is False
         children = route["children"][0]["children"]
-        assert children[0] == unsolved_leaf(SALICYLIC_ACID)
+        assert children[0] == unsolved_leaf(canonicalize(SALICYLIC_ACID))
         assert children[1] == unsolved_leaf(ACETIC_ACID)
 
     def test_empty_first_pathway_uses_first_non_empty_candidate(self) -> None:
@@ -548,7 +550,7 @@ class TestSingleStep:
             0.9
         )
         assert route["children"][0]["children"] == [
-            unsolved_leaf(SALICYLIC_ACID),
+            unsolved_leaf(canonicalize(SALICYLIC_ACID)),
             unsolved_leaf(ACETIC_ACID),
         ]
 
@@ -1082,8 +1084,12 @@ class TestSolveMultiple:
 
         assert len(results) == 3
         assert [solved for _, solved in results] == [True, True, False]
-        assert results[0][0]["children"][0]["children"][0]["smiles"] == SALICYLIC_ACID
-        assert results[2][0]["children"][0]["children"][0]["smiles"] == IBUPROFEN
+        assert results[0][0]["children"][0]["children"][0]["smiles"] == canonicalize(
+            SALICYLIC_ACID
+        )
+        assert results[2][0]["children"][0]["children"][0]["smiles"] == canonicalize(
+            IBUPROFEN
+        )
 
     def test_respects_k_limit(self) -> None:
         solver = AutoSolver(

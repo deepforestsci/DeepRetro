@@ -355,6 +355,8 @@ class TestIterationBudget:
         params.update(kwargs)
         with pytest.raises(ValueError):
             agent_loop.iteration_budget("CCO", **params)
+
+
 # ---------------------------------------------------------------------------
 # Per-molecule LLM call logging (default litellm-backed model call)
 # ---------------------------------------------------------------------------

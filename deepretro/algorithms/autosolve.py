@@ -270,11 +270,11 @@ class AutoSolver:
         False
         """
         self._reject_orchestrator()
-        smiles = _clean_smiles(smiles)
+        smiles = _canonical_target(_clean_smiles(smiles))
         if not smiles:
             return unsolved_leaf(smiles), False
 
-        canonical = canonicalize(smiles)
+        canonical = smiles  # already canonical from _canonical_target
         if self.stop_depth is not None and depth >= self.stop_depth:
             logger.debug(
                 "Reached configured stop_depth; truncating branch",
@@ -377,7 +377,7 @@ class AutoSolver:
         False
         """
         self._reject_orchestrator()
-        smiles = _clean_smiles(smiles)
+        smiles = _canonical_target(_clean_smiles(smiles))
         if not smiles:
             return unsolved_leaf(smiles), False
 
@@ -440,7 +440,7 @@ class AutoSolver:
         [True]
         """
         self._reject_orchestrator()
-        smiles = _clean_smiles(smiles)
+        smiles = _canonical_target(_clean_smiles(smiles))
         if not smiles:
             return [(unsolved_leaf(smiles), False)]
 
@@ -457,7 +457,7 @@ class AutoSolver:
         if not pathways:
             return [(unsolved_leaf(smiles), False)]
 
-        canonical = canonicalize(smiles)
+        canonical = smiles  # already canonical from _canonical_target
         results: list[tuple[dict[str, Any], bool]] = []
         for i, pathway in enumerate(pathways[:k]):
             # Fresh visited set per route so a reactant used by one candidate
@@ -508,6 +508,7 @@ class AutoSolver:
         False
         """
         output = format_output(route_tree)
+        output["smiles_canonicalized"] = True
         output["solved"] = solved
         summary = summarize_az(route_tree)
         output["az_solved"] = solved and summary["az_solved"]
@@ -619,7 +620,7 @@ class AutoSolver:
         >>> output["solved"]  # doctest: +SKIP
         False
         """
-        smiles = _clean_smiles(smiles)
+        smiles = _canonical_target(_clean_smiles(smiles))
         log = logger.bind(
             job_id=(f"{time.strftime('%Y%m%d_%H%M%S')}_{os.getpid()}_{time.time_ns()}")
         )
@@ -687,11 +688,15 @@ class AutoSolver:
         """
         if self.solve_mode == "single_step_agent":
             pathways, explanations, confidence = self._run_agent(molecule, depth)
+            # Canonicalize model output so the safety filters, recursion, and
+            # the route tree all use one spelling per molecule.
+            pathways = _canonicalize_pathways(pathways)
             pathways, explanations, confidence = self._apply_safety_filters(
                 molecule, pathways, explanations, confidence
             )
         else:
             pathways, explanations, confidence = self._run_pipeline(molecule)
+            pathways = _canonicalize_pathways(pathways)
 
         return filter_with_checker(
             molecule,
@@ -1056,6 +1061,77 @@ def summarize_az(route_tree: dict[str, Any]) -> dict[str, Any]:
         "leaves_in_stock": in_stock,
         "leaves_unsolved": total - in_stock,
     }
+
+
+def _canonical_target(smiles: str) -> str:
+    """Rewrite a target SMILES canonically, logging when the spelling changes.
+
+    Applied at every :class:`AutoSolver` entry point so the LLM prompt, the
+    route tree, and the returned pathways all use one spelling. Unparseable
+    input is returned unchanged and rejected later by the validity filter.
+
+    Parameters
+    ----------
+    smiles : str
+        Target molecule SMILES, canonical or not.
+
+    Returns
+    -------
+    str
+        Canonical SMILES, or the input unchanged when it does not parse.
+
+    Examples
+    --------
+    >>> _canonical_target("C(C)O")  # doctest: +SKIP
+    'CCO'
+    """
+    canonical = canonicalize(smiles)
+    if canonical != smiles:
+        logger.debug(
+            "Canonicalized target SMILES", original=smiles, canonical=canonical
+        )
+    return canonical
+
+
+def _canonicalize_pathways(pathways: Sequence[Any]) -> list[Any]:
+    """Canonicalize every reactant SMILES the model proposed.
+
+    Model output is free text, so a precursor can arrive in any valid spelling.
+    Rewriting here means the recursion, the cycle-detection visited set, and
+    the emitted route tree all agree on a single canonical form. Entries RDKit
+    cannot parse are passed through untouched so :func:`validity_check` still
+    drops them. The shape of each pathway (single SMILES string vs list of
+    strings) is preserved.
+
+    Parameters
+    ----------
+    pathways : Sequence
+        Candidate precursor sets from the LLM pipeline or the agent.
+
+    Returns
+    -------
+    list
+        The same pathways with canonical reactant SMILES.
+
+    Examples
+    --------
+    >>> _canonicalize_pathways([["C(C)O", "not_a_smiles"], "C(C)O"])
+    [['CCO', 'not_a_smiles'], 'CCO']
+    """
+    canonical_pathways: list[Any] = []
+    for pathway in pathways:
+        if isinstance(pathway, str):
+            canonical_pathways.append(canonicalize(pathway))
+        elif isinstance(pathway, Sequence):
+            canonical_pathways.append(
+                [
+                    canonicalize(reactant) if isinstance(reactant, str) else reactant
+                    for reactant in pathway
+                ]
+            )
+        else:
+            canonical_pathways.append(pathway)
+    return canonical_pathways
 
 
 def _clean_smiles(smiles: str) -> str:

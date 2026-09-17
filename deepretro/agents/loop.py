@@ -160,7 +160,8 @@ _TOOL_INSTRUCTION = (
     "and never include dummy atoms in final pathways. When you are done, "
     "respond with the final answer in "
     "exactly the JSON format described above (do not call a tool in that final "
-    "message)."
+    "message). All SMILES you return will be canonicalized to their RDKit "
+    "canonical form."
 )
 
 
