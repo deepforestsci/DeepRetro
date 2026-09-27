@@ -1,0 +1,266 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Background,
+  Controls,
+  type Edge,
+  type FitViewOptions,
+  MiniMap,
+  ReactFlow,
+  ReactFlowProvider,
+  useReactFlow,
+  type NodeTypes,
+} from "@xyflow/react";
+import { Expand, Search } from "lucide-react";
+
+import "@xyflow/react/dist/style.css";
+
+import { buildFlowGraph, type StepFlowNode } from "../../lib/layout";
+import { StepNode } from "./StepNode";
+import type { ViewerRun } from "../../types/viewer";
+
+const nodeTypes = {
+  step: StepNode,
+} satisfies NodeTypes;
+
+type GraphCanvasProps = {
+  run?: ViewerRun;
+  selectedStepId?: string;
+  onSelectStep: (stepId: string) => void;
+  onEditStep: (stepId: string) => void;
+  onPartialRerunStep: (stepId: string) => void;
+};
+
+function GraphCanvasInner({
+  run,
+  selectedStepId,
+  onSelectStep,
+  onEditStep,
+  onPartialRerunStep,
+}: GraphCanvasProps) {
+  const [nodes, setNodes] = useState<StepFlowNode[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+  const [search, setSearch] = useState("");
+  const shellRef = useRef<HTMLDivElement | null>(null);
+  const handlersRef = useRef({
+    onSelectStep,
+    onEditStep,
+    onPartialRerunStep,
+  });
+  const lastFitSignatureRef = useRef("");
+  const reactFlow = useReactFlow();
+
+  useEffect(() => {
+    handlersRef.current = {
+      onSelectStep,
+      onEditStep,
+      onPartialRerunStep,
+    };
+  }, [onEditStep, onPartialRerunStep, onSelectStep]);
+
+  const searchQuery = search.trim().toLowerCase();
+
+  const matchesSearch = useMemo(() => {
+    return (stepNode: NonNullable<ViewerRun["graph"]>["nodes"][number]) => {
+      if (!searchQuery) {
+        return true;
+      }
+
+      const haystacks = [
+        stepNode.title,
+        ...stepNode.products.map((molecule) => `${molecule.label} ${molecule.smiles}`),
+        ...stepNode.reactants.map((molecule) => `${molecule.label} ${molecule.smiles}`),
+        ...stepNode.reagents.map((molecule) => `${molecule.label} ${molecule.smiles}`),
+      ];
+
+      return haystacks.some((value) => value.toLowerCase().includes(searchQuery));
+    };
+  }, [searchQuery]);
+
+  const visibleNodeIds = useMemo(() => {
+    if (!searchQuery) {
+      return new Set(nodes.map((node) => node.id));
+    }
+
+    return new Set(
+      nodes
+        .filter((node) => matchesSearch(node.data.stepNode))
+        .map((node) => node.id),
+    );
+  }, [matchesSearch, nodes, searchQuery]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!run?.graph) {
+      setNodes([]);
+      setEdges([]);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    buildFlowGraph(run.graph, {
+      onInspect: (stepId) => handlersRef.current.onSelectStep(stepId),
+      onEdit: (stepId) => handlersRef.current.onEditStep(stepId),
+      onPartialRerun: (stepId) => handlersRef.current.onPartialRerunStep(stepId),
+      matchesSearch: () => true,
+    }).then((flow) => {
+      if (!cancelled) {
+        setNodes(flow.nodes);
+        setEdges(flow.edges);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [run?.graph]);
+
+  useEffect(() => {
+    if (!nodes.length) {
+      return;
+    }
+
+    const signature = `${run?.key ?? "no-run"}:${searchQuery}:${Array.from(visibleNodeIds)
+      .sort()
+      .join(",")}`;
+    if (signature === lastFitSignatureRef.current) {
+      return;
+    }
+    lastFitSignatureRef.current = signature;
+
+    const targetNodes = searchQuery
+      ? nodes.filter((node) => visibleNodeIds.has(node.id))
+      : nodes;
+
+    const timeout = window.setTimeout(() => {
+      const options: FitViewOptions = {
+        duration: 350,
+        padding: searchQuery ? 0.08 : 0.14,
+        includeHiddenNodes: true,
+      };
+      if (searchQuery) {
+        options.minZoom = 0.82;
+      }
+      if (targetNodes.length) {
+        options.nodes = targetNodes;
+      }
+      reactFlow.fitView(options);
+    }, 40);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [nodes, reactFlow, searchQuery, visibleNodeIds]);
+
+  useEffect(() => {
+    if (!searchQuery) {
+      return;
+    }
+    const firstMatch = nodes.find((node) => visibleNodeIds.has(node.id));
+    if (firstMatch) {
+      onSelectStep(firstMatch.data.stepNode.stepId);
+    }
+  }, [nodes, onSelectStep, searchQuery, visibleNodeIds]);
+
+  if (!run) {
+    return (
+      <div className="canvas-empty">
+        <h3>No pathway selected</h3>
+        <p>Run an analysis or upload a pathway JSON to populate the canvas.</p>
+      </div>
+    );
+  }
+
+  if (run.status === "error") {
+    return (
+      <div className="canvas-empty error">
+        <h3>Pathway request failed</h3>
+        <p>{run.error}</p>
+      </div>
+    );
+  }
+
+  if (!run.graph) {
+    return (
+      <div className="canvas-empty">
+        <h3>Waiting for graph data</h3>
+        <p>The active run has not produced a pathway graph yet.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="canvas-shell" ref={shellRef}>
+      <div className="canvas-toolbar">
+        <label className="search-field">
+          <Search size={16} />
+          <input
+            type="search"
+            placeholder="Search by step, molecule, or SMILES"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+        </label>
+        <button
+          className="ghost-button"
+          onClick={async () => {
+            const element = shellRef.current;
+            if (!element) {
+              return;
+            }
+
+            try {
+              if (document.fullscreenElement) {
+                await document.exitFullscreen();
+              } else if (element.requestFullscreen) {
+                await element.requestFullscreen();
+              }
+            } catch (error) {
+              console.error("Fullscreen toggle failed.", error);
+            }
+          }}
+          type="button"
+        >
+          <Expand size={14} />
+          Fullscreen
+        </button>
+      </div>
+      <div className="canvas-flow">
+        <ReactFlow
+          nodes={nodes.map((node) => ({
+            ...node,
+            hidden: !visibleNodeIds.has(node.id),
+            selected: node.data.stepNode.stepId === selectedStepId,
+            data: {
+              ...node.data,
+              highlighted: visibleNodeIds.has(node.id),
+            },
+          }))}
+          edges={edges.map((edge) => ({
+            ...edge,
+            hidden:
+              !visibleNodeIds.has(edge.source) || !visibleNodeIds.has(edge.target),
+          }))}
+          nodeTypes={nodeTypes}
+          minZoom={0.35}
+          maxZoom={2.2}
+          onNodeClick={(_, node) => onSelectStep(node.data.stepNode.stepId)}
+          proOptions={{ hideAttribution: true }}
+        >
+          <MiniMap pannable zoomable />
+          <Controls position="bottom-left" showInteractive={false} />
+          <Background gap={22} size={1.1} />
+        </ReactFlow>
+      </div>
+    </div>
+  );
+}
+
+export function GraphCanvas(props: GraphCanvasProps) {
+  return (
+    <ReactFlowProvider>
+      <GraphCanvasInner {...props} />
+    </ReactFlowProvider>
+  );
+}

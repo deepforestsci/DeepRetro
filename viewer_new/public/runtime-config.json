@@ -1,0 +1,24 @@
+{
+  "instances": [
+    {
+      "id": "instance1",
+      "label": "Pathway 1",
+      "baseUrl": "http://localhost:5000",
+      "defaults": {
+        "model_type": "claude4sonnet",
+        "advanced_prompt": true,
+        "model_version": "Pistachio_100+",
+        "stability_flag": true,
+        "hallucination_check": true,
+        "use_protecting_group_feature": false
+      }
+    }
+  ],
+  "endpoints": {
+    "retrosynthesis": "/api/retrosynthesis",
+    "rerun": "/api/rerun_retrosynthesis",
+    "partialRerun": "/api/partial_rerun",
+    "saveEdited": "/api/save_edited_result",
+    "health": "/api/health"
+  }
+}

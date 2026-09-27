@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DeepRetro — Mockup A · Instrument</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f4f6f9;
+    --panel: #ffffff;
+    --border: #dee4eb;
+    --border-strong: #c9d2dc;
+    --ink: #182430;
+    --muted: #64748b;
+    --faint: #8b98a9;
+    --accent: #2557d6;
+    --accent-ink: #1c46b0;
+    --accent-soft: #e9effc;
+    --ok: #178a50;
+    --ok-soft: #e3f4eb;
+    --warn: #b26a0c;
+    --warn-soft: #fbf0dd;
+    --err: #c43d3d;
+    --err-soft: #fbe9e9;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+    --sans: "Inter", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; background: none; border: 0; padding: 0; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  svg { display: block; }
+
+  .app {
+    display: grid;
+    grid-template-rows: 52px minmax(0, 1fr);
+    height: 100vh;
+    min-width: 1180px;
+  }
+
+  /* ── Topbar ─────────────────────────────────────── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 16px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; padding-right: 4px; }
+  .brand-mark {
+    display: grid; place-items: center;
+    width: 30px; height: 30px;
+    color: var(--accent);
+  }
+  .brand-name { font-weight: 650; font-size: 14px; letter-spacing: -0.01em; }
+  .brand-sub { font-family: var(--mono); font-size: 9.5px; color: var(--faint); letter-spacing: 0.14em; text-transform: uppercase; margin-top: 1px; }
+
+  .seg {
+    display: inline-flex;
+    padding: 2px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--bg);
+  }
+  .seg button {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px;
+    border-radius: 5px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .seg button.active { background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgba(24,36,48,0.1); }
+
+  .field {
+    display: flex; align-items: center; gap: 8px;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--panel);
+  }
+  .field:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .field label {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+    letter-spacing: 0.12em; color: var(--faint);
+  }
+  .field input { border: 0; outline: none; background: transparent; min-width: 0; width: 100%; }
+  .field.smiles { flex: 1; min-width: 240px; }
+  .field.smiles input { font-family: var(--mono); font-size: 12.5px; }
+  .field.key { width: 150px; color: var(--muted); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    height: 34px; padding: 0 14px;
+    border-radius: 7px;
+    font-weight: 550;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .btn.primary { background: var(--accent); color: #fff; }
+  .btn.primary:hover { background: var(--accent-ink); }
+  .btn.ghost { border-color: var(--border); background: var(--panel); color: var(--ink); }
+  .btn.ghost:hover { border-color: var(--border-strong); background: var(--bg); }
+  .btn.icon { width: 34px; padding: 0; justify-content: center; color: var(--muted); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .toolgroup { display: flex; align-items: center; gap: 6px; }
+
+  .health {
+    display: flex; align-items: center; gap: 7px;
+    margin-left: auto;
+    font-size: 12px; color: var(--muted); white-space: nowrap;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px var(--ok-soft); }
+
+  /* ── Workspace ──────────────────────────────────── */
+  .workspace {
+    display: grid;
+    grid-template-columns: 292px minmax(0, 1fr) 336px;
+    min-height: 0;
+  }
+
+  /* ── Sidebar ────────────────────────────────────── */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    background: var(--panel);
+    overflow-y: auto;
+    padding: 14px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .side-label {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint);
+    padding: 2px 2px 0;
+  }
+  .side-label .linkish { color: var(--accent); font-family: var(--sans); font-size: 12px; font-weight: 550; letter-spacing: 0; text-transform: none; }
+
+  .inst {
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--panel);
+  }
+  .inst.active { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .inst-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    width: 100%; text-align: left;
+    padding: 11px 12px;
+  }
+  .inst-head h3 { margin: 0; font-size: 13px; font-weight: 600; }
+  .inst-url { font-family: var(--mono); font-size: 10.5px; color: var(--faint); margin-top: 2px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2.5px 8px;
+    border-radius: 999px;
+    font-size: 11px; font-weight: 550;
+    background: var(--bg); color: var(--muted);
+    white-space: nowrap;
+  }
+  .pill .dot { box-shadow: none; width: 6px; height: 6px; }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.err { background: var(--err-soft); color: var(--err); }
+  .pill.accent { background: var(--accent-soft); color: var(--accent-ink); }
+  .pill.mono { font-family: var(--mono); font-size: 10.5px; }
+
+  .inst-body { padding: 0 12px 12px; display: grid; gap: 10px; }
+  .inst-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+  .selects { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .selects label { display: grid; gap: 4px; font-size: 11px; color: var(--muted); font-weight: 500; }
+  .selects label { min-width: 0; }
+  .selects select {
+    width: 100%; min-width: 0;
+    height: 30px; padding: 0 8px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--panel); color: var(--ink); font-size: 12px;
+  }
+  .toggles { display: grid; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+  .toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 10px; font-size: 12px;
+    background: var(--panel);
+  }
+  .toggle + .toggle { border-top: 1px solid var(--border); }
+  .toggle.off { color: var(--muted); }
+  .sw { position: relative; width: 30px; height: 18px; border-radius: 999px; background: var(--border-strong); flex: none; }
+  .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(24,36,48,0.25); }
+  .sw.on { background: var(--accent); }
+  .sw.on::after { left: auto; right: 2px; }
+
+  .filecard {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    width: 100%; text-align: left;
+    padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 9px;
+    background: var(--panel);
+  }
+  .filecard:hover { border-color: var(--border-strong); }
+  .filecard .name { font-family: var(--mono); font-size: 11.5px; }
+  .filecard .sub { font-size: 11px; color: var(--faint); margin-top: 2px; }
+
+  /* ── Canvas ─────────────────────────────────────── */
+  .canvas {
+    position: relative;
+    min-width: 0;
+    background-color: #f8fafc;
+    background-image: radial-gradient(#d5dce5 1px, transparent 1.2px);
+    background-size: 22px 22px;
+    overflow: auto;
+  }
+  .canvas-bar {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    background: rgba(248, 250, 252, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+  }
+  .canvas-bar .run-name { font-weight: 600; font-size: 12.5px; }
+  .canvas-bar .run-smiles { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+  .zoom {
+    display: inline-flex; align-items: center;
+    margin-left: auto;
+    border: 1px solid var(--border); border-radius: 7px; background: var(--panel);
+  }
+  .zoom button { display: grid; place-items: center; width: 28px; height: 28px; color: var(--muted); }
+  .zoom button:hover { color: var(--ink); }
+  .zoom .pct { font-family: var(--mono); font-size: 11px; color: var(--muted); padding: 0 6px; border-inline: 1px solid var(--border); }
+
+  .stage { position: relative; width: 800px; height: 700px; margin: 0 auto; }
+  .edges { position: absolute; inset: 0; pointer-events: none; }
+  .edge { stroke: #aeb9c6; stroke-width: 1.6; fill: none; }
+  .edge.hot { stroke: var(--accent); stroke-width: 1.8; }
+
+  .node {
+    position: absolute;
+    width: 216px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel);
+    box-shadow: 0 1px 3px rgba(24, 36, 48, 0.07);
+    overflow: hidden;
+    transition: box-shadow 120ms ease, border-color 120ms ease;
+  }
+  .node:hover { border-color: var(--border-strong); box-shadow: 0 4px 14px rgba(24, 36, 48, 0.12); }
+  .node.selected { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), 0 4px 14px rgba(37, 87, 214, 0.14); }
+  .node-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 10px 0;
+  }
+  .node-tag {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+    letter-spacing: 0.13em; color: var(--faint);
+  }
+  .node.selected .node-tag { color: var(--accent); }
+  .node-conf { font-family: var(--mono); font-size: 10.5px; font-weight: 600; color: var(--ok); }
+  .node-mol { display: grid; place-items: center; height: 118px; color: var(--ink); }
+  .node-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 10px 9px;
+  }
+  .node-formula { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .node-count { font-size: 11px; color: var(--faint); }
+  .conf-rail { height: 3px; background: var(--bg); }
+  .conf-rail i { display: block; height: 100%; background: var(--ok); }
+  .node.target .conf-rail i { background: var(--accent); }
+
+  .legend {
+    position: absolute; left: 14px; bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--border); border-radius: 7px;
+    background: rgba(255,255,255,0.9);
+    font-size: 11px; color: var(--muted);
+  }
+  .legend .scale { width: 64px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--err), var(--warn), var(--ok)); }
+
+  /* ── Inspector ──────────────────────────────────── */
+  .inspector {
+    border-left: 1px solid var(--border);
+    background: var(--panel);
+    overflow-y: auto;
+    padding: 14px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .insp-head .eyebrow {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint);
+    margin: 0 0 4px;
+  }
+  .insp-head h2 { margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -0.01em; }
+  .insp-head .pills { display: flex; gap: 6px; margin-top: 8px; }
+
+  .actions { display: flex; gap: 6px; }
+  .actions .btn { height: 30px; padding: 0 10px; font-size: 12px; }
+
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border); border-radius: 9px; overflow: hidden; }
+  .metric { padding: 9px 10px; background: var(--panel); }
+  .metric + .metric { border-left: 1px solid var(--border); }
+  .metric .k { font-size: 10px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.06em; }
+  .metric .v { font-family: var(--mono); font-size: 14px; font-weight: 600; margin-top: 3px; }
+  .metric .v.ok { color: var(--ok); }
+
+  .sec-title {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 9.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint);
+  }
+  .sec-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+  .sec-title b { color: var(--muted); font-weight: 600; }
+
+  .mol-row {
+    display: grid; grid-template-columns: 84px 1fr; gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--border); border-radius: 9px;
+    align-items: center;
+  }
+  .mol-row .thumb { display: grid; place-items: center; height: 64px; border-radius: 6px; background: var(--bg); color: var(--ink); }
+  .mol-row h4 { margin: 0 0 3px; font-size: 12.5px; font-weight: 600; }
+  .mol-row .smiles {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .mol-row .badges { display: flex; gap: 5px; margin-top: 6px; }
+  .badge { font-family: var(--mono); font-size: 10px; color: var(--muted); background: var(--bg); border-radius: 4px; padding: 2px 6px; }
+
+  .conds { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cond { border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px; }
+  .cond .k { font-size: 10.5px; color: var(--faint); text-transform: capitalize; }
+  .cond .v { font-size: 12.5px; font-weight: 550; margin-top: 2px; }
+
+  .json-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 9px;
+    color: var(--muted); font-weight: 550; font-size: 12px;
+    width: 100%;
+  }
+  .json-row:hover { background: var(--bg); }
+  .stack { display: grid; gap: 8px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/>
+          <path d="M12 7.2v9.6M7.8 9.6l8.4 4.8M16.2 9.6l-8.4 4.8" stroke-width="1.2" opacity="0.55"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">DeepRetro</div>
+        <div class="brand-sub">Retrosynthesis</div>
+      </div>
+    </div>
+
+    <div class="seg" role="tablist">
+      <button class="active" type="button">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 3l14 9-14 9V3z"/></svg>
+        Analyze
+      </button>
+      <button type="button">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5M5 21h14"/></svg>
+        Upload
+      </button>
+    </div>
+
+    <div class="field smiles">
+      <label for="smiles">SMILES</label>
+      <input id="smiles" value="CC(=O)Oc1ccccc1C(=O)O" spellcheck="false" />
+    </div>
+
+    <div class="field key">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="M10.85 12.15 19 4M18 5l2 2M15 8l2 2"/></svg>
+      <input aria-label="Backend API key" type="password" value="••••••••••" />
+    </div>
+
+    <button class="btn primary" type="button">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 3l14 9-14 9V3z"/></svg>
+      Run analysis
+    </button>
+
+    <div class="toolgroup">
+      <button class="btn ghost icon" title="Run again" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.3-6.4L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.3 6.4L3 16"/><path d="M3 21v-5h5"/></svg>
+      </button>
+      <button class="btn ghost icon" title="Download JSON" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+      </button>
+      <button class="btn ghost icon" title="Save edits" disabled type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+      </button>
+    </div>
+
+    <div class="health"><span class="dot"></span>All backends healthy</div>
+  </header>
+
+  <div class="workspace">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="side-label">Backends · compare runs</div>
+
+      <article class="inst active">
+        <button class="inst-head" type="button">
+          <div>
+            <h3>Production A</h3>
+            <div class="inst-url">api.deepretro.internal:5000</div>
+          </div>
+          <span class="pill ok"><span class="dot"></span>success</span>
+        </button>
+        <div class="inst-body">
+          <div class="inst-meta">
+            <span class="pill ok">Healthy</span>
+            <span class="pill mono">42.3 s</span>
+          </div>
+          <div class="selects">
+            <label>LLM model
+              <select><option>Claude Sonnet 4.5</option></select>
+            </label>
+            <label>AZ model
+              <select><option>USPTO ensemble</option></select>
+            </label>
+          </div>
+          <div class="toggles">
+            <div class="toggle"><span>Advanced prompt</span><span class="sw on"></span></div>
+            <div class="toggle"><span>Stability check</span><span class="sw on"></span></div>
+            <div class="toggle"><span>Hallucination check</span><span class="sw on"></span></div>
+            <div class="toggle off"><span>Protecting groups</span><span class="sw"></span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="inst">
+        <button class="inst-head" type="button">
+          <div>
+            <h3>Staging B</h3>
+            <div class="inst-url">staging.deepretro.internal:5000</div>
+          </div>
+          <span class="pill">idle</span>
+        </button>
+        <div class="inst-body">
+          <div class="inst-meta">
+            <span class="pill warn">Degraded</span>
+          </div>
+        </div>
+      </article>
+
+      <div class="side-label">Uploaded runs <button class="linkish" type="button">Add files</button></div>
+
+      <button class="filecard" type="button">
+        <div>
+          <div class="name">pathway_aspirin_v2.json</div>
+          <div class="sub">Uploaded JSON</div>
+        </div>
+        <span class="pill ok">loaded</span>
+      </button>
+    </aside>
+
+    <!-- Canvas -->
+    <main class="canvas">
+      <div class="canvas-bar">
+        <span class="run-name">Production A</span>
+        <span class="run-smiles">CC(=O)Oc1ccccc1C(=O)O</span>
+        <span class="pill warn">unsaved edits</span>
+        <div class="zoom">
+          <button title="Zoom out" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+          <span class="pct">100%</span>
+          <button title="Zoom in" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+          <button title="Fit view" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
+        </div>
+      </div>
+
+      <div class="stage">
+        <svg class="edges" width="800" height="700">
+          <defs>
+            <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0L10 5L0 10z" fill="#aeb9c6"/>
+            </marker>
+            <marker id="arr-hot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0L10 5L0 10z" fill="#2557d6"/>
+            </marker>
+          </defs>
+          <path class="edge hot" d="M232 353 C 272 353, 254 168, 292 168" marker-end="url(#arr-hot)"/>
+          <path class="edge" d="M232 353 C 272 353, 254 538, 292 538" marker-end="url(#arr)"/>
+          <path class="edge" d="M508 168 C 528 168, 545 168, 565 168" marker-end="url(#arr)"/>
+        </svg>
+
+        <!-- Molecule symbols -->
+        <svg width="0" height="0" style="position:absolute">
+          <defs>
+            <g id="ring" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M70 38 97.7 54 97.7 86 70 102 42.3 86 42.3 54Z"/>
+              <path d="M70 47 89.9 58.5M89.9 81.5 70 93M50.1 58.5 50.1 81.5" stroke-width="1.4"/>
+            </g>
+            <g id="cooh" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+              <path d="M97.7 54 124 39"/>
+              <path d="M122 39V19M126 39V19"/>
+              <path d="M124 39 146 51"/>
+              <text x="151" y="58" font-size="12" font-family="Inter,sans-serif" fill="currentColor" stroke="none">OH</text>
+              <text x="120" y="14" font-size="12" font-family="Inter,sans-serif" fill="currentColor" stroke="none">O</text>
+            </g>
+            <g id="mol-aspirin">
+              <use href="#ring"/>
+              <use href="#cooh"/>
+              <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                <path d="M97.7 86 122 100"/>
+                <text x="126" y="109" font-size="12" font-family="Inter,sans-serif" fill="currentColor" stroke="none">O</text>
+                <path d="M138 102 164 94"/>
+                <path d="M163 92 181 80M166 96 184 84"/>
+                <text x="185" y="78" font-size="12" font-family="Inter,sans-serif" fill="currentColor" stroke="none">O</text>
+                <path d="M164 94 186 106"/>
+              </g>
+            </g>
+            <g id="mol-salicylic">
+              <use href="#ring"/>
+              <use href="#cooh"/>
+              <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                <path d="M97.7 86 120 99"/>
+                <text x="124" y="108" font-size="12" font-family="Inter,sans-serif" fill="currentColor" stroke="none">OH</text>
+              </g>
+            </g>
+            <g id="mol-phenol">
+              <use href="#ring"/>
+              <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                <path d="M97.7 54 122 40"/>
+                <text x="126" y="44" font-size="12" font-family="Inter,sans-serif" fill="currentColor" stroke="none">OH</text>
+              </g>
+            </g>
+            <g id="mol-ac2o" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+              <path d="M28 96 56 78"/>
+              <path d="M54 78V54M58 78V54"/>
+              <text x="50" y="48" font-size="12" font-family="Inter,sans-serif" fill="currentColor" stroke="none">O</text>
+              <path d="M56 78 84 92"/>
+              <text x="88" y="101" font-size="12" font-family="Inter,sans-serif" fill="currentColor" stroke="none">O</text>
+              <path d="M102 92 130 78"/>
+              <path d="M128 78V54M132 78V54"/>
+              <text x="124" y="48" font-size="12" font-family="Inter,sans-serif" fill="currentColor" stroke="none">O</text>
+              <path d="M130 78 158 96"/>
+            </g>
+          </defs>
+        </svg>
+
+        <!-- Target -->
+        <article class="node target" style="left:16px; top:258px;">
+          <div class="node-head"><span class="node-tag">TARGET</span><span class="node-conf" style="color:var(--accent)">input</span></div>
+          <div class="node-mol"><svg width="200" height="118" viewBox="0 0 210 124"><use href="#mol-aspirin" transform="translate(0,4)"/></svg></div>
+          <div class="node-foot"><span class="node-formula">C9H8O4</span><span class="node-count">aspirin</span></div>
+          <div class="conf-rail"><i style="width:100%"></i></div>
+        </article>
+
+        <!-- Step 1 (selected) -->
+        <article class="node selected" style="left:292px; top:72px;">
+          <div class="node-head"><span class="node-tag">STEP 1</span><span class="node-conf">0.92</span></div>
+          <div class="node-mol"><svg width="200" height="118" viewBox="0 0 210 124"><use href="#mol-salicylic" transform="translate(10,4)"/></svg></div>
+          <div class="node-foot"><span class="node-formula">C7H6O3</span><span class="node-count">2 reactants</span></div>
+          <div class="conf-rail"><i style="width:92%"></i></div>
+        </article>
+
+        <!-- Step 2 -->
+        <article class="node" style="left:292px; top:442px;">
+          <div class="node-head"><span class="node-tag">STEP 2</span><span class="node-conf">0.88</span></div>
+          <div class="node-mol"><svg width="200" height="118" viewBox="0 0 210 124"><use href="#mol-ac2o" transform="translate(14,0)"/></svg></div>
+          <div class="node-foot"><span class="node-formula">C4H6O3</span><span class="node-count">1 reactant</span></div>
+          <div class="conf-rail"><i style="width:88%"></i></div>
+        </article>
+
+        <!-- Step 3 -->
+        <article class="node" style="left:565px; top:72px;">
+          <div class="node-head"><span class="node-tag">STEP 3</span><span class="node-conf" style="color:var(--warn)">0.71</span></div>
+          <div class="node-mol"><svg width="200" height="118" viewBox="0 0 210 124"><use href="#mol-phenol" transform="translate(24,10)"/></svg></div>
+          <div class="node-foot"><span class="node-formula">C6H6O</span><span class="node-count">1 reactant</span></div>
+          <div class="conf-rail"><i style="width:71%; background:var(--warn)"></i></div>
+        </article>
+
+        <div class="legend"><span>Confidence</span><span class="scale"></span></div>
+      </div>
+    </main>
+
+    <!-- Inspector -->
+    <aside class="inspector">
+      <div class="insp-head">
+        <p class="eyebrow">Production A · Step 1</p>
+        <h2>Acetylation of salicylic acid</h2>
+        <div class="pills">
+          <span class="pill ok">success</span>
+          <span class="pill warn">unsaved edits</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" type="button">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+          Edit step
+        </button>
+        <button class="btn ghost" type="button">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.3-6.4L21 8"/><path d="M21 3v5h-5"/></svg>
+          Partial rerun
+        </button>
+        <button class="btn ghost" type="button">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+          Save
+        </button>
+      </div>
+
+      <div class="metrics">
+        <div class="metric"><div class="k">Conf</div><div class="v ok">0.92</div></div>
+        <div class="metric"><div class="k">Scale</div><div class="v">8/10</div></div>
+        <div class="metric"><div class="k">Parents</div><div class="v">1</div></div>
+        <div class="metric"><div class="k">Children</div><div class="v">2</div></div>
+      </div>
+
+      <div class="stack">
+        <div class="sec-title">Product <b>1</b></div>
+        <div class="mol-row">
+          <div class="thumb"><svg width="76" height="56" viewBox="0 0 210 140"><use href="#mol-aspirin" transform="translate(0,10)"/></svg></div>
+          <div>
+            <h4>Aspirin</h4>
+            <div class="smiles">CC(=O)Oc1ccccc1C(=O)O</div>
+            <div class="badges"><span class="badge">C9H8O4</span><span class="badge">180.2 g/mol</span></div>
+          </div>
+        </div>
+
+        <div class="sec-title">Reactants <b>2</b></div>
+        <div class="mol-row">
+          <div class="thumb"><svg width="76" height="56" viewBox="0 0 210 140"><use href="#mol-salicylic" transform="translate(6,10)"/></svg></div>
+          <div>
+            <h4>Salicylic acid</h4>
+            <div class="smiles">O=C(O)c1ccccc1O</div>
+            <div class="badges"><span class="badge">C7H6O3</span><span class="badge">138.1 g/mol</span></div>
+          </div>
+        </div>
+        <div class="mol-row">
+          <div class="thumb"><svg width="76" height="56" viewBox="0 0 210 140"><use href="#mol-ac2o" transform="translate(14,14)"/></svg></div>
+          <div>
+            <h4>Acetic anhydride</h4>
+            <div class="smiles">CC(=O)OC(C)=O</div>
+            <div class="badges"><span class="badge">C4H6O3</span><span class="badge">102.1 g/mol</span></div>
+          </div>
+        </div>
+
+        <div class="sec-title">Conditions</div>
+        <div class="conds">
+          <div class="cond"><div class="k">Catalyst</div><div class="v">H2SO4 (cat.)</div></div>
+          <div class="cond"><div class="k">Temperature</div><div class="v">85 °C</div></div>
+          <div class="cond"><div class="k">Time</div><div class="v">2 h</div></div>
+          <div class="cond"><div class="k">Atmosphere</div><div class="v">Air</div></div>
+        </div>
+
+        <button class="json-row" type="button">
+          Raw step JSON
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <button class="json-row" type="button">
+          Run JSON
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+    </aside>
+
+  </div>
+</div>
+</body>
+</html>

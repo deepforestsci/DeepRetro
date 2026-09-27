@@ -1,0 +1,145 @@
+{
+  "dependencies": { "1": ["2", "3"] },
+  "steps": [
+    {
+      "step": "1",
+      "products": [
+        {
+          "smiles": "CC(=O)Oc1ccccc1C(=O)O",
+          "product_metadata": {
+            "name": "Aspirin",
+            "chemical_formula": "C9H8O4",
+            "mass": 180.2
+          }
+        }
+      ],
+      "reactants": [
+        {
+          "smiles": "O=C(O)c1ccccc1O",
+          "reactant_metadata": {
+            "name": "Salicylic acid",
+            "chemical_formula": "C7H6O3",
+            "mass": 138.1
+          }
+        },
+        {
+          "smiles": "CC(=O)OC(C)=O",
+          "reactant_metadata": {
+            "name": "Acetic anhydride",
+            "chemical_formula": "C4H6O3",
+            "mass": 102.1
+          }
+        }
+      ],
+      "reagents": [
+        {
+          "smiles": "OS(=O)(=O)O",
+          "reagent_metadata": {
+            "name": "Sulfuric acid (cat.)",
+            "chemical_formula": "H2SO4",
+            "mass": 98.1
+          }
+        }
+      ],
+      "conditions": {
+        "temperature": "85 °C",
+        "time": "2 h",
+        "solvent": "neat",
+        "atmosphere": "air"
+      },
+      "reactionmetrics": [
+        {
+          "confidenceestimate": 0.92,
+          "scalabilityindex": "8",
+          "closestliterature": "Org. Synth. acetylation of salicylic acid"
+        }
+      ]
+    },
+    {
+      "step": "2",
+      "products": [
+        {
+          "smiles": "O=C(O)c1ccccc1O",
+          "product_metadata": {
+            "name": "Salicylic acid",
+            "chemical_formula": "C7H6O3",
+            "mass": 138.1
+          }
+        }
+      ],
+      "reactants": [
+        {
+          "smiles": "Oc1ccccc1",
+          "reactant_metadata": {
+            "name": "Phenol",
+            "chemical_formula": "C6H6O",
+            "mass": 94.1
+          }
+        },
+        {
+          "smiles": "O=C=O",
+          "reactant_metadata": {
+            "name": "Carbon dioxide",
+            "chemical_formula": "CO2",
+            "mass": 44.0
+          }
+        }
+      ],
+      "reagents": [
+        {
+          "smiles": "[Na+].[OH-]",
+          "reagent_metadata": {
+            "name": "Sodium hydroxide",
+            "chemical_formula": "NaOH",
+            "mass": 40.0
+          }
+        }
+      ],
+      "conditions": {
+        "temperature": "125 °C",
+        "pressure": "100 atm CO2",
+        "note": "Kolbe-Schmitt carboxylation"
+      },
+      "reactionmetrics": [
+        {
+          "confidenceestimate": 0.84,
+          "scalabilityindex": "7"
+        }
+      ]
+    },
+    {
+      "step": "3",
+      "products": [
+        {
+          "smiles": "CC(=O)OC(C)=O",
+          "product_metadata": {
+            "name": "Acetic anhydride",
+            "chemical_formula": "C4H6O3",
+            "mass": 102.1
+          }
+        }
+      ],
+      "reactants": [
+        {
+          "smiles": "CC(=O)O",
+          "reactant_metadata": {
+            "name": "Acetic acid",
+            "chemical_formula": "C2H4O2",
+            "mass": 60.1
+          }
+        }
+      ],
+      "reagents": [],
+      "conditions": {
+        "temperature": "700 °C",
+        "note": "via ketene intermediate"
+      },
+      "reactionmetrics": [
+        {
+          "confidenceestimate": 0.71,
+          "scalabilityindex": "6"
+        }
+      ]
+    }
+  ]
+}
