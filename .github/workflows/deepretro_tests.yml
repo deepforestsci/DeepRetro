@@ -31,7 +31,7 @@ jobs:
           python -m build deepretro/
 
       - name: Upload dist artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: deepretro-dist-${{ matrix.python-version }}
           path: deepretro/dist/
