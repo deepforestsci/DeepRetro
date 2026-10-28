@@ -71,6 +71,8 @@ class LLMRequest:
         Provider reasoning effort when supported.
     max_output_tokens : int, optional
         Output token override.
+    max_api_attempts : int or None, optional
+        Positive transport-attempt cap. None preserves the normal retry budget.
 
     Examples
     --------
@@ -87,6 +89,7 @@ class LLMRequest:
     enable_thinking: bool = True
     thinking_effort: ThinkingEffort = "medium"
     max_output_tokens: int | None = None
+    max_api_attempts: int | None = None
 
 
 @dataclass(frozen=True)
@@ -298,9 +301,23 @@ class LLMInterface(ABC):
         )
         messages = self.build_messages(request)
         params = self.build_completion_params(request, messages)
+        if request.max_api_attempts is not None:
+            # A bounded call must not hide further provider calls inside LiteLLM.
+            params["num_retries"] = 0
 
+        max_api_attempts = (
+            MAX_API_RETRIES
+            if request.max_api_attempts is None
+            else request.max_api_attempts
+        )
+        if (
+            isinstance(max_api_attempts, bool)
+            or not isinstance(max_api_attempts, int)
+            or max_api_attempts < 1
+        ):
+            raise ValueError("max_api_attempts must be positive")
         last_error = ""
-        for attempt in range(1, MAX_API_RETRIES + 1):
+        for attempt in range(1, max_api_attempts + 1):
             started = time.perf_counter()
             try:
                 response = completion(**params)
@@ -334,16 +351,16 @@ class LLMInterface(ABC):
                 logger.warning(
                     "LLM call attempt failed",
                     attempt=attempt,
-                    max_retries=MAX_API_RETRIES,
+                    max_retries=max_api_attempts,
                     model=self.selection.completion_model,
                     error=str(exc),
                 )
-                if attempt < MAX_API_RETRIES:
+                if attempt < max_api_attempts:
                     time.sleep(0.5)
 
         logger.error(
             "All LLM attempts exhausted",
-            max_retries=MAX_API_RETRIES,
+            max_retries=max_api_attempts,
             model=self.selection.completion_model,
         )
         return LLMResponse(status_code=400, text=last_error)

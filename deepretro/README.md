@@ -46,6 +46,36 @@ experimental feasibility or assess unspecified reaction conditions.
 See the [project documentation](https://github.com/deepforestsci/DeepRetro/tree/dev/docs)
 for solver configuration, custom weights, and development instructions.
 
+## Guarded heuristic search
+
+`GuardedSolver` checks both template-generated and LLM reactions, rejects flagged
+fallbacks, and sends rejection reasons into bounded repair calls. It requires an
+explicit stock lookup and writes partial-route checkpoints and repair events.
+This offline example uses an illustrative stock and proposal runner:
+
+```python
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from deepretro import AutoSolver
+from deepretro.algorithms.guarded import GuardedSolver
+
+backend = AutoSolver(
+    hallucination_mode="heuristic",
+    az_runner=lambda smiles, model: (False, []),
+    llm_runner=lambda molecule, **kwargs: ([["CCO"]], ["oxidation"], [0.9]),
+)
+with TemporaryDirectory() as directory:
+    solver = GuardedSolver(backend, {"CCO"}.__contains__, Path(directory) / "run")
+    tree, passed = solver.solve("CC=O")
+    result = backend.parse(tree, solved=passed)
+```
+
+For production, supply a catalog-backed callback instead of the example set.
+`deepretro.utils.disk_stock.SortedInchiKeyQuery` provides exact, memory-mapped
+InChIKey lookup for a producer-verified sorted `.npy` stock. Heuristic acceptance
+does not establish chemical feasibility. Ordinary `AutoSolver` behavior is
+unchanged; guarded search currently supports pipeline mode only.
+
 ### Agent feedback
 
 The agent's `check_hallucination` tool returns heuristic `score`, `severity`,

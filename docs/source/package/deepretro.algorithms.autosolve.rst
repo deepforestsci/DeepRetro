@@ -72,6 +72,11 @@ uses canonical SMILES.
 Modes
 -----
 
+For opt-in checks on both template and proposal reactions, exact stock
+membership and feedback-driven repair, see :doc:`deepretro.algorithms.guarded`.
+``run_llm(rejection_feedback=...)`` passes rejection reasons to the pipeline
+with a single provider attempt; ordinary calls retain their existing budgets.
+
 - ``solve_mode``: ``"pipeline"`` (default, non-agentic), ``"single_step_agent"``
   (per-molecule tool-calling agent), or ``"orchestrator"`` (reserved; raises
   ``NotImplementedError``).

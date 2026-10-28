@@ -21,6 +21,7 @@ dependencies = [
     "python-dotenv",
     "langfuse<3",
     "requests",
+    "tenacity>=9.1.4",
 ]
 
 [project.optional-dependencies]
