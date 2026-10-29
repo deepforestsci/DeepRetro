@@ -1,7 +1,8 @@
 """Domain feature extraction utilities for reaction-step featurization."""
 
-import numpy as np
 from collections import Counter
+
+import numpy as np
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 
@@ -15,7 +16,13 @@ def extract_domain_features_single(
     Extract hand-crafted domain features for one product-reactant pair.
 
     Computes atom-count deltas (C, N, O, Cl, Br), bond/ring/aromaticity
-    deltas, molecular-weight deltas, and absolute counts.
+    deltas, molecular-weight deltas, and absolute counts. Deltas are the
+    reactant total minus the product value.
+
+    The feature order is C, N, O, Cl, and Br atom-count deltas; bond, ring,
+    aromatic-atom, and molecular-weight deltas; reactant count; heavy-atom
+    delta; product and reactant molecular weights; product and reactant
+    ring counts. Molecular weights use RDKit's average atomic weights.
 
     Parameters
     ----------
@@ -39,11 +46,14 @@ def extract_domain_features_single(
     """
     try:
         product_mol = Chem.MolFromSmiles(product_smiles)
-        if product_mol is None:
+        if product_mol is None or product_mol.GetNumAtoms() == 0:
             return np.full(NUM_DOMAIN_FEATURES, np.nan)
 
         # Reactants may be multiple molecules joined by '.' (standard SMILES mixture notation)
         reactant_mols = [Chem.MolFromSmiles(r) for r in reactants_smiles.split(".")]
+
+        if any(mol is None or mol.GetNumAtoms() == 0 for mol in reactant_mols):
+            return np.full(NUM_DOMAIN_FEATURES, np.nan)
 
         # Product-side descriptors
         p_atoms = Counter(
@@ -56,16 +66,15 @@ def extract_domain_features_single(
         )  # aromatic atom count
         p_mw = Descriptors.MolWt(product_mol)  # molecular weight (Da)
 
-        # Reactant-side descriptors (aggregated across all valid reactant molecules)
-        r_atoms, r_bonds, r_rings, r_arom, r_mw, n_valid = Counter(), 0, 0, 0, 0.0, 0
+        # Sum descriptors across all reactants.
+        r_atoms: Counter[str] = Counter()
+        r_bonds, r_rings, r_arom, r_mw = 0, 0, 0, 0.0
         for mol in reactant_mols:
-            if mol:
-                r_atoms += Counter(a.GetSymbol() for a in mol.GetAtoms())
-                r_bonds += mol.GetNumBonds()
-                r_rings += len(Chem.GetSSSR(mol))
-                r_arom += sum(1 for a in mol.GetAtoms() if a.GetIsAromatic())
-                r_mw += Descriptors.MolWt(mol)
-                n_valid += 1  # count of successfully parsed reactant molecules
+            r_atoms += Counter(a.GetSymbol() for a in mol.GetAtoms())
+            r_bonds += mol.GetNumBonds()
+            r_rings += len(Chem.GetSSSR(mol))
+            r_arom += sum(1 for a in mol.GetAtoms() if a.GetIsAromatic())
+            r_mw += Descriptors.MolWt(mol)
 
         # 15 features: deltas (reactant - product) capture what atoms/bonds are "consumed"
         return np.array(
@@ -83,7 +92,7 @@ def extract_domain_features_single(
                 float(r_rings - p_rings),  # ring count delta
                 float(r_arom - p_arom),  # aromatic atom count delta
                 float(r_mw - p_mw),  # molecular weight delta (Da)
-                float(n_valid),  # number of valid reactant molecules
+                float(len(reactant_mols)),  # number of valid reactant molecules
                 float(
                     sum(r_atoms.values()) - sum(p_atoms.values())
                 ),  # total heavy-atom delta
