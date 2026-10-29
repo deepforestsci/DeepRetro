@@ -62,6 +62,7 @@ Subpackages
    :maxdepth: 2
 
    deepretro.algorithms.autosolve
+   deepretro.algorithms.guarded
    deepretro.algorithms.hallucination_checker
    deepretro.agents
    deepretro.batch

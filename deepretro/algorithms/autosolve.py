@@ -651,6 +651,8 @@ class AutoSolver:
         self,
         molecule: str,
         depth: int = 0,
+        *,
+        rejection_feedback: str | None = None,
     ) -> tuple[list[Pathway], list[str], list[float]]:
         """Obtain candidate pathways and apply all safety filters.
 
@@ -671,6 +673,11 @@ class AutoSolver:
             :func:`deepretro.agents.loop.iteration_budget`); ignored by the
             pipeline mode. Defaults to ``0`` (the target).
 
+        rejection_feedback : str or None, optional
+            Reasons for rejected reactions to include in the next pipeline call.
+            Feedback calls use one provider attempt. Only pipeline mode supports
+            this argument.
+
         Returns
         -------
         tuple[list[Pathway], list[str], list[float]]
@@ -686,6 +693,8 @@ class AutoSolver:
         >>> pathways
         [['CCO']]
         """
+        if rejection_feedback is not None and self.solve_mode != "pipeline":
+            raise ValueError("rejection_feedback requires pipeline mode")
         if self.solve_mode == "single_step_agent":
             pathways, explanations, confidence = self._run_agent(molecule, depth)
             # Canonicalize model output so the safety filters, recursion, and
@@ -695,7 +704,9 @@ class AutoSolver:
                 molecule, pathways, explanations, confidence
             )
         else:
-            pathways, explanations, confidence = self._run_pipeline(molecule)
+            pathways, explanations, confidence = self._run_pipeline(
+                molecule, rejection_feedback=rejection_feedback
+            )
             pathways = _canonicalize_pathways(pathways)
 
         return filter_with_checker(
@@ -784,7 +795,7 @@ class AutoSolver:
             return False, [], True
 
     def _run_pipeline(
-        self, molecule: str
+        self, molecule: str, rejection_feedback: str | None = None
     ) -> tuple[list[Pathway], list[str], list[float]]:
         """Get raw pathways from the non-agentic LLM pipeline."""
         runner = self._llm_runner
@@ -792,6 +803,16 @@ class AutoSolver:
             from deepretro.utils.llm import llm_pipeline
 
             runner = llm_pipeline
+        feedback_kwargs: dict[str, Any] = {}
+        if rejection_feedback is not None:
+            from deepretro.utils.llm import build_messages
+
+            feedback_kwargs = {
+                "messages": build_messages(
+                    molecule, self.llm, addon=rejection_feedback
+                ),
+                "max_attempts": 1,
+            }
         return runner(
             molecule,
             model=self.llm,
@@ -799,6 +820,7 @@ class AutoSolver:
             hallucination_check=False,
             enable_thinking=self.enable_thinking,
             max_output_tokens=self.max_output_tokens,
+            **feedback_kwargs,
         )
 
     def _run_agent(

@@ -525,6 +525,7 @@ def llm_pipeline(
     prompt_mode: PromptMode | None = None,
     enable_thinking: bool = True,
     max_output_tokens: int | None = None,
+    max_attempts: int | None = None,
 ) -> tuple[list[Pathway], list[str], list[float]]:
     """Run the end-to-end single-step retrosynthesis LLM pipeline.
 
@@ -547,6 +548,10 @@ def llm_pipeline(
     max_output_tokens : int, optional
         Output token override for each LLM call.
 
+    max_attempts : int or None, optional
+        Positive provider-call cap. When set, disable nested transport retries.
+        None preserves the existing retry budgets.
+
     Returns
     -------
     tuple[list[Pathway], list[str], list[float]]
@@ -564,7 +569,15 @@ def llm_pipeline(
     """
     run_stability = is_enabled(stability_check)
     run_hallucination = is_enabled(hallucination_check)
-    max_attempts = 15 if (run_stability or run_hallucination) else 6
+    bounded_calls = max_attempts is not None
+    if max_attempts is not None and (
+        isinstance(max_attempts, bool)
+        or not isinstance(max_attempts, int)
+        or max_attempts < 1
+    ):
+        raise ValueError("max_attempts must be a positive integer")
+    if max_attempts is None:
+        max_attempts = 15 if (run_stability or run_hallucination) else 6
 
     for attempt in range(max_attempts):
         temperature = round(attempt * TEMPERATURE_STEP, 2)
@@ -582,6 +595,7 @@ def llm_pipeline(
                 prompt_mode=prompt_mode,
                 enable_thinking=enable_thinking,
                 max_output_tokens=max_output_tokens,
+                max_api_attempts=1 if bounded_calls else None,
             )
         )
         status = response.status_code
