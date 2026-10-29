@@ -4,13 +4,16 @@ from __future__ import annotations
 
 import importlib.util
 import os
-import subprocess
+import socket
 import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import NoReturn, Optional
+from types import ModuleType
 
 import pytest
+
+import deepretro
 
 from deepretro.metadata_types import (
     ConditionsPayload,
@@ -25,8 +28,7 @@ from deepretro.metadata_types import (
 from deepretro.utils.parse import RetrosynthesisRouteParser
 from deepretro.utils.utils_molecule import calc_chemical_formula, calc_mol_wt
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-AZ_MODULE_PATH = PROJECT_ROOT / "deepretro" / "utils" / "az.py"
+AZ_MODULE_PATH = Path(deepretro.__file__).resolve().parent / "utils" / "az.py"
 AZ_MODULE_NAME = "_deepretro_utils_az_under_test"
 
 
@@ -35,46 +37,25 @@ AZ_MODULE_NAME = "_deepretro_utils_az_under_test"
 # ---------------------------------------------------------------------------
 
 
-def _download_aizynth_models(models_dir: Path) -> None:
-    """Download AiZynthFinder public models to *models_dir* (skips if config.yml exists)."""
-    if (models_dir / "config.yml").exists():
-        return
-    models_dir.mkdir(parents=True, exist_ok=True)
-    result = subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "aizynthfinder.tools.download_public_data",
-            str(models_dir),
-        ],
-        capture_output=True,
-        text=True,
-        timeout=600,
-    )
-    if result.returncode != 0:
-        raise RuntimeError(
-            f"Failed to download AiZynthFinder models: {result.stderr or result.stdout}"
-        )
-
-
 @pytest.fixture(scope="session")
-def az_models_dir(tmp_path_factory):
-    """Session-scoped fixture providing a directory with AiZynthFinder models.
+def az_models_dir() -> Path:
+    """Use explicitly provisioned AiZynthFinder models for integration tests.
 
-    Honours ``AZ_TEST_MODELS_DIR`` so CI can point to a cached directory
-    and skip the download entirely.
+    Set ``AZ_TEST_MODELS_DIR`` to a directory containing ``config.yml``.
+    Tests never download model files themselves.
     """
     env_dir = os.environ.get("AZ_TEST_MODELS_DIR")
-    if env_dir:
-        models_dir = Path(env_dir)
-    else:
-        models_dir = tmp_path_factory.mktemp("aizynth_models")
-    _download_aizynth_models(models_dir)
+    if not env_dir:
+        pytest.skip("Set AZ_TEST_MODELS_DIR to run AiZynthFinder integration tests")
+    models_dir = Path(env_dir).expanduser().resolve()
+    if not (models_dir / "config.yml").is_file():
+        pytest.fail(f"AZ_TEST_MODELS_DIR has no config.yml: {models_dir}")
+    pytest.importorskip("aizynthfinder")
     return models_dir
 
 
 @pytest.fixture
-def az_module():
+def az_module() -> ModuleType:
     """Load the az module from source."""
     sys.modules.pop(AZ_MODULE_NAME, None)
     spec = importlib.util.spec_from_file_location(AZ_MODULE_NAME, AZ_MODULE_PATH)
@@ -86,7 +67,7 @@ def az_module():
 
 
 @pytest.fixture
-def az_module_with_models(az_module, az_models_dir):
+def az_module_with_models(az_module: ModuleType, az_models_dir: Path) -> ModuleType:
     """Az module with paths configured to use downloaded models."""
     config_path = az_models_dir / "config.yml"
     az_module.AZ_MODEL_CONFIG_PATH = str(config_path)
@@ -304,3 +285,48 @@ def _offline_langfuse_events(monkeypatch: pytest.MonkeyPatch) -> None:
     from deepretro.utils import llm_trace
 
     monkeypatch.setattr(llm_trace, "_langfuse_client", lambda: None)
+
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    """Register the explicit opt-in for network and model integration tests."""
+    parser.addoption(
+        "--run-integration",
+        action="store_true",
+        default=False,
+        help="Run integration tests that may call paid providers or use local models",
+    )
+
+
+def pytest_collection_modifyitems(
+    config: pytest.Config, items: list[pytest.Item]
+) -> None:
+    """Skip integration tests unless the caller explicitly enables them."""
+    if config.getoption("--run-integration"):
+        return
+    skip = pytest.mark.skip(reason="Integration test: pass --run-integration to enable")
+    for item in items:
+        if item.get_closest_marker("integration") is not None:
+            item.add_marker(skip)
+
+
+@pytest.fixture(autouse=True)
+def _block_unit_test_network(
+    request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Fail unexpected socket connections in unit tests, even if keys exist.
+
+    This guard covers Python sockets in the test process. External programs
+    and subprocesses must still use explicit test doubles.
+    """
+    if request.node.get_closest_marker("integration") is not None:
+        return
+
+    def blocked(*args: object, **kwargs: object) -> NoReturn:
+        raise RuntimeError(
+            "Network access is disabled in unit tests. Use a test double or mark "
+            "the test integration and pass --run-integration."
+        )
+
+    monkeypatch.setattr(socket, "create_connection", blocked)
+    monkeypatch.setattr(socket.socket, "connect", blocked)
+    monkeypatch.setattr(socket.socket, "connect_ex", blocked)
