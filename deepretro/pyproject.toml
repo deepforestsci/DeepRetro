@@ -17,7 +17,7 @@ dependencies = [
     "lightgbm",
     "scikit-learn",
     "pandas",
-    "litellm",
+    "litellm==1.90.2", # Retains the Langfuse v2 callback used by this package.
     "python-dotenv",
     "langfuse<3",
     "requests",
