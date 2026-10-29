@@ -94,3 +94,29 @@ The tool exposes `flagged` as `is_hallucination`. For unassessable inputs it is
 `None` (`null` in JSON); inspect `message` for the reason. Explanations include
 ring-size and relative substituent-position changes, without exact atom/bond
 localization.
+
+
+## Run package tests
+
+From the repository root:
+
+```sh
+uv sync --project deepretro --extra dev --locked
+uv run --project deepretro --no-sync pytest deepretro/tests
+```
+
+Unit tests block Python socket connections in the test process. Integration
+tests are skipped even when provider credentials are present. External programs
+and child processes still require explicit test doubles.
+
+To request live provider or model tests deliberately:
+
+```sh
+uv run --project deepretro --no-sync pytest deepretro/tests --run-integration -m integration
+```
+
+Provider tests require the appropriate credentials and may incur charges.
+AiZynthFinder tests require the `az` extra and an explicitly provisioned model
+directory in `AZ_TEST_MODELS_DIR`, containing `config.yml`. Test fixtures never
+download models. A missing setting skips these tests; a configured directory
+without `config.yml` fails with an actionable error.

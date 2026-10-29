@@ -75,6 +75,7 @@ def test_run_az_core_raises_file_not_found_before_import_error(
         az_module._run_az_core("CCCCC", az_model="MISSING_MODEL")
 
 
+@pytest.mark.integration
 @pytest.mark.slow
 def test_run_az_core_returns_finder_for_real_molecule(az_module_with_models):
     """_run_az_core returns a non-None finder for a real molecule."""
@@ -86,6 +87,7 @@ def test_run_az_core_returns_finder_for_real_molecule(az_module_with_models):
     assert finder is not None
 
 
+@pytest.mark.integration
 @pytest.mark.slow
 def test_run_az_returns_valid_result(az_module_with_models):
     """Test run_az with real AiZynthFinder returns (bool, list) with valid structure."""
@@ -98,6 +100,7 @@ def test_run_az_returns_valid_result(az_module_with_models):
         assert "type" in route or "smiles" in route
 
 
+@pytest.mark.integration
 @pytest.mark.slow
 def test_run_az_uses_fallback_config_when_model_missing(az_module_with_models):
     """Test run_az falls back to AZ_MODEL_CONFIG_PATH when model-specific config missing."""
@@ -151,6 +154,7 @@ def test_run_az_uses_explicit_cache(az_module):
     cache.close()
 
 
+@pytest.mark.integration
 @pytest.mark.slow
 def test_run_az_with_img_returns_valid_result(az_module_with_models):
     """Test run_az_with_img with real AiZynthFinder returns (bool, list, images)."""
