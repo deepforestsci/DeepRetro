@@ -8,7 +8,7 @@ stereoselectivity and experimental feasibility require separate assessment.
 
 from __future__ import annotations
 
-from collections import Counter
+from collections import Counter, deque
 from typing import Any
 
 from rdkit import Chem
@@ -432,6 +432,7 @@ def check_ring_substituent_positions(
         }
 
         def _overlap(candidate: dict) -> tuple[int, int]:
+            """Rank ring candidates by shared substituents, then count difference."""
             subs = identify_substituents(product_mol, candidate)
             sigs = {get_substituent_signature(product_mol, s) for s in subs}
             # Prefer most shared substituents, then the closest count.
@@ -622,7 +623,9 @@ def determine_ring_position(
     Determine the position of a substituent on a ring.
 
     For 6-membered rings uses ortho/meta/para nomenclature.
-    For other ring sizes returns numbered positions.
+    For other ring sizes returns ``"sepN"``, where N is the shortest
+    separation from another substituent along a path confined to the ring.
+    An isolated substituent receives ``"1"``.
 
     Parameters
     ----------
@@ -638,7 +641,8 @@ def determine_ring_position(
     Returns
     -------
     position : str
-        ``"ortho"``, ``"meta"``, ``"para"``, or a numbered position.
+        ``"ortho"``, ``"meta"``, ``"para"``, ``"sepN"``, or ``"1"``.
+        Six-membered rings can also return a numeric path length.
 
     Examples
     --------
@@ -765,10 +769,10 @@ def get_connected_atoms(
     True
     """
     visited = set([start_idx])
-    queue = [start_idx]
+    queue = deque([start_idx])
 
     while queue:
-        current = queue.pop(0)
+        current = queue.popleft()
         atom = mol.GetAtomWithIdx(current)
 
         for neighbor in atom.GetNeighbors():
@@ -812,28 +816,13 @@ def get_substituent_signature(
     >>> get_substituent_signature(mol, subst)
     'O1'
     """
-    # Create a fragment of just the substituent
-    atoms = substituent["atoms"]
-    if not atoms:
-        return ""
-
-    # Get the SMILES of the fragment
-    # This is a simplified approach, a more robust one would create a proper fragment
-    atom_symbols = []
-    for atom_idx in atoms:
-        atom = mol.GetAtomWithIdx(atom_idx)
-        atom_symbols.append(atom.GetSymbol())
-
-    # Count elements as a basic signature
-    elem_counts = Counter(atom_symbols)
-    signature = ".".join(
-        f"{elem}{count}" for elem, count in sorted(elem_counts.items())
+    # Element counts intentionally ignore connectivity and bond order.
+    elem_counts = Counter(
+        mol.GetAtomWithIdx(index).GetSymbol() for index in substituent["atoms"]
     )
-
-    # For more complex substituents, we could use a more sophisticated approach
-    # like a Morgan fingerprint or a proper SMILES fragment
-
-    return signature
+    return ".".join(
+        f"{element}{count}" for element, count in sorted(elem_counts.items())
+    )
 
 
 def get_friendly_substituent_name(signature: str) -> str:
@@ -939,9 +928,8 @@ def score_from_comparison(
             ),
         }
 
-    # Treated as a validity failure rather than a penalty: the structure parsed,
-    # but a carbon radical means the SMILES was truncated, so the atom and ring
-    # counts describe a molecule nobody proposed.
+    # Radical chemistry is outside this heuristic's supported scope, even
+    # when the radical SMILES is intentional and chemically meaningful.
     if comparison.get("carbon_radical"):
         return {
             "score": 0,

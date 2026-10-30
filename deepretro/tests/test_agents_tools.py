@@ -161,3 +161,11 @@ class TestAzTools:
         registry = build_tool_registry(az_tools=True)
         result = registry.execute("az_suggest", {"smiles": "CCO"})
         assert "error" in result
+
+
+def test_registry_schemas_are_independent() -> None:
+    """Provider-specific schema edits must not leak into another agent run."""
+    first = build_tool_registry()
+    first.schemas[0]["function"]["parameters"]["required"].append("context")
+    second = build_tool_registry()
+    assert second.schemas[0]["function"]["parameters"]["required"] == ["smiles"]

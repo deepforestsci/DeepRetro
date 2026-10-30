@@ -400,7 +400,12 @@ class AutoSolver:
                 continue
             children = [unsolved_leaf(reactant) for reactant in reactants]
             selected_confidence = [confidence[i]] if i < len(confidence) else []
-            return reaction_tree(smiles, children, selected_confidence), False
+            return reaction_tree(
+                smiles,
+                children,
+                selected_confidence,
+                self._verdict_for(pathway, smiles),
+            ), False
 
         return unsolved_leaf(smiles), False
 
@@ -472,7 +477,12 @@ class AutoSolver:
             selected_confidence = [confidence[i]] if i < len(confidence) else []
             results.append(
                 (
-                    reaction_tree(smiles, candidate_children, selected_confidence),
+                    reaction_tree(
+                        smiles,
+                        candidate_children,
+                        selected_confidence,
+                        self._verdict_for(pathway, smiles),
+                    ),
                     candidate_solved,
                 )
             )
@@ -1014,6 +1024,7 @@ def summarize_hallucination(route_tree: dict[str, Any]) -> dict[str, Any]:
     verdicts: list[dict[str, Any]] = []
 
     def walk(node: dict[str, Any], parent_smiles: str | None) -> None:
+        """Collect reaction verdicts while retaining the parent product identifier."""
         if not isinstance(node, dict):
             return
         smiles = node.get("smiles", parent_smiles)
