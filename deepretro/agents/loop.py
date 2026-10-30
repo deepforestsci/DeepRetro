@@ -215,6 +215,12 @@ def agentic_single_step(
         ``no_final_answer`` (``max_iterations`` reached without a final
         message). Lets callers surface model refusals in their output.
 
+    az_tools : bool, optional
+        Expose AiZynthFinder single-step and full-route tools. These tools need
+        the optional AiZynthFinder installation and local model files.
+    az_model : str, optional
+        Model configuration used by the AiZynthFinder tools.
+
     Returns
     -------
     tuple[list[Pathway], list[str], list[float]]

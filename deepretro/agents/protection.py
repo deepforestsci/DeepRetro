@@ -132,6 +132,7 @@ class ProtectionContext:
     """
 
     def __init__(self) -> None:
+        """Create an empty restoration context for one agent run."""
         self._masks: dict[str, dict[int, tuple[Any, _ProtectionSite]]] = {}
 
     def handle_protection(
@@ -144,8 +145,8 @@ class ProtectionContext:
         smiles : str
             Full molecular SMILES, including any salts and atom maps.
         groups : list of str or None, optional
-            Motifs to consider: Boc, Cbz, TBS, OBn, OEt, OMe. Defaults to all.
-            An empty list disables masking.
+            Motifs to consider: Boc, Cbz, TBS, TES, TBDPS, OBn, OEt, OMe.
+            Defaults to all. An empty list disables masking.
 
         Returns
         -------

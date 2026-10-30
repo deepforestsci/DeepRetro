@@ -6,9 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-import pytest
 
-from deepretro.algorithms.autosolve import AutoSolver, unsolved_leaf
+from deepretro.algorithms.autosolve import AutoSolver
 from deepretro.batch import read_molecules, run_batch
 from deepretro.utils.utils_molecule import canonicalize, try_canonicalize
 

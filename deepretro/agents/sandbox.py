@@ -1,23 +1,15 @@
-"""Hardened subprocess sandbox for agent-generated Python code.
+"""Run agent-generated Python in a temporary subprocess.
 
-The agent's ``run_python`` tool executes model-written code. That code is
-*semi-trusted* (produced by the LLM's own reasoning, never interpolated from
-untrusted Google-Sheet / molecule-file text), so the sandbox aims to make the
-common failure modes safe rather than to be an escape-proof jail:
+The child receives a small allow-list of environment variables. Provider API
+keys are not inherited. POSIX resource limits and a wall-clock timeout reduce
+accidental resource use. On Linux, an available ``unshare`` command requests a
+separate network namespace.
 
-* **Secret scrubbing (primary guarantee).** The child runs with a minimal
-  allow-list environment, so API keys in the parent process (``ANTHROPIC_API_KEY``
-  and friends) can never be read or exfiltrated by generated code.
-* **Resource caps.** POSIX ``RLIMIT_AS`` / ``RLIMIT_CPU`` / ``RLIMIT_NPROC`` /
-  ``RLIMIT_FSIZE`` bound memory, CPU, fork-bombs, and file writes.
-* **Wall-clock timeout.** The child process group is killed on expiry.
-* **Best-effort network isolation.** On Linux with ``unshare`` available the
-  child runs in a fresh, network-less namespace.
-
-ponytail: subprocess + rlimits + secret-scrub is adequate for semi-trusted
-code; it is NOT namespace isolation on macOS (``RLIMIT_AS`` unenforced, no
-``unshare``). Upgrade path: a ``PodmanSandbox`` (``--network=none``, read-only
-rootfs) implementing the same :class:`Sandbox` protocol.
+This is not a security boundary for untrusted code. The child keeps the user's
+filesystem permissions, including access to files under HOME. On macOS there
+is no network namespace and some resource limits are not enforced. Supply a
+separately isolated backend implementing :class:`Sandbox` when stronger
+isolation is required.
 """
 
 from __future__ import annotations
@@ -126,12 +118,17 @@ class SubprocessSandbox:
         Interpreter used for the child. Defaults to the current interpreter,
         so installed packages (RDKit, deepretro) remain importable.
     allow_network : bool, optional
-        When ``False`` (default), the child is run under ``unshare -rn`` if
-        available (Linux) to remove network access.
+        When ``False`` (default), use ``unshare -rn`` on Linux if installed.
+        Other platforms still allow network access. A failing ``unshare``
+        command is reported as a failed execution; it is not retried without
+        isolation.
 
     Examples
     --------
-    >>> SubprocessSandbox().run("print(2 + 2)").stdout.strip()
+    This trusted example bypasses the optional Linux namespace. It does not
+    make network requests.
+
+    >>> SubprocessSandbox(allow_network=True).run("print(2 + 2)").stdout.strip()
     '4'
     """
 
@@ -180,7 +177,7 @@ class SubprocessSandbox:
 
         Examples
         --------
-        >>> SubprocessSandbox().run("print('ok')").ok
+        >>> SubprocessSandbox(allow_network=True).run("print('ok')").ok
         True
         """
         cpu_seconds = max(1, int(timeout_s) + 1)
@@ -224,7 +221,7 @@ class SubprocessSandbox:
 
 
 def _kill_process_group(pid: int) -> None:
-    """Kill the child's process group so no orphaned children survive."""
+    """Kill processes still in the child's process group on timeout."""
     try:
         os.killpg(os.getpgid(pid), 9)
     except (ProcessLookupError, PermissionError, OSError):  # pragma: no cover
