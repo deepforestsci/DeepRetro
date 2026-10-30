@@ -10,7 +10,8 @@ public pipeline stays focused on the retrosynthesis workflow.
 from __future__ import annotations
 
 import ast
-from typing import Any, cast
+import json
+import math
 
 import litellm
 import structlog
@@ -384,13 +385,19 @@ def validate_split_json(
     Parameters
     ----------
     json_content : str
-        JSON object containing ``data``, ``explanation``, and
-        ``confidence_scores``.
+        JSON object containing equally sized ``data``, ``explanation``, and
+        ``confidence_scores`` lists. Each pathway is a nonempty list of
+        nonempty SMILES strings. Explanations are strings. Scores must be
+        finite numbers from zero to one; numeric strings are also accepted.
+        Legacy Python literal dictionaries remain supported.
 
     Returns
     -------
     tuple[int, list[Pathway], list[str], list[float]]
-        Status code, pathways, explanations, and confidence scores.
+        ``200`` with aligned pathways, explanations, and float scores on
+        success. Invalid syntax or schema returns ``(504, [], [], [])``.
+        Empty, aligned lists are valid. SMILES chemistry is checked later
+        by :func:`deepretro.utils.utils_molecule.validity_check`.
 
     Examples
     --------
@@ -400,12 +407,50 @@ def validate_split_json(
     (200, [['CCO']], ['demo'], [1.0])
     """
     try:
-        result = cast(dict[str, Any], ast.literal_eval(json_content))
-        pathways = cast(list[Pathway], result["data"])
-        explanations = cast(list[str], result["explanation"])
-        confidence = [float(value) for value in result["confidence_scores"]]
+        try:
+            result = json.loads(json_content)
+        except json.JSONDecodeError:
+            result = ast.literal_eval(json_content)
+        if not isinstance(result, dict):
+            raise ValueError("response must be an object")
+        pathways = result["data"]
+        explanations = result["explanation"]
+        scores = result["confidence_scores"]
+        if not all(
+            isinstance(column, list) for column in (pathways, explanations, scores)
+        ):
+            raise ValueError("pathways, explanations, and scores must be lists")
+        if not len(pathways) == len(explanations) == len(scores):
+            raise ValueError(
+                "pathways, explanations, and scores must have equal lengths"
+            )
+        if any(
+            not isinstance(pathway, list)
+            or not pathway
+            or any(
+                not isinstance(smiles, str) or not smiles.strip() for smiles in pathway
+            )
+            for pathway in pathways
+        ):
+            raise ValueError("each pathway must contain nonempty SMILES strings")
+        if any(not isinstance(explanation, str) for explanation in explanations):
+            raise ValueError("explanations must be strings")
+        if any(isinstance(score, bool) for score in scores):
+            raise ValueError("confidence scores must be numbers, not booleans")
+        confidence = [float(value) for value in scores]
+        if any(not math.isfinite(score) or not 0 <= score <= 1 for score in confidence):
+            raise ValueError(
+                "confidence scores must be finite and between zero and one"
+            )
         return 200, pathways, explanations, confidence
-    except Exception as exc:
+    except (
+        ValueError,
+        SyntaxError,
+        TypeError,
+        KeyError,
+        OverflowError,
+        RecursionError,
+    ) as exc:
         logger.error("Error parsing JSON response", error=str(exc))
         return 504, [], [], []
 
@@ -459,8 +504,10 @@ def filter_hallucination_pathways(
 
     Examples
     --------
-    >>> filter_hallucination_pathways("CCO", [["CCO"]])
+    >>> filter_hallucination_pathways("CC=O", [["CCO"]])
     [['CCO']]
+    >>> filter_hallucination_pathways("CCO", [["CCO"]])
+    []
     """
     filtered_pathways: list[Pathway] = []
     for pathway in pathways:
@@ -547,7 +594,6 @@ def llm_pipeline(
         Whether provider-supported reasoning controls should be sent.
     max_output_tokens : int, optional
         Output token override for each LLM call.
-
     max_attempts : int or None, optional
         Positive provider-call cap. When set, disable nested transport retries.
         None preserves the existing retry budgets.
@@ -555,7 +601,22 @@ def llm_pipeline(
     Returns
     -------
     tuple[list[Pathway], list[str], list[float]]
-        Valid pathways, explanations, and confidence scores.
+        Valid pathways, explanations, and confidence scores. The lists are
+        aligned by candidate index. Exhausted attempts return three empty
+        lists. Confidence values come from the model, not a calibrated scorer.
+
+    Raises
+    ------
+    ValueError
+        ``max_attempts`` is not a positive integer.
+
+    Notes
+    -----
+    The default budget is six pipeline attempts, or fifteen when a heuristic
+    filter is enabled. Each attempt can also use the provider interface's
+    transport retries. Set ``max_attempts`` to cap actual completion calls
+    and disable those nested retries. After the first failed DeepSeek
+    attempt, subsequent attempts use ``FALLBACK_MODEL``.
 
     Examples
     --------

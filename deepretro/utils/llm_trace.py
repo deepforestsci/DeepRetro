@@ -18,7 +18,7 @@ a time. This module carries that missing grouping in a
   Langfuse *events* inside the same trace, so tool outputs render online next
   to the model turns that requested them.
 
-Both are best-effort observability: neither ever raises into the solver.
+Recording is best-effort. Logging failures are reported without aborting the solver.
 
 Examples
 --------
@@ -175,7 +175,11 @@ def elapsed_ms(started: float) -> float:
 
 
 def _default_session_id(molecule: str) -> str:
-    """Build a readable, collision-resistant Langfuse session id.
+    """Build a readable Langfuse session ID from the target, second, and process.
+
+    Repeated runs for the same target within one second can share a session.
+    Each MoleculeTrace still receives its own UUID trace ID. Supply an explicit
+    session_id to molecule_trace when a different grouping policy is needed.
 
     Examples
     --------
@@ -265,9 +269,8 @@ def build_langfuse_client() -> Any | None:
 
     Examples
     --------
-    >>> import os
-    >>> os.environ.pop("LANGFUSE_PUBLIC_KEY", None) and None
-    >>> build_langfuse_client() is None  # doctest: +SKIP
+    >>> client = build_langfuse_client()  # doctest: +SKIP
+    >>> client is None or callable(client.event)  # doctest: +SKIP
     True
     """
     global _client_cache, _client_checked
@@ -843,7 +846,9 @@ def _write_record(trace: MoleculeTrace, record: dict[str, Any]) -> None:
         trace.log_path.parent.mkdir(parents=True, exist_ok=True)
         with trace.log_path.open("a", encoding="utf-8") as handle:
             handle.write(line + "\n")
-    except (OSError, TypeError, ValueError) as exc:
+    except Exception as exc:
+        # Provider objects can raise arbitrary exceptions from the ``str``
+        # fallback. Logging must not turn a successful completion into a retry.
         _warn_once("llm_trace.write_failed", str(exc))
 
 

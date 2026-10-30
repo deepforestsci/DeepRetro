@@ -20,7 +20,18 @@ def get_langfuse_metadata(session_type: str = "default") -> dict[str, JSONValue]
     Returns
     -------
     dict[str, JSONValue]
-        Copy of the configured Langfuse metadata.
+        Shallow copy of the configured Langfuse metadata.
+
+    Raises
+    ------
+    FileNotFoundError
+        No ancestor directory contains ``config/langfuse_config.json``.
+        This helper reads a source-checkout configuration; a standalone wheel
+        does not include that file.
+    KeyError
+        The requested session is not defined in the configuration.
+    json.JSONDecodeError
+        The configuration is not valid JSON.
 
     Examples
     --------
@@ -37,7 +48,7 @@ def get_langfuse_metadata(session_type: str = "default") -> dict[str, JSONValue]
     if config_path is None:
         raise FileNotFoundError("Could not locate config/langfuse_config.json")
 
-    with config_path.open() as handle:
+    with config_path.open(encoding="utf-8") as handle:
         config = json.load(handle)
 
     sessions = config.get("sessions", {})
