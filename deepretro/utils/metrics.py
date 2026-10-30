@@ -13,7 +13,9 @@ def find_optimal_threshold(
     Find the classification threshold that maximises F1-score.
 
     Sweeps the precision-recall curve and picks the threshold where
-    the harmonic mean of precision and recall is highest.
+    the harmonic mean of precision and recall is highest. Predictions at
+    or above the threshold count as positive. Ties select the lowest
+    threshold. Choose the threshold on validation data, not the test set.
 
     Parameters
     ----------

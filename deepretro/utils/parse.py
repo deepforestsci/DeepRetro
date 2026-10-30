@@ -42,8 +42,9 @@ class RetrosynthesisRouteParser:
     dependency map by matching each step's reactant SMILES against the
     product SMILES of all other steps.
 
-    See the :doc:`deepretro.utils.parse` documentation for the full
-    pseudocode and input tree structure.
+    A route must contain a selected reaction at each molecule node. This
+    parser does not choose between alternative reactions. A molecule node
+    with ``type="mol"`` and no children is a terminal starting material.
 
     Examples
     --------
@@ -169,7 +170,9 @@ class RetrosynthesisRouteParser:
         -------
         dict[str, list[str]]
             Mapping from each step id to the step ids that produce its
-            reactants.
+            reactants. Matching uses exact SMILES strings. If several steps
+            produce the same SMILES, the last step wins. Duplicate reactants
+            retain duplicate dependency entries.
         """
         steps = list(step_list)
         product_to_step = {

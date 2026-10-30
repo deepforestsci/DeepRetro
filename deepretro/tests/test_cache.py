@@ -2,7 +2,15 @@
 
 from __future__ import annotations
 
-from deepretro.utils.cache import CacheEntry, CacheManager, make_args_hash, make_cache_key
+from pathlib import Path
+import pytest
+
+from deepretro.utils.cache import (
+    CacheEntry,
+    CacheManager,
+    make_args_hash,
+    make_cache_key,
+)
 
 
 def test_make_cache_key_is_stable_and_versioned() -> None:
@@ -23,7 +31,9 @@ def test_make_args_hash_is_stable_for_identical_inputs() -> None:
     assert first == second
 
 
-def test_cache_manager_keeps_values_in_memory(tmp_path, monkeypatch) -> None:
+def test_cache_manager_keeps_values_in_memory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """CacheManager should not create on-disk state for cached values."""
     cache_dir = tmp_path / "cache"
     monkeypatch.setenv("DEEPRETRO_CACHE_DIR", str(cache_dir))
@@ -53,13 +63,17 @@ def test_cache_instances_do_not_share_state() -> None:
     assert second.get(key, default=miss) is miss
 
 
-def test_cache_manager_purge_if_expired_removes_stale_keys(monkeypatch) -> None:
+def test_cache_manager_purge_if_expired_removes_stale_keys(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """purge_if_expired should drop expired entries and report the removal."""
     cache = CacheManager()
     key = make_cache_key("demo", "CCO", version=1)
     monotonic_values = iter([10.0, 11.5])
 
-    monkeypatch.setattr("deepretro.utils.cache.time.monotonic", lambda: next(monotonic_values))
+    monkeypatch.setattr(
+        "deepretro.utils.cache.time.monotonic", lambda: next(monotonic_values)
+    )
     cache.set(key, {"smiles": "CCO"}, expire=1.0, tag="alcohol")
 
     assert cache.purge_if_expired(key) is True
@@ -95,3 +109,43 @@ def test_cache_manager_evict_tag_returns_removed_entries() -> None:
     assert cache.get(second_key, default=miss) is miss
     assert cache.get(third_key) == {"smiles": "CCC"}
     assert cache.stats().num_entries == 1
+
+
+def test_replacing_key_moves_tag_and_retains_only_new_value() -> None:
+    """Old group eviction cannot delete a replacement with a different tag."""
+    cache = CacheManager()
+    cache.set("key", "old", tag="old")
+    cache.set("key", "new", tag="new")
+    assert cache.evict_tag("old") == 0
+    assert cache.get("key") == "new"
+    assert cache.evict_tag("new") == 1
+
+
+def test_stats_purges_expired_entries_and_preserves_live_values(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Statistics count live entries and expiry also removes tag membership."""
+    monkeypatch.setattr("deepretro.utils.cache.time.monotonic", lambda: 10.0)
+    cache = CacheManager()
+    cache.set("expired", "value", expire=1.0, tag="batch")
+    cache.set("live", "value")
+    monkeypatch.setattr("deepretro.utils.cache.time.monotonic", lambda: 11.0)
+    assert cache.stats().num_entries == 1
+    assert cache.evict_tag("batch") == 0
+    assert cache.estimate_size_bytes() > 0
+    assert cache.get("live") == "value"
+    cache.close()
+    assert cache.stats().num_entries == 0
+    cache.close()
+
+
+def test_clear_keeps_cumulative_hit_and_miss_counts() -> None:
+    """Clearing values resets storage while diagnostic counters stay cumulative."""
+    cache = CacheManager()
+    cache.set("key", "value", tag="group")
+    cache.get("key")
+    cache.get("missing")
+    cache.clear()
+    stats = cache.stats()
+    assert (stats.hits, stats.misses, stats.num_entries) == (1, 1, 0)
+    assert cache.evict_tag("group") == 0
