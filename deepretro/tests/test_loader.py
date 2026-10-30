@@ -1,5 +1,7 @@
 """Unit tests for ReactionDataLoader and stratified_split."""
 
+from pathlib import Path
+
 import warnings
 
 import numpy as np
@@ -32,7 +34,7 @@ VALID_ROWS = [
 
 
 @pytest.fixture
-def csv_path(tmp_path):
+def csv_path(tmp_path: Path) -> str:
     """Write a small valid CSV and return its path."""
     df = pd.DataFrame(VALID_ROWS, columns=["product", "reactants", "label"])
     path = tmp_path / "reactions.csv"
@@ -41,7 +43,7 @@ def csv_path(tmp_path):
 
 
 @pytest.fixture
-def csv_with_invalid(tmp_path):
+def csv_with_invalid(tmp_path: Path) -> str:
     """CSV that includes one row with invalid SMILES."""
     rows = VALID_ROWS + [(INVALID_SMILES, ETHANE_WATER, 0)]
     df = pd.DataFrame(rows, columns=["product", "reactants", "label"])
@@ -53,7 +55,7 @@ def csv_with_invalid(tmp_path):
 # ReactionDataLoader inherits from DataLoader
 
 
-def test_loader_is_dataloader_subclass():
+def test_loader_is_dataloader_subclass() -> None:
     loader = ReactionDataLoader()
     assert isinstance(loader, DataLoader)
 
@@ -61,20 +63,20 @@ def test_loader_is_dataloader_subclass():
 # ReactionDataLoader.create_dataset
 
 
-def test_create_dataset_returns_disk_dataset(csv_path):
+def test_create_dataset_returns_disk_dataset(csv_path: str) -> None:
     loader = ReactionDataLoader()
     ds = loader.create_dataset(csv_path)
     assert isinstance(ds, DiskDataset)
 
 
-def test_create_dataset_shapes(csv_path):
+def test_create_dataset_shapes(csv_path: str) -> None:
     loader = ReactionDataLoader()
     ds = loader.create_dataset(csv_path)
     assert ds.X.shape == (len(VALID_ROWS), loader.featurizer.feature_dim)
     assert ds.y.shape == (len(VALID_ROWS), 1)
 
 
-def test_create_dataset_custom_data_dir(csv_path, tmp_path):
+def test_create_dataset_custom_data_dir(csv_path: str, tmp_path: Path) -> None:
     out_dir = str(tmp_path / "shards")
     loader = ReactionDataLoader()
     ds = loader.create_dataset(csv_path, data_dir=out_dir)
@@ -82,7 +84,7 @@ def test_create_dataset_custom_data_dir(csv_path, tmp_path):
     assert ds.data_dir == out_dir
 
 
-def test_create_dataset_drops_invalid_smiles(csv_with_invalid):
+def test_create_dataset_drops_invalid_smiles(csv_with_invalid: str) -> None:
     loader = ReactionDataLoader()
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
@@ -92,13 +94,13 @@ def test_create_dataset_drops_invalid_smiles(csv_with_invalid):
     assert len(ds) == len(VALID_ROWS)
 
 
-def test_create_dataset_missing_column_raises(csv_path):
+def test_create_dataset_missing_column_raises(csv_path: str) -> None:
     loader = ReactionDataLoader(product_col="nonexistent")
     with pytest.raises(KeyError):
         loader.create_dataset(csv_path)
 
 
-def test_create_dataset_with_custom_shard_size(csv_path):
+def test_create_dataset_with_custom_shard_size(csv_path: str) -> None:
     """shard_size passed to create_dataset controls chunking."""
     loader = ReactionDataLoader()
     ds = loader.create_dataset(csv_path, shard_size=2)
@@ -111,7 +113,7 @@ def test_create_dataset_with_custom_shard_size(csv_path):
 
 
 @pytest.fixture
-def large_csv_path(tmp_path):
+def large_csv_path(tmp_path: Path) -> str:
     """Write a balanced 40-row CSV (20 per class) for split tests."""
     rows = (
         [(ETHANOL, ETHANE_WATER, 0)] * 10
@@ -125,7 +127,7 @@ def large_csv_path(tmp_path):
     return str(path)
 
 
-def test_split_preserves_total_count_and_shards(large_csv_path):
+def test_split_preserves_total_count_and_shards(large_csv_path: str) -> None:
     """stratified_split should not drop rows and works with DiskDataset shards."""
     loader = ReactionDataLoader()
     ds = loader.create_dataset(large_csv_path, shard_size=8)
@@ -137,3 +139,27 @@ def test_split_preserves_total_count_and_shards(large_csv_path):
     assert isinstance(valid, DiskDataset)
     assert isinstance(test, DiskDataset)
     assert len(train) + len(valid) + len(test) == len(ds)
+
+
+def test_loader_accepts_graph_features(csv_path: str) -> None:
+    from deepchem.feat.graph_data import GraphData
+    from deepretro.featurizers import ReactionStepFeaturizer
+
+    loader = ReactionDataLoader(
+        featurizer=ReactionStepFeaturizer(base_featurizer="molgraphconv")
+    )
+    dataset = loader.create_dataset(csv_path)
+    assert len(dataset) == len(VALID_ROWS)
+    assert isinstance(dataset.X[0], GraphData)
+    np.testing.assert_array_equal(dataset.y[:, 0], [row[2] for row in VALID_ROWS])
+
+
+def test_graph_loader_drops_invalid_rows(csv_with_invalid: str) -> None:
+    from deepretro.featurizers import ReactionStepFeaturizer
+
+    loader = ReactionDataLoader(
+        featurizer=ReactionStepFeaturizer(base_featurizer="molgraphconv")
+    )
+    with pytest.warns(UserWarning, match="Dropped 1 rows"):
+        dataset = loader.create_dataset(csv_with_invalid)
+    assert len(dataset) == len(VALID_ROWS)

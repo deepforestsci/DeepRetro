@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
+import logging
+from collections.abc import Iterable
+
 import numpy as np
 import deepchem as dc
 import deepchem.feat  # noqa: F401  # ensure ``dc.feat`` submodule is registered
 from deepchem.feat.graph_data import GraphData
-from deepretro.utils import extract_domain_features_single
+from deepretro.utils import NUM_DOMAIN_FEATURES, extract_domain_features_single
 from typing import Any, Callable, Dict, Tuple, TypedDict
+
+logger = logging.getLogger(__name__)
 
 # ``class`` is a Python keyword, so this TypedDict uses the functional syntax.
 FeaturizerConfig = TypedDict(
@@ -17,36 +22,31 @@ FeaturizerConfig = TypedDict(
 
 
 class ReactionStepFeaturizer(dc.feat.Featurizer):
-    """
-    Featurizer for a single retrosynthesis reaction step.
+    """Represent a reaction as fingerprints or a disconnected molecular graph.
 
-    Each datapoint is represented as a tuple of ``(product_smiles, reactants_smiles)``.
-
-    The featurizer wraps a DeepChem molecular featurizer and applies it to both the product and reactant molecules.
-    Depending on the selected base featurizer, the output is either:
-
-    * **Vector-based features** (e.g. CircularFingerprint): product and reactant feature vectors are concatenated.
-      Optional reaction-level domain features can also be appended.
-
-    * **Graph-based features** (e.g. MolGraphConvFeaturizer): product and reactant SMILES are combined into a single
-      molecular graph representation.
+    Input pairs contain ``(product_smiles, reactants_smiles)``. Join multiple
+    reactants with a dot. Fingerprints concatenate product features first,
+    then reactant features. Graphs combine both sides into one disconnected
+    graph; they do not encode an atom mapping or reaction direction.
 
     Parameters
     ----------
-    base_featurizer : str
-        Name of the base featurizer to use. Must correspond to a key in ``FEATURIZER_MAP``. default="circularfingerprint"
+    base_featurizer : str, optional
+        ``"circularfingerprint"`` (default) or ``"molgraphconv"``.
+    use_domain_features : bool, optional
+        Append 15 reaction descriptors to circular fingerprints. Default False.
+        This option has no effect on graph features.
+    **kwargs : Any
+        Options for the DeepChem featurizer, such as ``radius`` and ``size``.
+        Sparse fingerprints are not supported.
 
-    use_domain_features : bool
-        Whether to append handcrafted reaction-level domain features when using circular fingerprints. default=True
-
-    **kwargs
-        Additional keyword arguments passed to the underlying DeepChem featurizer. These override any defaults defined
-        in ``FEATURIZER_MAP``.
-
-    Raises
-    ------
-    ValueError
-        If ``base_featurizer`` is not present in ``FEATURIZER_MAP``.
+    Examples
+    --------
+    >>> feat = ReactionStepFeaturizer(size=32)
+    >>> feat.featurize([("CCO", "CC.O")]).shape
+    (1, 64)
+    >>> ReactionStepFeaturizer(size=32, use_domain_features=True).feature_dim
+    79
     """
 
     def __init__(
@@ -55,20 +55,9 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
         use_domain_features: bool = False,
         **kwargs: Any,
     ) -> None:
-        """
-        Initialize the reaction-step featurizer.
-
-        Parameters
-        ----------
-        base_featurizer: str
-            Base DeepChem featurizer to wrap. default="circularfingerprint"
-        use_domain_features: bool
-            controls whether reaction-level domain features are appended for fingerprint-based features. default = False
-        **kwargs
-            Parameters passed to the selected base featurizer. The special argument ``use_domain_features``
-        """
-        # Extract use_domain_features safely from kwargs with a standard True fallback
+        """Resolve the registered base featurizer and its configuration."""
         self.use_domain_features = use_domain_features
+        self._vector_feature_dim: int | None = None
 
         feat_lower = base_featurizer.lower()
         if feat_lower not in FEATURIZER_MAP:
@@ -78,11 +67,110 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
 
         config = FEATURIZER_MAP[feat_lower]
         self.base_feat_type = config["type"]
+        if self.base_feat_type not in {"1d_vector", "graph"}:
+            raise ValueError(
+                f"'{base_featurizer}' cannot be used as a base featurizer."
+            )
+        if kwargs.get("sparse", False):
+            raise ValueError("ReactionStepFeaturizer requires dense fingerprints.")
 
         # Combine default config parameters with remaining explicit user overrides
         merged_params = config["default_params"].copy()
         merged_params.update(kwargs)
         self.base_featurizer = config["class"](**merged_params)
+
+    @property
+    def feature_dim(self) -> int:
+        """Return the number of columns in a vector feature row.
+
+        Returns
+        -------
+        int
+            Twice the fingerprint size, plus 15 when domain features are enabled.
+            For custom vector featurizers, the width of the first successful
+            reaction pair.
+
+        Raises
+        ------
+        ValueError
+            If this instance produces graphs, or a custom vector featurizer
+            has not yet processed a valid reaction pair.
+        """
+        if self.base_feat_type != "1d_vector":
+            raise ValueError("Graph features do not have a fixed vector dimension.")
+        if not isinstance(self.base_featurizer, dc.feat.CircularFingerprint):
+            if self._vector_feature_dim is None:
+                raise ValueError(
+                    "Custom vector dimension requires a valid reaction pair."
+                )
+            return self._vector_feature_dim
+        return 2 * self.base_featurizer.size + (
+            NUM_DOMAIN_FEATURES if self.use_domain_features else 0
+        )
+
+    def featurize(
+        self,
+        datapoints: Iterable[Tuple[str, str]],
+        log_every_n: int = 1000,
+        **kwargs: Any,
+    ) -> np.ndarray:
+        """Featurize a batch while preserving invalid input positions.
+
+        Parameters
+        ----------
+        datapoints : iterable of tuple of str and str
+            Product and dot-separated reactant SMILES pairs.
+        log_every_n : int, optional
+            Log progress every this many rows. Must be positive.
+        **kwargs : Any
+            Options forwarded to the base featurizer.
+
+        Returns
+        -------
+        numpy.ndarray
+            A numeric matrix for fingerprints, including all-NaN failure rows.
+            For graphs, a one-dimensional object array with empty arrays at
+            failed positions. Empty fingerprint input has shape
+            ``(0, feature_dim)``. Custom vector widths are learned from valid
+            rows. Before any valid row is seen, failed custom batches have
+            shape ``(n_rows, 0)``.
+
+        Raises
+        ------
+        ValueError
+            If ``log_every_n`` is not positive.
+        """
+        if log_every_n <= 0:
+            raise ValueError("log_every_n must be positive.")
+        features: list[np.ndarray | GraphData] = []
+        for index, datapoint in enumerate(datapoints):
+            if index % log_every_n == 0:
+                logger.info("Featurizing reaction %d", index)
+            try:
+                features.append(self._featurize(datapoint, **kwargs))
+            except Exception:
+                logger.warning("Failed to featurize reaction %d", index, exc_info=True)
+                features.append(self._failure_features())
+        if self.base_feat_type == "graph":
+            result = np.empty(len(features), dtype=object)
+            result[:] = features
+            return result
+        try:
+            width = self.feature_dim
+        except ValueError:
+            return np.empty((len(features), 0))
+        vectors = [
+            np.full(width, np.nan) if np.asarray(feature).size == 0 else feature
+            for feature in features
+        ]
+        return np.asarray(vectors).reshape(len(vectors), width)
+
+    def _failure_features(self) -> np.ndarray:
+        """Return a NaN row when its width is known, otherwise an empty sentinel."""
+        try:
+            return np.full(self.feature_dim, np.nan)
+        except ValueError:
+            return np.array([])
 
     def _featurize(
         self, datapoint: Tuple[str, str], **kwargs: Any
@@ -115,21 +203,21 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
 
         Notes
         -----
-        Invalid molecules are handled by DeepChem's parent ``Featurizer.featurize()`` implementation. If either
-        the product or reactant featurization fails for vector-based featurizers, an empty NumPy array is returned.
+        If either side fails vector featurization, return an all-NaN row.
+        Graph failures use DeepChem's empty-array sentinel. The batch method
+        preserves these failed positions so callers can keep labels aligned.
         """
         product_smiles, reactants_smiles = datapoint
 
         if self.base_feat_type == "1d_vector":
-            # --- 1D VECTOR ROUTE (Fingerprints, Descriptors) ---
             prod_feats = self.base_featurizer.featurize(product_smiles, **kwargs)[0]
 
             if prod_feats.size == 0:
-                return np.array([])
+                return self._failure_features()
 
             reac_feats = self.base_featurizer.featurize(reactants_smiles, **kwargs)[0]
             if reac_feats.size == 0:
-                return np.array([])
+                return self._failure_features()
 
             parts = [prod_feats, reac_feats]
 
@@ -140,10 +228,11 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
                 parts.append(
                     extract_domain_features_single(product_smiles, reactants_smiles)
                 )
-            return np.concatenate(parts)
+            result = np.concatenate(parts)
+            self._vector_feature_dim = result.size
+            return result
 
         elif self.base_feat_type == "graph":
-            # --- GRAPH ROUTE (MolGraphConv, DMPNN) ---
             combined_smiles = f"{product_smiles}.{reactants_smiles}"
             return self.base_featurizer.featurize(combined_smiles, **kwargs)[0]
 
