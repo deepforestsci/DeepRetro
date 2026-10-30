@@ -168,8 +168,9 @@ class ReactionDataLoader(DataLoader):
         -------
         dataset : DiskDataset
             Disk-backed DeepChem dataset ready for splitting / training.
-            Fully failed shards are omitted. If every row fails, the dataset
-            is empty and has no stored feature width.
+            Fully failed shards are omitted when valid rows exist. If every
+            row fails, one empty shard is retained; custom feature width can
+            be zero if no valid vector has been seen.
 
         Examples
         --------
@@ -187,6 +188,8 @@ class ReactionDataLoader(DataLoader):
         ]:
             """Yield valid features, labels, weights, and IDs for each CSV shard."""
             nonlocal total_dropped
+            yielded = False
+            empty_features = np.empty((0, 0))
             for shard in self._get_shards(inputs, shard_size):
                 X, valid_inds = self._featurize_shard(shard)
 
@@ -197,6 +200,7 @@ class ReactionDataLoader(DataLoader):
                 # A custom vector width may still be unknown in an all-failed
                 # shard. Do not persist empty shards with incompatible widths.
                 if not len(valid_inds):
+                    empty_features = X
                     continue
 
                 # Extract labels from task columns
@@ -211,7 +215,17 @@ class ReactionDataLoader(DataLoader):
                 else:
                     ids = np.arange(len(valid_inds))
 
+                yielded = True
                 yield X, y, w, ids
+
+            if not yielded:
+                # DeepChem's array accessors require at least one shard.
+                yield (
+                    empty_features,
+                    np.empty((0, 1)),
+                    np.empty((0, 1), dtype=np.float32),
+                    np.empty(0, dtype=object),
+                )
 
         dataset = DiskDataset.create_dataset(shard_generator(), data_dir, self.tasks)
 
