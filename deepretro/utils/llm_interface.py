@@ -72,7 +72,9 @@ class LLMRequest:
     max_output_tokens : int, optional
         Output token override.
     max_api_attempts : int or None, optional
-        Positive transport-attempt cap. None preserves the normal retry budget.
+        Positive cap on completion calls. Setting it disables LiteLLM retries.
+        ``None`` allows two completion calls, each with the retry count from
+        ``DEEPRETRO_LLM_NUM_RETRIES`` (three by default).
 
     Examples
     --------
@@ -551,6 +553,4 @@ def create_llm_interface(
         return OpenAILLM(model, prompt_mode=prompt_mode)
     if selection.provider == "deepseek":
         return DeepSeekLLM(model, prompt_mode=prompt_mode)
-    if selection.provider == "anthropic":
-        return AnthropicLLM(model, prompt_mode=prompt_mode)
     return AnthropicLLM(model, prompt_mode=prompt_mode)
