@@ -168,6 +168,8 @@ class ReactionDataLoader(DataLoader):
         -------
         dataset : DiskDataset
             Disk-backed DeepChem dataset ready for splitting / training.
+            Fully failed shards are omitted. If every row fails, the dataset
+            is empty and has no stored feature width.
 
         Examples
         --------
