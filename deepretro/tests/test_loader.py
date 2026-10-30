@@ -163,3 +163,45 @@ def test_graph_loader_drops_invalid_rows(csv_with_invalid: str) -> None:
     with pytest.warns(UserWarning, match="Dropped 1 rows"):
         dataset = loader.create_dataset(csv_with_invalid)
     assert len(dataset) == len(VALID_ROWS)
+
+
+@pytest.mark.parametrize("all_invalid", [False, True])
+def test_custom_vectors_skip_empty_shards(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, all_invalid: bool
+) -> None:
+    """Unknown-width failed shards must not corrupt later descriptor rows."""
+    from deepchem.feat import RDKitDescriptors
+    from deepretro.featurizers import ReactionStepFeaturizer
+    from deepretro.featurizers.reactionstep import FEATURIZER_MAP
+
+    monkeypatch.setitem(
+        FEATURIZER_MAP,
+        "descriptors",
+        {"class": RDKitDescriptors, "type": "1d_vector", "default_params": {}},
+    )
+    rows = [(INVALID_SMILES, ETHANE_WATER, 0, "bad")]
+    if not all_invalid:
+        rows.append((ETHANOL, ETHANE_WATER, 1, "good"))
+    path = tmp_path / "custom.csv"
+    pd.DataFrame(rows, columns=["product", "reactants", "label", "id"]).to_csv(
+        path, index=False
+    )
+    feat = ReactionStepFeaturizer(base_featurizer="descriptors")
+    loader = ReactionDataLoader(featurizer=feat, id_field="id")
+    with pytest.warns(UserWarning, match="Dropped 1 rows"):
+        dataset = loader.create_dataset(
+            str(path), data_dir=str(tmp_path / "data"), shard_size=1
+        )
+    if all_invalid:
+        assert len(dataset) == 0
+        assert (
+            dataset.X.size == dataset.y.size == dataset.w.size == dataset.ids.size == 0
+        )
+    else:
+        assert dataset.X.shape == (1, feat.feature_dim)
+        np.testing.assert_array_equal(
+            dataset.X, feat.featurize([(ETHANOL, ETHANE_WATER)])
+        )
+        np.testing.assert_array_equal(dataset.y, [[1]])
+        np.testing.assert_array_equal(dataset.w, [[1]])
+        np.testing.assert_array_equal(dataset.ids, ["good"])

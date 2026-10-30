@@ -192,6 +192,11 @@ class ReactionDataLoader(DataLoader):
                 if dropped > 0:
                     total_dropped += dropped
 
+                # A custom vector width may still be unknown in an all-failed
+                # shard. Do not persist empty shards with incompatible widths.
+                if not len(valid_inds):
+                    continue
+
                 # Extract labels from task columns
                 y = shard[self.label_col].values.reshape(-1, 1)
                 y = y[valid_inds]
