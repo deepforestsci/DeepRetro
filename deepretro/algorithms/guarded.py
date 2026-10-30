@@ -60,10 +60,21 @@ class GuardedSolver:
 
     Examples
     --------
+    This example uses a small in-memory stock. It makes no model calls.
+
+    >>> from tempfile import TemporaryDirectory
     >>> from deepretro import AutoSolver
-    >>> backend = AutoSolver(hallucination_mode="heuristic")  # doctest: +SKIP
-    >>> solver = GuardedSolver(backend, stock_checker, Path("new-run"))  # doctest: +SKIP
-    >>> tree, passed = solver.solve("CC=O")  # doctest: +SKIP
+    >>> backend = AutoSolver(
+    ...     az_runner=lambda smiles, model: (False, []),
+    ...     llm_runner=lambda molecule, **kwargs: ([], [], []),
+    ... )
+    >>> with TemporaryDirectory() as directory:
+    ...     solver = GuardedSolver(
+    ...         backend, {"CCO"}.__contains__, Path(directory) / "run"
+    ...     )
+    ...     tree, passed = solver.solve("CCO")
+    >>> passed, tree["in_stock"]
+    (True, True)
     """
 
     def __init__(
@@ -75,6 +86,7 @@ class GuardedSolver:
         rounds: int = 3,
         deadline: float | None = None,
     ) -> None:
+        """Validate the backend and create a new run directory."""
         if (
             backend.hallucination_mode != "heuristic"
             or backend.solve_mode != "pipeline"
@@ -188,9 +200,9 @@ class GuardedSolver:
         RuntimeError
             If the AZ backend reports an operational error.
 
-        Examples
+        See Also
         --------
-        >>> tree, passed = solver.solve("CC=O")  # doctest: +SKIP
+        GuardedSolver : Construction and a complete offline example.
         """
         if isinstance(depth, bool) or not isinstance(depth, int) or depth < 0:
             raise ValueError("depth must be a nonnegative integer")
@@ -278,12 +290,12 @@ class GuardedSolver:
                 revision=revision,
                 rejection_feedback=feedback,
             )
-            paths, explanations, confidence = self.backend.run_llm(
+            paths, _explanations, _confidence = self.backend.run_llm(
                 product,
                 depth=depth,
                 rejection_feedback=json.dumps(feedback),
             )
-            for index, path in enumerate(paths):
+            for path in paths:
                 if self._stopped(depth):
                     break
                 raw = path.split(".") if isinstance(path, str) else path
@@ -294,15 +306,7 @@ class GuardedSolver:
                 except (ValueError, TypeError) as exc:
                     self._reject(product, [], str(exc), "llm")
                     continue
-                context = dict(
-                    explanation=explanations[index]
-                    if index < len(explanations)
-                    else "",
-                    confidence=confidence[index] if index < len(confidence) else None,
-                )
-                if self._try_reaction(
-                    node, reactants, "llm", ancestors, depth, context=context
-                ):
+                if self._try_reaction(node, reactants, "llm", ancestors, depth):
                     self.solved_memo[product] = copy.deepcopy(node)
                     self._checkpoint()
                     return True
@@ -359,7 +363,6 @@ class GuardedSolver:
         ancestors: set[str],
         depth: int,
         hints: list[dict[str, Any]] | None = None,
-        context: dict[str, Any] | None = None,
     ) -> bool:
         """Gate an edge before recursively expanding any of its precursors."""
         product = node["smiles"]

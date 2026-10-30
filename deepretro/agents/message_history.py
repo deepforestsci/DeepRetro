@@ -101,6 +101,23 @@ def append_assistant_message(
 ) -> dict[str, Any]:
     """Snapshot one assistant message, append it, and return the snapshot.
 
+    Parameters
+    ----------
+    history : list of dict
+        Conversation to extend in place.
+    message : mapping or Pydantic-compatible object
+        Assistant message accepted by :func:`snapshot_assistant_message`.
+
+    Returns
+    -------
+    dict
+        The independent snapshot that was appended to ``history``.
+
+    Raises
+    ------
+    MessagePreservationError
+        If the message cannot be serialized, validated, or copied.
+
     Examples
     --------
     >>> history = []

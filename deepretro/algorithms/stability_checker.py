@@ -1,73 +1,26 @@
-"""Heuristic stability checker for molecules in retrosynthetic pathways.
+"""Structural warning rules for proposed precursor molecules.
 
-When an LLM proposes reactant molecules, some of them may be chemically
-unstable — strained small rings, anti-aromatic systems, reactive
-intermediates like carbocations or carbenes, etc.  This module catches
-those problems by inspecting the molecular graph with RDKit descriptors
-and SMARTS pattern matching.  No trained model is required.
+The checker uses RDKit descriptors and SMARTS patterns. It starts at 100,
+subtracts penalties, adds an aromatic-ring bonus, and clamps the result to
+0 through 100. The score is a screening heuristic, not a measured stability,
+a probability, or a prediction of whether a compound can be isolated.
 
-Checks performed
-----------------
+The rules flag small heterocycles, selected potentially anti-aromatic motifs,
+rings that share atoms, large heterocycles, carbocations, and carbene-like
+patterns. Additional penalties cover extreme logP, many rotatable bonds, and
+bridgehead atoms in small rings. Each issue explains which rule matched.
 
-1. **Strained small rings** — 3- or 4-membered rings that contain a
-   heteroatom (N, O, S …) are flagged.  Aziridines and azetidines are
-   significantly more strained than plain cyclopropane / cyclobutane.
+The rules do not account for solvent, temperature, concentration, reaction
+conditions, or three-dimensional geometry. Stable compounds can trigger
+warnings. A clean report does not establish stability or experimental safety.
 
-2. **Anti-aromatic motifs** — rings whose π-electron count is a multiple
-   of 4 (Hückel 4n rule) are thermodynamically destabilised.  Known
-   patterns (cyclobutadiene, cyclooctatetraene, pentalene) are matched
-   via SMARTS, and π electrons are also counted directly for rings of
-   size 4, 8, 12, or 16.
+Scores of at least 80 receive the label ``"Likely stable"``. Scores from 50
+through 79 receive ``"Moderately stable"``. Lower scores receive
+``"Potentially unstable"``. These labels describe the rule score only.
 
-3. **Fused small rings** — two rings of ≤ 4 atoms sharing atoms create
-   extreme angle strain (e.g. bicyclo[1.1.0]butane).  These systems can
-   be explosive.
-
-4. **Large heterocycles** — rings with ≥ 7 atoms containing heteroatoms
-   tend to be conformationally floppy and often unstable.  Very large
-   heterocycles (> 10 atoms, ≥ 3 heteroatoms) get an extra penalty.
-
-5. **Carbocations** — positively charged carbon centres are reactive
-   intermediates, not isolable species.  The checker distinguishes:
-
-   * *sp2* (``[C+;X3]``) — penalised unless stabilised by an adjacent
-     aromatic ring, allylic double bond, or benzylic position.
-   * *sp* (``[C+;X2]``) — always penalised heavily.
-   * *Primary vs secondary* — primary is worse because fewer alkyl
-     groups donate electron density.
-   * *Adjacent to EWG* — a carbocation next to F, Cl, Br, I or charged
-     N/S/O is the worst case.
-
-6. **Carbenes** — a neutral carbon with two bonds and no hydrogens
-   (``[C;X2;H0;+0]``) is extremely reactive.  Extra penalties if the
-   carbene sits inside a 3- or 4-membered ring or is adjacent to an
-   electron-withdrawing group.
-
-7. **Fused cyclopentane + small hetero ring** — a 5-membered all-carbon
-   ring sharing atoms with a 3- or 4-membered hetero ring creates
-   significant ring strain.
-
-8. **Physicochemical outliers** — extreme ``logP`` values with
-   ``abs(logP) > 10`` or too many rotatable bonds (``> 15``) each
-   incur a small penalty.
-
-9. **Aromatic bonus** — aromatic rings stabilise a molecule, so each
-   one adds a small bonus (capped at +15 total).
-
-Scoring
--------
-After all checks, the score is clamped to 0–100:
-
-* **≥ 80** → ``"Likely stable"``
-* **50–79** → ``"Moderately stable"``
-* **< 50** → ``"Potentially unstable"``
-
-Entry points
-------------
-
-* `check_molecule_stability` — analyse a single SMILES and return a
-  0–100 stability score with an issue list.
-* `is_valid_smiles` — quick check that a SMILES string parses.
+Use :func:`check_molecule_stability` for the complete report. The lower-level
+``check_*`` functions append messages to a supplied ``results["issues"]`` list
+and return an updated, unclamped score.
 """
 
 from __future__ import annotations
@@ -327,7 +280,7 @@ def check_molecule_stability(smiles: str) -> dict[str, Any]:
                 symbols = {a.GetSymbol() for a in heteroatoms}
                 results["issues"].append(
                     f"Large ({len(ring)}-membered) heterocycle with "
-                    f"{', '.join(symbols)} (potentially unstable)"
+                    f"{', '.join(sorted(symbols))} (potentially unstable)"
                 )
                 if len(ring) > 10 and len(heteroatoms) >= 3:
                     results["issues"].append(
@@ -411,12 +364,9 @@ def check_carbocations(
 ) -> int:
     """Detect carbocation intermediates and apply score penalties.
 
-    Carbocations are positively charged carbon centres i.e. reactive
-    intermediates that cannot be bottled.  The function uses SMARTS
-    pattern matching to find them and then checks whether the charge
-    is stabilised by resonance (allylic or benzylic position) or by
-    neighbouring aromatic atoms.  Unstabilised and primary carbocations
-    get the heaviest penalties; stabilised ones get a small bonus.
+    SMARTS patterns identify charged carbon atoms and selected neighboring
+    groups. Allylic or benzylic motifs reduce the penalty. This is a graph
+    heuristic and does not determine whether a carbocation can be isolated.
 
     Parameters
     ----------
@@ -495,11 +445,10 @@ def check_carbenes(
 ) -> int:
     """Detect carbene intermediates and apply score penalties.
 
-    A carbene is a neutral carbon with only two bonds and no hydrogens
-    i.e. an extremely reactive species that usually exists only as a
-    fleeting intermediate.  Additional penalties stack if the carbene
-    is inside a strained 3- or 4-membered ring, or sits next to an
-    electron-withdrawing group (halogens, charged heteroatoms).
+    The rule matches neutral carbon with connectivity two and no hydrogens.
+    Additional penalties apply to small-ring and electron-withdrawing-group
+    motifs. The pattern is a screening approximation, not a general carbene
+    classifier or a prediction of lifetime.
 
     Parameters
     ----------
@@ -555,7 +504,7 @@ def check_carbenes(
 
 def check_fused_cyclopentane(
     mol: Chem.Mol,
-    atom_rings: tuple,
+    atom_rings: tuple[tuple[int, ...], ...],
     results: dict[str, Any],
     score: int,
 ) -> int:
@@ -586,7 +535,7 @@ def check_fused_cyclopentane(
     --------
     >>> from rdkit import Chem
     >>> from deepretro.algorithms import check_fused_cyclopentane
-    >>> mol = Chem.MolFromSmiles("C1CC2OCC12")  # epoxycyclopentane
+    >>> mol = Chem.MolFromSmiles("C1CCC2OC12")  # 1,2-epoxycyclopentane
     >>> rings = mol.GetRingInfo().AtomRings()
     >>> results = {"issues": []}
     >>> new_score = check_fused_cyclopentane(mol, rings, results, 100)
@@ -621,7 +570,7 @@ def check_fused_cyclopentane(
                 results["issues"].append(
                     f"5-membered carbon ring fused with "
                     f"{len(sr)}-membered ring containing "
-                    f"{', '.join(hetero)} (strained system)"
+                    f"{', '.join(sorted(hetero))} (strained system)"
                 )
                 score -= 40
 
