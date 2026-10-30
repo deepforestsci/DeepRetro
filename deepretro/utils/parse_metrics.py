@@ -65,7 +65,8 @@ class ReactionMetricCalculator:
         reaction_encoding_names: Mapping[int, str] = REACTION_ENCODING_NAMES,
         scalability_encoding: Mapping[int, Any] = ENCODING_SCALABILITY,
     ) -> None:
-        """
+        """Configure the classifier and descriptor callbacks.
+
         Parameters
         ----------
         model_path : str, optional
@@ -167,6 +168,20 @@ def get_reaction_type(mol1: str, mol2: str, model_path: str) -> tuple[str, int]:
     Predict reaction type for a reactant/product pair.
 
     This compatibility wrapper delegates to ``ReactionMetricCalculator``.
+
+    Parameters
+    ----------
+    mol1 : str
+        Reactant SMILES.
+    mol2 : str
+        Product SMILES.
+    model_path : str
+        Path to a trusted joblib classifier file.
+
+    Returns
+    -------
+    tuple[str, int]
+        Reaction name and encoding, or ``("Unknown Reaction", -1)`` on failure.
     """
     return ReactionMetricCalculator(model_path=model_path).reaction_type(mol1, mol2)
 
@@ -177,5 +192,17 @@ def calc_scalability_index(mol1: str, mol2: str) -> int:
 
     This compatibility wrapper resolves the configured classifier path from
     ``RXN_CLASSIFICATION_MODEL_PATH``.
+
+    Parameters
+    ----------
+    mol1 : str
+        Reactant SMILES.
+    mol2 : str
+        Product SMILES.
+
+    Returns
+    -------
+    int
+        Configured scalability score, or zero when prediction is unavailable.
     """
     return ReactionMetricCalculator().scalability_index(mol1, mol2)

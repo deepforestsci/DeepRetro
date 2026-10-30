@@ -2,7 +2,9 @@
 
 Runs AiZynthFinder on target molecules, with optional image export.
 Uses ZINC stock and USPTO expansion/filter policies by default.
-Requires ``AZ_MODEL_CONFIG_PATH`` or ``AZ_MODELS_PATH`` environment variables.
+Model search requires ``AZ_MODEL_CONFIG_PATH`` or ``AZ_MODELS_PATH``.
+Absolute paths are used unchanged. Relative paths are resolved from the
+repository root in a source checkout. Set paths before importing this module.
 Caching is opt-in through an explicit ``CacheManager`` argument.
 """
 
@@ -23,7 +25,7 @@ if TYPE_CHECKING:
     from PIL.Image import Image
 
 try:
-    from aizynthfinder.aizynthfinder import AiZynthFinder
+    from aizynthfinder.aizynthfinder import AiZynthFinder  # ty: ignore[unresolved-import]
 except ImportError:
     AiZynthFinder = None  # type: ignore[assignment, misc]
 
@@ -31,8 +33,18 @@ logger = structlog.get_logger()
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-AZ_MODEL_CONFIG_PATH = f"{PROJECT_ROOT}/{os.getenv('AZ_MODEL_CONFIG_PATH')}"
-AZ_MODELS_PATH = f"{PROJECT_ROOT}/{os.getenv('AZ_MODELS_PATH')}"
+
+def _configured_path(name: str) -> str:
+    """Resolve an environment path without rewriting absolute paths."""
+    configured = os.getenv(name, "")
+    if not configured:
+        return ""
+    path = Path(configured).expanduser()
+    return str(path if path.is_absolute() else PROJECT_ROOT / path)
+
+
+AZ_MODEL_CONFIG_PATH = _configured_path("AZ_MODEL_CONFIG_PATH")
+AZ_MODELS_PATH = _configured_path("AZ_MODELS_PATH")
 
 
 def _basic_molecule_route(smiles: str) -> list[Dict[str, Any]]:
@@ -50,7 +62,7 @@ def _basic_molecule_route(smiles: str) -> list[Dict[str, Any]]:
 
 def _resolve_config(az_model: str | None = None) -> str:
     """Resolve AiZynthFinder config path, falling back to ``AZ_MODEL_CONFIG_PATH``."""
-    if az_model is not None:
+    if az_model is not None and AZ_MODELS_PATH:
         config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
         try:
             with open(config_path, "r") as _:
@@ -154,8 +166,8 @@ def run_az(
 ) -> tuple[bool, Sequence[Dict[str, Any]]]:
     """Run the retrosynthesis using AiZynthFinder.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from deepretro.utils.az import run_az
     >>> status, result_dict = run_az("C1CCCCC1", "USPTO")  # doctest: +SKIP
     >>> isinstance(status, bool) and isinstance(result_dict, list)  # doctest: +SKIP
@@ -202,8 +214,8 @@ def run_az_with_img(
 ) -> tuple[bool, Sequence[Dict[str, Any]], Sequence[Image | None] | None]:
     """Run the retrosynthesis using AiZynthFinder, including route images.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from deepretro.utils.az import run_az_with_img
     >>> status, result_dict, images = run_az_with_img("C1CCCCC1")  # doctest: +SKIP
     >>> isinstance(status, bool)  # doctest: +SKIP
@@ -221,7 +233,9 @@ def run_az_with_img(
     -------
     tuple[bool, Sequence[Dict[str, Any]], Sequence[Image] | None]
         ``(solved, routes, images)`` — solved status, route data, and
-        optional route images (PNG bytes). Uses ``AZ_MODEL_CONFIG_PATH``.
+        optional PIL image objects. Individual images may be ``None`` when
+        rendering fails. Basic feedstocks return ``images=None``. Uses
+        ``AZ_MODEL_CONFIG_PATH``.
 
     Notes
     -----
@@ -247,8 +261,10 @@ def run_az_with_img(
 
 
 def is_basic_molecule(smiles: str) -> bool:
-    """Check if the molecule is a basic molecule
-    (if number of C atoms is less than 5 or total atoms < 5).
+    """Check the historical size-based feedstock heuristic.
+
+    A molecule passes if it has fewer than five carbon atoms or fewer than
+    five total atoms. This heuristic does not query a supplier catalog.
 
     Parameters
     ----------
@@ -283,14 +299,7 @@ def is_basic_molecule(smiles: str) -> bool:
 
     q = rdqueries.AtomNumEqualsQueryAtom(6)
     num_c_atoms = len(mol.GetAtomsMatchingQuery(q))
-    # if total number of atoms is less than 5, return True
-    if mol.GetNumAtoms() < 5:
-        return True
-    elif num_c_atoms < 5:
-        return True
-    # if total number of C atoms is less than 5, return True
-
-    return False
+    return mol.GetNumAtoms() < 5 or num_c_atoms < 5
 
 
 def az_single_step(
@@ -299,8 +308,8 @@ def az_single_step(
     """Return AiZynthFinder's top-``k`` single-step disconnections for a molecule.
 
     Runs only the expansion policy for one step (no tree search, no stock), so
-    it is fast and always returns AZ's suggested precursor sets even for
-    molecules AZ cannot fully solve.
+    it can return suggested precursor sets even for molecules AZ cannot
+    fully solve. Templates that cannot be applied are skipped.
 
     Parameters
     ----------
@@ -309,7 +318,8 @@ def az_single_step(
     az_model : str, optional
         Model variant for config resolution (see :func:`run_az`).
     top_k : int, optional
-        Maximum number of disconnections to return, ranked by policy prior.
+        Maximum number of ranked templates to attempt. Failed templates are
+        skipped, so fewer disconnections may be returned.
 
     Returns
     -------
@@ -322,7 +332,7 @@ def az_single_step(
     >>> az_single_step("CC(=O)Oc1ccccc1C(=O)O")  # doctest: +SKIP
     [{'precursors': ['CC(=O)OC(C)=O', 'O=C(O)c1ccccc1O'], 'probability': 0.5}, ...]
     """
-    from aizynthfinder.chem import TreeMolecule
+    from aizynthfinder.chem import TreeMolecule  # ty: ignore[unresolved-import]
 
     config_filename = _resolve_config(az_model)
     finder = _get_finder(config_filename)

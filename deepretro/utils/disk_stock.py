@@ -10,7 +10,7 @@ from typing import Any
 import numpy as np
 
 try:
-    from aizynthfinder.context.stock.queries import StockQueryMixin
+    from aizynthfinder.context.stock.queries import StockQueryMixin  # ty: ignore[unresolved-import]
 except ImportError:
     # Keep the query usable without the optional template-search dependency.
     class StockQueryMixin:  # type: ignore[no-redef]
