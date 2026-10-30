@@ -15,7 +15,7 @@ logger = structlog.get_logger()
 _INVALID_SMILES_ERROR = "Invalid SMILES string provided."
 
 
-def _parse_molecule(smiles: str, *, message: str | None = None):
+def _parse_molecule(smiles: str, *, message: str | None = None) -> Chem.Mol | None:
     """Parse a SMILES string into an RDKit molecule."""
 
     try:
@@ -179,22 +179,16 @@ def validity_check(
 
     Examples
     --------
-    >>> original_logger = validity_check.__globals__["logger"]
-    >>> class _SilentLogger:
-    ...     def info(self, *args, **kwargs):
-    ...         pass
-    ...
-    ...     def warning(self, *args, **kwargs):
-    ...         pass
-    >>> validity_check.__globals__["logger"] = _SilentLogger()
-    >>> validity_check(
-    ...     molecule="c1ccccc1",
-    ...     res_molecules=[["CCO", "CCCl"]],
-    ...     res_explanations=["valid pathway"],
-    ...     res_confidence=[0.9],
-    ... )
+    >>> from structlog.testing import capture_logs
+    >>> with capture_logs():
+    ...     result = validity_check(
+    ...         molecule="c1ccccc1",
+    ...         res_molecules=[["CCO", "CCCl"]],
+    ...         res_explanations=["valid pathway"],
+    ...         res_confidence=[0.9],
+    ...     )
+    >>> result
     ([['CCO', 'CCCl']], ['valid pathway'], [0.9])
-    >>> validity_check.__globals__["logger"] = original_logger
     """
 
     valid_pathways: list[list[str]] = []
@@ -302,7 +296,12 @@ def calc_chemical_formula(mol: str) -> str:
 
 
 def are_molecules_same(smiles1: str, smiles2: str) -> bool:
-    """Check whether two SMILES strings describe the same molecule.
+    """Compare molecules using the historical fingerprint-based heuristic.
+
+    Canonically equal SMILES match immediately. Otherwise, equality of
+    radius-two, 1024-bit Morgan fingerprints counts as a match. These
+    fingerprints omit chirality and can collide. Use :func:`try_canonicalize`
+    to compare canonical SMILES when exact stereochemical identity matters.
 
     Parameters
     ----------
@@ -314,7 +313,7 @@ def are_molecules_same(smiles1: str, smiles2: str) -> bool:
     Returns
     -------
     bool
-        ``True`` when the molecules are equivalent, otherwise ``False``.
+        ``True`` when canonical SMILES or fingerprints match.
 
     Raises
     ------
