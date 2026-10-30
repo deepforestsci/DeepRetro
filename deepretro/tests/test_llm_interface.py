@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 from typing import Any
 
 from deepretro.utils.llm_helpers import (
@@ -20,7 +19,6 @@ from deepretro.utils.llm_helpers import (
 )
 from deepretro.utils.llm_interface import (
     LLMRequest,
-    LLMResponse,
     create_llm_interface,
     parse_cot_response,
 )
@@ -342,3 +340,30 @@ def test_json_payload_helpers() -> None:
     assert extract_json_payload('```json\n{"data": []}\n```') == '{"data": []}'
     assert extract_json_payload("prefix [1, 2] suffix") == "[1, 2]"
     assert extract_json_payload("No JSON here") is None
+
+
+def test_timeout_rejects_non_finite_values(monkeypatch: Any) -> None:
+    """Environment overrides must not turn a bounded request into an infinite one."""
+    for value in ("inf", "Infinity", "1e1000", "nan", "-inf"):
+        monkeypatch.setenv("DEEPRETRO_LLM_TIMEOUT", value)
+        assert resolve_llm_timeout() == DEFAULT_LLM_TIMEOUT_SECONDS
+
+
+def test_reaction_labels_share_the_class_name_mapping() -> None:
+    """Classifier labels retain their names when the duplicated table is removed."""
+    from deepretro.utils.variables import (
+        ENCODING_SCALABILITY,
+        REACTION_CLASSES,
+        REACTION_ENCODING,
+        REACTION_ENCODING_NAMES,
+    )
+
+    assert (
+        set(REACTION_ENCODING)
+        == set(REACTION_ENCODING_NAMES)
+        == set(ENCODING_SCALABILITY)
+    )
+    assert REACTION_ENCODING_NAMES[0] == "Amide to amine reduction"
+    assert REACTION_ENCODING_NAMES[49] == "Bromo Suzuki coupling"
+    for encoding, reaction_class in REACTION_ENCODING.items():
+        assert REACTION_ENCODING_NAMES[encoding] == REACTION_CLASSES[reaction_class]

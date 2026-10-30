@@ -249,3 +249,58 @@ def test_llm_pipeline_falls_back_from_deepseek_after_failed_attempt(
         enable_thinking=False,
     ) == ([["CCO"]], ["fallback"], [0.7])
     assert created_models[:2] == ["deepseek-ai/DeepSeek-R1", llm.FALLBACK_MODEL]
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"data": "CCO"},
+        {"data": ["CCO"]},
+        {"data": [[]]},
+        {"data": [[None]]},
+        {"data": [[""]]},
+        {"explanation": "oxidation"},
+        {"explanation": [None]},
+        {"explanation": []},
+        {"confidence_scores": "0.5"},
+        {"confidence_scores": []},
+        {"confidence_scores": [True]},
+        {"confidence_scores": ["nan"]},
+        {"confidence_scores": ["inf"]},
+        {"confidence_scores": [-0.1]},
+        {"confidence_scores": [1.1]},
+    ],
+)
+def test_validate_split_json_rejects_malformed_candidates(
+    overrides: dict[str, object],
+) -> None:
+    """Reject malformed candidate rows before RDKit or filtering sees them."""
+    payload = {
+        "data": [["CCO"]],
+        "explanation": ["oxidation"],
+        "confidence_scores": [0.5],
+    }
+    payload.update(overrides)
+    assert validate_split_json(json.dumps(payload)) == (504, [], [], [])
+
+
+def test_validate_split_json_accepts_json_metadata_and_legacy_literals() -> None:
+    """Extra JSON booleans/nulls do not invalidate the three pathway columns."""
+    payload = {
+        "data": [["CCO"]],
+        "explanation": ["oxidation"],
+        "confidence_scores": [0.5],
+        "extra": {"valid": True, "details": None},
+    }
+    expected = (200, [["CCO"]], ["oxidation"], [0.5])
+    assert validate_split_json(json.dumps(payload)) == expected
+    assert validate_split_json(repr(payload)) == expected
+    assert validate_split_json(
+        '{"data": [], "explanation": [], "confidence_scores": []}'
+    ) == (200, [], [], [])
+
+
+def test_validate_split_json_contains_recursion_errors() -> None:
+    """Pathologically nested provider output follows the normal retry contract."""
+    nested = "[" * 1100 + "0" + "]" * 1100
+    assert validate_split_json(nested) == (504, [], [], [])
