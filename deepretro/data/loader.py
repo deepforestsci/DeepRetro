@@ -10,7 +10,7 @@ stratified train/valid/test splitting.
 from __future__ import annotations
 
 import warnings
-from typing import Any, Iterator, List, Optional
+from typing import Iterator, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -22,19 +22,19 @@ from deepretro.featurizers import ReactionStepFeaturizer
 
 
 class ReactionDataLoader(DataLoader):
-    """Load a two-column reaction CSV into a DeepChem ``DiskDataset``.
+    """Load a labelled reaction CSV into a DeepChem ``DiskDataset``.
 
     Inherits from :class:`~deepchem.data.DataLoader` and overrides
     :meth:`_get_shards` and :meth:`_featurize_shard` to handle paired
     SMILES columns (product + reactants).  The parent's
-    ``create_dataset`` method is overridden to add automatic NaN-row
+    ``create_dataset`` method is overridden to add automatic failed-row
     dropping (invalid SMILES) with a summary warning.
 
     Parameters
     ----------
     featurizer : ReactionStepFeaturizer or None, optional
         Pre-configured featurizer.  A default one (radius=2, size=2048,
-        domain features on) is created when ``None``.
+        domain features off) is created when ``None``.
     product_col : str, optional
         Column name for product SMILES.  Default ``"product"``.
     reactants_col : str, optional
@@ -45,7 +45,7 @@ class ReactionDataLoader(DataLoader):
         Column name to use as sample identifiers.  When ``None``
         (default), sequential integer IDs are generated per shard.
     log_every_n : int, optional
-        Log a progress message every *n* shards.  Default ``1000``.
+        DeepChem progress logging interval.  Default ``1000``.
 
     Examples
     --------
@@ -65,6 +65,7 @@ class ReactionDataLoader(DataLoader):
         id_field: str | None = None,
         log_every_n: int = 1000,
     ) -> None:
+        """Store CSV column names and configure the DeepChem loader."""
         feat = featurizer or ReactionStepFeaturizer()
         super().__init__(
             tasks=[label_col],
@@ -116,22 +117,31 @@ class ReactionDataLoader(DataLoader):
             Feature matrix (only valid rows).
         valid_inds : np.ndarray
             Integer indices of rows that were successfully featurized
-            (all-NaN rows are excluded).
+            (all-NaN or empty feature rows are excluded).
         """
         products = shard[self.product_col].tolist()
         reactants = shard[self.reactants_col].tolist()
         pairs = list(zip(products, reactants))
         X = self.featurizer.featurize(pairs)
 
-        # Identify rows where featurization failed (all-NaN)
-        nan_mask = np.isnan(X).all(axis=1)
-        valid_inds = np.where(~nan_mask)[0]
+        # DeepChem represents failed graph featurization with an empty array.
+        # Vector failures use an all-NaN row to retain the feature dimension.
+        valid_inds = np.asarray(
+            [
+                index
+                for index, row in enumerate(X)
+                if not isinstance(row, np.ndarray)
+                or (row.size > 0 and not np.isnan(row).all())
+            ],
+            dtype=int,
+        )
         X = X[valid_inds]
         return X, valid_inds
 
     # create_dataset : customised to handle missing id_field & NaN warn
 
-    def create_dataset(
+    # Unlike the generic loader, this implementation accepts CSV paths only.
+    def create_dataset(  # ty: ignore[invalid-method-override]
         self,
         inputs: str | List[str],
         data_dir: Optional[str] = None,
@@ -150,8 +160,7 @@ class ReactionDataLoader(DataLoader):
             Path(s) to CSV file(s).
         data_dir : str or None, optional
             Directory to write shards into.  When ``None`` a temporary
-            directory is used (cleaned up when the ``DiskDataset``
-            object is garbage-collected).
+            directory is used. Remove that directory when it is no longer needed.
         shard_size : int or None, optional
             Number of rows per shard.  Default ``1000``.
 
@@ -159,6 +168,9 @@ class ReactionDataLoader(DataLoader):
         -------
         dataset : DiskDataset
             Disk-backed DeepChem dataset ready for splitting / training.
+            Fully failed shards are omitted when valid rows exist. If every
+            row fails, one empty shard is retained; custom feature width can
+            be zero if no valid vector has been seen.
 
         Examples
         --------
@@ -170,15 +182,26 @@ class ReactionDataLoader(DataLoader):
 
         total_dropped = 0
 
-        # Generator that streams featurized shards (X, y, w, ids) into ``DiskDataset.create_dataset`` while tracking how many rows are dropped due to all-NaN features from failed featurization.
-        def shard_generator():
+        # Stream aligned features, labels, weights, and identifiers to disk.
+        def shard_generator() -> Iterator[
+            tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+        ]:
+            """Yield valid features, labels, weights, and IDs for each CSV shard."""
             nonlocal total_dropped
+            yielded = False
+            empty_features = np.empty((0, 0))
             for shard in self._get_shards(inputs, shard_size):
                 X, valid_inds = self._featurize_shard(shard)
 
                 dropped = len(shard) - len(valid_inds)
                 if dropped > 0:
                     total_dropped += dropped
+
+                # A custom vector width may still be unknown in an all-failed
+                # shard. Do not persist empty shards with incompatible widths.
+                if not len(valid_inds):
+                    empty_features = X
+                    continue
 
                 # Extract labels from task columns
                 y = shard[self.label_col].values.reshape(-1, 1)
@@ -192,13 +215,24 @@ class ReactionDataLoader(DataLoader):
                 else:
                     ids = np.arange(len(valid_inds))
 
+                yielded = True
                 yield X, y, w, ids
+
+            if not yielded:
+                # DeepChem's array accessors require at least one shard.
+                yield (
+                    empty_features,
+                    np.empty((0, 1)),
+                    np.empty((0, 1), dtype=np.float32),
+                    np.empty(0, dtype=object),
+                )
 
         dataset = DiskDataset.create_dataset(shard_generator(), data_dir, self.tasks)
 
         if total_dropped > 0:
             warnings.warn(
-                f"Dropped {total_dropped} rows with NaN features (invalid SMILES)."
+                f"Dropped {total_dropped} rows with failed features (invalid SMILES).",
+                stacklevel=2,
             )
 
         return dataset
