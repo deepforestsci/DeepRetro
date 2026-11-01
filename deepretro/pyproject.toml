@@ -64,7 +64,9 @@ include-package-data = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--strict-markers"
 markers = [
+    "integration: requires explicit --run-integration and external services or local model artifacts",
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
 

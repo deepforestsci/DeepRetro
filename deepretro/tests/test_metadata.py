@@ -242,6 +242,7 @@ def test_metadata_prompt_builders_include_reaction_context() -> None:
     assert "{conditions}" not in literature_messages[1]["content"]
 
 
+@pytest.mark.integration
 def test_metadata_agents_hit_real_opus() -> None:
     if not os.getenv("ANTHROPIC_API_KEY"):
         pytest.skip("ANTHROPIC_API_KEY not set — skipping live Opus metadata test")

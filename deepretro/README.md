@@ -94,3 +94,50 @@ The tool exposes `flagged` as `is_hallucination`. For unassessable inputs it is
 `None` (`null` in JSON); inspect `message` for the reason. Explanations include
 ring-size and relative substituent-position changes, without exact atom/bond
 localization.
+
+
+## Run package tests
+
+From the repository root:
+
+```sh
+uv sync --project deepretro --extra dev --locked
+uv run --project deepretro --no-sync pytest deepretro/tests
+```
+
+Unit tests block Python socket connections in the test process. Integration
+tests are skipped even when provider credentials are present. External programs
+and child processes still require explicit test doubles.
+
+To request live provider or model tests deliberately:
+
+```sh
+uv run --project deepretro --no-sync pytest deepretro/tests --run-integration -m integration
+```
+
+Provider tests require the appropriate credentials and may incur charges.
+AiZynthFinder tests require the `az` extra and an explicitly provisioned model
+directory in `AZ_TEST_MODELS_DIR`, containing `config.yml`. Test fixtures never
+download models. A missing setting skips these tests; a configured directory
+without `config.yml` fails with an actionable error.
+
+### Real-model AiZynthFinder E2E
+
+The `deepretro AZ E2E` workflow installs the `az` extra and downloads/caches
+public policies and stock separately from the offline unit job. To run locally
+from the repository root:
+
+```sh
+uv sync --project deepretro --extra dev --extra az --locked
+export AZ_TEST_MODELS_DIR="$PWD/.az_models_cache"
+mkdir -p "$AZ_TEST_MODELS_DIR"
+uv run --project deepretro --no-sync python -m aizynthfinder.tools.download_public_data "$AZ_TEST_MODELS_DIR"
+uv run --project deepretro --no-sync pytest deepretro/tests/test_az_e2e.py --run-integration -m integration -v
+```
+
+The test loads real models, checks nonempty expansion proposals for aspirin,
+and runs route search/serialization. It does not require provider keys or a
+particular solved route. Missing model configuration or AZ dependencies fails
+an explicitly requested E2E run. Without `--run-integration`, it is skipped.
+Models and stock are large; keep the directory for subsequent runs. Missing or
+corrupt model files fail loading rather than silently skipping coverage.
