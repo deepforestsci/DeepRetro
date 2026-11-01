@@ -1,4 +1,16 @@
-"""File to store Variables for the retrosynthesis task"""
+"""Prompt templates and compatibility lookup tables for retrosynthesis.
+
+``llm_interface.PROMPT_CONFIG`` selects the active prompt pairs. Templates
+with ``_OLD``, ``_V2``, or ``_V3`` names remain available to older callers.
+Changing prompt text changes model behavior, so compare outputs when editing it.
+
+``REACTION_ENCODING`` maps classifier labels to reaction class identifiers.
+``REACTION_CLASSES`` supplies their names. ``ENCODING_SCALABILITY`` contains
+legacy ranking weights, not measured reaction yields or feasibility estimates.
+
+``BASIC_MOLECULES`` is a historical lookup list. It includes formula aliases
+as well as SMILES and is not a validated commercial stock catalog.
+"""
 
 prompt_old = """Do an one-step retrosynthesis on the given smile - {target_smiles} and provide 
 the list containing the reactants in the smiles format of all the possible pathways. 
@@ -1226,57 +1238,10 @@ REACTION_ENCODING = {
     49: "3.1.1",
 }
 
-REACTION_ENCODING_NAMES = {
-    0: "Amide to amine reduction",
-    1: "Carboxylic acid to alcohol reduction",
-    2: "Williamson ether synthesis",
-    3: "Alcohol to ketone oxidation",
-    4: "Chlorination",
-    5: "O-Bn deprotection",
-    6: "Nitration",
-    7: "N-Bn deprotection",
-    8: "Carboxylic acid to acid chloride",
-    9: "Bromo Suzuki-type coupling",
-    10: "Chloro N-arylation",
-    11: "Ketone reductive amination",
-    12: "N-Cbz deprotection",
-    13: "Alcohol to aldehyde oxidation",
-    14: "Isocyanate + amine reaction",
-    15: "Amide Schotten-Baumann",
-    16: "N-acetylation",
-    17: "Iodo N-alkylation",
-    18: "Chloro N-alkylation",
-    19: "Thioether synthesis",
-    20: "Stille reaction",
-    21: "Methoxy to hydroxy",
-    22: "CO2H-tBu deprotection",
-    23: "Hydroxy to chloro",
-    24: "Hydroxy to methoxy",
-    25: "Bromo N-arylation",
-    26: "CO2H-Me deprotection",
-    27: "Eschweiler-Clarke methylation",
-    28: "Nitrile reduction",
-    29: "Bromo N-alkylation",
-    30: "Nitro to amino",
-    31: "CO2H-Et deprotection",
-    32: "Ester Schotten-Baumann",
-    33: "Bromination",
-    34: "N-Boc deprotection",
-    35: "Aldehyde reductive amination",
-    36: "Mitsunobu aryl ether synthesis",
-    37: "Methyl esterification",
-    38: "Fischer-Speier esterification",
-    39: "Sonogashira coupling",
-    40: "Sulfonamide Schotten-Baumann",
-    41: "Wohl-Ziegler bromination",
-    42: "Chloro Suzuki-type coupling",
-    43: "N-Boc protection",
-    44: "Methylation",
-    45: "Sulfonic ester Schotten-Baumann",
-    46: "Fluoro N-arylation",
-    47: "Sulfanyl to sulfinyl",
-    48: "Carboxylic acid + amine reaction",
-    49: "Bromo Suzuki coupling",
+# Derive names from the class table so classifier labels cannot drift.
+REACTION_ENCODING_NAMES: dict[int, str] = {
+    encoding: REACTION_CLASSES[reaction_class]
+    for encoding, reaction_class in REACTION_ENCODING.items()
 }
 
 ENCODING_SCALABILITY = {
@@ -1334,6 +1299,8 @@ ENCODING_SCALABILITY = {
 
 
 class bcolors:
+    """ANSI terminal color escapes retained for older callers."""
+
     HEADER = "\033[95m"
     OKBLUE = "\033[94m"
     OKCYAN = "\033[96m"

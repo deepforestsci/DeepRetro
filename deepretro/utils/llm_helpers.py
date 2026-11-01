@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 import re
 from dataclasses import dataclass
@@ -32,7 +33,7 @@ DEFAULT_LLM_NUM_RETRIES = 3
 def resolve_llm_timeout() -> float:
     """Return the per-request LLM timeout in seconds.
 
-    Reads ``DEEPRETRO_LLM_TIMEOUT`` (seconds) when set to a positive number,
+    Reads ``DEEPRETRO_LLM_TIMEOUT`` (seconds) when set to a finite positive number,
     otherwise falls back to :data:`DEFAULT_LLM_TIMEOUT_SECONDS`. Invalid or
     non-positive values are ignored in favour of the default so a bad
     environment cannot silently disable the timeout.
@@ -53,7 +54,7 @@ def resolve_llm_timeout() -> float:
             value = float(raw)
         except ValueError:
             return DEFAULT_LLM_TIMEOUT_SECONDS
-        if value > 0:
+        if math.isfinite(value) and value > 0:
             return value
     return DEFAULT_LLM_TIMEOUT_SECONDS
 
@@ -435,9 +436,8 @@ def resolve_output_token_limit(
 def prompt_caching_enabled() -> bool:
     """Return whether Anthropic prompt caching should be applied.
 
-    Caching is on by default and can be disabled by setting the
-    ``DEEPRETRO_PROMPT_CACHING`` environment variable to a falsy value
-    (``0``, ``false``, ``no``, or ``off``).
+    Caching is on by default. Set ``DEEPRETRO_PROMPT_CACHING`` to ``0``,
+    ``false``, ``no``, or ``off`` to disable it.
 
     Returns
     -------
@@ -446,14 +446,13 @@ def prompt_caching_enabled() -> bool:
 
     Examples
     --------
-    >>> import os
-    >>> _ = os.environ.pop("DEEPRETRO_PROMPT_CACHING", None)
-    >>> prompt_caching_enabled()
+    >>> from unittest.mock import patch
+    >>> with patch.dict("os.environ", {"DEEPRETRO_PROMPT_CACHING": "on"}):
+    ...     prompt_caching_enabled()
     True
-    >>> os.environ["DEEPRETRO_PROMPT_CACHING"] = "off"
-    >>> prompt_caching_enabled()
+    >>> with patch.dict("os.environ", {"DEEPRETRO_PROMPT_CACHING": "off"}):
+    ...     prompt_caching_enabled()
     False
-    >>> _ = os.environ.pop("DEEPRETRO_PROMPT_CACHING", None)
     """
     raw = os.getenv(CACHE_CONTROL_ENV_VAR)
     if raw is None:
@@ -560,11 +559,9 @@ def apply_prompt_caching(
 ) -> list[ChatMessage]:
     """Add Anthropic prompt-caching breakpoints to a message list.
 
-    LiteLLM forwards ``cache_control`` markers to Anthropic to cache stable
-    prompt prefixes, cutting cost (~0.1x) and latency on repeated calls. This
-    codebase re-sends the same large system prompt across every
-    temperature-retry attempt, every molecule in a tree search, and every turn
-    of the agent loop, so caching the system-prompt prefix is a direct saving.
+    LiteLLM forwards ``cache_control`` markers to Anthropic. Stable prompt
+    prefixes can then be reused across retry attempts and agent turns.
+    A marker requests caching; it does not guarantee a cache hit.
 
     Caching is only applied for the Anthropic provider (OpenAI caches
     automatically; other providers do not accept the marker) and only when
@@ -591,7 +588,9 @@ def apply_prompt_caching(
     ...     {"role": "system", "content": "sys"},
     ...     {"role": "user", "content": "hi"},
     ... ]
-    >>> cached = apply_prompt_caching(messages, selection)
+    >>> from unittest.mock import patch
+    >>> with patch.dict("os.environ", {"DEEPRETRO_PROMPT_CACHING": "on"}):
+    ...     cached = apply_prompt_caching(messages, selection)
     >>> cached[0]["content"][0]["cache_control"]
     {'type': 'ephemeral'}
     >>> messages[0]["content"]
@@ -823,11 +822,11 @@ def extract_json_payload(response_text: str) -> str | None:
 def is_enabled(flag: str | bool) -> bool:
     """Normalize string and boolean feature flags.
 
-    Note:
+    Notes
     -----
-    This function is added for backwards compatibility, ideally we should
-    not have this as type safety is altered with this, we should remove this
-    once we make sure type safety is maintained.
+    String flags are retained for compatibility with older callers. Only
+    the case-insensitive string ``"true"`` enables a feature. Other strings,
+    including ``"1"`` and strings with surrounding whitespace, disable it.
 
     Parameters
     ----------
