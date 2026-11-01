@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - dev
   pull_request:
     branches:
       - main
+      - dev
     paths:
       - "deepretro/**"
 
@@ -25,10 +27,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - uses: astral-sh/setup-uv@v5
+
       - name: Build wheel and sdist
         run: |
-          python -m pip install --upgrade pip build
-          python -m build deepretro/
+          uv build deepretro --out-dir deepretro/dist
 
       - name: Upload dist artifacts
         uses: actions/upload-artifact@v4
@@ -39,10 +42,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: build
-    environment: testing
-    env:
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-      DEEPRETRO_METADATA_TEST_MODEL: "claude-opus-4-20250514"
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -56,36 +55,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install deepretro
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          if [ "${{ matrix.python-version }}" = "3.11" ]; then
-            pip install -e "deepretro/[dev,az]"
-          else
-            pip install -e "deepretro/[dev]"
-          fi
-
-      - name: Cache AiZynthFinder models
-        if: matrix.python-version == '3.11'
-        uses: actions/cache@v4
-        with:
-          path: .az_models_cache
-          key: az-models-v1
-
-      - name: Download AiZynthFinder models
-        if: matrix.python-version == '3.11'
-        run: |
-          if [ ! -f .az_models_cache/config.yml ]; then
-            mkdir -p .az_models_cache
-            python -m aizynthfinder.tools.download_public_data .az_models_cache
-          fi
-
-      - name: Run tests
-        env:
-          AZ_TEST_MODELS_DIR: ${{ matrix.python-version == '3.11' && '.az_models_cache' || '' }}
-        run: |
-          if [ "${{ matrix.python-version }}" = "3.11" ]; then
-            pytest deepretro/tests/ -v
-          else
-            pytest deepretro/tests/ -v -m "not slow"
-          fi
+      - uses: astral-sh/setup-uv@v5
+      - name: Install unit-test dependencies
+        run: uv sync --project deepretro --extra dev --locked
+      - name: Run offline unit tests
+        run: uv run --project deepretro --no-sync pytest deepretro/tests/ -v
