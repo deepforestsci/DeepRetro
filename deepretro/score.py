@@ -1,12 +1,22 @@
+"""Estimate molecular complexity and summarize retrosynthesis routes.
+
+SA scores come from RDKit Contrib. SCScore is optional and requires a separately
+installed model or an explicit module and weights path. Missing scores are
+reported as ``None`` with a warning, never as a zero. These descriptors do not
+establish reaction feasibility or experimental yield.
+"""
+
 from __future__ import annotations
 
 import contextlib
 import importlib.util
 import io
+import math
 import os
 import pickle
 import sys
 import warnings
+from collections.abc import Iterator
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -15,6 +25,23 @@ from typing import Any
 
 @dataclass(frozen=True)
 class SCScoreConfig:
+    """Locate an optional SCScore model and configure its fingerprints.
+
+    Parameters
+    ----------
+    module_path : str or None, optional
+        Path to ``standalone_model_numpy.py``. If omitted, use
+        ``SCSCORE_MODULE_PATH`` or import the installed ``scscore`` package.
+        Only load modules from trusted sources: loading executes Python code.
+    weight_path : str or None, optional
+        Path to model weights. If omitted, use ``SCSCORE_WEIGHT_PATH`` or the
+        model's default weights. No model download is performed here.
+    fp_len : int, optional
+        Fingerprint length expected by the weights. Default is 1024.
+    fp_rad : int, optional
+        Morgan fingerprint radius. Default is 2.
+    """
+
     module_path: str | None = None
     weight_path: str | None = None
     fp_len: int = 1024
@@ -22,7 +49,24 @@ class SCScoreConfig:
 
 
 def canonicalize_smiles(smiles: str) -> str | None:
-    """Return canonical isomeric SMILES, or None for invalid input/unavailable RDKit."""
+    """Return canonical isomeric SMILES when RDKit can parse the input.
+
+    Parameters
+    ----------
+    smiles : str
+        Molecule SMILES, with optional surrounding whitespace.
+
+    Returns
+    -------
+    str or None
+        Canonical SMILES preserving stereochemistry, or ``None`` for empty or
+        invalid input or when RDKit is unavailable.
+
+    Examples
+    --------
+    >>> canonicalize_smiles("C(C)O")
+    'CCO'
+    """
     text = str(smiles).strip() if smiles is not None else ""
     if not text:
         return None
@@ -42,13 +86,42 @@ def canonicalize_smiles(smiles: str) -> str | None:
 
 
 def sa_score(smiles: str) -> float | None:
-    """Return RDKit Contrib SA_Score for a SMILES string, or None if unavailable/invalid."""
+    """Calculate the RDKit synthetic accessibility descriptor.
+
+    Parameters
+    ----------
+    smiles : str
+        Molecule SMILES.
+
+    Returns
+    -------
+    float or None
+        SA score (normally 1 to 10; lower suggests easier synthesis), or
+        ``None`` for invalid inputs or an unavailable scorer. Use
+        :func:`score_molecule` to inspect the reason a score is missing.
+    """
     value, _error = _sa_score_with_error(smiles)
     return value
 
 
 def sc_score(smiles: str, config: SCScoreConfig | None = None) -> float | None:
-    """Return optional SCScore for a SMILES string, or None if unavailable/invalid."""
+    """Calculate the optional learned synthetic complexity descriptor.
+
+    Parameters
+    ----------
+    smiles : str
+        Molecule SMILES.
+    config : SCScoreConfig or None, optional
+        Model location and fingerprint settings. Defaults to environment
+        settings and the installed SCScore model.
+
+    Returns
+    -------
+    float or None
+        Finite SCScore (normally 1 to 5), or ``None`` if input or model output
+        is invalid or the model is unavailable. Lower scores indicate less
+        predicted complexity. Use :func:`score_molecule` for warning details.
+    """
     value, _error = _sc_score_with_error(smiles, config)
     return value
 
@@ -56,7 +129,29 @@ def sc_score(smiles: str, config: SCScoreConfig | None = None) -> float | None:
 def score_molecule(
     smiles: str, sc_config: SCScoreConfig | None = None
 ) -> dict[str, Any]:
-    """Score one molecule; unavailable optional metrics are None with warnings."""
+    """Score one molecule and retain missing-score diagnostics.
+
+    Parameters
+    ----------
+    smiles : str
+        Molecule SMILES.
+    sc_config : SCScoreConfig or None, optional
+        Optional SCScore model settings.
+
+    Returns
+    -------
+    dict[str, Any]
+        ``input_smiles``, ``canonical_smiles``, ``valid``, ``sa_score``,
+        ``sc_score``, ``warnings``, and ``errors``. Invalid input yields
+        ``valid=False`` and missing scores. A valid molecule can still have
+        missing scores when a scorer is unavailable.
+
+    Examples
+    --------
+    >>> result = score_molecule("C(C)O")
+    >>> result["canonical_smiles"], result["valid"]
+    ('CCO', True)
+    """
     warning_messages: list[str] = []
     error_messages: list[str] = []
     canonical = canonicalize_smiles(smiles)
@@ -103,7 +198,28 @@ def score_step(
     reactants_smiles: str | list[str],
     sc_config: SCScoreConfig | None = None,
 ) -> dict[str, Any]:
-    """Score a retrosynthesis step with dot-separated or list reactant SMILES."""
+    """Compare product complexity with the supplied reactants.
+
+    Parameters
+    ----------
+    product_smiles : str
+        Product molecule SMILES.
+    reactants_smiles : str or list[str]
+        Dot-separated reactants, or one SMILES string per list item.
+    sc_config : SCScoreConfig or None, optional
+        Optional SCScore model settings.
+
+    Returns
+    -------
+    dict[str, Any]
+        Product and reactant molecule reports, reactant mean/min/max scores,
+        and ``delta_sa_mean``, ``delta_sa_max``, ``delta_sc_mean``, and
+        ``delta_sc_max``. Deltas are product minus reactant complexity.
+        Positive mean deltas set ``sa_simplifies`` or ``sc_simplifies``.
+        Missing reactant scores are excluded from aggregates. An aggregate
+        is ``None`` when no scores are available. Always inspect ``errors``
+        and ``warnings`` before comparing incomplete steps.
+    """
     reactant_inputs = _split_reactants(reactants_smiles)
     if not reactant_inputs:
         return _malformed_step_score("Malformed step: missing reactant SMILES")
@@ -155,7 +271,33 @@ def score_pathway(
     pathway: dict[str, Any] | list[dict[str, Any]],
     sc_config: SCScoreConfig | None = None,
 ) -> dict[str, Any]:
-    """Score viewer-style {'steps': [...]} pathways or a raw list of step dicts."""
+    """Summarize complexity changes over a pathway.
+
+    Parameters
+    ----------
+    pathway : dict or list[dict]
+        A dictionary containing ``steps`` or a list of steps. Each step uses
+        ``product_smiles`` and ``reactants_smiles`` (aliases ``product`` and
+        ``reactants`` are accepted). Viewer-style steps use ``products`` and
+        ``reactants`` lists of SMILES strings or ``{"smiles": ...}`` records;
+        only the first product is scored.
+    sc_config : SCScoreConfig or None, optional
+        Optional SCScore model settings.
+
+    Returns
+    -------
+    dict[str, Any]
+        ``step_scores``, ``route_summary``, ``warnings``, and ``errors``.
+        The summary includes step count, mean product scores, mean deltas,
+        fractions of scored steps with positive deltas, and zero-based
+        indices of complexity-increasing steps. Missing scores are excluded
+        from means and fractions. Malformed steps remain as error reports.
+
+    Examples
+    --------
+    >>> score_pathway({"steps": []})["route_summary"]["n_steps"]
+    0
+    """
     steps, pathway_error = _get_pathway_steps(pathway)
     if pathway_error is not None:
         return _pathway_result([], [pathway_error])
@@ -183,13 +325,26 @@ def score_pathway(
 
 
 def empty_pathway_scores(error: str | None = None) -> dict[str, Any]:
-    """Return an empty pathway score payload using the standard schema."""
+    """Create an empty score report, optionally recording a failure.
+
+    Parameters
+    ----------
+    error : str or None, optional
+        Failure description to include in ``errors``.
+
+    Returns
+    -------
+    dict[str, Any]
+        The same schema as :func:`score_pathway`, with no step scores,
+        zero steps, and ``None`` for unavailable summary metrics.
+    """
     errors = [error] if error else []
     return _pathway_result([], errors)
 
 
 @lru_cache(maxsize=1)
 def _get_chem() -> Any | None:
+    """Load and cache RDKit, returning None if it is unavailable."""
     try:
         with _quiet_output():
             from rdkit import Chem
@@ -200,6 +355,7 @@ def _get_chem() -> Any | None:
 
 @lru_cache(maxsize=1)
 def _get_sascorer() -> Any | None:
+    """Load the RDKit SA scorer, including its legacy Conda layout."""
     try:
         from rdkit.Contrib.SA_Score import sascorer
 
@@ -213,14 +369,13 @@ def _get_sascorer() -> Any | None:
         )
         if contrib_path not in sys.path:
             sys.path.append(contrib_path)
-        from SA_Score import sascorer
-
-        return sascorer
+        return importlib.import_module("SA_Score.sascorer")
     except Exception:
         return None
 
 
 def _sa_warning() -> str:
+    """Describe which SA scoring dependency or operation is unavailable."""
     if _get_chem() is None:
         return "RDKit unavailable"
     if _get_sascorer() is None:
@@ -229,6 +384,7 @@ def _sa_warning() -> str:
 
 
 def _sa_score_with_error(smiles: str) -> tuple[float | None, str | None]:
+    """Return the SA score or a diagnostic for one molecule."""
     canonical = canonicalize_smiles(smiles)
     if canonical is None:
         return (
@@ -256,6 +412,7 @@ def _sa_score_with_error(smiles: str) -> tuple[float | None, str | None]:
 def _sc_score_with_error(
     smiles: str, config: SCScoreConfig | None
 ) -> tuple[float | None, str | None]:
+    """Return a finite SCScore or a diagnostic for one molecule."""
     canonical = canonicalize_smiles(smiles)
     if canonical is None:
         return (
@@ -273,11 +430,16 @@ def _sc_score_with_error(
         value = scorer.get_score_from_smi(canonical)
     except Exception as exc:
         return None, _format_error("SCScore scoring failed", exc)
-    if isinstance(value, (list, tuple)):
-        value = value[1] if len(value) > 1 else value[0]
     try:
-        return float(value), None
-    except (TypeError, ValueError) as exc:
+        if isinstance(value, (list, tuple)):
+            if not value:
+                raise ValueError("model returned an empty score sequence")
+            value = value[1] if len(value) > 1 else value[0]
+        score = float(value)
+        if not math.isfinite(score):
+            raise ValueError("model returned a non-finite score")
+        return score, None
+    except (TypeError, ValueError, OverflowError) as exc:
         return None, _format_error("SCScore scoring failed", exc)
 
 
@@ -288,6 +450,7 @@ def _get_scscorer(
     fp_len: int,
     fp_rad: int,
 ) -> tuple[Any | None, str | None]:
+    """Cache a restored SCScore model or its loading failure."""
     _install_scscore_shims()
     try:
         scorer_class = _load_scscorer_class(module_path)
@@ -303,6 +466,7 @@ def _get_scscorer(
 
 
 def _install_scscore_shims() -> None:
+    """Provide legacy names expected by standalone SCScore releases."""
     sys.modules.setdefault("cPickle", pickle)
     try:
         import numpy
@@ -316,10 +480,9 @@ def _install_scscore_shims() -> None:
 
 
 def _load_scscorer_class(module_path: str | None) -> Any:
+    """Import SCScorer from its installed package or an explicit Python file."""
     if module_path is None:
-        from scscore.standalone_model_numpy import SCScorer
-
-        return SCScorer
+        return importlib.import_module("scscore.standalone_model_numpy").SCScorer
 
     spec = importlib.util.spec_from_file_location(
         "_deepretro_scscore_standalone", module_path
@@ -335,6 +498,7 @@ def _sc_paths(config: SCScoreConfig) -> tuple[str | None, str | None]:
     # Fall back to env vars so the SCScore model can be pointed at without
     # changing call sites: SCSCORE_MODULE_PATH (standalone_model_numpy.py) and
     # SCSCORE_WEIGHT_PATH (model.ckpt-*.as_numpy.json.gz).
+    """Resolve explicit model paths, falling back to environment settings."""
     raw_module = config.module_path or os.getenv("SCSCORE_MODULE_PATH")
     raw_weight = config.weight_path or os.getenv("SCSCORE_WEIGHT_PATH")
     module_path = str(Path(raw_module).expanduser().resolve()) if raw_module else None
@@ -343,7 +507,8 @@ def _sc_paths(config: SCScoreConfig) -> tuple[str | None, str | None]:
 
 
 @contextlib.contextmanager
-def _quiet_output() -> Any:
+def _quiet_output() -> Iterator[None]:
+    """Temporarily capture Python stdout and stderr from optional scorers."""
     with (
         contextlib.redirect_stdout(io.StringIO()),
         contextlib.redirect_stderr(io.StringIO()),
@@ -352,21 +517,19 @@ def _quiet_output() -> Any:
 
 
 @contextlib.contextmanager
-def _quiet_rdkit_logs() -> Any:
+def _quiet_rdkit_logs() -> Iterator[None]:
+    """Temporarily suppress RDKit logs while preserving the caller's settings."""
     try:
-        from rdkit import RDLogger
-
-        RDLogger.DisableLog("rdApp.*")
-    except Exception:
-        RDLogger = None
-    try:
+        from rdkit import rdBase
+    except ImportError:
         yield
-    finally:
-        if RDLogger is not None:
-            RDLogger.EnableLog("rdApp.*")
+        return
+    with rdBase.BlockLogs():
+        yield
 
 
 def _get_pathway_steps(pathway: Any) -> tuple[list[Any], str | None]:
+    """Normalize supported pathway containers without hiding malformed inputs."""
     if isinstance(pathway, dict):
         if "steps" not in pathway:
             return [], "Malformed pathway: missing steps"
@@ -380,6 +543,7 @@ def _get_pathway_steps(pathway: Any) -> tuple[list[Any], str | None]:
 
 
 def _extract_step_smiles(step: Any) -> tuple[str, list[str]]:
+    """Read a product and reactants from one supported step schema."""
     if not isinstance(step, dict):
         raise ValueError("step must be a dictionary")
 
@@ -406,6 +570,7 @@ def _extract_step_smiles(step: Any) -> tuple[str, list[str]]:
 
 
 def _extract_viewer_step_smiles(step: dict[str, Any]) -> tuple[str, list[str]]:
+    """Read the first product and all reactants from a viewer-style step."""
     products = step["products"]
     reactants = step["reactants"]
     if not isinstance(products, list) or not products:
@@ -422,6 +587,7 @@ def _extract_viewer_step_smiles(step: dict[str, Any]) -> tuple[str, list[str]]:
 
 
 def _split_reactants(reactants_smiles: Any) -> list[str]:
+    """Normalize dot-separated or list reactants and omit empty entries."""
     if isinstance(reactants_smiles, str):
         parts = reactants_smiles.split(".")
     elif isinstance(reactants_smiles, list):
@@ -432,6 +598,7 @@ def _split_reactants(reactants_smiles: Any) -> list[str]:
 
 
 def _smiles_from_item(item: Any) -> str:
+    """Read a nonempty SMILES from a record or scalar value."""
     value = item.get("smiles") if isinstance(item, dict) else item
     if value is None or not str(value).strip():
         raise ValueError("missing SMILES")
@@ -441,6 +608,7 @@ def _smiles_from_item(item: Any) -> str:
 def _pathway_result(
     step_scores: list[dict[str, Any]], error_messages: list[str]
 ) -> dict[str, Any]:
+    """Assemble step scores, their route summary, and unique errors."""
     return {
         "step_scores": step_scores,
         "route_summary": _summarize_steps(step_scores),
@@ -450,6 +618,7 @@ def _pathway_result(
 
 
 def _malformed_step_score(message: str) -> dict[str, Any]:
+    """Represent an unreadable step with missing scores and its error."""
     return {
         "product": None,
         "reactants": [],
@@ -471,6 +640,7 @@ def _malformed_step_score(message: str) -> dict[str, Any]:
 
 
 def _summarize_steps(step_scores: list[dict[str, Any]]) -> dict[str, Any]:
+    """Aggregate available scores without treating missing values as zero."""
     delta_sa = [step.get("delta_sa_mean") for step in step_scores]
     delta_sc = [step.get("delta_sc_mean") for step in step_scores]
     complexity_increasing_steps = [
@@ -497,6 +667,7 @@ def _summarize_steps(step_scores: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _product_scores(step_scores: list[dict[str, Any]], key: str) -> list[float | None]:
+    """Extract a score field from steps with a product record."""
     return [
         step["product"][key]
         for step in step_scores
@@ -505,27 +676,32 @@ def _product_scores(step_scores: list[dict[str, Any]], key: str) -> list[float |
 
 
 def _mean(values: list[float | None]) -> float | None:
+    """Average available values, or return None when none are present."""
     real_values = [float(value) for value in values if value is not None]
     return sum(real_values) / len(real_values) if real_values else None
 
 
 def _max_or_none(values: list[float | None]) -> float | None:
+    """Return the largest available value, or None for missing data."""
     real_values = [float(value) for value in values if value is not None]
     return max(real_values) if real_values else None
 
 
 def _min_or_none(values: list[float | None]) -> float | None:
+    """Return the smallest available value, or None for missing data."""
     real_values = [float(value) for value in values if value is not None]
     return min(real_values) if real_values else None
 
 
 def _delta(left: float | None, right: float | None) -> float | None:
+    """Subtract two available scores, or preserve missing data as None."""
     return None if left is None or right is None else float(left) - float(right)
 
 
 def _fraction_simplifying(
     step_scores: list[dict[str, Any]], delta_key: str, simplify_key: str
 ) -> float | None:
+    """Compute the simplifying fraction among steps with a score delta."""
     scored_steps = [step for step in step_scores if step.get(delta_key) is not None]
     if not scored_steps:
         return None
@@ -535,15 +711,18 @@ def _fraction_simplifying(
 
 
 def _is_negative(value: Any) -> bool:
+    """Check whether an available numeric value is below zero."""
     return value is not None and float(value) < 0
 
 
 def _format_error(prefix: str, exc: Exception) -> str:
+    """Combine a failure context with the exception message or class name."""
     message = str(exc).strip() or exc.__class__.__name__
     return f"{prefix}: {message}"
 
 
 def _dedupe(messages: list[str]) -> list[str]:
+    """Remove repeated messages while preserving their first occurrence order."""
     seen: set[str] = set()
     deduped: list[str] = []
     for message in messages:
