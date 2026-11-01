@@ -77,7 +77,7 @@ def test_az_e2e_fails_when_models_are_missing(tmp_path: Path, configured: bool) 
         "[pytest]\nmarkers =\n    integration: external dependency\n    slow: model search\n",
         encoding="utf-8",
     )
-    environment = {**os.environ, "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"}
+    environment: dict[str, str] = {**os.environ, "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"}
     environment.pop("AZ_TEST_MODELS_DIR", None)
     if configured:
         environment["AZ_TEST_MODELS_DIR"] = str(tmp_path / "missing-models")
