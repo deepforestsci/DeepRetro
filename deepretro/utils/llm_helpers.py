@@ -33,10 +33,10 @@ DEFAULT_LLM_NUM_RETRIES = 3
 def resolve_llm_timeout() -> float:
     """Return the per-request LLM timeout in seconds.
 
-    Reads ``DEEPRETRO_LLM_TIMEOUT`` (seconds) when set to a finite positive number,
-    otherwise falls back to :data:`DEFAULT_LLM_TIMEOUT_SECONDS`. Invalid or
-    non-positive values are ignored in favour of the default so a bad
-    environment cannot silently disable the timeout.
+    Reads ``DEEPRETRO_LLM_TIMEOUT`` in seconds. A finite positive value is
+    used as is. An invalid, non-finite or non-positive value falls back to
+    :data:`DEFAULT_LLM_TIMEOUT_SECONDS`. A bad environment value therefore
+    cannot disable the timeout.
 
     Returns
     -------
@@ -822,12 +822,6 @@ def extract_json_payload(response_text: str) -> str | None:
 def is_enabled(flag: str | bool) -> bool:
     """Normalize string and boolean feature flags.
 
-    Notes
-    -----
-    String flags are retained for compatibility with older callers. Only
-    the case-insensitive string ``"true"`` enables a feature. Other strings,
-    including ``"1"`` and strings with surrounding whitespace, disable it.
-
     Parameters
     ----------
     flag : str or bool
@@ -837,6 +831,12 @@ def is_enabled(flag: str | bool) -> bool:
     -------
     bool
         Normalized boolean value.
+
+    Notes
+    -----
+    String flags are retained for compatibility with older callers. Only
+    the case-insensitive string ``"true"`` enables a feature. Other strings,
+    including ``"1"`` and strings with surrounding whitespace, disable it.
 
     Examples
     --------

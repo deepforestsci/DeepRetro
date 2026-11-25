@@ -18,7 +18,8 @@ a time. This module carries that missing grouping in a
   Langfuse *events* inside the same trace, so tool outputs render online next
   to the model turns that requested them.
 
-Recording is best-effort. Logging failures are reported without aborting the solver.
+Recording is best-effort. A logging failure logs one warning per process.
+It never stops the solver.
 
 Examples
 --------
@@ -175,11 +176,12 @@ def elapsed_ms(started: float) -> float:
 
 
 def _default_session_id(molecule: str) -> str:
-    """Build a readable Langfuse session ID from the target, second, and process.
+    """Build a readable Langfuse session ID.
 
-    Repeated runs for the same target within one second can share a session.
-    Each MoleculeTrace still receives its own UUID trace ID. Supply an explicit
-    session_id to molecule_trace when a different grouping policy is needed.
+    The ID joins a target slug, the time to the second, and the process ID.
+    Two traces for the same target in the same process and second share a
+    session ID. Each ``MoleculeTrace`` still gets its own UUID trace ID.
+    Pass ``session_id`` to :func:`molecule_trace` to group traces another way.
 
     Examples
     --------
@@ -833,7 +835,9 @@ def _envelope(
 
 
 def _write_record(trace: MoleculeTrace, record: dict[str, Any]) -> None:
-    """Append one JSON line to the trace's log; filesystem errors warn once.
+    """Append one JSON line to the trace's log.
+
+    Any write or serialization error logs one warning and is not raised.
 
     Examples
     --------

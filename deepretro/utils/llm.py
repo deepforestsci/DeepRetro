@@ -388,8 +388,9 @@ def validate_split_json(
         JSON object containing equally sized ``data``, ``explanation``, and
         ``confidence_scores`` lists. Each pathway is a nonempty list of
         nonempty SMILES strings. Explanations are strings. Scores must be
-        finite numbers from zero to one; numeric strings are also accepted.
-        Legacy Python literal dictionaries remain supported.
+        finite numbers from 0 to 1. Numeric strings such as ``"0.5"`` are
+        also accepted. Python dict literals (single quotes, ``True``,
+        ``None``) are accepted for older prompts.
 
     Returns
     -------

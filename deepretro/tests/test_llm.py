@@ -298,9 +298,18 @@ def test_validate_split_json_accepts_json_metadata_and_legacy_literals() -> None
     assert validate_split_json(
         '{"data": [], "explanation": [], "confidence_scores": []}'
     ) == (200, [], [], [])
+    assert validate_split_json(
+        '{"data": [["CCO"]], "explanation": ["x"], "confidence_scores": ["0.5"]}'
+    ) == (200, [["CCO"]], ["x"], [0.5])
 
 
 def test_validate_split_json_contains_recursion_errors() -> None:
     """Pathologically nested provider output follows the normal retry contract."""
-    nested = "[" * 1100 + "0" + "]" * 1100
+    # Deep enough to exceed the recursion limit on every supported Python.
+    nested = "[" * 100_000 + "0" + "]" * 100_000
     assert validate_split_json(nested) == (504, [], [], [])
+
+
+def test_validate_split_json_rejects_non_object_json() -> None:
+    """A JSON value that is not an object follows the retry contract."""
+    assert validate_split_json("[1]") == (504, [], [], [])
