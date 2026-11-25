@@ -1,9 +1,11 @@
 """Unit tests for the heuristic hallucination checker."""
 
 import pytest
+from rdkit import Chem
 
 from deepretro.algorithms.hallucination_checker import (
     calculate_hallucination_score,
+    get_substituent_signature,
     hallucination_compare_molecules,
     interpret_score,
 )
@@ -270,3 +272,16 @@ def test_score_does_not_depend_on_reactant_fragment_order():
         "score"
     ]
     assert a == b
+
+
+@pytest.mark.parametrize(
+    ("smiles", "atoms", "signature"),
+    [
+        ("FC(F)(F)c1ccccc1", [0, 1, 2, 3], "C1.F3"),  # CF3 group of benzotrifluoride
+        ("CCOc1ccccc1", [0, 1, 2], "C2.O1"),  # ethoxy group of phenetole
+    ],
+    ids=["trifluoromethyl", "ethoxy"],
+)
+def test_substituent_signature_counts_each_element(smiles, atoms, signature):
+    mol = Chem.MolFromSmiles(smiles)
+    assert get_substituent_signature(mol, {"atoms": atoms}) == signature

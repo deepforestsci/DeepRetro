@@ -647,11 +647,15 @@ def determine_ring_position(
     Examples
     --------
     >>> from rdkit import Chem
-    >>> mol = Chem.MolFromSmiles("c1ccc(O)cc1")  # phenol
-    >>> ring_atoms = set(range(6))
-    >>> pos = determine_ring_position(mol, 3, ring_atoms, 6)
-    >>> pos in ("1", "ortho", "meta", "para")
-    True
+    >>> phenol = Chem.MolFromSmiles("Oc1ccccc1")  # ring atoms are 1-6
+    >>> determine_ring_position(phenol, 1, set(range(1, 7)), 6)
+    '1'
+    >>> p_cresol = Chem.MolFromSmiles("Cc1ccc(O)cc1")  # atom 5 is the O, not in the ring
+    >>> determine_ring_position(p_cresol, 4, {1, 2, 3, 4, 6, 7}, 6)
+    'para'
+    >>> dimethylcyclopentane = Chem.MolFromSmiles("CC1CCC(C)C1")  # 1,3-isomer; atom 5 is the second methyl
+    >>> determine_ring_position(dimethylcyclopentane, 1, {1, 2, 3, 4, 6}, 5)
+    'sep2'
     """
     # For 6-membered rings, use ortho/meta/para nomenclature
     if ring_size == 6:

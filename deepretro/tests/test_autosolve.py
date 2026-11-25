@@ -1356,18 +1356,32 @@ def test_autosolve_writes_llm_calls_log(tmp_path: Any) -> None:
     assert records[0]["node_molecule"] == ACETIC_ACID
 
 
-@pytest.mark.parametrize("method", ["solve", "single_step", "solve_multiple"])
-def test_all_search_entrypoints_preserve_flagged_verdict(method: str) -> None:
-    """Retained fallbacks must remain visibly flagged after route parsing."""
+@pytest.mark.parametrize(
+    ("method", "solvable"),
+    [
+        ("solve", {"CC"}),
+        ("solve", set()),
+        ("single_step", {"CC"}),
+        ("solve_multiple", {"CC"}),
+    ],
+    ids=["solve", "solve-unsolved-fallback", "single_step", "solve_multiple"],
+)
+def test_every_search_mode_keeps_the_flagged_verdict(
+    method: str, solvable: set[str]
+) -> None:
+    """Benzene from ethane scores 0, so the returned step stays flagged."""
     solver = AutoSolver(
-        az_runner=SelectiveAzRunner({"CC"}),
+        az_runner=SelectiveAzRunner(solvable),
         llm_runner=lambda molecule, **kwargs: ([["CC"]], ["proposal"], [0.8]),
         hallucination_mode="heuristic",
         stability_check=False,
     )
     returned = getattr(solver, method)("c1ccccc1")
     tree, solved = returned[0] if method == "solve_multiple" else returned
-    summary = solver.parse(tree, solved=solved)["hallucination_summary"]
-    assert summary["n_steps"] == 1
-    assert summary["n_flagged"] == 1
-    assert summary["flagged_steps"][0]["product"] == "c1ccccc1"
+    assert tree["children"][0]["metadata"]["hallucination"] == {
+        "source": "heuristic",
+        "score": 0,
+        "severity": "critical",
+        "flagged": True,
+    }
+    assert solver.parse(tree, solved=solved)["hallucination_summary"]["n_flagged"] == 1

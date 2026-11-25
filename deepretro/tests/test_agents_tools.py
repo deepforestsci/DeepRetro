@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
+
 from deepretro.agents.sandbox import SubprocessSandbox
 from deepretro.agents.tools import build_tool_registry
 
@@ -164,9 +166,12 @@ class TestAzTools:
         assert "error" in result
 
 
-def test_registry_schemas_are_independent() -> None:
-    """Provider-specific schema edits must not leak into another agent run."""
+def test_editing_a_registry_schema_does_not_change_the_next_registry() -> None:
     first = build_tool_registry()
-    first.schemas[0]["function"]["parameters"]["required"].append("context")
-    second = build_tool_registry()
-    assert second.schemas[0]["function"]["parameters"]["required"] == ["smiles"]
+    original = deepcopy(first.schemas)
+    validate = next(
+        s for s in first.schemas if s["function"]["name"] == "validate_smiles"
+    )
+    validate["function"]["description"] = "edited"
+    validate["function"]["parameters"]["required"].append("context")
+    assert build_tool_registry().schemas == original

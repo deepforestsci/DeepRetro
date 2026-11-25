@@ -127,7 +127,8 @@ def check_molecule_stability(smiles: str) -> dict[str, Any]:
 
         * ``valid_structure`` (bool) — whether RDKit could parse the
           SMILES at all.
-        * ``stability_score`` (int, 0–100) — overall stability rating.
+        * ``stability_score`` (int, 0–100) — screening heuristic, not a
+          measured stability.
         * ``issues`` (list[str]) — plain-English descriptions of every
           problem found (e.g. ``"Three-membered heterocycle
           (potentially unstable)"``).
