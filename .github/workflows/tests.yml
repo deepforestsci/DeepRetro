@@ -12,7 +12,8 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Python 3.9 is not available on ubuntu-latest (26.04) runners.
+    runs-on: ${{ matrix.os }}
     environment: testing
     env:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -36,7 +37,7 @@ jobs:
         working-directory: ./tests/
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-24.04]
         python-version: [3.9]
     steps:
       - uses: actions/checkout@v4
