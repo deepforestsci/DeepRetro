@@ -11,6 +11,7 @@ swapped in without touching tool code.
 from __future__ import annotations
 
 from collections.abc import Callable
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any
 
@@ -73,7 +74,7 @@ class ToolRegistry:
             return {"error": f"unknown tool: {name}"}
         try:
             return executor(**arguments)
-        except Exception as exc:  # ponytail: model-supplied args; never crash the loop
+        except Exception as exc:  # Model-supplied arguments must not crash the loop.
             logger.warning("Tool execution failed", tool=name, error=str(exc))
             return {"error": f"tool {name} failed: {exc}"}
 
@@ -114,6 +115,7 @@ def _make_check_hallucination(checker: HallucinationChecker) -> ToolExecutor:
     """
 
     def _check(product: str, reactants: str | list[str]) -> dict[str, Any]:
+        """Return the bound checker decision and its available explanation."""
         assess = getattr(checker, "assess", None)
         if callable(assess):
             assessment = assess(product, reactants)
@@ -141,6 +143,7 @@ def _make_run_python(sandbox: Any) -> ToolExecutor:
     """Bind a sandbox into a ``run_python`` tool executor."""
 
     def _run(code: str) -> dict[str, Any]:
+        """Return the bound execution backend result as a tool response."""
         result = sandbox.run(code)
         return {
             "ok": result.ok,
@@ -156,6 +159,7 @@ def _make_az_suggest(az_model: str) -> ToolExecutor:
     """Bind an ``az_suggest`` executor: AZ's top-k single-step disconnections."""
 
     def _suggest(smiles: str, top_k: int = 5) -> dict[str, Any]:
+        """Request ranked one-step proposals from the bound AZ model."""
         from deepretro.utils.az import az_single_step
 
         suggestions = az_single_step(smiles, az_model=az_model, top_k=int(top_k))
@@ -168,6 +172,7 @@ def _make_az_route(az_model: str) -> ToolExecutor:
     """Bind an ``az_route`` executor: a full AiZynthFinder solve attempt."""
 
     def _route(smiles: str) -> dict[str, Any]:
+        """Return the first full route from the bound AZ model."""
         from deepretro.utils.az import run_az
 
         solved, routes = run_az(smiles, az_model)
@@ -185,7 +190,8 @@ _VALIDATE_SMILES_SCHEMA = {
         "name": "validate_smiles",
         "description": (
             "Validate a SMILES string and return its canonical form. Call this "
-            "before proposing any precursor to ensure it is chemically valid."
+            "before proposing a precursor to check that RDKit can parse it. "
+            "Parsing does not establish chemical feasibility."
         ),
         "parameters": {
             "type": "object",
@@ -206,8 +212,8 @@ _CHECK_STABILITY_SCHEMA = {
     "function": {
         "name": "check_stability",
         "description": (
-            "Assess whether a molecule is chemically stable using heuristic "
-            "structural checks. Returns an assessment and a 0-100 score."
+            "Screen a molecule with structural warning rules. Returns an "
+            "assessment and a 0-100 heuristic score, not measured stability."
         ),
         "parameters": {
             "type": "object",
@@ -252,8 +258,9 @@ _RUN_PYTHON_SCHEMA = {
         "name": "run_python",
         "description": (
             "Execute Python in a sandbox to compute chemistry (RDKit and the "
-            "deepretro package are importable). Print results to stdout. No "
-            "network access and a short time/memory budget."
+            "deepretro package are importable). Print results to stdout. "
+            "The working directory is temporary. Time and memory are limited. "
+            "Network isolation depends on the configured execution backend."
         ),
         "parameters": {
             "type": "object",
@@ -457,4 +464,4 @@ def build_tool_registry(
         executors["az_suggest"] = _make_az_suggest(az_model)
         executors["az_route"] = _make_az_route(az_model)
 
-    return ToolRegistry(schemas=schemas, executors=executors)
+    return ToolRegistry(schemas=deepcopy(schemas), executors=executors)

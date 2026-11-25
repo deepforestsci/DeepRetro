@@ -214,6 +214,14 @@ def agentic_single_step(
         ``no_parseable_answer`` (a final message that did not parse), or a
         ``no_final_answer`` (``max_iterations`` reached without a final
         message). Lets callers surface model refusals in their output.
+    az_tools : bool, optional
+        Expose AiZynthFinder single-step and full-route tools. These tools need
+        the optional AiZynthFinder installation and local model files.
+        Defaults to ``False``. If AiZynthFinder or its model files are missing,
+        the tool returns an error to the model; it does not raise.
+    az_model : str, optional
+        Model configuration used by the AiZynthFinder tools. Defaults to
+        ``"Pistachio_100+"``.
 
     Returns
     -------
