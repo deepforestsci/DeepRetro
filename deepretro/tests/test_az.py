@@ -9,8 +9,14 @@ models. Tests marked ``slow`` run a full search; skip them with -m "not slow".
 from __future__ import annotations
 
 import re
+import sys
+from pathlib import Path
+from types import ModuleType, SimpleNamespace
+from typing import Any
 
 import pytest
+
+import deepretro
 from deepretro.utils.cache import CacheManager
 
 _BASIC_ROUTE = [
@@ -34,7 +40,9 @@ _BASIC_ROUTE = [
         ("not_a_smiles!!!", False),
     ],
 )
-def test_is_basic_molecule_chemical_thresholds(az_module, smiles, expected):
+def test_is_basic_molecule_chemical_thresholds(
+    az_module: ModuleType, smiles: str, expected: bool
+) -> None:
     """Test is_basic_molecule chemical thresholds."""
     assert az_module.is_basic_molecule(smiles) is expected
 
@@ -44,7 +52,7 @@ def test_is_basic_molecule_chemical_thresholds(az_module, smiles, expected):
 # ---------------------------------------------------------------------------
 
 
-def test_run_az_core_short_circuits_basic_molecule(az_module):
+def test_run_az_core_short_circuits_basic_molecule(az_module: ModuleType) -> None:
     """_run_az_core returns (True, route, None) for basic molecules."""
     status, routes, finder = az_module._run_az_core("CCO")
     assert status is True
@@ -52,7 +60,7 @@ def test_run_az_core_short_circuits_basic_molecule(az_module):
     assert finder is None
 
 
-def test_run_az_core_short_circuits_with_az_model(az_module):
+def test_run_az_core_short_circuits_with_az_model(az_module: ModuleType) -> None:
     """az_model param is irrelevant for basic molecules."""
     status, routes, finder = az_module._run_az_core("CCO", az_model="USPTO")
     assert status is True
@@ -61,8 +69,8 @@ def test_run_az_core_short_circuits_with_az_model(az_module):
 
 
 def test_run_az_core_raises_file_not_found_before_import_error(
-    tmp_path, monkeypatch, az_module
-):
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+) -> None:
     """Config resolution should fail before the AiZynthFinder import check."""
     missing_models_root = tmp_path / "models"
     missing_fallback = tmp_path / "missing.yml"
@@ -76,7 +84,9 @@ def test_run_az_core_raises_file_not_found_before_import_error(
 
 @pytest.mark.integration
 @pytest.mark.slow
-def test_run_az_core_returns_finder_for_real_molecule(az_module_with_models):
+def test_run_az_core_returns_finder_for_real_molecule(
+    az_module_with_models: ModuleType,
+) -> None:
     """_run_az_core returns a non-None finder for a real molecule."""
     status, routes, finder = az_module_with_models._run_az_core(
         "CC(=O)Oc1ccccc1C(=O)O", az_model="USPTO"
@@ -88,7 +98,7 @@ def test_run_az_core_returns_finder_for_real_molecule(az_module_with_models):
 
 @pytest.mark.integration
 @pytest.mark.slow
-def test_run_az_returns_valid_result(az_module_with_models):
+def test_run_az_returns_valid_result(az_module_with_models: ModuleType) -> None:
     """Test run_az with real AiZynthFinder returns (bool, list) with valid structure."""
     status, routes = az_module_with_models.run_az("C1CCCCC1", az_model="USPTO")
     assert isinstance(status, bool)
@@ -101,7 +111,9 @@ def test_run_az_returns_valid_result(az_module_with_models):
 
 @pytest.mark.integration
 @pytest.mark.slow
-def test_run_az_uses_fallback_config_when_model_missing(az_module_with_models):
+def test_run_az_uses_fallback_config_when_model_missing(
+    az_module_with_models: ModuleType,
+) -> None:
     """Test run_az falls back to AZ_MODEL_CONFIG_PATH when model-specific config missing."""
     # MISSING_MODEL has no config in AZ_MODELS_PATH, so uses fallback
     status, routes = az_module_with_models.run_az("C1CCCCC1", az_model="MISSING_MODEL")
@@ -109,7 +121,9 @@ def test_run_az_uses_fallback_config_when_model_missing(az_module_with_models):
     assert isinstance(routes, list)
 
 
-def test_run_az_raises_if_no_config_available(tmp_path, monkeypatch, az_module):
+def test_run_az_raises_if_no_config_available(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+) -> None:
     """Test run_az raises FileNotFoundError when no config exists."""
     missing_models_root = tmp_path / "models"
     missing_fallback = tmp_path / "missing.yml"
@@ -121,14 +135,14 @@ def test_run_az_raises_if_no_config_available(tmp_path, monkeypatch, az_module):
         az_module.run_az("CCCCC", az_model="MISSING_MODEL")
 
 
-def test_run_az_short_circuits_for_feedstock_smiles(az_module):
+def test_run_az_short_circuits_for_feedstock_smiles(az_module: ModuleType) -> None:
     """Test run_az returns early for basic molecules without calling AiZynthFinder."""
     status, routes = az_module.run_az("CCO", az_model="USPTO")
     assert status is True
     assert routes == _BASIC_ROUTE
 
 
-def test_run_az_has_no_cache_side_effect_without_cache(az_module):
+def test_run_az_has_no_cache_side_effect_without_cache(az_module: ModuleType) -> None:
     """run_az should not create cache state unless the caller passes one in."""
     cache = CacheManager()
 
@@ -139,7 +153,7 @@ def test_run_az_has_no_cache_side_effect_without_cache(az_module):
     assert cache.stats().num_entries == 0
 
 
-def test_run_az_uses_explicit_cache(az_module):
+def test_run_az_uses_explicit_cache(az_module: ModuleType) -> None:
     """run_az should reuse results only when an explicit cache is provided."""
     cache = CacheManager()
 
@@ -155,7 +169,9 @@ def test_run_az_uses_explicit_cache(az_module):
 
 @pytest.mark.integration
 @pytest.mark.slow
-def test_run_az_with_img_returns_valid_result(az_module_with_models):
+def test_run_az_with_img_returns_valid_result(
+    az_module_with_models: ModuleType,
+) -> None:
     """Test run_az_with_img with real AiZynthFinder returns (bool, list, images)."""
     status, routes, images = az_module_with_models.run_az_with_img("C1CCCCC1")
     assert isinstance(status, bool)
@@ -165,7 +181,9 @@ def test_run_az_with_img_returns_valid_result(az_module_with_models):
         assert isinstance(images, (list, tuple))
 
 
-def test_run_az_with_img_short_circuits_for_basic_molecules(az_module):
+def test_run_az_with_img_short_circuits_for_basic_molecules(
+    az_module: ModuleType,
+) -> None:
     """Test run_az_with_img returns early for basic molecules."""
     status, routes, images = az_module.run_az_with_img("CCO")
     assert status is True
@@ -173,7 +191,7 @@ def test_run_az_with_img_short_circuits_for_basic_molecules(az_module):
     assert images is None
 
 
-def test_run_az_with_img_uses_explicit_cache(az_module):
+def test_run_az_with_img_uses_explicit_cache(az_module: ModuleType) -> None:
     """run_az_with_img should also cache only through the provided instance."""
     cache = CacheManager()
 
@@ -186,3 +204,136 @@ def test_run_az_with_img_uses_explicit_cache(az_module):
     assert cache.stats().misses == 1
     assert cache.stats().num_entries == 1
     cache.close()
+
+
+@pytest.mark.parametrize(
+    ("configured", "expected"),
+    [
+        ("/opt/az-models", "/opt/az-models"),
+        ("~/models", str(Path.home() / "models")),
+        ("models", str(Path(deepretro.__file__).resolve().parents[1] / "models")),
+        (None, ""),
+    ],
+    ids=[
+        "absolute-kept",
+        "tilde-expanded",
+        "relative-joined-to-checkout",
+        "unset-empty",
+    ],
+)
+def test_az_models_path_follows_environment(
+    monkeypatch: pytest.MonkeyPatch,
+    az_module: ModuleType,
+    configured: str | None,
+    expected: str,
+) -> None:
+    if configured is None:
+        monkeypatch.delenv("AZ_MODELS_PATH", raising=False)
+    else:
+        monkeypatch.setenv("AZ_MODELS_PATH", configured)
+    # The path is read at import time, so run az.py again.
+    assert az_module.__spec__ is not None and az_module.__spec__.loader is not None
+    az_module.__spec__.loader.exec_module(az_module)
+    assert az_module.AZ_MODELS_PATH == expected
+
+
+# _resolve_config is tested directly: every public caller loads AZ models next.
+def test_resolve_config_uses_model_specific_config(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+) -> None:
+    """A model config under ``AZ_MODELS_PATH`` is preferred."""
+    config = tmp_path / "USPTO" / "config.yml"
+    config.parent.mkdir()
+    config.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(az_module, "AZ_MODELS_PATH", str(tmp_path))
+    assert az_module._resolve_config("USPTO") == str(config)
+
+
+def test_resolve_config_raises_when_no_path_is_set(
+    monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+) -> None:
+    monkeypatch.setattr(az_module, "AZ_MODELS_PATH", "")
+    monkeypatch.setattr(az_module, "AZ_MODEL_CONFIG_PATH", "")
+    with pytest.raises(FileNotFoundError, match="AZ_MODEL_CONFIG_PATH is not set"):
+        az_module._resolve_config("USPTO")
+
+
+def test_resolve_config_skips_model_lookup_when_models_path_is_empty(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+) -> None:
+    opened_paths: list[str] = []
+
+    def recording_open(path: str, *args: Any, **kwargs: Any) -> Any:
+        opened_paths.append(str(path))
+        return open(path, *args, **kwargs)
+
+    monkeypatch.setattr(az_module, "open", recording_open, raising=False)
+    fallback = tmp_path / "config.yml"
+    fallback.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(az_module, "AZ_MODELS_PATH", "")
+    monkeypatch.setattr(az_module, "AZ_MODEL_CONFIG_PATH", str(fallback))
+    assert az_module._resolve_config("USPTO") == str(fallback)
+    assert opened_paths == [str(fallback)]
+
+
+def _stub_expansion_policy(
+    monkeypatch: pytest.MonkeyPatch,
+    az_module: ModuleType,
+    actions: list[Any],
+    priors: list[float],
+) -> None:
+    """Replace the AiZynthFinder model with one that returns fixed templates."""
+    chem = ModuleType("aizynthfinder.chem")
+    setattr(chem, "TreeMolecule", lambda **kwargs: SimpleNamespace(**kwargs))
+    monkeypatch.setitem(sys.modules, "aizynthfinder.chem", chem)
+    finder = SimpleNamespace(
+        expansion_policy=SimpleNamespace(
+            get_actions=lambda molecules: (actions, priors)
+        )
+    )
+    monkeypatch.setattr(az_module, "_resolve_config", lambda model: "example.yml")
+    monkeypatch.setattr(az_module, "_get_finder", lambda path: finder)
+
+
+def _template(*precursors: str) -> SimpleNamespace:
+    """Build a template action that gives one set of precursors."""
+    return SimpleNamespace(reactants=[[SimpleNamespace(smiles=s) for s in precursors]])
+
+
+def test_single_step_keeps_highest_prior_templates_first(
+    monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+) -> None:
+    actions = [
+        _template("C=C=O", "CCO"),
+        _template("CC(=O)O", "CCO"),
+        _template("CC(=O)Cl", "CCO"),
+    ]
+    _stub_expansion_policy(monkeypatch, az_module, actions, [0.3, 0.9, 0.6])
+
+    assert az_module.az_single_step("CCOC(C)=O", top_k=2) == [
+        {"precursors": ["CC(=O)O", "CCO"], "probability": 0.9},
+        {"precursors": ["CC(=O)Cl", "CCO"], "probability": 0.6},
+    ]
+
+
+def test_single_step_skips_templates_that_fail_or_give_no_precursors(
+    monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+) -> None:
+    class FailedTemplate:
+        @property
+        def reactants(self) -> list[Any]:
+            raise ValueError("template does not apply")
+
+    no_precursors = SimpleNamespace(reactants=[])
+    actions = [
+        FailedTemplate(),
+        no_precursors,
+        _template("CC(=O)O", "CCO"),
+        _template("CC(=O)OC(C)=O", "CCO"),
+    ]
+    _stub_expansion_policy(monkeypatch, az_module, actions, [0.9, 0.6, 0.3, 0.1])
+
+    # top_k=3 stops before the anhydride; failed templates are not replaced
+    assert az_module.az_single_step("CCOC(C)=O", top_k=3) == [
+        {"precursors": ["CC(=O)O", "CCO"], "probability": 0.3}
+    ]

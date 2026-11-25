@@ -100,7 +100,22 @@ def make_args_hash(*args: Any, **kwargs: Any) -> str:
     """
     Generate a deterministic hash of arguments for cache keying.
 
-    Tries JSON first for common types; falls back to pickle for complex objects.
+    Inputs are written as JSON with sorted keys. Values that JSON cannot
+    store are converted with ``str``. If JSON still fails, the inputs are
+    pickled instead.
+
+    Parameters
+    ----------
+    *args : Any
+        Positional inputs to hash.
+    **kwargs : Any
+        Named inputs to hash. Keyword order does not change the hash on the
+        JSON path.
+
+    Returns
+    -------
+    str
+        SHA-256 hexadecimal digest of the serialized inputs.
 
     Examples
     --------
@@ -164,16 +179,15 @@ class CacheManager:
 
     Examples
     --------
+    >>> from structlog.testing import capture_logs
     >>> cache = CacheManager()
-    >>> key = make_cache_key("call_llm", "CCO", model="gpt-5.4", version=1)
-    >>> miss = object()
-    >>> cache.get(key, default=miss) is miss
-    True
-    >>> cache.set(key, {"molecule": "CCO"}, expire=300, tag="molecule:CCO")
-    >>> cache.get(key)
-    {'molecule': 'CCO'}
-    >>> cache.evict_tag("molecule:CCO")
-    1
+    >>> key = make_cache_key("call_llm", "CCO", model="example-model", version=1)
+    >>> with capture_logs():
+    ...     cache.set(key, {"molecule": "CCO"}, expire=300, tag="molecule:CCO")
+    ...     value = cache.get(key)
+    ...     removed = cache.evict_tag("molecule:CCO")
+    >>> value, removed
+    ({'molecule': 'CCO'}, 1)
     """
 
     def __init__(self) -> None:
@@ -248,7 +262,12 @@ class CacheManager:
 
         The estimate includes the top-level dictionaries, keys, tag sets, and
         the immediate cached values. Referenced objects are not traversed
-        recursively.
+        recursively. Expired entries are included until they are purged.
+
+        Returns
+        -------
+        int
+            Approximate shallow storage size in bytes.
         """
         size = sys.getsizeof(self._entries) + sys.getsizeof(self._tags)
         for key, entry in self._entries.items():
@@ -279,9 +298,12 @@ class CacheManager:
 
         Examples
         --------
+        >>> from structlog.testing import capture_logs
         >>> cache = CacheManager()
         >>> miss = object()
-        >>> cache.get("missing", default=miss) is miss
+        >>> with capture_logs():
+        ...     value = cache.get("missing", default=miss)
+        >>> value is miss
         True
         """
         if self.purge_if_expired(key):
@@ -324,8 +346,10 @@ class CacheManager:
 
         Examples
         --------
+        >>> from structlog.testing import capture_logs
         >>> cache = CacheManager()
-        >>> cache.set("demo", {"smiles": "CCO"}, expire=60, tag="molecule:CCO")
+        >>> with capture_logs():
+        ...     cache.set("demo", {"smiles": "CCO"}, expire=60, tag="molecule:CCO")
         """
         self.delete_key(key)
         expires_at = None if expire is None else time.monotonic() + expire
@@ -336,7 +360,7 @@ class CacheManager:
 
     def evict_tag(self, tag: str) -> int:
         """
-        Remove all live entries with the given tag.
+        Remove all stored entries with the given tag.
 
         Parameters
         ----------
@@ -351,10 +375,13 @@ class CacheManager:
 
         Examples
         --------
+        >>> from structlog.testing import capture_logs
         >>> cache = CacheManager()
-        >>> cache.set("a", 1, tag="batch:1")
-        >>> cache.set("b", 2, tag="batch:1")
-        >>> cache.evict_tag("batch:1")
+        >>> with capture_logs():
+        ...     cache.set("a", 1, tag="batch:1")
+        ...     cache.set("b", 2, tag="batch:1")
+        ...     removed = cache.evict_tag("batch:1")
+        >>> removed
         2
         """
         keys = list(self._tags.get(tag, set()))
@@ -365,7 +392,7 @@ class CacheManager:
         return removed
 
     def clear(self) -> None:
-        """Remove all entries from this cache instance."""
+        """Remove all entries and tags. Hit and miss counts are kept."""
         self._entries.clear()
         self._tags.clear()
         self._log.info("cache.clear")
@@ -382,8 +409,10 @@ class CacheManager:
 
         Examples
         --------
+        >>> from structlog.testing import capture_logs
         >>> cache = CacheManager()
-        >>> cache.set("demo", 1)
+        >>> with capture_logs():
+        ...     cache.set("demo", 1)
         >>> stats = cache.stats()
         >>> (stats.hits, stats.misses, stats.num_entries)
         (0, 0, 1)

@@ -96,6 +96,13 @@ class TestAreMoleculesSame:
         with pytest.raises(ValueError, match="Invalid SMILES string provided"):
             utils_molecule.are_molecules_same(ETHANOL, INVALID_SMILES)
 
+    def test_enantiomers_match_as_known_limitation(self) -> None:
+        # The fingerprints omit chirality, so L- and D-alanine look the same.
+        assert (
+            utils_molecule.are_molecules_same("N[C@@H](C)C(=O)O", "N[C@H](C)C(=O)O")
+            is True
+        )
+
 
 class TestCalcMolWt:
     """Tests for ``utils_molecule.calc_mol_wt``."""

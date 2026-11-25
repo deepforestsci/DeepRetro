@@ -13,7 +13,9 @@ def find_optimal_threshold(
     Find the classification threshold that maximises F1-score.
 
     Sweeps the precision-recall curve and picks the threshold where
-    the harmonic mean of precision and recall is highest.
+    the harmonic mean of precision and recall is highest. Predictions at
+    or above the threshold count as positive. Ties select the lowest
+    threshold. Choose the threshold on validation data, not the test set.
 
     Parameters
     ----------
@@ -36,10 +38,8 @@ def find_optimal_threshold(
     >>> y = np.array([0, 0, 1, 1])
     >>> proba = np.array([0.1, 0.4, 0.6, 0.9])
     >>> thr, f1 = find_optimal_threshold(y, proba)
-    >>> 0.0 < thr < 1.0
-    True
-    >>> f1 > 0.0
-    True
+    >>> (thr, round(f1, 6))
+    (0.6, 1.0)
     """
     # Import lazily so docs and lightweight tooling can import this module
     # without pulling in sklearn's full scipy stack at module import time.
