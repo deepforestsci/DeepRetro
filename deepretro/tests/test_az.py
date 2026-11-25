@@ -1,10 +1,9 @@
-"""Unit tests for deepretro/utils/az.py.
+"""Tests for deepretro/utils/az.py.
 
-These tests run only when aizynthfinder is installed. They use real AiZynthFinder
-with models downloaded to a temporary directory at session start. No mocking.
-
-Speed optimizations:
-- Tests that run full inference are marked @pytest.mark.slow; skip with -m "not slow"
+Most tests need no models. Tests marked ``integration`` use real AiZynthFinder
+models from ``AZ_TEST_MODELS_DIR``. They run only with ``--run-integration``.
+They fail if the models or the ``az`` extra are missing. Tests never download
+models. Tests marked ``slow`` run a full search; skip them with -m "not slow".
 """
 
 from __future__ import annotations
@@ -75,6 +74,7 @@ def test_run_az_core_raises_file_not_found_before_import_error(
         az_module._run_az_core("CCCCC", az_model="MISSING_MODEL")
 
 
+@pytest.mark.integration
 @pytest.mark.slow
 def test_run_az_core_returns_finder_for_real_molecule(az_module_with_models):
     """_run_az_core returns a non-None finder for a real molecule."""
@@ -86,6 +86,7 @@ def test_run_az_core_returns_finder_for_real_molecule(az_module_with_models):
     assert finder is not None
 
 
+@pytest.mark.integration
 @pytest.mark.slow
 def test_run_az_returns_valid_result(az_module_with_models):
     """Test run_az with real AiZynthFinder returns (bool, list) with valid structure."""
@@ -98,6 +99,7 @@ def test_run_az_returns_valid_result(az_module_with_models):
         assert "type" in route or "smiles" in route
 
 
+@pytest.mark.integration
 @pytest.mark.slow
 def test_run_az_uses_fallback_config_when_model_missing(az_module_with_models):
     """Test run_az falls back to AZ_MODEL_CONFIG_PATH when model-specific config missing."""
@@ -151,6 +153,7 @@ def test_run_az_uses_explicit_cache(az_module):
     cache.close()
 
 
+@pytest.mark.integration
 @pytest.mark.slow
 def test_run_az_with_img_returns_valid_result(az_module_with_models):
     """Test run_az_with_img with real AiZynthFinder returns (bool, list, images)."""

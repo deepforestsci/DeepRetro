@@ -94,3 +94,53 @@ The tool exposes `flagged` as `is_hallucination`. For unassessable inputs it is
 `None` (`null` in JSON); inspect `message` for the reason. Explanations include
 ring-size and relative substituent-position changes, without exact atom/bond
 localization.
+
+
+## Run package tests
+
+From the repository root:
+
+```sh
+uv sync --project deepretro --extra dev --locked
+uv run --project deepretro --no-sync pytest deepretro/tests
+```
+
+Unit tests block Python socket connections in the test process. Integration
+tests are skipped even when provider credentials are present. External programs
+and child processes still require explicit test doubles.
+
+To request live provider or model tests deliberately:
+
+```sh
+uv run --project deepretro --no-sync pytest deepretro/tests --run-integration -m integration
+```
+
+Provider tests require the appropriate credentials and may incur charges.
+AiZynthFinder tests require the `az` extra and an explicitly provisioned model
+directory in `AZ_TEST_MODELS_DIR`, containing `config.yml`. Test fixtures never
+download models. With `--run-integration`, these tests fail if
+`AZ_TEST_MODELS_DIR` is unset, `config.yml` is missing or the `az` extra is not
+installed. They never skip.
+
+### Real-model AiZynthFinder E2E
+
+The `deepretro AZ E2E` workflow runs these tests in CI. It also runs the
+real-model tests in `test_az.py`. It installs the `az` extra. It downloads the
+public models and stock once and caches them. To run it locally from the
+repository root:
+
+```sh
+uv sync --project deepretro --extra dev --extra az --locked
+export AZ_TEST_MODELS_DIR="$PWD/.az_models_cache"
+mkdir -p "$AZ_TEST_MODELS_DIR"
+uv run --project deepretro --no-sync python -m aizynthfinder.tools.download_public_data "$AZ_TEST_MODELS_DIR"
+uv run --project deepretro --no-sync pytest deepretro/tests/test_az_e2e.py --run-integration -m integration -v
+```
+
+The tests load the real models and use aspirin. The first test checks that
+the expansion policy proposes precursors and that RDKit can parse each one. The
+second test runs a route search. It checks that each route starts at aspirin and
+that the top route has a reaction under aspirin. The tests need no provider
+keys. Without `--run-integration` they are skipped. With it, they fail in the
+same cases as the other AiZynthFinder tests. The models are large, so keep the
+directory.

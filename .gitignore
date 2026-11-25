@@ -11,6 +11,8 @@ pistachio/
 results/
 node_modules/
 coverage/
+.coverage
+.az_models_cache/
 
 *.out
 *.log

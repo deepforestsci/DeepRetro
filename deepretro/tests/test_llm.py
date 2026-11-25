@@ -172,6 +172,7 @@ def assert_retro_response_is_tagged_and_valid(
     assert all(0 <= score <= 1 for score in confidence)
 
 
+@pytest.mark.integration
 @pytest.mark.slow
 @pytest.mark.parametrize("prompt_mode", ["standard", "advanced"])
 def test_live_anthropic_retrosynthesis_prompt_returns_parseable_tagged_json(
