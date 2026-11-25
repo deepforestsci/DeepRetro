@@ -121,7 +121,9 @@ class SubprocessSandbox:
         When ``False`` (default), use ``unshare -rn`` on Linux if installed.
         Other platforms still allow network access. A failing ``unshare``
         command is reported as a failed execution; it is not retried without
-        isolation.
+        isolation. Some Linux hosts block user namespaces, for example
+        GitHub-hosted runners. There, every default run fails. Pass ``True``
+        if network access is acceptable.
 
     Examples
     --------

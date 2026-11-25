@@ -800,7 +800,8 @@ class AutoSolver:
         try:
             solved, routes = self._az_runner(smiles, self.az_model)
             return solved, list(routes), False
-        except Exception as exc:  # ponytail: AZ is external; never crash a solve
+        except Exception as exc:
+            # AiZynthFinder is optional; a failure must not stop the solve.
             logger.error("AZ runner failed", molecule=smiles, error=str(exc))
             return False, [], True
 

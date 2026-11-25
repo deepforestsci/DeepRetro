@@ -1,14 +1,20 @@
 """Structural warning rules for proposed precursor molecules.
 
-The checker uses RDKit descriptors and SMARTS patterns. It starts at 100,
-subtracts penalties, adds an aromatic-ring bonus, and clamps the result to
-0 through 100. The score is a screening heuristic, not a measured stability,
-a probability, or a prediction of whether a compound can be isolated.
+The checker uses RDKit descriptors and SMARTS patterns. The score starts
+at 100. Each ring, anti-aromatic or bridgehead issue subtracts 15 points.
+Some rules subtract more. The carbocation, carbene and fused-cyclopentane
+rules use their own penalties. Each aromatic ring adds 5 points, up to 15.
+The result is clamped to 0 through 100. The score is a screening heuristic.
+It is not a measured stability, a probability, or a prediction that a
+compound can be isolated.
 
-The rules flag small heterocycles, selected potentially anti-aromatic motifs,
-rings that share atoms, large heterocycles, carbocations, and carbene-like
-patterns. Additional penalties cover extreme logP, many rotatable bonds, and
-bridgehead atoms in small rings. Each issue explains which rule matched.
+Issues are added for small heterocycles (3 or 4 atoms), possible
+anti-aromatic motifs, fused rings of 4 atoms or fewer, large heterocycles
+(7 or more atoms), carbocations, carbene-like carbons, and strained
+bridgehead systems. Each issue explains which rule matched. Some penalties
+change the score but add no issue: ``abs(logP) > 10``, more than 15 rotatable
+bonds, aliphatic heterocycles, and bridgehead atoms in rings of 5 atoms or
+fewer.
 
 The rules do not account for solvent, temperature, concentration, reaction
 conditions, or three-dimensional geometry. Stable compounds can trigger

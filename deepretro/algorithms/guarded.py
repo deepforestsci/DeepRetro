@@ -60,7 +60,8 @@ class GuardedSolver:
 
     Examples
     --------
-    This example uses a small in-memory stock. It makes no model calls.
+    This example uses a small in-memory stock. It makes no model calls. It
+    writes checkpoint files to a temporary directory.
 
     >>> from tempfile import TemporaryDirectory
     >>> from deepretro import AutoSolver
@@ -68,9 +69,10 @@ class GuardedSolver:
     ...     az_runner=lambda smiles, model: (False, []),
     ...     llm_runner=lambda molecule, **kwargs: ([], [], []),
     ... )
+    >>> stock = {"CCO"}
     >>> with TemporaryDirectory() as directory:
     ...     solver = GuardedSolver(
-    ...         backend, {"CCO"}.__contains__, Path(directory) / "run"
+    ...         backend, lambda smiles: smiles in stock, Path(directory) / "run"
     ...     )
     ...     tree, passed = solver.solve("CCO")
     >>> passed, tree["in_stock"]

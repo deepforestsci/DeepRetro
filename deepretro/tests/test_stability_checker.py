@@ -47,6 +47,12 @@ class TestStabilityChecker(unittest.TestCase):
         issues = check_molecule_stability("C1CCNCCCC1")["issues"]
         self.assertTrue(any("Large" in i and "heterocycle" in i for i in issues))
 
+    def test_large_heterocycle_lists_heteroatoms_in_sorted_order(self):
+        issues = check_molecule_stability("C1CNCCOCC1")["issues"]
+        self.assertIn(
+            "Large (8-membered) heterocycle with N, O (potentially unstable)", issues
+        )
+
     def test_ethyl_cation_unstable(self):
         res = check_molecule_stability("[CH2+]C")
         self.assertEqual(res["assessment"], "Potentially unstable")
