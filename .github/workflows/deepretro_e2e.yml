@@ -1,0 +1,44 @@
+name: deepretro AZ E2E
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "deepretro/**"
+      - ".github/workflows/deepretro_e2e.yml"
+  push:
+    branches: [main, dev]
+    paths:
+      - "deepretro/**"
+      - ".github/workflows/deepretro_e2e.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  az-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      AZ_TEST_MODELS_DIR: ${{ github.workspace }}/.az_models_cache
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - name: Install package with real AZ dependencies
+        run: uv sync --project deepretro --extra dev --extra az --locked
+      - name: Cache public AZ models and stock
+        uses: actions/cache@v4
+        with:
+          path: .az_models_cache
+          key: az-e2e-${{ runner.os }}-${{ hashFiles('deepretro/uv.lock') }}-v1
+      - name: Provision public models on cache miss
+        run: |
+          if [ ! -f "$AZ_TEST_MODELS_DIR/config.yml" ]; then
+            mkdir -p "$AZ_TEST_MODELS_DIR"
+            uv run --project deepretro --no-sync python -m aizynthfinder.tools.download_public_data "$AZ_TEST_MODELS_DIR"
+          fi
+          test -s "$AZ_TEST_MODELS_DIR/config.yml"
+      - name: Run real-model E2E
+        run: uv run --project deepretro --no-sync pytest deepretro/tests/test_az_e2e.py --run-integration -m integration -v
