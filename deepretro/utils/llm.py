@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import ast
 import json
-import math
 
 import litellm
 import structlog
@@ -406,14 +405,20 @@ def validate_split_json(
     ...     '{"data": [["CCO"]], "explanation": ["demo"], "confidence_scores": [1]}'
     ... )
     (200, [['CCO']], ['demo'], [1.0])
+
+    Text that is not JSON returns the failure tuple. ``capture_logs`` hides
+    the error log line here.
+
+    >>> from structlog.testing import capture_logs
+    >>> with capture_logs():
+    ...     validate_split_json("{bad json")
+    (504, [], [], [])
     """
     try:
         try:
             result = json.loads(json_content)
         except json.JSONDecodeError:
             result = ast.literal_eval(json_content)
-        if not isinstance(result, dict):
-            raise ValueError("response must be an object")
         pathways = result["data"]
         explanations = result["explanation"]
         scores = result["confidence_scores"]
@@ -439,10 +444,8 @@ def validate_split_json(
         if any(isinstance(score, bool) for score in scores):
             raise ValueError("confidence scores must be numbers, not booleans")
         confidence = [float(value) for value in scores]
-        if any(not math.isfinite(score) or not 0 <= score <= 1 for score in confidence):
-            raise ValueError(
-                "confidence scores must be finite and between zero and one"
-            )
+        if any(not 0 <= score <= 1 for score in confidence):
+            raise ValueError("confidence scores must be between zero and one")
         return 200, pathways, explanations, confidence
     except (
         ValueError,

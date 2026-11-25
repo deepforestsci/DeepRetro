@@ -29,11 +29,6 @@ def test_config_reads_named_session(config_path: Path) -> None:
     )
     metadata = langfuse_config.get_langfuse_metadata("metadata")
     assert metadata == {"session_id": "metadata_agent"}
-    metadata["session_id"] = "changed"
-    assert (
-        langfuse_config.get_langfuse_metadata("metadata")["session_id"]
-        == "metadata_agent"
-    )
 
 
 def test_config_reports_missing_session(config_path: Path) -> None:

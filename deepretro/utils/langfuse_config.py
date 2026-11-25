@@ -20,7 +20,7 @@ def get_langfuse_metadata(session_type: str = "default") -> dict[str, JSONValue]
     Returns
     -------
     dict[str, JSONValue]
-        Shallow copy of the configured Langfuse metadata.
+        Configured Langfuse metadata for the session.
 
     Raises
     ------
@@ -58,4 +58,4 @@ def get_langfuse_metadata(session_type: str = "default") -> dict[str, JSONValue]
             f"Session type {session_type!r} not found in config. "
             f"Available sessions: {available}"
         )
-    return cast(dict[str, JSONValue], sessions[session_type].copy())
+    return cast(dict[str, JSONValue], sessions[session_type])

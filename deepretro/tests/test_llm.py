@@ -94,19 +94,24 @@ def test_backward_compatible_parser_wrappers_delegate_to_provider_parsers() -> N
     assert parse_response(cot_response, "claude-opus-4-6") == (200, ["step"], "{}")
 
 
-def test_validate_split_json_returns_aligned_typed_pipeline_data() -> None:
+def test_validate_split_json_returns_aligned_pathways() -> None:
     payload = (
         '{"data": [["CCO"], ["CCN"]], "explanation": ["ethanol", "ethylamine"], '
-        '"confidence_scores": [1, "0.5"]}'
+        '"confidence_scores": [1, 0.5]}'
     )
-
     assert validate_split_json(payload) == (
         200,
         [["CCO"], ["CCN"]],
         ["ethanol", "ethylamine"],
         [1.0, 0.5],
     )
+
+
+def test_validate_split_json_rejects_text_that_is_not_json() -> None:
     assert validate_split_json("{bad json") == (504, [], [], [])
+
+
+def test_validate_split_json_rejects_missing_columns() -> None:
     assert validate_split_json('{"data": [["CCO"]]}') == (504, [], [], [])
 
 
@@ -254,27 +259,27 @@ def test_llm_pipeline_falls_back_from_deepseek_after_failed_attempt(
 @pytest.mark.parametrize(
     "overrides",
     [
-        {"data": "CCO"},
-        {"data": ["CCO"]},
-        {"data": [[]]},
-        {"data": [[None]]},
-        {"data": [[""]]},
-        {"explanation": "oxidation"},
-        {"explanation": [None]},
-        {"explanation": []},
-        {"confidence_scores": "0.5"},
-        {"confidence_scores": []},
-        {"confidence_scores": [True]},
-        {"confidence_scores": ["nan"]},
-        {"confidence_scores": ["inf"]},
-        {"confidence_scores": [-0.1]},
-        {"confidence_scores": [1.1]},
+        pytest.param({"data": "CCO"}, id="data_not_a_list"),
+        pytest.param({"data": ["CCO"]}, id="pathway_not_a_list"),
+        pytest.param({"data": [[]]}, id="empty_pathway"),
+        pytest.param({"data": [[None]]}, id="smiles_not_a_string"),
+        pytest.param({"data": [[""]]}, id="empty_smiles"),
+        pytest.param({"data": [["  "]]}, id="whitespace_smiles"),
+        pytest.param({"explanation": "oxidation"}, id="explanation_not_a_list"),
+        pytest.param({"explanation": [None]}, id="explanation_not_a_string"),
+        pytest.param({"explanation": []}, id="fewer_explanations_than_pathways"),
+        pytest.param({"confidence_scores": "0.5"}, id="scores_not_a_list"),
+        pytest.param({"confidence_scores": []}, id="fewer_scores_than_pathways"),
+        pytest.param({"confidence_scores": [True]}, id="score_is_bool"),
+        pytest.param({"confidence_scores": ["nan"]}, id="score_is_nan"),
+        pytest.param({"confidence_scores": ["inf"]}, id="score_is_inf"),
+        pytest.param({"confidence_scores": [-0.1]}, id="score_below_zero"),
+        pytest.param({"confidence_scores": [1.1]}, id="score_above_one"),
     ],
 )
 def test_validate_split_json_rejects_malformed_candidates(
     overrides: dict[str, object],
 ) -> None:
-    """Reject malformed candidate rows before RDKit or filtering sees them."""
     payload = {
         "data": [["CCO"]],
         "explanation": ["oxidation"],
@@ -284,32 +289,38 @@ def test_validate_split_json_rejects_malformed_candidates(
     assert validate_split_json(json.dumps(payload)) == (504, [], [], [])
 
 
-def test_validate_split_json_accepts_json_metadata_and_legacy_literals() -> None:
-    """Extra JSON booleans/nulls do not invalidate the three pathway columns."""
-    payload = {
-        "data": [["CCO"]],
-        "explanation": ["oxidation"],
-        "confidence_scores": [0.5],
-        "extra": {"valid": True, "details": None},
-    }
-    expected = (200, [["CCO"]], ["oxidation"], [0.5])
-    assert validate_split_json(json.dumps(payload)) == expected
-    assert validate_split_json(repr(payload)) == expected
-    assert validate_split_json(
-        '{"data": [], "explanation": [], "confidence_scores": []}'
-    ) == (200, [], [], [])
-    assert validate_split_json(
-        '{"data": [["CCO"]], "explanation": ["x"], "confidence_scores": ["0.5"]}'
-    ) == (200, [["CCO"]], ["x"], [0.5])
+def test_validate_split_json_ignores_extra_json_true_and_null() -> None:
+    payload = (
+        '{"data": [["CCO"]], "explanation": ["oxidation"], '
+        '"confidence_scores": [0.5], "extra": {"valid": true, "details": null}}'
+    )
+    assert validate_split_json(payload) == (200, [["CCO"]], ["oxidation"], [0.5])
 
 
-def test_validate_split_json_contains_recursion_errors() -> None:
-    """Pathologically nested provider output follows the normal retry contract."""
+def test_validate_split_json_accepts_python_dict_literal() -> None:
+    """Older prompts return single quotes, True and None instead of JSON."""
+    payload = (
+        "{'data': [['CCO']], 'explanation': ['oxidation'], "
+        "'confidence_scores': [0.5], 'extra': {'valid': True, 'details': None}}"
+    )
+    assert validate_split_json(payload) == (200, [["CCO"]], ["oxidation"], [0.5])
+
+
+def test_validate_split_json_accepts_empty_lists() -> None:
+    payload = '{"data": [], "explanation": [], "confidence_scores": []}'
+    assert validate_split_json(payload) == (200, [], [], [])
+
+
+def test_validate_split_json_converts_numeric_string_scores() -> None:
+    payload = '{"data": [["CCO"]], "explanation": ["oxidation"], "confidence_scores": ["0.5"]}'
+    assert validate_split_json(payload) == (200, [["CCO"]], ["oxidation"], [0.5])
+
+
+def test_validate_split_json_rejects_deeply_nested_text() -> None:
     # Deep enough to exceed the recursion limit on every supported Python.
     nested = "[" * 100_000 + "0" + "]" * 100_000
     assert validate_split_json(nested) == (504, [], [], [])
 
 
-def test_validate_split_json_rejects_non_object_json() -> None:
-    """A JSON value that is not an object follows the retry contract."""
+def test_validate_split_json_rejects_json_that_is_not_an_object() -> None:
     assert validate_split_json("[1]") == (504, [], [], [])
