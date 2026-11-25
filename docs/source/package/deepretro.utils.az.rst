@@ -43,7 +43,22 @@ The module resolves configuration in this order:
 1. ``AZ_MODELS_PATH/<az_model>/config.yml`` (model-variant specific)
 2. ``AZ_MODEL_CONFIG_PATH`` (fallback global config)
 
-Both are interpreted relative to project root when loaded by this module.
+Path rules for both variables:
+
+- An absolute path is used as given.
+- A leading ``~`` is expanded to your home directory.
+- A relative path is joined to ``PROJECT_ROOT``. This is the folder two
+  levels above ``deepretro/utils/az.py``. In a source checkout, it is the
+  repository root.
+- When deepretro is installed as a package, ``PROJECT_ROOT`` is not the
+  repository. Use absolute paths there.
+- An unset variable is skipped.
+
+The module reads both variables once, when it is imported. Set them before
+you import ``deepretro.utils.az``.
+
+If no model-specific config exists and ``AZ_MODEL_CONFIG_PATH`` is unset or
+points to a missing file, the run raises ``FileNotFoundError``.
 
 Basic Molecule Shortcut
 -----------------------

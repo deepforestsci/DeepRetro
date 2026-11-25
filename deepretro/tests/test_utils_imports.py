@@ -3,20 +3,22 @@
 import subprocess
 import sys
 
+import pytest
 
-def test_utils_import_does_not_load_optional_science_stack() -> None:
-    """Namespace import stays usable before science dependencies are loaded."""
-    subprocess.run(
+
+def test_utils_import_does_not_load_rdkit_or_numpy() -> None:
+    """Importing the namespace does not import RDKit or NumPy."""
+    result = subprocess.run(
         [
             sys.executable,
             "-c",
             "import sys; import deepretro.utils; "
             "assert 'rdkit' not in sys.modules; assert 'numpy' not in sys.modules",
         ],
-        check=True,
         capture_output=True,
         text=True,
     )
+    assert result.returncode == 0, result.stderr
 
 
 def test_exports_resolve_to_public_implementations() -> None:
@@ -34,7 +36,6 @@ def test_exports_resolve_to_public_implementations() -> None:
 
 def test_unknown_export_raises_attribute_error() -> None:
     """Unknown names retain normal module attribute behavior."""
-    import pytest
     import deepretro.utils as utils
 
     with pytest.raises(AttributeError, match="does_not_exist"):

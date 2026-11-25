@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator
-
 import pytest
 
 import deepretro.utils.az as az
@@ -26,7 +24,7 @@ class _FakeFinder:
 
 
 @pytest.fixture(autouse=True)
-def _clear_cache(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+def _clear_cache(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(az, "AiZynthFinder", _FakeFinder)
     az._FINDER_CACHE.clear()
     _FakeFinder.instances = 0

@@ -42,9 +42,9 @@ class RetrosynthesisRouteParser:
     dependency map by matching each step's reactant SMILES against the
     product SMILES of all other steps.
 
-    A route must contain a selected reaction at each molecule node. This
-    parser does not choose between alternative reactions. A molecule node
-    with ``type="mol"`` and no children is a terminal starting material.
+    Each molecule node should have at most one reaction child. If it has
+    several, the parser does not pick one. It merges all their precursors
+    into one step. A molecule node with no children is a starting material.
 
     Examples
     --------

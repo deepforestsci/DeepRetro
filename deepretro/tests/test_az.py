@@ -8,12 +8,14 @@ models. Tests marked ``slow`` run a full search; skip them with -m "not slow".
 
 from __future__ import annotations
 
-from pathlib import Path
-from types import ModuleType
-
 import re
+import sys
+from pathlib import Path
+from types import ModuleType, SimpleNamespace
+from typing import Any
 
 import pytest
+
 from deepretro.utils.cache import CacheManager
 
 _BASIC_ROUTE = [
@@ -203,25 +205,41 @@ def test_run_az_with_img_uses_explicit_cache(az_module: ModuleType) -> None:
     cache.close()
 
 
-@pytest.mark.parametrize("variable", ["AZ_MODEL_CONFIG_PATH", "AZ_MODELS_PATH"])
 def test_absolute_environment_path_is_preserved(
-    variable: str,
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-    az_module: ModuleType,
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
 ) -> None:
     """Absolute model paths must not be prefixed by the checkout directory."""
-    import runpy
+    monkeypatch.setenv("AZ_MODELS_PATH", str(tmp_path))
+    assert az_module._configured_path("AZ_MODELS_PATH") == str(tmp_path)
 
-    path = tmp_path / "models"
-    config = path / "USPTO" / "config.yml" if variable == "AZ_MODELS_PATH" else path
-    config.parent.mkdir(parents=True, exist_ok=True)
+
+def test_home_environment_path_is_expanded(
+    monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+) -> None:
+    """A leading ``~`` is expanded to the home directory."""
+    monkeypatch.setenv("AZ_MODELS_PATH", "~/models")
+    assert az_module._configured_path("AZ_MODELS_PATH") == str(Path.home() / "models")
+
+
+def test_resolve_config_uses_model_specific_config(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+) -> None:
+    """A model config under ``AZ_MODELS_PATH`` is preferred."""
+    config = tmp_path / "USPTO" / "config.yml"
+    config.parent.mkdir()
     config.write_text("{}", encoding="utf-8")
-    monkeypatch.setenv(variable, str(path))
-    namespace = runpy.run_path(az_module.__file__)
-    assert namespace[variable] == str(path)
-    model = "USPTO" if variable == "AZ_MODELS_PATH" else None
-    assert namespace["_resolve_config"](model) == str(config)
+    monkeypatch.setattr(az_module, "AZ_MODELS_PATH", str(tmp_path))
+    assert az_module._resolve_config("USPTO") == str(config)
+
+
+def test_resolve_config_reports_unset_fallback(
+    monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+) -> None:
+    """An unset fallback variable is named in the error."""
+    monkeypatch.setattr(az_module, "AZ_MODELS_PATH", "")
+    monkeypatch.setattr(az_module, "AZ_MODEL_CONFIG_PATH", "")
+    with pytest.raises(FileNotFoundError, match="AZ_MODEL_CONFIG_PATH is not set"):
+        az_module._resolve_config("USPTO")
 
 
 def test_relative_environment_path_is_checkout_relative(
@@ -246,9 +264,6 @@ def test_single_step_ranks_templates_and_skips_failed_applications(
     monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
 ) -> None:
     """A failed high-prior template must not hide later usable suggestions."""
-    import sys
-    from types import SimpleNamespace
-    from typing import Any
 
     class FailedAction:
         @property

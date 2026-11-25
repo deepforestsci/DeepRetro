@@ -296,7 +296,7 @@ def calc_chemical_formula(mol: str) -> str:
 
 
 def are_molecules_same(smiles1: str, smiles2: str) -> bool:
-    """Compare molecules using the historical fingerprint-based heuristic.
+    """Compare two molecules by canonical SMILES, then by Morgan fingerprint.
 
     Canonically equal SMILES match immediately. Otherwise, equality of
     radius-two, 1024-bit Morgan fingerprints counts as a match. These

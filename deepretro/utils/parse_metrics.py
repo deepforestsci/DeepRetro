@@ -176,7 +176,8 @@ def get_reaction_type(mol1: str, mol2: str, model_path: str) -> tuple[str, int]:
     mol2 : str
         Product SMILES.
     model_path : str
-        Path to a trusted joblib classifier file.
+        Path to a joblib classifier file. joblib can run code while it
+        loads a file, so only pass files you trust.
 
     Returns
     -------

@@ -2,9 +2,10 @@
 
 Runs AiZynthFinder on target molecules, with optional image export.
 Uses ZINC stock and USPTO expansion/filter policies by default.
-Model search requires ``AZ_MODEL_CONFIG_PATH`` or ``AZ_MODELS_PATH``.
-Absolute paths are used unchanged. Relative paths are resolved from the
-repository root in a source checkout. Set paths before importing this module.
+Model search needs ``AZ_MODEL_CONFIG_PATH`` or ``AZ_MODELS_PATH``.
+Absolute paths are used as given. A leading ``~`` is expanded. Relative
+paths are joined to the repository root, so they only work in a source
+checkout. The paths are read once, when this module is imported.
 Caching is opt-in through an explicit ``CacheManager`` argument.
 """
 
@@ -25,7 +26,7 @@ if TYPE_CHECKING:
     from PIL.Image import Image
 
 try:
-    from aizynthfinder.aizynthfinder import AiZynthFinder  # ty: ignore[unresolved-import]
+    from aizynthfinder.aizynthfinder import AiZynthFinder
 except ImportError:
     AiZynthFinder = None  # type: ignore[assignment, misc]
 
@@ -35,7 +36,24 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _configured_path(name: str) -> str:
-    """Resolve an environment path without rewriting absolute paths."""
+    """
+    Read a path from an environment variable.
+
+    Absolute paths are kept as given. A leading ``~`` is expanded to the
+    home directory. A relative path is joined to ``PROJECT_ROOT``. In an
+    installed package, ``PROJECT_ROOT`` is not the repository, so use
+    absolute paths there.
+
+    Parameters
+    ----------
+    name : str
+        Name of the environment variable to read.
+
+    Returns
+    -------
+    str
+        Absolute path string, or ``""`` when the variable is unset or empty.
+    """
     configured = os.getenv(name, "")
     if not configured:
         return ""
@@ -61,7 +79,29 @@ def _basic_molecule_route(smiles: str) -> list[Dict[str, Any]]:
 
 
 def _resolve_config(az_model: str | None = None) -> str:
-    """Resolve AiZynthFinder config path, falling back to ``AZ_MODEL_CONFIG_PATH``."""
+    """
+    Find the AiZynthFinder config file to use.
+
+    First try ``AZ_MODELS_PATH/<az_model>/config.yml``. If that file does
+    not exist, or ``az_model`` is ``None``, use ``AZ_MODEL_CONFIG_PATH``.
+
+    Parameters
+    ----------
+    az_model : str | None, optional
+        Model variant name, such as ``"USPTO"``. ``None`` skips the
+        model-specific config.
+
+    Returns
+    -------
+    str
+        Path to an existing config file.
+
+    Raises
+    ------
+    FileNotFoundError
+        If no model-specific config is found and ``AZ_MODEL_CONFIG_PATH``
+        is unset or points to a missing file.
+    """
     if az_model is not None and AZ_MODELS_PATH:
         config_path = f"{AZ_MODELS_PATH}/{az_model}/config.yml"
         try:
@@ -70,6 +110,10 @@ def _resolve_config(az_model: str | None = None) -> str:
         except FileNotFoundError:
             logger.warning("AZ config not found, trying fallback", path=config_path)
 
+    if not AZ_MODEL_CONFIG_PATH:
+        raise FileNotFoundError(
+            "AZ_MODEL_CONFIG_PATH is not set and no model-specific config was found"
+        )
     try:
         with open(AZ_MODEL_CONFIG_PATH, "r") as _:
             return AZ_MODEL_CONFIG_PATH
@@ -231,10 +275,10 @@ def run_az_with_img(
 
     Returns
     -------
-    tuple[bool, Sequence[Dict[str, Any]], Sequence[Image] | None]
+    tuple[bool, Sequence[Dict[str, Any]], Sequence[Image | None] | None]
         ``(solved, routes, images)`` — solved status, route data, and
         optional PIL image objects. Individual images may be ``None`` when
-        rendering fails. Basic feedstocks return ``images=None``. Uses
+        rendering fails. ``images`` is ``None`` for a basic molecule. Uses
         ``AZ_MODEL_CONFIG_PATH``.
 
     Notes
@@ -261,7 +305,7 @@ def run_az_with_img(
 
 
 def is_basic_molecule(smiles: str) -> bool:
-    """Check the historical size-based feedstock heuristic.
+    """Check whether a molecule is small enough to count as a starting material.
 
     A molecule passes if it has fewer than five carbon atoms or fewer than
     five total atoms. This heuristic does not query a supplier catalog.
@@ -332,7 +376,7 @@ def az_single_step(
     >>> az_single_step("CC(=O)Oc1ccccc1C(=O)O")  # doctest: +SKIP
     [{'precursors': ['CC(=O)OC(C)=O', 'O=C(O)c1ccccc1O'], 'probability': 0.5}, ...]
     """
-    from aizynthfinder.chem import TreeMolecule  # ty: ignore[unresolved-import]
+    from aizynthfinder.chem import TreeMolecule
 
     config_filename = _resolve_config(az_model)
     finder = _get_finder(config_filename)

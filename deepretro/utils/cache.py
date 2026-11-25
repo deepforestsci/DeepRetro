@@ -100,16 +100,17 @@ def make_args_hash(*args: Any, **kwargs: Any) -> str:
     """
     Generate a deterministic hash of arguments for cache keying.
 
-    JSON keys are sorted. Values outside JSON's native types use ``str``.
-    If JSON serialization fails, the complete payload is pickled. Stability
-    therefore depends on the input objects' string or pickle representation.
+    Inputs are written as JSON with sorted keys. Values that JSON cannot
+    store are converted with ``str``. If JSON still fails, the inputs are
+    pickled instead.
 
     Parameters
     ----------
     *args : Any
         Positional inputs to hash.
     **kwargs : Any
-        Named inputs to hash. Their insertion order does not affect JSON keys.
+        Named inputs to hash. Keyword order does not change the hash on the
+        JSON path.
 
     Returns
     -------
@@ -391,7 +392,7 @@ class CacheManager:
         return removed
 
     def clear(self) -> None:
-        """Remove all entries from this cache instance."""
+        """Remove all entries and tags. Hit and miss counts are kept."""
         self._entries.clear()
         self._tags.clear()
         self._log.info("cache.clear")
