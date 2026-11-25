@@ -38,10 +38,8 @@ def find_optimal_threshold(
     >>> y = np.array([0, 0, 1, 1])
     >>> proba = np.array([0.1, 0.4, 0.6, 0.9])
     >>> thr, f1 = find_optimal_threshold(y, proba)
-    >>> 0.0 < thr < 1.0
-    True
-    >>> f1 > 0.0
-    True
+    >>> (thr, round(f1, 6))
+    (0.6, 1.0)
     """
     # Import lazily so docs and lightweight tooling can import this module
     # without pulling in sklearn's full scipy stack at module import time.

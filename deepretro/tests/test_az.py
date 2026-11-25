@@ -16,6 +16,7 @@ from typing import Any
 
 import pytest
 
+import deepretro
 from deepretro.utils.cache import CacheManager
 
 _BASIC_ROUTE = [
@@ -205,22 +206,38 @@ def test_run_az_with_img_uses_explicit_cache(az_module: ModuleType) -> None:
     cache.close()
 
 
-def test_absolute_environment_path_is_preserved(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+@pytest.mark.parametrize(
+    ("configured", "expected"),
+    [
+        ("/opt/az-models", "/opt/az-models"),
+        ("~/models", str(Path.home() / "models")),
+        ("models", str(Path(deepretro.__file__).resolve().parents[1] / "models")),
+        (None, ""),
+    ],
+    ids=[
+        "absolute-kept",
+        "tilde-expanded",
+        "relative-joined-to-checkout",
+        "unset-empty",
+    ],
+)
+def test_az_models_path_follows_environment(
+    monkeypatch: pytest.MonkeyPatch,
+    az_module: ModuleType,
+    configured: str | None,
+    expected: str,
 ) -> None:
-    """Absolute model paths must not be prefixed by the checkout directory."""
-    monkeypatch.setenv("AZ_MODELS_PATH", str(tmp_path))
-    assert az_module._configured_path("AZ_MODELS_PATH") == str(tmp_path)
+    if configured is None:
+        monkeypatch.delenv("AZ_MODELS_PATH", raising=False)
+    else:
+        monkeypatch.setenv("AZ_MODELS_PATH", configured)
+    # The path is read at import time, so run az.py again.
+    assert az_module.__spec__ is not None and az_module.__spec__.loader is not None
+    az_module.__spec__.loader.exec_module(az_module)
+    assert az_module.AZ_MODELS_PATH == expected
 
 
-def test_home_environment_path_is_expanded(
-    monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
-) -> None:
-    """A leading ``~`` is expanded to the home directory."""
-    monkeypatch.setenv("AZ_MODELS_PATH", "~/models")
-    assert az_module._configured_path("AZ_MODELS_PATH") == str(Path.home() / "models")
-
-
+# _resolve_config is tested directly: every public caller loads AZ models next.
 def test_resolve_config_uses_model_specific_config(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
 ) -> None:
@@ -232,63 +249,91 @@ def test_resolve_config_uses_model_specific_config(
     assert az_module._resolve_config("USPTO") == str(config)
 
 
-def test_resolve_config_reports_unset_fallback(
+def test_resolve_config_raises_when_no_path_is_set(
     monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
 ) -> None:
-    """An unset fallback variable is named in the error."""
     monkeypatch.setattr(az_module, "AZ_MODELS_PATH", "")
     monkeypatch.setattr(az_module, "AZ_MODEL_CONFIG_PATH", "")
     with pytest.raises(FileNotFoundError, match="AZ_MODEL_CONFIG_PATH is not set"):
         az_module._resolve_config("USPTO")
 
 
-def test_relative_environment_path_is_checkout_relative(
-    monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+def test_resolve_config_skips_model_lookup_when_models_path_is_empty(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
 ) -> None:
-    """Existing relative-path configurations keep their source-checkout meaning."""
-    monkeypatch.setenv("AZ_MODELS_PATH", "models")
-    assert az_module._configured_path("AZ_MODELS_PATH") == str(
-        az_module.PROJECT_ROOT / "models"
-    )
+    opened_paths: list[str] = []
+
+    def recording_open(path: str, *args: Any, **kwargs: Any) -> Any:
+        opened_paths.append(str(path))
+        return open(path, *args, **kwargs)
+
+    monkeypatch.setattr(az_module, "open", recording_open, raising=False)
+    fallback = tmp_path / "config.yml"
+    fallback.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(az_module, "AZ_MODELS_PATH", "")
+    monkeypatch.setattr(az_module, "AZ_MODEL_CONFIG_PATH", str(fallback))
+    assert az_module._resolve_config("USPTO") == str(fallback)
+    assert opened_paths == [str(fallback)]
 
 
-def test_unset_environment_path_is_empty(
-    monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+def _stub_expansion_policy(
+    monkeypatch: pytest.MonkeyPatch,
+    az_module: ModuleType,
+    actions: list[Any],
+    priors: list[float],
 ) -> None:
-    """Missing configuration must not become a literal path ending in None."""
-    monkeypatch.delenv("AZ_MODELS_PATH", raising=False)
-    assert az_module._configured_path("AZ_MODELS_PATH") == ""
-
-
-def test_single_step_ranks_templates_and_skips_failed_applications(
-    monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
-) -> None:
-    """A failed high-prior template must not hide later usable suggestions."""
-
-    class FailedAction:
-        @property
-        def reactants(self) -> list[Any]:
-            raise ValueError("template does not apply")
-
+    """Replace the AiZynthFinder model with one that returns fixed templates."""
     chem = ModuleType("aizynthfinder.chem")
-    chem.TreeMolecule = lambda **kwargs: SimpleNamespace(**kwargs)
+    setattr(chem, "TreeMolecule", lambda **kwargs: SimpleNamespace(**kwargs))
     monkeypatch.setitem(sys.modules, "aizynthfinder.chem", chem)
-    actions = [
-        SimpleNamespace(
-            reactants=[[SimpleNamespace(smiles="CC"), SimpleNamespace(smiles="O")]]
-        ),
-        FailedAction(),
-        SimpleNamespace(reactants=[]),
-    ]
     finder = SimpleNamespace(
         expansion_policy=SimpleNamespace(
-            get_actions=lambda molecules: (actions, [0.5, 0.9, 0.2])
+            get_actions=lambda molecules: (actions, priors)
         )
     )
     monkeypatch.setattr(az_module, "_resolve_config", lambda model: "example.yml")
     monkeypatch.setattr(az_module, "_get_finder", lambda path: finder)
 
-    assert az_module.az_single_step("CCO", top_k=3) == [
-        {"precursors": ["CC", "O"], "probability": 0.5}
+
+def _template(*precursors: str) -> SimpleNamespace:
+    """Build a template action that gives one set of precursors."""
+    return SimpleNamespace(reactants=[[SimpleNamespace(smiles=s) for s in precursors]])
+
+
+def test_single_step_keeps_highest_prior_templates_first(
+    monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+) -> None:
+    actions = [
+        _template("C=C=O", "CCO"),
+        _template("CC(=O)O", "CCO"),
+        _template("CC(=O)Cl", "CCO"),
     ]
-    assert az_module.az_single_step("CCO", top_k=1) == []
+    _stub_expansion_policy(monkeypatch, az_module, actions, [0.3, 0.9, 0.6])
+
+    assert az_module.az_single_step("CCOC(C)=O", top_k=2) == [
+        {"precursors": ["CC(=O)O", "CCO"], "probability": 0.9},
+        {"precursors": ["CC(=O)Cl", "CCO"], "probability": 0.6},
+    ]
+
+
+def test_single_step_skips_templates_that_fail_or_give_no_precursors(
+    monkeypatch: pytest.MonkeyPatch, az_module: ModuleType
+) -> None:
+    class FailedTemplate:
+        @property
+        def reactants(self) -> list[Any]:
+            raise ValueError("template does not apply")
+
+    no_precursors = SimpleNamespace(reactants=[])
+    actions = [
+        FailedTemplate(),
+        no_precursors,
+        _template("CC(=O)O", "CCO"),
+        _template("CC(=O)OC(C)=O", "CCO"),
+    ]
+    _stub_expansion_policy(monkeypatch, az_module, actions, [0.9, 0.6, 0.3, 0.1])
+
+    # top_k=3 stops before the anhydride; failed templates are not replaced
+    assert az_module.az_single_step("CCOC(C)=O", top_k=3) == [
+        {"precursors": ["CC(=O)O", "CCO"], "probability": 0.3}
+    ]

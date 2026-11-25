@@ -24,10 +24,9 @@ def test_make_cache_key_is_stable_and_versioned() -> None:
     assert first != third
 
 
-def test_make_args_hash_is_stable_for_identical_inputs() -> None:
-    """make_args_hash should produce stable hashes for the same payload."""
+def test_make_args_hash_ignores_keyword_order() -> None:
     first = make_args_hash("CCO", az_model="USPTO", include_scores=True)
-    second = make_args_hash("CCO", az_model="USPTO", include_scores=True)
+    second = make_args_hash("CCO", include_scores=True, az_model="USPTO")
 
     assert first == second
 
@@ -122,22 +121,35 @@ def test_replacing_key_moves_tag_and_retains_only_new_value() -> None:
     assert cache.evict_tag("new") == 1
 
 
-def test_stats_purges_expired_entries_and_preserves_live_values(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Statistics count live entries and expiry also removes tag membership."""
+@pytest.fixture
+def cache_after_expiry(monkeypatch: pytest.MonkeyPatch) -> CacheManager:
+    """Return a cache where "expired" (tag "batch") has run out and "live" has not."""
     monkeypatch.setattr("deepretro.utils.cache.time.monotonic", lambda: 10.0)
     cache = CacheManager()
     cache.set("expired", "value", expire=1.0, tag="batch")
     cache.set("live", "value")
     monkeypatch.setattr("deepretro.utils.cache.time.monotonic", lambda: 11.0)
-    assert cache.stats().num_entries == 1
-    assert cache.evict_tag("batch") == 0
-    assert cache.estimate_size_bytes() > 0
-    assert cache.get("live") == "value"
+    return cache
+
+
+def test_stats_counts_only_live_entries(cache_after_expiry: CacheManager) -> None:
+    assert cache_after_expiry.stats().num_entries == 1
+    assert cache_after_expiry.get("live") == "value"
+
+
+def test_purged_entry_leaves_its_old_tag(cache_after_expiry: CacheManager) -> None:
+    cache_after_expiry.purge_expired_entries()
+    # reuse the key: a stale "batch" tag would now evict the new value
+    cache_after_expiry.set("expired", "new value", tag="other")
+    assert cache_after_expiry.evict_tag("batch") == 0
+    assert cache_after_expiry.get("expired") == "new value"
+
+
+def test_close_empties_cache() -> None:
+    cache = CacheManager()
+    cache.set("key", "value")
     cache.close()
     assert cache.stats().num_entries == 0
-    cache.close()
 
 
 def test_clear_keeps_cumulative_hit_and_miss_counts() -> None:
