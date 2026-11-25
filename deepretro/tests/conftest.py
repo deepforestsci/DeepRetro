@@ -51,17 +51,20 @@ def az_models_dir() -> Path:
 
     Notes
     -----
-    The fixture skips the test if ``AZ_TEST_MODELS_DIR`` is unset.
-    It fails the test if the directory has no ``config.yml``.
-    It skips the test if ``aizynthfinder`` is not installed.
+    Tests that use this fixture are marked ``integration``, so they run only
+    with ``--run-integration``. A run that asks for them must not pass by
+    skipping. The fixture fails the test if ``AZ_TEST_MODELS_DIR`` is unset,
+    if the directory has no ``config.yml`` or if ``aizynthfinder`` is not
+    installed.
     """
     env_dir = os.environ.get("AZ_TEST_MODELS_DIR")
     if not env_dir:
-        pytest.skip("Set AZ_TEST_MODELS_DIR to run AiZynthFinder integration tests")
+        pytest.fail("Set AZ_TEST_MODELS_DIR to a directory with downloaded models")
     models_dir = Path(env_dir).expanduser().resolve()
     if not (models_dir / "config.yml").is_file():
         pytest.fail(f"AZ_TEST_MODELS_DIR has no config.yml: {models_dir}")
-    pytest.importorskip("aizynthfinder")
+    if importlib.util.find_spec("aizynthfinder") is None:
+        pytest.fail("Install the deepretro az extra to run AiZynthFinder tests")
     return models_dir
 
 
@@ -78,11 +81,14 @@ def az_module() -> ModuleType:
 
 
 @pytest.fixture
-def az_module_with_models(az_module: ModuleType, az_models_dir: Path) -> ModuleType:
+def az_module_with_models(
+    az_module: ModuleType, az_models_dir: Path, monkeypatch: pytest.MonkeyPatch
+) -> ModuleType:
     """Return the az module configured to use the models in ``az_models_dir``."""
-    config_path = az_models_dir / "config.yml"
-    az_module.AZ_MODEL_CONFIG_PATH = str(config_path)
-    az_module.AZ_MODELS_PATH = str(az_models_dir)
+    monkeypatch.setattr(
+        az_module, "AZ_MODEL_CONFIG_PATH", str(az_models_dir / "config.yml")
+    )
+    monkeypatch.setattr(az_module, "AZ_MODELS_PATH", str(az_models_dir))
     return az_module
 
 

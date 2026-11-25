@@ -1,10 +1,9 @@
-"""Unit tests for deepretro/utils/az.py.
+"""Tests for deepretro/utils/az.py.
 
-These tests run only when aizynthfinder is installed. They use real AiZynthFinder
-with models downloaded to a temporary directory at session start. No mocking.
-
-Speed optimizations:
-- Tests that run full inference are marked @pytest.mark.slow; skip with -m "not slow"
+Most tests need no models. Tests marked ``integration`` use real AiZynthFinder
+models from ``AZ_TEST_MODELS_DIR``. They run only with ``--run-integration``.
+They fail if the models or the ``az`` extra are missing. Tests never download
+models. Tests marked ``slow`` run a full search; skip them with -m "not slow".
 """
 
 from __future__ import annotations

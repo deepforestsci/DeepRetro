@@ -118,12 +118,13 @@ uv run --project deepretro --no-sync pytest deepretro/tests --run-integration -m
 Provider tests require the appropriate credentials and may incur charges.
 AiZynthFinder tests require the `az` extra and an explicitly provisioned model
 directory in `AZ_TEST_MODELS_DIR`, containing `config.yml`. Test fixtures never
-download models. A missing setting skips these tests; a configured directory
-without `config.yml` fails with an actionable error.
+download models. With `--run-integration`, these tests fail if
+`AZ_TEST_MODELS_DIR` is unset, `config.yml` is missing or the `az` extra is not
+installed. They never skip.
 
 ### Real-model AiZynthFinder E2E
 
-The `deepretro AZ E2E` workflow runs this test in CI. It also runs the
+The `deepretro AZ E2E` workflow runs these tests in CI. It also runs the
 real-model tests in `test_az.py`. It installs the `az` extra. It downloads the
 public models and stock once and caches them. To run it locally from the
 repository root:
@@ -136,9 +137,10 @@ uv run --project deepretro --no-sync python -m aizynthfinder.tools.download_publ
 uv run --project deepretro --no-sync pytest deepretro/tests/test_az_e2e.py --run-integration -m integration -v
 ```
 
-The test loads the real models and expands aspirin. It checks that each
-proposal has valid precursors. It then runs a route search and checks the
-returned routes. It needs no provider keys. Without `--run-integration` it is
-skipped. With it, the test fails (other AiZynthFinder tests skip) if
-`AZ_TEST_MODELS_DIR` is unset, `config.yml` is missing or the `az` extra is not
-installed. The models are large, so keep the directory.
+The tests load the real models and use aspirin. The first test checks that
+the expansion policy proposes precursors and that RDKit can parse each one. The
+second test runs a route search. It checks that each route starts at aspirin and
+that the top route has a reaction under aspirin. The tests need no provider
+keys. Without `--run-integration` they are skipped. With it, they fail in the
+same cases as the other AiZynthFinder tests. The models are large, so keep the
+directory.
