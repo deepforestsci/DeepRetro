@@ -584,3 +584,29 @@ def test_no_langfuse_client_without_keys(monkeypatch: pytest.MonkeyPatch) -> Non
     monkeypatch.delenv("LANGFUSE_SECRET_KEY", raising=False)
     monkeypatch.setattr(llm_trace, "_client_cache", None)
     assert llm_trace.build_langfuse_client() is None
+
+
+def test_log_serialization_failure_does_not_abort_solver(tmp_path: Path) -> None:
+    """A provider object with a broken string fallback cannot escape logging."""
+
+    class BrokenString:
+        def __str__(self) -> str:
+            raise RuntimeError("provider serialization failed")
+
+    with molecule_trace("CCO", log_dir=tmp_path):
+        record_llm_call(
+            stage="retrosynthesis",
+            model="m",
+            messages=[{"role": "user", "content": BrokenString()}],
+            response="ok",
+            latency_ms=1.0,
+        )
+        # A subsequent serializable record must still be written.
+        record_llm_call(
+            stage="retrosynthesis",
+            model="m",
+            messages=[],
+            response="next",
+            latency_ms=1.0,
+        )
+    assert [record["response"] for record in read_records(tmp_path)] == ["next"]

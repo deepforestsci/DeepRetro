@@ -18,7 +18,8 @@ a time. This module carries that missing grouping in a
   Langfuse *events* inside the same trace, so tool outputs render online next
   to the model turns that requested them.
 
-Both are best-effort observability: neither ever raises into the solver.
+Recording is best-effort. A logging failure logs one warning per process.
+It never stops the solver.
 
 Examples
 --------
@@ -175,7 +176,12 @@ def elapsed_ms(started: float) -> float:
 
 
 def _default_session_id(molecule: str) -> str:
-    """Build a readable, collision-resistant Langfuse session id.
+    """Build a readable Langfuse session ID.
+
+    The ID joins a target slug, the time to the second, and the process ID.
+    Two traces for the same target in the same process and second share a
+    session ID. Each ``MoleculeTrace`` still gets its own UUID trace ID.
+    Pass ``session_id`` to :func:`molecule_trace` to group traces another way.
 
     Examples
     --------
@@ -265,9 +271,8 @@ def build_langfuse_client() -> Any | None:
 
     Examples
     --------
-    >>> import os
-    >>> os.environ.pop("LANGFUSE_PUBLIC_KEY", None) and None
-    >>> build_langfuse_client() is None  # doctest: +SKIP
+    >>> client = build_langfuse_client()  # doctest: +SKIP
+    >>> client is None or callable(client.event)  # doctest: +SKIP
     True
     """
     global _client_cache, _client_checked
@@ -830,7 +835,9 @@ def _envelope(
 
 
 def _write_record(trace: MoleculeTrace, record: dict[str, Any]) -> None:
-    """Append one JSON line to the trace's log; filesystem errors warn once.
+    """Append one JSON line to the trace's log.
+
+    Any write or serialization error logs one warning and is not raised.
 
     Examples
     --------
@@ -843,7 +850,9 @@ def _write_record(trace: MoleculeTrace, record: dict[str, Any]) -> None:
         trace.log_path.parent.mkdir(parents=True, exist_ok=True)
         with trace.log_path.open("a", encoding="utf-8") as handle:
             handle.write(line + "\n")
-    except (OSError, TypeError, ValueError) as exc:
+    except Exception as exc:
+        # Provider objects can raise arbitrary exceptions from the ``str``
+        # fallback. Logging must not turn a successful completion into a retry.
         _warn_once("llm_trace.write_failed", str(exc))
 
 

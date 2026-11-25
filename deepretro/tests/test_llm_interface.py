@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 from typing import Any
 
 from deepretro.utils.llm_helpers import (
@@ -20,7 +19,6 @@ from deepretro.utils.llm_helpers import (
 )
 from deepretro.utils.llm_interface import (
     LLMRequest,
-    LLMResponse,
     create_llm_interface,
     parse_cot_response,
 )
@@ -176,6 +174,11 @@ def test_llm_limits_respect_and_validate_env_overrides(monkeypatch: Any) -> None
     assert resolve_llm_num_retries() == DEFAULT_LLM_NUM_RETRIES
 
     monkeypatch.setenv("DEEPRETRO_LLM_TIMEOUT", "0")
+    assert resolve_llm_timeout() == DEFAULT_LLM_TIMEOUT_SECONDS
+
+
+def test_timeout_uses_default_when_env_is_infinite(monkeypatch: Any) -> None:
+    monkeypatch.setenv("DEEPRETRO_LLM_TIMEOUT", "inf")
     assert resolve_llm_timeout() == DEFAULT_LLM_TIMEOUT_SECONDS
 
 
