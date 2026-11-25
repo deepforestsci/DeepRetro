@@ -125,14 +125,13 @@ class ReactionDataLoader(DataLoader):
         pairs = list(zip(products, reactants))
         X = self.featurizer.featurize(pairs, log_every_n=self.log_every_n)
 
-        # DeepChem represents failed graph featurization with an empty array.
-        # Vector failures use an all-NaN row to retain the feature dimension.
+        # A failed graph row is an empty array; a failed vector row is all NaN.
+        # np.isnan(empty).all() is True, so one check drops both.
         valid_inds = np.asarray(
             [
                 index
                 for index, row in enumerate(X)
-                if not isinstance(row, np.ndarray)
-                or (row.size > 0 and not np.isnan(row).all())
+                if not isinstance(row, np.ndarray) or not np.isnan(row).all()
             ],
             dtype=int,
         )
@@ -158,7 +157,8 @@ class ReactionDataLoader(DataLoader):
             Path(s) to CSV file(s). Only CSV paths are accepted.
         data_dir : str or None, optional
             Directory to write shards into.  When ``None`` a temporary
-            directory is used. Remove that directory when it is no longer needed.
+            directory is used. Its path is ``dataset.data_dir``.
+            Remove it when it is no longer needed.
         shard_size : int or None, optional
             Number of rows per shard.  Default ``1000``.
 

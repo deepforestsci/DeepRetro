@@ -227,8 +227,8 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
         Notes
         -----
         If either side fails vector featurization, return an all-NaN row.
-        Graph failures use DeepChem's empty-array sentinel. The batch method
-        preserves these failed positions so callers can keep labels aligned.
+        A failed graph is an empty array, as in DeepChem. The batch method
+        keeps these failed rows so callers can keep labels aligned.
         """
         product_smiles, reactants_smiles = datapoint
 
