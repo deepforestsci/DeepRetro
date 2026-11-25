@@ -40,6 +40,22 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
         Options for the DeepChem featurizer, such as ``radius`` and ``size``.
         Sparse fingerprints are not supported.
 
+    Raises
+    ------
+    ValueError
+        If ``base_featurizer`` is not a key of ``FEATURIZER_MAP``.
+    ValueError
+        If the base featurizer does not make vectors or graphs.
+    ValueError
+        If ``sparse=True`` is passed.
+    ValueError
+        If a vector featurizer fails on the probe molecule ``"C"``.
+
+    Notes
+    -----
+    For vector featurizers, the constructor featurizes the probe molecule
+    ``"C"`` once. The size of that result sets the row width.
+
     Examples
     --------
     >>> feat = ReactionStepFeaturizer(size=32)
@@ -55,9 +71,8 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
         use_domain_features: bool = False,
         **kwargs: Any,
     ) -> None:
-        """Resolve the registered base featurizer and its configuration."""
+        """Build the base featurizer and find the vector row width."""
         self.use_domain_features = use_domain_features
-        self._vector_feature_dim: int | None = None
 
         feat_lower = base_featurizer.lower()
         if feat_lower not in FEATURIZER_MAP:
@@ -79,6 +94,24 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
         merged_params.update(kwargs)
         self.base_featurizer = config["class"](**merged_params)
 
+        self._feature_dim: int | None = None
+        if self.base_feat_type == "1d_vector":
+            probe_size = self.base_featurizer.featurize(["C"])[0].size
+            if probe_size == 0:
+                raise ValueError(
+                    "Cannot find the vector width: the probe molecule failed."
+                )
+            self._feature_dim = 2 * probe_size + (
+                NUM_DOMAIN_FEATURES if self._adds_domain_features else 0
+            )
+
+    @property
+    def _adds_domain_features(self) -> bool:
+        """Return True when rows end with the domain descriptors."""
+        return self.use_domain_features and isinstance(
+            self.base_featurizer, dc.feat.CircularFingerprint
+        )
+
     @property
     def feature_dim(self) -> int:
         """Return the number of columns in a vector feature row.
@@ -86,27 +119,22 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
         Returns
         -------
         int
-            Twice the fingerprint size, plus 15 when domain features are enabled.
-            For custom vector featurizers, the width of the first successful
-            reaction pair.
+            Twice the base vector size.
+            Add 15 when domain features are on for circular fingerprints.
 
         Raises
         ------
         ValueError
-            If this instance produces graphs, or a custom vector featurizer
-            has not yet processed a valid reaction pair.
+            If this instance makes graphs.
+
+        Examples
+        --------
+        >>> ReactionStepFeaturizer(size=32).feature_dim
+        64
         """
-        if self.base_feat_type != "1d_vector":
+        if self._feature_dim is None:
             raise ValueError("Graph features do not have a fixed vector dimension.")
-        if not isinstance(self.base_featurizer, dc.feat.CircularFingerprint):
-            if self._vector_feature_dim is None:
-                raise ValueError(
-                    "Custom vector dimension requires a valid reaction pair."
-                )
-            return self._vector_feature_dim
-        return 2 * self.base_featurizer.size + (
-            NUM_DOMAIN_FEATURES if self.use_domain_features else 0
-        )
+        return self._feature_dim
 
     def featurize(
         self,
@@ -114,34 +142,40 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
         log_every_n: int = 1000,
         **kwargs: Any,
     ) -> np.ndarray:
-        """Featurize a batch while preserving invalid input positions.
+        """Featurize a batch and keep one output row per input pair.
 
         Parameters
         ----------
         datapoints : iterable of tuple of str and str
             Product and dot-separated reactant SMILES pairs.
         log_every_n : int, optional
-            Log progress every this many rows. Must be positive.
+            Log progress every this many rows. Default 1000.
         **kwargs : Any
             Options forwarded to the base featurizer.
 
         Returns
         -------
         numpy.ndarray
-            A numeric matrix for fingerprints, including all-NaN failure rows.
-            For graphs, a one-dimensional object array with empty arrays at
-            failed positions. Empty fingerprint input has shape
-            ``(0, feature_dim)``. Custom vector widths are learned from valid
-            rows. Before any valid row is seen, failed custom batches have
-            shape ``(n_rows, 0)``.
+            For vectors: a float matrix of shape ``(n_rows, feature_dim)``.
+            A failed row is all NaN.
 
-        Raises
-        ------
-        ValueError
-            If ``log_every_n`` is not positive.
+            For graphs: an object array of shape ``(n_rows,)``.
+            A failed row is an empty array.
+
+        Notes
+        -----
+        This method does not raise for a bad row.
+        It logs a warning with the traceback and keeps a failed row.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> X = ReactionStepFeaturizer(size=8).featurize(
+        ...     [("CCO", "CC.O"), ("bad", "CC.O")]
+        ... )
+        >>> X.shape, bool(np.isnan(X[1]).all())
+        ((2, 16), True)
         """
-        if log_every_n <= 0:
-            raise ValueError("log_every_n must be positive.")
         features: list[np.ndarray | GraphData] = []
         for index, datapoint in enumerate(datapoints):
             if index % log_every_n == 0:
@@ -150,27 +184,16 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
                 features.append(self._featurize(datapoint, **kwargs))
             except Exception:
                 logger.warning("Failed to featurize reaction %d", index, exc_info=True)
-                features.append(self._failure_features())
+                features.append(
+                    np.array([])
+                    if self.base_feat_type == "graph"
+                    else np.full(self.feature_dim, np.nan)
+                )
         if self.base_feat_type == "graph":
             result = np.empty(len(features), dtype=object)
             result[:] = features
             return result
-        try:
-            width = self.feature_dim
-        except ValueError:
-            return np.empty((len(features), 0))
-        vectors = [
-            np.full(width, np.nan) if np.asarray(feature).size == 0 else feature
-            for feature in features
-        ]
-        return np.asarray(vectors).reshape(len(vectors), width)
-
-    def _failure_features(self) -> np.ndarray:
-        """Return a NaN row when its width is known, otherwise an empty sentinel."""
-        try:
-            return np.full(self.feature_dim, np.nan)
-        except ValueError:
-            return np.array([])
+        return np.asarray(features).reshape(len(features), self.feature_dim)
 
     def _featurize(
         self, datapoint: Tuple[str, str], **kwargs: Any
@@ -209,34 +232,25 @@ class ReactionStepFeaturizer(dc.feat.Featurizer):
         """
         product_smiles, reactants_smiles = datapoint
 
-        if self.base_feat_type == "1d_vector":
-            prod_feats = self.base_featurizer.featurize(product_smiles, **kwargs)[0]
-
-            if prod_feats.size == 0:
-                return self._failure_features()
-
-            reac_feats = self.base_featurizer.featurize(reactants_smiles, **kwargs)[0]
-            if reac_feats.size == 0:
-                return self._failure_features()
-
-            parts = [prod_feats, reac_feats]
-
-            # Append domain chemistry metrics only for ECFP calculations
-            if self.use_domain_features and isinstance(
-                self.base_featurizer, dc.feat.CircularFingerprint
-            ):
-                parts.append(
-                    extract_domain_features_single(product_smiles, reactants_smiles)
-                )
-            result = np.concatenate(parts)
-            self._vector_feature_dim = result.size
-            return result
-
-        elif self.base_feat_type == "graph":
+        if self.base_feat_type == "graph":
             combined_smiles = f"{product_smiles}.{reactants_smiles}"
             return self.base_featurizer.featurize(combined_smiles, **kwargs)[0]
 
-        raise ValueError(f"Unsupported base featurizer type: '{self.base_feat_type}'.")
+        prod_feats = self.base_featurizer.featurize(product_smiles, **kwargs)[0]
+        if prod_feats.size == 0:
+            return np.full(self.feature_dim, np.nan)
+
+        reac_feats = self.base_featurizer.featurize(reactants_smiles, **kwargs)[0]
+        if reac_feats.size == 0:
+            return np.full(self.feature_dim, np.nan)
+
+        parts = [prod_feats, reac_feats]
+        # Append domain chemistry metrics only for ECFP calculations
+        if self._adds_domain_features:
+            parts.append(
+                extract_domain_features_single(product_smiles, reactants_smiles)
+            )
+        return np.concatenate(parts)
 
 
 FEATURIZER_MAP: Dict[str, FeaturizerConfig] = {

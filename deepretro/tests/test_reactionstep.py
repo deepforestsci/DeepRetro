@@ -2,8 +2,10 @@
 
 import numpy as np
 import pytest
+from deepchem.feat import RDKitDescriptors
+from deepchem.feat.graph_data import GraphData
 
-from deepretro.featurizers.reactionstep import ReactionStepFeaturizer
+from deepretro.featurizers.reactionstep import FEATURIZER_MAP, ReactionStepFeaturizer
 from deepretro.utils import NUM_DOMAIN_FEATURES
 
 ETHANOL = "CCO"
@@ -105,23 +107,16 @@ def test_reproducibility() -> None:
 
 
 def test_nested_base_featurizer_rejected() -> None:
-    import pytest
-
     with pytest.raises(ValueError, match="cannot be used as a base"):
         ReactionStepFeaturizer(base_featurizer="reactionfeaturizer")
 
 
 def test_sparse_fingerprints_rejected() -> None:
-    import pytest
-
     with pytest.raises(ValueError, match="dense fingerprints"):
         ReactionStepFeaturizer(sparse=True)
 
 
 def test_graph_features_and_dimension() -> None:
-    import pytest
-    from deepchem.feat.graph_data import GraphData
-
     featurizer = ReactionStepFeaturizer(base_featurizer="molgraphconv")
     result = featurizer.featurize([("CCO", "CC.O")])
     assert isinstance(result[0], GraphData)
@@ -131,8 +126,6 @@ def test_graph_features_and_dimension() -> None:
 
 
 def test_graph_batch_preserves_failure_positions() -> None:
-    from deepchem.feat.graph_data import GraphData
-
     feat = ReactionStepFeaturizer(base_featurizer="molgraphconv")
     result = feat.featurize([("CCO", "CC.O"), (INVALID_SMILES, "CC.O")])
     assert result.shape == (2,)
@@ -149,10 +142,7 @@ def test_empty_batch_retains_vector_width() -> None:
 def test_registered_vector_featurizer_without_size(
     monkeypatch: pytest.MonkeyPatch, use_domain_features: bool
 ) -> None:
-    """Custom DeepChem descriptor vectors retain their inferred width."""
-    from deepchem.feat import RDKitDescriptors
-    from deepretro.featurizers.reactionstep import FEATURIZER_MAP
-
+    """Custom vector width is known at construction and kept for failed rows."""
     monkeypatch.setitem(
         FEATURIZER_MAP,
         "descriptors",
@@ -164,6 +154,10 @@ def test_registered_vector_featurizer_without_size(
     expected = np.concatenate(
         [feat.base_featurizer.featurize([smi])[0] for smi in (ETHANOL, ETHANE_WATER)]
     )
+    assert feat.feature_dim == expected.size
+    all_failed = feat.featurize([(INVALID_SMILES, ETHANE_WATER)])
+    assert all_failed.shape == (1, expected.size)
+    assert np.isnan(all_failed).all()
     result = feat.featurize([(INVALID_SMILES, ETHANE_WATER), (ETHANOL, ETHANE_WATER)])
     assert result.shape == (2, expected.size)
     assert feat.feature_dim == expected.size

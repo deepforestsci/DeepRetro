@@ -1,16 +1,20 @@
 """Unit tests for ReactionDataLoader and stratified_split."""
 
-from pathlib import Path
-
 import warnings
+from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
 import pytest
 from deepchem.data import DiskDataset
 from deepchem.data.data_loader import DataLoader
+from deepchem.feat import RDKitDescriptors
+from deepchem.feat.graph_data import GraphData
 
 from deepretro.data.loader import ReactionDataLoader, stratified_split
+from deepretro.featurizers import ReactionStepFeaturizer
+from deepretro.featurizers.reactionstep import FEATURIZER_MAP
 
 PYRAZOLE_ADDUCT = "Cn1nccc1[C@]1(O)CCCC[C@H]1O"
 PYRAZOLE_BROMIDE_KETONE = "Cn1nccc1Br.O=C1CCCC[C@H]1O"
@@ -142,9 +146,6 @@ def test_split_preserves_total_count_and_shards(large_csv_path: str) -> None:
 
 
 def test_loader_accepts_graph_features(csv_path: str) -> None:
-    from deepchem.feat.graph_data import GraphData
-    from deepretro.featurizers import ReactionStepFeaturizer
-
     loader = ReactionDataLoader(
         featurizer=ReactionStepFeaturizer(base_featurizer="molgraphconv")
     )
@@ -155,8 +156,6 @@ def test_loader_accepts_graph_features(csv_path: str) -> None:
 
 
 def test_graph_loader_drops_invalid_rows(csv_with_invalid: str) -> None:
-    from deepretro.featurizers import ReactionStepFeaturizer
-
     loader = ReactionDataLoader(
         featurizer=ReactionStepFeaturizer(base_featurizer="molgraphconv")
     )
@@ -166,14 +165,10 @@ def test_graph_loader_drops_invalid_rows(csv_with_invalid: str) -> None:
 
 
 @pytest.mark.parametrize("all_invalid", [False, True])
-def test_custom_vectors_skip_empty_shards(
+def test_custom_vectors_with_failed_shards(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, all_invalid: bool
 ) -> None:
-    """Unknown-width failed shards must not corrupt later descriptor rows."""
-    from deepchem.feat import RDKitDescriptors
-    from deepretro.featurizers import ReactionStepFeaturizer
-    from deepretro.featurizers.reactionstep import FEATURIZER_MAP
-
+    """A leading failed shard must not corrupt later descriptor rows."""
     monkeypatch.setitem(
         FEATURIZER_MAP,
         "descriptors",
@@ -205,3 +200,20 @@ def test_custom_vectors_skip_empty_shards(
         np.testing.assert_array_equal(dataset.y, [[1]])
         np.testing.assert_array_equal(dataset.w, [[1]])
         np.testing.assert_array_equal(dataset.ids, ["good"])
+
+
+def test_loader_forwards_log_every_n(
+    csv_path: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The loader passes its log_every_n value to the featurizer."""
+    feat = ReactionStepFeaturizer(size=16)
+    seen: list[int] = []
+    original = feat.featurize
+
+    def spy(pairs: Any, log_every_n: int = 1000, **kwargs: Any) -> np.ndarray:
+        seen.append(log_every_n)
+        return original(pairs, log_every_n=log_every_n, **kwargs)
+
+    monkeypatch.setattr(feat, "featurize", spy)
+    ReactionDataLoader(featurizer=feat, log_every_n=7).create_dataset(csv_path)
+    assert seen == [7]
