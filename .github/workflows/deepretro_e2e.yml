@@ -4,7 +4,11 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - "deepretro/**"
+      - "deepretro/utils/az.py"
+      - "deepretro/utils/variables.py"
+      - "deepretro/tests/conftest.py"
+      - "deepretro/tests/test_az*.py"
+      - "deepretro/uv.lock"
       - ".github/workflows/deepretro_e2e.yml"
   push:
     branches: [main, dev]
@@ -41,4 +45,4 @@ jobs:
           fi
           test -s "$AZ_TEST_MODELS_DIR/config.yml"
       - name: Run real-model E2E
-        run: uv run --project deepretro --no-sync pytest deepretro/tests/test_az_e2e.py --run-integration -m integration -v
+        run: uv run --project deepretro --no-sync pytest deepretro/tests/test_az.py deepretro/tests/test_az_e2e.py --run-integration -m integration -v

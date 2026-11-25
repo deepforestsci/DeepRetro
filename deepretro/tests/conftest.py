@@ -43,6 +43,17 @@ def az_models_dir() -> Path:
 
     Set ``AZ_TEST_MODELS_DIR`` to a directory containing ``config.yml``.
     Tests never download model files themselves.
+
+    Returns
+    -------
+    Path
+        Absolute directory that contains ``config.yml``.
+
+    Notes
+    -----
+    The fixture skips the test if ``AZ_TEST_MODELS_DIR`` is unset.
+    It fails the test if the directory has no ``config.yml``.
+    It skips the test if ``aizynthfinder`` is not installed.
     """
     env_dir = os.environ.get("AZ_TEST_MODELS_DIR")
     if not env_dir:
@@ -68,7 +79,7 @@ def az_module() -> ModuleType:
 
 @pytest.fixture
 def az_module_with_models(az_module: ModuleType, az_models_dir: Path) -> ModuleType:
-    """Az module with paths configured to use downloaded models."""
+    """Return the az module configured to use the models in ``az_models_dir``."""
     config_path = az_models_dir / "config.yml"
     az_module.AZ_MODEL_CONFIG_PATH = str(config_path)
     az_module.AZ_MODELS_PATH = str(az_models_dir)
@@ -288,7 +299,13 @@ def _offline_langfuse_events(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
-    """Register the explicit opt-in for network and model integration tests."""
+    """Register the explicit opt-in for network and model integration tests.
+
+    Parameters
+    ----------
+    parser : pytest.Parser
+        Parser that receives the ``--run-integration`` flag.
+    """
     parser.addoption(
         "--run-integration",
         action="store_true",
@@ -300,7 +317,16 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 def pytest_collection_modifyitems(
     config: pytest.Config, items: list[pytest.Item]
 ) -> None:
-    """Skip integration tests unless the caller explicitly enables them."""
+    """Skip integration tests unless the caller explicitly enables them.
+
+    Parameters
+    ----------
+    config : pytest.Config
+        Run configuration. It holds the ``--run-integration`` flag.
+    items : list[pytest.Item]
+        Collected tests. Tests marked ``integration`` get a skip marker in
+        place when the flag is not set.
+    """
     if config.getoption("--run-integration"):
         return
     skip = pytest.mark.skip(reason="Integration test: pass --run-integration to enable")
@@ -317,6 +343,15 @@ def _block_unit_test_network(
 
     This guard covers Python sockets in the test process. External programs
     and subprocesses must still use explicit test doubles.
+
+    Parameters
+    ----------
+    request : pytest.FixtureRequest
+        Current test request. Tests marked ``integration`` are not guarded.
+    monkeypatch : pytest.MonkeyPatch
+        Patches ``socket.create_connection``, ``socket.socket.connect`` and
+        ``socket.socket.connect_ex`` to raise ``RuntimeError``. The patches
+        are undone after the test.
     """
     if request.node.get_closest_marker("integration") is not None:
         return

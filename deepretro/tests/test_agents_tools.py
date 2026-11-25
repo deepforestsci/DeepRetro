@@ -70,8 +70,9 @@ class TestRunPython:
         assert "run_python" not in registry.names
 
     def test_present_and_executes_in_sandbox_backend(self) -> None:
+        # GitHub runners cannot create network namespaces; this trusted code needs no isolation.
         registry = build_tool_registry(
-            tool_backend="sandbox", sandbox=SubprocessSandbox()
+            tool_backend="sandbox", sandbox=SubprocessSandbox(allow_network=True)
         )
         assert "run_python" in registry.names
         result = registry.execute("run_python", {"code": "print(6 * 7)"})

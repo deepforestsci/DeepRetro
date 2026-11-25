@@ -27,11 +27,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: astral-sh/setup-uv@v5
-
       - name: Build wheel and sdist
         run: |
-          uv build deepretro --out-dir deepretro/dist
+          python -m pip install --upgrade pip build
+          python -m build deepretro/
 
       - name: Upload dist artifacts
         uses: actions/upload-artifact@v4

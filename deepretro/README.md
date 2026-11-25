@@ -123,9 +123,10 @@ without `config.yml` fails with an actionable error.
 
 ### Real-model AiZynthFinder E2E
 
-The `deepretro AZ E2E` workflow installs the `az` extra and downloads/caches
-public policies and stock separately from the offline unit job. To run locally
-from the repository root:
+The `deepretro AZ E2E` workflow runs this test in CI. It also runs the
+real-model tests in `test_az.py`. It installs the `az` extra. It downloads the
+public models and stock once and caches them. To run it locally from the
+repository root:
 
 ```sh
 uv sync --project deepretro --extra dev --extra az --locked
@@ -135,9 +136,9 @@ uv run --project deepretro --no-sync python -m aizynthfinder.tools.download_publ
 uv run --project deepretro --no-sync pytest deepretro/tests/test_az_e2e.py --run-integration -m integration -v
 ```
 
-The test loads real models, checks nonempty expansion proposals for aspirin,
-and runs route search/serialization. It does not require provider keys or a
-particular solved route. Missing model configuration or AZ dependencies fails
-an explicitly requested E2E run. Without `--run-integration`, it is skipped.
-Models and stock are large; keep the directory for subsequent runs. Missing or
-corrupt model files fail loading rather than silently skipping coverage.
+The test loads the real models and expands aspirin. It checks that each
+proposal has valid precursors. It then runs a route search and checks the
+returned routes. It needs no provider keys. Without `--run-integration` it is
+skipped. With it, the test fails (other AiZynthFinder tests skip) if
+`AZ_TEST_MODELS_DIR` is unset, `config.yml` is missing or the `az` extra is not
+installed. The models are large, so keep the directory.
